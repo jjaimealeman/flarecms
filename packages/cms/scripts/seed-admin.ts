@@ -1,0 +1,98 @@
+import { createDb, users } from '@sonicjs-cms/core'
+import { eq } from 'drizzle-orm'
+import * as crypto from 'crypto'
+import { getPlatformProxy } from 'wrangler'
+
+/**
+ * Seed script to create initial admin user
+ *
+ * Run this script after migrations:
+ * npm run db:migrate:local
+ * npm run seed
+ *
+ * Admin credentials:
+ * Email: jjaimealeman@gmail.com
+ * Password: [as entered during setup]
+ */
+
+async function seed() {
+  // Get D1 database from Cloudflare environment using wrangler's getPlatformProxy
+  const { env, dispose } = await getPlatformProxy()
+
+  if (!env?.DB) {
+    console.error('❌ Error: DB binding not found')
+    console.error('')
+    console.error('Make sure you have:')
+    console.error('1. Created your D1 database: wrangler d1 create <database-name>')
+    console.error('2. Updated wrangler.toml with the database_id')
+    console.error('3. Run migrations: npm run db:migrate:local')
+    console.error('')
+    process.exit(1)
+  }
+
+  const db = createDb(env.DB)
+
+  try {
+    // Check if admin user already exists
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, 'jjaimealeman@gmail.com'))
+      .get()
+
+    if (existingUser) {
+      console.log('✓ Admin user already exists')
+      console.log(`  Email: jjaimealeman@gmail.com`)
+      console.log(`  Role: ${existingUser.role}`)
+      return
+    }
+
+    // Hash password using SHA-256 (same as SonicJS auth system)
+    const data = 'R3yK15VnqFTFFp' + 'salt-change-in-production'
+    const passwordHash = crypto.createHash('sha256').update(data).digest('hex')
+    const now = Date.now()
+    const odid = `admin-${now}-${Math.random().toString(36).substr(2, 9)}`
+
+    // Create admin user
+    await db
+      .insert(users)
+      .values({
+        id: odid,
+        email: 'jjaimealeman@gmail.com',
+        username: 'jjaimealeman',
+        firstName: 'Admin',
+        lastName: 'User',
+        passwordHash: passwordHash,
+        role: 'admin',
+        isActive: true,
+        createdAt: now,
+        updatedAt: now
+      })
+      .run()
+
+    console.log('✓ Admin user created successfully')
+    console.log(`  Email: jjaimealeman@gmail.com`)
+    console.log(`  Role: admin`)
+    console.log('')
+    console.log('You can now login at: http://localhost:8787/auth/login')
+  } catch (error) {
+    console.error('❌ Error creating admin user:', error)
+    await dispose()
+    process.exit(1)
+  }
+
+  // Clean up the platform proxy
+  await dispose()
+}
+
+// Run seed
+seed()
+  .then(() => {
+    console.log('')
+    console.log('✓ Seeding complete')
+    process.exit(0)
+  })
+  .catch((error) => {
+    console.error('❌ Seeding failed:', error)
+    process.exit(1)
+  })

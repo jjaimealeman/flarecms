@@ -1,0 +1,22 @@
+{
+  "name": "flarecms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flare CMS - Edge-first headless CMS built for Cloudflare Workers",
+  "author": "Jaime Aleman",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm --filter @flare-cms/core build",
+    "build:site": "pnpm --filter @flare-cms/site build",
+    "deploy:cms": "pnpm --filter @flare-cms/cms deploy",
+    "deploy:site": "pnpm --filter @flare-cms/site deploy",
+    "deploy:all": "pnpm deploy:cms && pnpm deploy:site",
+    "dev:cms": "echo 'Run wrangler dev in packages/cms/ tmux pane'",
+    "dev:site": "echo 'Run pnpm dev in packages/site/ tmux pane'",
+    "test": "pnpm --filter @flare-cms/core test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@10.12.1"
+}
