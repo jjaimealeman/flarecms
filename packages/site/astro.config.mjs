@@ -1,15 +1,14 @@
 // @ts-check
-import { defineConfig } from "astro/config";
-import { execSync } from "child_process";
-
-import cloudflare from "@astrojs/cloudflare";
-
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config"
+import { execSync } from "child_process"
+import cloudflare from "@astrojs/cloudflare"
+import tailwindcss from "@tailwindcss/vite"
+import Icons from "unplugin-icons/vite"
 
 const pkg = JSON.parse(
   (await import("fs")).readFileSync("./package.json", "utf-8"),
-);
-const gitHash = execSync("git rev-parse --short HEAD").toString().trim();
+)
+const gitHash = execSync("git rev-parse --short HEAD").toString().trim()
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,10 +16,16 @@ export default defineConfig({
   adapter: cloudflare(),
 
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      Icons({
+        compiler: "astro",
+        defaultClass: "inline-block",
+      }),
+    ],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
       __GIT_HASH__: JSON.stringify(gitHash),
     },
   },
-});
+})

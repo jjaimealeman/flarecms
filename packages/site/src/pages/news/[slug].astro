@@ -1,60 +1,118 @@
 ---
-import { getNewsArticleBySlug } from '../../lib/flare';
-import Layout from '../../layouts/Layout.astro';
+import { getNewsArticleBySlug } from '../../lib/flare'
+import { getStaticNewsArticle } from '../../data/news-articles'
+import Layout from '../../layouts/Layout.astro'
 
-const { slug } = Astro.params;
-const article = await getNewsArticleBySlug(slug!);
+const { slug } = Astro.params
+
+const categoryStyles: Record<string, string> = {
+  technology: 'bg-cyan-500/10 text-cyan-400',
+  business: 'bg-amber-500/10 text-amber-400',
+  general: 'bg-slate-700/50 text-slate-300',
+}
+
+// Try CMS first, fall back to static
+let article: any = null
+
+try {
+  const cmsArticle = await getNewsArticleBySlug(slug!)
+  if (cmsArticle) {
+    article = {
+      title: cmsArticle.data.title,
+      content: cmsArticle.data.content,
+      category: cmsArticle.data.category || 'general',
+      author: cmsArticle.data.author || '',
+      date: cmsArticle.data.publish_date || new Date(cmsArticle.created_at).toISOString(),
+    }
+  }
+} catch {
+  // CMS unavailable
+}
 
 if (!article) {
-  return new Response(null, {
-    status: 404,
-    statusText: 'Not Found',
-  });
+  const staticArticle = getStaticNewsArticle(slug!)
+  if (staticArticle) {
+    article = staticArticle
+  }
+}
+
+if (!article) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 ---
 
-<Layout title={article.data.title}>
-  <article class="max-w-3xl mx-auto px-6 pt-12 pb-20">
-    <header class="mb-10">
-      <a href="/news" class="inline-flex items-center text-sm text-gray-500 hover:text-indigo-600 transition-colors mb-6">
-        &larr; Back to News
-      </a>
+<Layout title={article.title}>
+  <article class="max-w-4xl mx-auto px-6 pt-12 pb-20">
+    <!-- Back link -->
+    <a href="/news" class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-flare-400 transition-colors mb-8 group">
+      <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5m7-7-7 7 7 7" />
+      </svg>
+      Back to News
+    </a>
+
+    <!-- Article header -->
+    <header class="mb-12">
       <div class="flex items-center gap-3 mb-4">
-        {article.data.category && (
-          <span class:list={[
-            "inline-block px-2.5 py-0.5 rounded-full text-xs font-medium",
-            article.data.category === 'technology' && "bg-blue-100 text-blue-700",
-            article.data.category === 'business' && "bg-amber-100 text-amber-700",
-            article.data.category === 'general' && "bg-gray-100 text-gray-700",
-          ]}>
-            {article.data.category}
-          </span>
-        )}
+        <span class:list={[
+          'inline-block px-2.5 py-1 rounded-md text-xs font-medium',
+          categoryStyles[article.category] || 'bg-slate-700 text-slate-300'
+        ]}>
+          {article.category}
+        </span>
       </div>
-      <h1 class="text-4xl font-bold tracking-tight text-gray-900 leading-tight">
-        {article.data.title}
+
+      <h1 class="text-4xl md:text-5xl font-heading font-bold tracking-tight leading-[1.15]">
+        {article.title}
       </h1>
-      <div class="mt-4 flex items-center gap-4 text-sm text-gray-500">
-        {article.data.author && (
-          <span>By {article.data.author}</span>
-        )}
-        {article.data.publish_date && (
-          <time datetime={article.data.publish_date}>
-            {new Date(article.data.publish_date).toLocaleDateString('en-US', {
+
+      <div class="mt-6 flex items-center gap-4 pt-6 border-t border-slate-800">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center text-sm font-bold text-slate-950">
+          {article.author ? article.author.split(' ').map((n: string) => n[0]).join('') : '?'}
+        </div>
+        <div>
+          {article.author && (
+            <div class="text-sm font-medium text-slate-200">{article.author}</div>
+          )}
+          <time datetime={article.date} class="text-xs text-slate-500">
+            {new Date(article.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric'
             })}
           </time>
-        )}
+        </div>
       </div>
     </header>
 
-    <div class="prose prose-lg prose-gray max-w-none prose-headings:tracking-tight prose-a:text-indigo-600 prose-pre:bg-gray-900 prose-pre:rounded-xl" set:html={article.data.content} />
+    <!-- Article content -->
+    <div
+      class:list={[
+        'prose prose-lg prose-invert max-w-none',
+        'prose-headings:font-heading prose-headings:tracking-tight prose-headings:text-slate-50',
+        'prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4',
+        'prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3',
+        'prose-p:text-slate-300 prose-p:leading-relaxed',
+        'prose-a:text-flare-400 prose-a:no-underline hover:prose-a:underline',
+        'prose-strong:text-slate-100',
+        'prose-ul:text-slate-300 prose-ol:text-slate-300',
+        'prose-li:marker:text-cyan-500',
+        'prose-code:text-cyan-300 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none',
+        'prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl',
+        'prose-pre:text-sm prose-pre:leading-7',
+        'prose-hr:border-slate-800',
+        'prose-blockquote:border-cyan-500 prose-blockquote:text-slate-400',
+      ]}
+      set:html={article.content}
+    />
 
-    <footer class="mt-16 pt-8 border-t border-gray-200">
-      <a href="/news" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
-        &larr; Back to News
+    <!-- Footer -->
+    <footer class="mt-16 pt-8 border-t border-slate-800">
+      <a href="/news" class="inline-flex items-center gap-1.5 text-sm font-medium text-flare-500 hover:text-flare-400 transition-colors group">
+        <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5m7-7-7 7 7 7" />
+        </svg>
+        All news
       </a>
     </footer>
   </article>
