@@ -279,7 +279,7 @@ describe('SettingsService', () => {
 
       expect(result).toEqual({
         siteName: 'Flare CMS',
-        siteDescription: 'A modern headless CMS powered by AI',
+        siteDescription: 'Edge-native headless CMS for Cloudflare Workers. Built on D1, R2, and Hono.',
         adminEmail: 'admin@example.com',
         timezone: 'UTC',
         language: 'en',
@@ -299,7 +299,7 @@ describe('SettingsService', () => {
 
       expect(result).toEqual({
         siteName: 'Custom Site',
-        siteDescription: 'A modern headless CMS powered by AI',
+        siteDescription: 'Edge-native headless CMS for Cloudflare Workers. Built on D1, R2, and Hono.',
         adminEmail: 'admin@example.com',
         timezone: 'UTC',
         language: 'fr',
