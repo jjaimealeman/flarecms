@@ -1,19 +1,40 @@
 ---
 import { getNewsArticles } from '../../lib/flare'
+import { getAllStaticNewsArticles } from '../../data/news-articles'
 import Layout from '../../layouts/Layout.astro'
-
-let articles: any[] = []
-try {
-  articles = await getNewsArticles()
-} catch {
-  // CMS API unavailable
-}
 
 const categoryStyles: Record<string, string> = {
   technology: 'bg-cyan-500/10 text-cyan-400',
   business: 'bg-amber-500/10 text-amber-400',
-  general: 'bg-slate-700 text-slate-300',
+  general: 'bg-slate-700/50 text-slate-300',
 }
+
+// Try CMS first, fall back to static
+let cmsArticles: any[] = []
+try {
+  cmsArticles = await getNewsArticles()
+} catch {
+  // CMS unavailable
+}
+
+const staticArticles = getAllStaticNewsArticles()
+const hasCmsData = cmsArticles.length > 0
+
+const articles = hasCmsData
+  ? cmsArticles.map(a => ({
+      slug: a.slug,
+      title: a.data.title,
+      category: a.data.category || 'general',
+      author: a.data.author || '',
+      date: a.data.publish_date || new Date(a.created_at).toISOString(),
+    }))
+  : staticArticles.map(a => ({
+      slug: a.slug,
+      title: a.title,
+      category: a.category,
+      author: a.author,
+      date: a.date,
+    }))
 ---
 
 <Layout title="News">
@@ -23,41 +44,28 @@ const categoryStyles: Record<string, string> = {
       <p class="mt-2 text-slate-400">Technology, business, and community updates.</p>
     </header>
 
-    <div class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {articles.map((article) => (
         <a href={`/news/${article.slug}`} class="group block">
-          <article class="rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800/60 hover:border-slate-700 transition-all p-6">
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex-1">
-                <div class="flex items-center gap-3 mb-2">
-                  {article.data.category && (
-                    <span class:list={[
-                      'inline-block px-2.5 py-0.5 rounded-md text-xs font-medium',
-                      categoryStyles[article.data.category] || 'bg-slate-700 text-slate-300'
-                    ]}>
-                      {article.data.category}
-                    </span>
-                  )}
-                  {article.data.publish_date && (
-                    <time datetime={article.data.publish_date} class="text-xs text-slate-500">
-                      {new Date(article.data.publish_date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                    </time>
-                  )}
-                </div>
-                <h2 class="font-heading font-semibold text-lg text-slate-50 group-hover:text-flare-400 transition-colors">
-                  {article.data.title}
-                </h2>
-                {article.data.author && (
-                  <p class="mt-1 text-sm text-slate-500">By {article.data.author}</p>
-                )}
-              </div>
-              <span class="text-slate-600 group-hover:text-flare-500 transition-colors mt-1 shrink-0">
-                &rarr;
-              </span>
+          <article class="h-full rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800/60 hover:border-slate-700 transition-all p-6 flex flex-col">
+            <span class:list={[
+              'self-start inline-block px-2.5 py-1 rounded-md text-xs font-medium mb-3',
+              categoryStyles[article.category] || 'bg-slate-700 text-slate-300'
+            ]}>
+              {article.category}
+            </span>
+            <h2 class="font-heading font-semibold text-slate-50 group-hover:text-flare-400 transition-colors mb-3">
+              {article.title}
+            </h2>
+            <div class="mt-auto pt-4 flex items-center justify-between text-xs text-slate-500">
+              {article.author && <span>{article.author}</span>}
+              <time datetime={article.date}>
+                {new Date(article.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </time>
             </div>
           </article>
         </a>

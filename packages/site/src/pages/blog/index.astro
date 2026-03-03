@@ -1,13 +1,47 @@
 ---
 import { getBlogPosts } from '../../lib/flare'
+import { getAllStaticBlogPosts } from '../../data/blog-posts'
 import Layout from '../../layouts/Layout.astro'
 
-let posts: any[] = []
-try {
-  posts = await getBlogPosts()
-} catch {
-  // CMS API unavailable — show empty state
+const categoryStyles: Record<string, string> = {
+  flare: 'bg-flare-500/10 text-flare-400',
+  cyan: 'bg-cyan-500/10 text-cyan-400',
+  amber: 'bg-amber-500/10 text-amber-400',
 }
+
+// Try CMS first, fall back to static data
+let cmsPosts: any[] = []
+try {
+  cmsPosts = await getBlogPosts()
+} catch {
+  // CMS unavailable
+}
+
+const staticPosts = getAllStaticBlogPosts()
+const hasCmsData = cmsPosts.length > 0
+
+// Normalize both sources into a common shape
+const posts = hasCmsData
+  ? cmsPosts.map(p => ({
+      slug: p.data.slug,
+      title: p.data.title,
+      excerpt: p.data.excerpt || '',
+      category: '',
+      categoryColor: '',
+      author: p.data.author || '',
+      date: p.data.publishedAt || new Date(p.created_at).toISOString(),
+      featuredImage: p.data.featuredImage,
+    }))
+  : staticPosts.map(p => ({
+      slug: p.slug,
+      title: p.title,
+      excerpt: p.excerpt,
+      category: p.category,
+      categoryColor: p.categoryColor,
+      author: p.author,
+      date: p.date,
+      featuredImage: undefined as string | undefined,
+    }))
 ---
 
 <Layout title="Blog">
@@ -19,32 +53,41 @@ try {
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {posts.map((post) => (
-        <a href={`/blog/${post.data.slug}`} class="group block">
-          <article class="h-full rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800/60 hover:border-slate-700 transition-all overflow-hidden">
-            {post.data.featuredImage && (
+        <a href={`/blog/${post.slug}`} class="group block">
+          <article class="h-full rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800/60 hover:border-slate-700 transition-all overflow-hidden flex flex-col">
+            {post.featuredImage && (
               <img
-                src={post.data.featuredImage}
-                alt={post.data.title}
+                src={post.featuredImage}
+                alt={post.title}
                 loading="lazy"
                 class="w-full h-48 object-cover"
               />
             )}
-            <div class="p-5">
-              <h2 class="font-heading font-semibold text-slate-50 group-hover:text-flare-400 transition-colors">
-                {post.data.title}
-              </h2>
-              {post.data.excerpt && (
-                <p class="mt-2 text-sm text-slate-400 line-clamp-2">{post.data.excerpt}</p>
+            <div class="p-5 flex flex-col flex-1">
+              {post.category && (
+                <span class:list={[
+                  'self-start inline-block px-2.5 py-1 rounded-md text-xs font-medium mb-3',
+                  categoryStyles[post.categoryColor] || 'bg-slate-700 text-slate-300'
+                ]}>
+                  {post.category}
+                </span>
               )}
-              {post.data.publishedAt && (
-                <time datetime={post.data.publishedAt} class="mt-3 block text-xs text-slate-500">
-                  {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
+              <h2 class="font-heading font-semibold text-slate-50 group-hover:text-flare-400 transition-colors">
+                {post.title}
+              </h2>
+              {post.excerpt && (
+                <p class="mt-2 text-sm text-slate-400 line-clamp-2">{post.excerpt}</p>
+              )}
+              <div class="mt-auto pt-4 flex items-center justify-between text-xs text-slate-500">
+                {post.author && <span>{post.author}</span>}
+                <time datetime={post.date}>
+                  {new Date(post.date).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric'
                   })}
                 </time>
-              )}
+              </div>
             </div>
           </article>
         </a>
