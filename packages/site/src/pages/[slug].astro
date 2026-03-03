@@ -1,40 +1,29 @@
 ---
-import { getPageBySlug } from '../lib/flare';
-import Layout from '../layouts/Layout.astro';
+import { getPageBySlug } from '../lib/flare'
+import Layout from '../layouts/Layout.astro'
 
-const { slug } = Astro.params;
-const page = await getPageBySlug(slug!);
+const { slug } = Astro.params
 
-if (!page) {
-  return new Response(null, {
-    status: 404,
-    statusText: 'Not Found',
-  });
+let page: any = null
+try {
+  page = await getPageBySlug(slug!)
+} catch {
+  // CMS API unavailable
 }
 
-const heroImages: Record<string, string> = {
-  about: '/images/pages/about.jpg',
-  contact: '/images/pages/contact.jpg',
-  uses: '/images/pages/uses.jpg',
-};
-const heroImage = heroImages[page.slug];
+if (!page) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
 ---
 
 <Layout title={page.data.title} description={page.data.meta_description}>
   <article class="max-w-3xl mx-auto px-6 pt-12 pb-20">
-    {heroImage && (
-      <img
-        src={heroImage}
-        alt={page.data.title}
-        class="w-full max-h-[300px] object-cover rounded-xl mb-8"
-      />
-    )}
     <header class="mb-10">
-      <h1 class="text-4xl font-bold tracking-tight text-gray-900 leading-tight">
+      <h1 class="text-4xl font-heading font-bold tracking-tight leading-tight">
         {page.data.title}
       </h1>
     </header>
 
-    <div class="prose prose-lg prose-gray max-w-none prose-headings:tracking-tight prose-a:text-indigo-600 prose-pre:bg-gray-900 prose-pre:rounded-xl" set:html={page.data.content} />
+    <div class="prose prose-lg prose-invert max-w-none prose-headings:font-heading prose-headings:tracking-tight prose-a:text-flare-400 prose-pre:bg-slate-950 prose-pre:rounded-xl" set:html={page.data.content} />
   </article>
 </Layout>

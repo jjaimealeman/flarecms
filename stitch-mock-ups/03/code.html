@@ -1,0 +1,344 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#6366f1",
+            "cyan-accent": "#06b6d4",
+            "amber-accent": "#f59e0b",
+            "background-light": "#f8fafc",
+            "background-dark": "#0f172a",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style type="text/tailwindcss">
+    .glass {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .grid-pattern {
+      background-image: radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.1) 1px, transparent 0);
+      background-size: 32px 32px;
+    }
+    .syntax-keyword { color: #c678dd; }
+    .syntax-string { color: #98c379; }
+    .syntax-func { color: #61afef; }
+    .syntax-comment { color: #5c6370; }
+    .step-line {
+        position: absolute;
+        left: 50%;
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(to bottom, transparent, #6366f1, #06b6d4, #f59e0b, transparent);
+        transform: translateX(-50%);
+        z-index: 0;
+    }
+    .journey-node {
+        position: relative;
+        z-index: 10;
+    }
+</style>
+</head>
+<body class="bg-background-dark font-display text-slate-100 selection:bg-primary/30 scroll-smooth">
+<header class="sticky top-0 z-50 w-full glass">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl">flare</span>
+<h1 class="text-xl font-bold tracking-tight">
+          Flare<span class="text-primary">CMS</span>
+</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#journey">The Journey</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Docs</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">GitHub</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-sm font-semibold border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors">
+          Admin Demo
+        </button>
+<button class="px-4 py-2 text-sm font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+          Deploy Now
+        </button>
+</div>
+</div>
+</header>
+<main class="relative grid-pattern">
+<section class="relative min-h-[85vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden pt-20">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none"></div>
+<div class="relative z-10 max-w-4xl space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 text-sm font-medium">
+<span class="flex h-2 w-2 rounded-full bg-cyan-accent animate-pulse"></span>
+            Cloudflare Workers Ecosystem Ready
+</div>
+<h1 class="text-6xl md:text-8xl font-black leading-tight tracking-tighter">
+            Your Content, <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-accent to-amber-accent">Perfectly Distributed.</span>
+</h1>
+<p class="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Stop worrying about database regions and cold starts. Experience the first truly edge-native headless CMS built for the modern developer.
+</p>
+<div class="pt-8 flex flex-col items-center gap-6">
+<a class="group relative flex items-center gap-3 px-10 py-5 bg-white text-slate-950 rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)]" href="#step-1">
+<span class="material-symbols-outlined">explore</span>
+              Start the Edge Journey
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_downward</span>
+</a>
+<p class="text-sm text-slate-500 font-mono">Estimated discovery time: 3 minutes</p>
+</div>
+</div>
+<div class="mt-20 w-full max-w-5xl mx-auto px-6 opacity-40">
+<div class="flex justify-between items-center text-xs font-bold uppercase tracking-[0.2em] text-slate-500 border-b border-slate-800 pb-4">
+<span>Phase 01: Architecture</span>
+<span>Phase 02: Experience</span>
+<span>Phase 03: Scalability</span>
+</div>
+</div>
+</section>
+<section class="relative py-24" id="journey">
+<div class="step-line"></div>
+<div class="relative max-w-7xl mx-auto px-6 py-32 flex flex-col lg:flex-row gap-16 items-center" id="step-1">
+<div class="journey-node lg:w-1/2 space-y-6 bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-sm">
+<div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-2">
+<span class="font-black text-xl">01</span>
+</div>
+<h2 class="text-4xl font-extrabold">The "Database Distance" Problem</h2>
+<p class="text-lg text-slate-400 leading-relaxed">
+              Traditional CMS platforms rely on a single-region database. When a user in Tokyo requests content from a London server, latency kills the experience.
+            </p>
+<div class="p-4 bg-primary/10 border-l-4 border-primary rounded-r-lg">
+<p class="text-sm italic text-primary">"FlareCMS solves this by living inside Cloudflare Workers, executing logic at the nearest edge node to your user."</p>
+</div>
+<a class="inline-flex items-center gap-2 text-primary font-bold hover:underline" href="#step-2">
+              How do we store data at the edge? <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="lg:w-1/2 w-full">
+<div class="relative group">
+<div class="absolute -inset-1 bg-primary rounded-xl blur opacity-20"></div>
+<div class="relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+<div class="px-4 py-2 bg-slate-900 flex justify-between items-center">
+<span class="text-xs font-mono text-slate-500">edge-handler.ts</span>
+<div class="flex gap-1.5">
+<div class="w-2 h-2 rounded-full bg-slate-700"></div>
+<div class="w-2 h-2 rounded-full bg-slate-700"></div>
+</div>
+</div>
+<div class="p-6 font-mono text-sm">
+<p class="text-primary">// Every request starts here</p>
+<p><span class="syntax-keyword">export default</span> {</p>
+<p class="pl-4"><span class="syntax-keyword">async</span> <span class="syntax-func">fetch</span>(request, env) {</p>
+<p class="pl-8 text-cyan-accent">// Logic runs in &lt; 1ms</p>
+<p class="pl-8"><span class="syntax-keyword">const</span> data = <span class="syntax-keyword">await</span> env.DB.<span class="syntax-func">prepare</span>(</p>
+<p class="pl-12"><span class="syntax-string">"SELECT * FROM posts"</span></p>
+<p class="pl-8">).<span class="syntax-func">first</span>();</p>
+<p class="pl-8"><span class="syntax-keyword">return</span> Response.<span class="syntax-func">json</span>(data);</p>
+<p class="pl-4">}</p>
+<p>};</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="relative max-w-7xl mx-auto px-6 py-32 flex flex-col lg:flex-row-reverse gap-16 items-center" id="step-2">
+<div class="journey-node lg:w-1/2 space-y-6 bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-sm">
+<div class="w-12 h-12 rounded-2xl bg-cyan-accent/20 flex items-center justify-center text-cyan-accent mb-2">
+<span class="font-black text-xl">02</span>
+</div>
+<h2 class="text-4xl font-extrabold">D1 and R2 Integration</h2>
+<p class="text-lg text-slate-400 leading-relaxed">
+              We don't just run code at the edge; we keep your data there too. Using Cloudflare D1 for SQL and R2 for assets, your entire CMS state is distributed.
+            </p>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700 text-center">
+<div class="text-2xl font-bold text-cyan-accent">Zero</div>
+<p class="text-xs text-slate-500 uppercase tracking-widest mt-1">Cold Starts</p>
+</div>
+<div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700 text-center">
+<div class="text-2xl font-bold text-cyan-accent">50ms</div>
+<p class="text-xs text-slate-500 uppercase tracking-widest mt-1">Avg. Latency</p>
+</div>
+</div>
+<a class="inline-flex items-center gap-2 text-cyan-accent font-bold hover:underline" href="#step-3">
+              What about content management? <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="lg:w-1/2 w-full grid grid-cols-2 gap-4">
+<div class="h-48 rounded-2xl bg-gradient-to-br from-cyan-accent/10 to-slate-900 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
+<span class="material-symbols-outlined text-cyan-accent text-4xl mb-2">database</span>
+<p class="font-bold">D1 Database</p>
+<p class="text-xs text-slate-500">Distributed SQL persistence</p>
+</div>
+<div class="h-48 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-slate-900 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-2">cloud_upload</span>
+<p class="font-bold">R2 Storage</p>
+<p class="text-xs text-slate-500">S3-compatible asset edge</p>
+</div>
+</div>
+</div>
+<div class="relative max-w-7xl mx-auto px-6 py-32 flex flex-col lg:flex-row gap-16 items-center" id="step-3">
+<div class="journey-node lg:w-1/2 space-y-6 bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-sm">
+<div class="w-12 h-12 rounded-2xl bg-amber-accent/20 flex items-center justify-center text-amber-accent mb-2">
+<span class="font-black text-xl">03</span>
+</div>
+<h2 class="text-4xl font-extrabold">The Visual Control Room</h2>
+<p class="text-lg text-slate-400 leading-relaxed">
+              Powerful technology is useless without a great interface. FlareCMS includes a React-based admin dashboard that manages your edge data with ease.
+            </p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-slate-300">
+<span class="material-symbols-outlined text-amber-accent">check_circle</span>
+                Visual Schema Builder
+</li>
+<li class="flex items-center gap-3 text-slate-300">
+<span class="material-symbols-outlined text-amber-accent">check_circle</span>
+                Multi-environment branching
+</li>
+<li class="flex items-center gap-3 text-slate-300">
+<span class="material-symbols-outlined text-amber-accent">check_circle</span>
+                Instant Preview Engines
+</li>
+</ul>
+<a class="inline-flex items-center gap-2 text-amber-accent font-bold hover:underline" href="#cta">
+              Ready to deploy your first project? <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="lg:w-1/2 w-full">
+<div class="aspect-video bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+<div class="h-8 bg-slate-800 border-b border-slate-700 flex items-center px-4 gap-2">
+<div class="w-2 h-2 rounded-full bg-red-500"></div>
+<div class="w-2 h-2 rounded-full bg-amber-500"></div>
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-[10px] text-slate-500 ml-2 font-mono">FlareCMS Dashboard — admin.project.workers.dev</span>
+</div>
+<div class="flex-1 flex">
+<div class="w-16 border-r border-slate-800 flex flex-col items-center py-4 gap-4">
+<div class="w-8 h-8 rounded-lg bg-primary/20"></div>
+<div class="w-8 h-8 rounded-lg bg-slate-800"></div>
+<div class="w-8 h-8 rounded-lg bg-slate-800"></div>
+</div>
+<div class="flex-1 p-6 space-y-4">
+<div class="h-4 w-48 bg-slate-800 rounded"></div>
+<div class="h-32 w-full bg-slate-800/50 border border-dashed border-slate-700 rounded-xl flex items-center justify-center text-slate-600">
+                    Interactive Content Editor
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="h-20 bg-slate-800/50 rounded-lg"></div>
+<div class="h-20 bg-slate-800/50 rounded-lg"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="border-y border-slate-800 bg-slate-900/30">
+<div class="max-w-7xl mx-auto px-6 py-20 grid grid-cols-2 md:grid-cols-4 gap-12">
+<div class="text-center group">
+<div class="text-5xl font-black text-primary transition-transform group-hover:scale-110">&lt; 50ms</div>
+<p class="text-slate-500 text-sm mt-3 uppercase tracking-widest font-bold">Global Latency</p>
+</div>
+<div class="text-center group">
+<div class="text-5xl font-black text-cyan-accent transition-transform group-hover:scale-110">275+</div>
+<p class="text-slate-500 text-sm mt-3 uppercase tracking-widest font-bold">Edge Cities</p>
+</div>
+<div class="text-center group">
+<div class="text-5xl font-black text-amber-accent transition-transform group-hover:scale-110">Zero</div>
+<p class="text-slate-500 text-sm mt-3 uppercase tracking-widest font-bold">Infrastructure Cost</p>
+</div>
+<div class="text-center group">
+<div class="text-5xl font-black text-white transition-transform group-hover:scale-110">100%</div>
+<p class="text-slate-500 text-sm mt-3 uppercase tracking-widest font-bold">Open Source</p>
+</div>
+</div>
+</section>
+<section class="py-32 relative overflow-hidden" id="cta">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+<h2 class="text-5xl font-black mb-6">Ready to build the edge?</h2>
+<p class="text-xl text-slate-400 mb-12">
+            The journey from local development to global production is one command away. Join thousands of developers building on the Cloudflare edge.
+          </p>
+<div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 font-mono text-left mb-12 shadow-2xl relative">
+<div class="absolute -top-3 left-6 px-3 py-1 bg-primary text-[10px] font-bold uppercase rounded tracking-widest">Setup Guide</div>
+<div class="space-y-2">
+<p class="text-slate-500"># Start your new project</p>
+<p><span class="text-primary">npx</span> flare-cms@latest init</p>
+<p class="text-slate-500 mt-4"># Follow the prompt, then deploy</p>
+<p><span class="text-primary">npm</span> run deploy</p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+<button class="w-full sm:w-auto px-12 py-5 bg-primary text-white rounded-2xl font-black text-xl hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] transition-all">
+              Go to Documentation
+            </button>
+<button class="w-full sm:w-auto px-12 py-5 bg-slate-800 text-white rounded-2xl font-black text-xl border border-slate-700 hover:bg-slate-700 transition-all">
+              View on GitHub
+            </button>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-slate-950 pt-20 pb-10 border-t border-slate-900">
+<div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-5 gap-12 mb-20">
+<div class="col-span-2 space-y-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">flare</span>
+<h2 class="text-lg font-bold">FlareCMS</h2>
+</div>
+<p class="text-slate-500 max-w-xs text-sm leading-relaxed">
+          The open-source headless CMS that lives at the edge. Built for the Cloudflare ecosystem.
+        </p>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Ecosystem</h3>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Workers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">D1 Database</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">R2 Storage</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Astro Integration</a></li>
+</ul>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Resources</h3>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Quickstart Guide</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API reference</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Edge Best Practices</a></li>
+</ul>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Community</h3>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Discord</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">GitHub</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Twitter</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-6 pt-10 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-slate-600">
+<div>© 2023 FlareCMS Open Source Project. Under MIT License.</div>
+<div class="flex gap-6">
+<a class="hover:text-slate-400" href="#">Privacy</a>
+<a class="hover:text-slate-400" href="#">Terms</a>
+<a class="hover:text-slate-400" href="#">Security</a>
+</div>
+</div>
+</footer>
+
+</body></html>
