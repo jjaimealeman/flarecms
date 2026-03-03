@@ -127,7 +127,7 @@ export class SettingsService {
 
     return {
       siteName: settings.siteName || 'Flare CMS',
-      siteDescription: settings.siteDescription || 'A modern headless CMS powered by AI',
+      siteDescription: settings.siteDescription || 'Edge-native headless CMS for Cloudflare Workers. Built on D1, R2, and Hono.',
       adminEmail: settings.adminEmail || userEmail || 'admin@example.com',
       timezone: settings.timezone || 'UTC',
       language: settings.language || 'en',

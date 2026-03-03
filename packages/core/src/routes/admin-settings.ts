@@ -41,7 +41,7 @@ function getMockSettings(user: any) {
   return {
     general: {
       siteName: 'Flare CMS',
-      siteDescription: 'A modern headless CMS powered by AI',
+      siteDescription: 'Edge-native headless CMS for Cloudflare Workers. Built on D1, R2, and Hono.',
       adminEmail: user?.email || 'admin@example.com',
       timezone: 'UTC',
       language: 'en',
