@@ -1,0 +1,58 @@
+---
+import { blogPosts } from '../data/homepage'
+
+const categoryStyles: Record<string, string> = {
+  flare: 'bg-flare-500/10 text-flare-400',
+  cyan: 'bg-cyan-500/10 text-cyan-400',
+  amber: 'bg-amber-500/10 text-amber-400',
+}
+---
+
+<section class="py-24 border-t border-slate-800">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between mb-12">
+      <div>
+        <h2 class="text-3xl font-heading font-bold tracking-tight">
+          Latest from the blog
+        </h2>
+        <p class="mt-2 text-slate-400">
+          Deep dives into edge computing and CMS architecture.
+        </p>
+      </div>
+      <a
+        href="/blog"
+        class="text-sm font-medium text-flare-500 hover:text-flare-400 transition-colors"
+      >
+        View all posts &rarr;
+      </a>
+    </div>
+
+    <div class="grid grid-cols-3 gap-6">
+      {blogPosts.map((post) => (
+        <a href={`/blog/${post.slug}`} class="group block">
+          <article class="h-full rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800/60 hover:border-slate-700 transition-all p-6 flex flex-col">
+            <span class:list={[
+              'self-start inline-block px-2.5 py-1 rounded-md text-xs font-medium mb-4',
+              categoryStyles[post.categoryColor] || 'bg-slate-700 text-slate-300'
+            ]}>
+              {post.category}
+            </span>
+            <h3 class="font-heading font-semibold text-slate-50 group-hover:text-flare-400 transition-colors mb-3">
+              {post.title}
+            </h3>
+            <p class="text-sm text-slate-400 leading-relaxed flex-1">
+              {post.excerpt}
+            </p>
+            <time class="mt-4 text-xs text-slate-500 block">
+              {new Date(post.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </time>
+          </article>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

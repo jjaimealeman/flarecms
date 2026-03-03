@@ -1,2 +1,69 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/* Self-hosted fonts — zero external requests */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+
+/* === Flare CMS Design Tokens === */
+@theme {
+  /* Color palette — CF orange + cyan + amber on dark slate */
+  --color-slate-950: #0a0f1a;
+  --color-slate-900: #0f172a;
+  --color-slate-800: #1e293b;
+  --color-slate-700: #334155;
+  --color-slate-600: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+  --color-slate-50: #f8fafc;
+
+  --color-flare-50: #fff7ed;
+  --color-flare-100: #ffedd5;
+  --color-flare-200: #fed7aa;
+  --color-flare-300: #fdba74;
+  --color-flare-400: #fb923c;
+  --color-flare-500: #f6821f;
+  --color-flare-600: #ea580c;
+  --color-flare-700: #c2410c;
+
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+
+  /* Typography */
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Space Grotesk Variable", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Code block styling */
+pre, code {
+  font-family: var(--font-mono);
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(246, 130, 31, 0.3);
+  color: #f8fafc;
+}

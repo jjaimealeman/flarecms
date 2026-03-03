@@ -12,9 +12,14 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.12",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@fontsource-variable/space-grotesk": "^5.2.10",
+    "@iconify-json/lucide": "^1.2.95",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "unplugin-icons": "^23.0.1"
   }
 }

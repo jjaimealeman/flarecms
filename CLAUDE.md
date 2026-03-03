@@ -1,5 +1,16 @@
 # Flare CMS Monorepo
 
+## CRITICAL: Branch Rules
+
+**NEVER commit directly to `main`.** Main is production — pushes trigger CI/CD deploy.
+
+- Work on `develop` branch (default working branch)
+- Feature work goes on `feature/*` branches off develop
+- User merges develop → main via lazygit when ready to deploy
+- If you find yourself on main, stop and `git checkout develop` before doing anything
+
+---
+
 ## Project Overview
 
 **Flare CMS** is a headless CMS built for Cloudflare Workers, forked from [SonicJS](https://github.com/Sonicjs-Org/sonicjs). This monorepo contains the core engine, CMS backend, and Astro frontend.

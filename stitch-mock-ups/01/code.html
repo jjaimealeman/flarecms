@@ -1,0 +1,417 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#6366f1",
+            "cyan-accent": "#06b6d4",
+            "amber-accent": "#f59e0b",
+            "background-light": "#f8fafc",
+            "background-dark": "#0f172a",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .glass {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .grid-pattern {
+      background-image: radial-gradient(circle at 2px 2px, rgba(99, 102, 241, 0.15) 1px, transparent 0);
+      background-size: 32px 32px;
+    }
+    .syntax-keyword { color: #c678dd; }
+    .syntax-string { color: #98c379; }
+    .syntax-func { color: #61afef; }
+    .syntax-comment { color: #5c6370; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 selection:bg-primary/30">
+<!-- Sticky Top Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 glass">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl">flare</span>
+<h1 class="text-xl font-bold tracking-tight">
+          Flare<span class="text-primary">CMS</span>
+</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Docs</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Blog</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">News</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Changelog</a>
+<a class="text-sm font-medium flex items-center gap-1 hover:text-primary transition-colors" href="#">
+          GitHub <span class="material-symbols-outlined text-xs">open_in_new</span>
+</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-sm font-semibold border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors">
+          Admin Demo
+        </button>
+<button class="px-4 py-2 text-sm font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+          Get Started
+        </button>
+</div>
+</div>
+</header>
+<main class="relative">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center overflow-hidden grid-pattern">
+<div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-20">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
+<span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+            Now v2.0 is Live
+          </div>
+<h1 class="text-6xl md:text-7xl font-black leading-tight tracking-tighter">
+            Content at the <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-accent">edge.</span>
+</h1>
+<p class="text-xl text-slate-400 max-w-lg leading-relaxed">
+            Open-source headless CMS built on Cloudflare Workers, D1, and R2. Deploy globally in seconds, scale infinitely with zero cold starts.
+          </p>
+<div class="flex flex-wrap gap-4">
+<button class="flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/20 transition-all">
+<span class="material-symbols-outlined">menu_book</span>
+              Read the Docs
+            </button>
+<button class="flex items-center gap-2 px-8 py-4 bg-slate-800 text-white rounded-xl font-bold text-lg border border-slate-700 hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined">terminal</span>
+              View on GitHub
+            </button>
+</div>
+<div class="flex items-center gap-6 pt-4 opacity-60">
+<div class="flex items-center gap-2 text-sm grayscale contrast-125">
+<span class="material-symbols-outlined">cloud</span> Cloudflare Workers
+            </div>
+<div class="flex items-center gap-2 text-sm grayscale contrast-125">
+<span class="material-symbols-outlined">rocket_launch</span> Astro
+            </div>
+<div class="flex items-center gap-2 text-sm grayscale contrast-125">
+<span class="material-symbols-outlined">verified</span> MIT License
+            </div>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary to-cyan-accent rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+<div class="relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+<div class="flex items-center gap-1.5 px-4 py-3 bg-slate-800/50 border-b border-slate-800">
+<div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-amber-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+<span class="ml-4 text-xs font-mono text-slate-500">terminal — pnpm</span>
+</div>
+<div class="p-6 font-mono text-sm leading-relaxed whitespace-pre">
+<span class="text-primary">$</span> pnpm create flare-cms@latest
+<span class="text-slate-500">? Project name:</span> <span class="text-cyan-accent">my-awesome-blog</span>
+<span class="text-slate-500">? Template:</span> <span class="text-amber-accent">Astro + Workers</span>
+<span class="text-slate-500">? Database:</span> <span class="text-primary">Cloudflare D1</span>
+<span class="text-green-400">✔</span> Scaffolding project...
+<span class="text-green-400">✔</span> Installing dependencies...
+<span class="text-green-400">✔</span> Initializing wrangler...
+
+<span class="text-primary">Done!</span> Run <span class="bg-slate-800 px-1 rounded">cd my-awesome-blog &amp;&amp; pnpm dev</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Performance Stats -->
+<section class="border-y border-slate-800 bg-slate-900/50">
+<div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="text-center md:text-left">
+<div class="text-4xl font-black text-primary">&lt; 50ms</div>
+<p class="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">Latency</p>
+</div>
+<div class="text-center md:text-left">
+<div class="text-4xl font-black text-cyan-accent">200+</div>
+<p class="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">Edge Nodes</p>
+</div>
+<div class="text-center md:text-left">
+<div class="text-4xl font-black text-amber-accent">0</div>
+<p class="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">Cold Starts</p>
+</div>
+<div class="text-center md:text-left">
+<div class="text-4xl font-black text-white">99.9%</div>
+<p class="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">Uptime</p>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-24 max-w-7xl mx-auto px-6">
+<div class="text-center mb-16 space-y-4">
+<h2 class="text-4xl font-bold">Engineered for speed.</h2>
+<p class="text-slate-400 max-w-2xl mx-auto text-lg">FlareCMS leverages the latest Cloudflare technologies to provide a headless experience that is faster than traditional CMS architectures.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Feature 1 -->
+<div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-primary/50 transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">public</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Edge-Native</h3>
+<p class="text-slate-400 leading-relaxed">Runs entirely on Cloudflare's global network. Deliver content from the server closest to your users.</p>
+</div>
+<!-- Feature 2 -->
+<div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-primary/50 transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-cyan-accent/10 flex items-center justify-center text-cyan-accent mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">dashboard</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Admin Dashboard</h3>
+<p class="text-slate-400 leading-relaxed">A lightning-fast, intuitive UI for managing content, media, and developer-defined schemas.</p>
+</div>
+<!-- Feature 3 -->
+<div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-primary/50 transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-amber-accent/10 flex items-center justify-center text-amber-accent mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">api</span>
+</div>
+<h3 class="text-xl font-bold mb-3">API-First</h3>
+<p class="text-slate-400 leading-relaxed">Generate Type-safe GraphQL and REST endpoints automatically based on your schema collections.</p>
+</div>
+<!-- Feature 4 -->
+<div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-primary/50 transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Schema Collections</h3>
+<p class="text-slate-400 leading-relaxed">Define complex data structures using TypeScript-like syntax or our visual builder.</p>
+</div>
+<!-- Feature 5 -->
+<div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-primary/50 transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-cyan-accent/10 flex items-center justify-center text-cyan-accent mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">history</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Workflow &amp; Versioning</h3>
+<p class="text-slate-400 leading-relaxed">Collaborate with confidence. Full draft support, revision history, and environment branching.</p>
+</div>
+<!-- Feature 6 -->
+<div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-primary/50 transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-amber-accent/10 flex items-center justify-center text-amber-accent mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">extension</span>
+</div>
+<h3 class="text-xl font-bold mb-3">Astro + Any Frontend</h3>
+<p class="text-slate-400 leading-relaxed">Seamlessly integrates with Astro, Next.js, SvelteKit, and more via native SDKs.</p>
+</div>
+</div>
+</section>
+<!-- Code Showcase -->
+<section class="py-24 bg-slate-900/30">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col lg:flex-row gap-12 items-center">
+<div class="flex-1 w-full">
+<div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+<div class="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
+<span class="text-xs font-mono text-slate-400">schema/posts.ts</span>
+<span class="text-[10px] uppercase font-bold text-primary tracking-widest">TypeScript</span>
+</div>
+<div class="p-6 font-mono text-sm">
+<p><span class="syntax-keyword">import</span> { collection } <span class="syntax-keyword">from</span> <span class="syntax-string">'@flarecms/core'</span>;</p>
+<p class="mt-4"><span class="syntax-keyword">export const</span> Posts = collection({</p>
+<p class="pl-4">name: <span class="syntax-string">'Blog Posts'</span>,</p>
+<p class="pl-4">fields: {</p>
+<p class="pl-8">title: { type: <span class="syntax-string">'text'</span>, required: <span class="syntax-keyword">true</span> },</p>
+<p class="pl-8">content: { type: <span class="syntax-string">'rich-text'</span> },</p>
+<p class="pl-8">author: { type: <span class="syntax-string">'relation'</span>, to: <span class="syntax-string">'Authors'</span> },</p>
+<p class="pl-4">},</p>
+<p>});</p>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 flex items-center justify-center w-full lg:w-auto">
+<div class="hidden lg:block w-16 h-[2px] bg-gradient-to-r from-primary to-cyan-accent relative">
+<div class="absolute right-0 -top-1 w-2 h-2 rounded-full bg-cyan-accent shadow-[0_0_8px_rgba(6,182,212,1)]"></div>
+</div>
+<span class="lg:hidden material-symbols-outlined text-primary text-4xl">keyboard_double_arrow_down</span>
+</div>
+<div class="flex-1 w-full">
+<div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+<div class="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800">
+<span class="text-xs font-mono text-slate-400">GET /api/v1/posts</span>
+<span class="text-[10px] uppercase font-bold text-cyan-accent tracking-widest">JSON Response</span>
+</div>
+<div class="p-6 font-mono text-sm">
+<p>{</p>
+<p class="pl-4"><span class="syntax-string">"data"</span>: [</p>
+<p class="pl-8">{</p>
+<p class="pl-12"><span class="syntax-string">"id"</span>: <span class="syntax-string">"post_8821"</span>,</p>
+<p class="pl-12"><span class="syntax-string">"title"</span>: <span class="syntax-string">"Deploying to the Edge"</span>,</p>
+<p class="pl-12"><span class="syntax-string">"author"</span>: { <span class="syntax-string">"name"</span>: <span class="syntax-string">"Sarah Drasner"</span> },</p>
+<p class="pl-12"><span class="syntax-string">"published_at"</span>: <span class="syntax-string">"2023-10-12T10:00Z"</span></p>
+<p class="pl-8">}</p>
+<p class="pl-4">]</p>
+<p>}</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Blog Section -->
+<section class="py-24 max-w-7xl mx-auto px-6">
+<div class="flex items-end justify-between mb-12">
+<div class="space-y-2">
+<h2 class="text-3xl font-bold">Latest from the blog</h2>
+<p class="text-slate-400">Deep dives into edge computing and CMS architecture.</p>
+</div>
+<a class="text-primary font-semibold flex items-center gap-1 hover:underline" href="#">
+          View all posts <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Blog 1 -->
+<article class="flex flex-col rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group cursor-pointer hover:-translate-y-1 transition-all duration-300">
+<div class="h-48 bg-gradient-to-br from-primary/20 to-slate-800 flex items-center justify-center" data-alt="Abstract geometric pattern in indigo and slate">
+<span class="material-symbols-outlined text-primary/40 text-6xl">article</span>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="mb-3">
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded">Infrastructure</span>
+</div>
+<h3 class="text-xl font-bold mb-3 group-hover:text-primary transition-colors">Why we chose D1 over traditional PostgreSQL</h3>
+<p class="text-slate-400 text-sm leading-relaxed mb-6">Exploring the architectural benefits of distributed SQL databases for edge-native applications...</p>
+<div class="mt-auto pt-4 border-t border-slate-800 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-700"></div>
+<span class="text-xs text-slate-400">Alex Rivers • Oct 14, 2023</span>
+</div>
+</div>
+</article>
+<!-- Blog 2 -->
+<article class="flex flex-col rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group cursor-pointer hover:-translate-y-1 transition-all duration-300">
+<div class="h-48 bg-gradient-to-br from-cyan-accent/20 to-slate-800 flex items-center justify-center" data-alt="Abstract pattern with cyan glowing lines">
+<span class="material-symbols-outlined text-cyan-accent/40 text-6xl">bolt</span>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="mb-3">
+<span class="px-2 py-1 bg-cyan-accent/10 text-cyan-accent text-[10px] font-bold uppercase rounded">Tutorial</span>
+</div>
+<h3 class="text-xl font-bold mb-3 group-hover:text-cyan-accent transition-colors">Building a portfolio with Astro and FlareCMS</h3>
+<p class="text-slate-400 text-sm leading-relaxed mb-6">A step-by-step guide to setting up your first edge-powered headless blog in under 5 minutes...</p>
+<div class="mt-auto pt-4 border-t border-slate-800 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-700"></div>
+<span class="text-xs text-slate-400">Maya Chen • Oct 09, 2023</span>
+</div>
+</div>
+</article>
+<!-- Blog 3 -->
+<article class="flex flex-col rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group cursor-pointer hover:-translate-y-1 transition-all duration-300">
+<div class="h-48 bg-gradient-to-br from-amber-accent/20 to-slate-800 flex items-center justify-center" data-alt="Warm amber abstract background with geometric shapes">
+<span class="material-symbols-outlined text-amber-accent/40 text-6xl">release_alert</span>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="mb-3">
+<span class="px-2 py-1 bg-amber-accent/10 text-amber-accent text-[10px] font-bold uppercase rounded">Product</span>
+</div>
+<h3 class="text-xl font-bold mb-3 group-hover:text-amber-accent transition-colors">FlareCMS v2.0: Environments and Rollbacks</h3>
+<p class="text-slate-400 text-sm leading-relaxed mb-6">Introducing enterprise-grade workflow features for small teams and solo developers alike...</p>
+<div class="mt-auto pt-4 border-t border-slate-800 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-700"></div>
+<span class="text-xs text-slate-400">Jordan Smith • Oct 01, 2023</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Open Source CTA -->
+<section class="py-20">
+<div class="max-w-4xl mx-auto px-6">
+<div class="relative bg-gradient-to-br from-primary/20 to-cyan-accent/20 rounded-3xl p-12 border border-primary/30 text-center overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-10">
+<span class="material-symbols-outlined text-[160px]">favorite</span>
+</div>
+<h2 class="text-4xl font-black mb-4">Built by the community, for the web.</h2>
+<p class="text-lg text-slate-300 mb-8 max-w-xl mx-auto">
+            FlareCMS is 100% open-source and will always be. Join our growing community of developers building the future of content management.
+          </p>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="px-8 py-3 bg-white text-slate-950 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined">star</span>
+              Star on GitHub
+            </button>
+<button class="px-8 py-3 bg-transparent text-white border border-white/20 rounded-xl font-bold flex items-center gap-2 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">description</span>
+              Read Documentation
+            </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-950 pt-20 pb-10 border-t border-slate-900">
+<div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-5 gap-12 mb-20">
+<div class="col-span-2 space-y-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">flare</span>
+<h2 class="text-lg font-bold">FlareCMS</h2>
+</div>
+<p class="text-slate-500 max-w-xs text-sm leading-relaxed">
+          The headless CMS that lives at the edge. Built for speed, security, and the ultimate developer experience.
+        </p>
+<div class="flex items-center gap-4">
+<a class="w-8 h-8 rounded bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-primary transition-colors" href="#">
+<svg class="w-4 h-4 fill-currentColor" viewbox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.43.372.82 1.102.82 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.627-5.373-12-12-12z"></path></svg>
+</a>
+<a class="w-8 h-8 rounded bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-primary transition-colors" href="#">
+<svg class="w-4 h-4 fill-currentColor" viewbox="0 0 24 24"><path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.951.555-2.005.959-3.127 1.184-.896-.959-2.173-1.559-3.591-1.559-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124C7.691 8.094 4.066 6.13 1.64 3.161c-.427.722-.666 1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.248-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.68 1.319-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 2.189 1.394 4.768 2.209 7.557 2.209 9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63.961-.689 1.8-1.56 2.46-2.548l-.047-.02z"></path></svg>
+</a>
+</div>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Product</h3>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Cloudflare Workers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Enterprise</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pricing</a></li>
+</ul>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Developers</h3>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">CLI Tools</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">SDKs</a></li>
+</ul>
+</div>
+<div>
+<h3 class="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Community</h3>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Discord</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">GitHub</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Discussions</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contributors</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-6 pt-10 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="text-xs text-slate-600">
+        © 2023 FlareCMS Open Source Project. Built by <a class="text-slate-400 hover:text-white" href="#">The Edge Team</a>.
+      </div>
+<div class="flex items-center gap-6 text-xs text-slate-600">
+<a class="hover:text-slate-400" href="#">Privacy Policy</a>
+<a class="hover:text-slate-400" href="#">Terms of Service</a>
+<a class="hover:text-slate-400 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm">balance</span> MIT License
+        </a>
+</div>
+</div>
+</footer>
+</body></html>
