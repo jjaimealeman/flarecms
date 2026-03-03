@@ -1,0 +1,19 @@
+{
+	"main": "dist/_worker.js/index.js",
+	"name": "flare-site",
+  "compatibility_date": "2026-02-03",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "./dist"
+	},
+	"observability": {
+    "enabled": true
+  },
+  "vars": {
+    "FLARE_API_URL": "https://flare-cms.jjaimealeman.workers.dev"
+  }
+}

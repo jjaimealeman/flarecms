@@ -1,0 +1,51 @@
+---
+import { getBlogPostBySlug } from '../../lib/flare';
+import Layout from '../../layouts/Layout.astro';
+
+const { slug } = Astro.params;
+const post = await getBlogPostBySlug(slug!);
+
+if (!post) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not Found',
+  });
+}
+---
+
+<Layout title={post.data.title} description={post.data.excerpt}>
+  <article class="max-w-3xl mx-auto px-6 pt-12 pb-20">
+    <header class="mb-10">
+      <a href="/blog" class="inline-flex items-center text-sm text-gray-500 hover:text-indigo-600 transition-colors mb-6">
+        &larr; Back to Blog
+      </a>
+      {post.data.featuredImage && (
+        <img
+          src={post.data.featuredImage}
+          alt={post.data.title}
+          class="w-full max-h-[400px] object-cover rounded-xl mb-8"
+        />
+      )}
+      <h1 class="text-4xl font-bold tracking-tight text-gray-900 leading-tight">
+        {post.data.title}
+      </h1>
+      {post.data.publishedAt && (
+        <time datetime={post.data.publishedAt} class="mt-4 block text-sm text-gray-500">
+          Published on {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </time>
+      )}
+    </header>
+
+    <div class="prose prose-lg prose-gray max-w-none prose-headings:tracking-tight prose-a:text-indigo-600 prose-pre:bg-gray-900 prose-pre:rounded-xl" set:html={post.data.content} />
+
+    <footer class="mt-16 pt-8 border-t border-gray-200">
+      <a href="/blog" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        &larr; Back to Blog
+      </a>
+    </footer>
+  </article>
+</Layout>

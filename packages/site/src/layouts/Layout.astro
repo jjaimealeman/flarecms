@@ -1,0 +1,118 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'My Astro site powered by Flare CMS' } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en" class="min-h-screen">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} | Flare CMS</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+      <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="text-xl font-bold tracking-tight text-gray-900 hover:text-indigo-600 transition-colors">
+          Flare<span class="text-indigo-600">CMS</span>
+        </a>
+        <div class="flex gap-6">
+          <a
+            href="/"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              currentPath === "/" ? "text-indigo-600" : "text-gray-600 hover:text-gray-900"
+            ]}
+          >
+            Home
+          </a>
+          <a
+            href="/blog"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              currentPath.startsWith("/blog") ? "text-indigo-600" : "text-gray-600 hover:text-gray-900"
+            ]}
+          >
+            Blog
+          </a>
+          <a
+            href="/news"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              currentPath.startsWith("/news") ? "text-indigo-600" : "text-gray-600 hover:text-gray-900"
+            ]}
+          >
+            News
+          </a>
+          <a
+            href="/uses"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              currentPath === "/uses" ? "text-indigo-600" : "text-gray-600 hover:text-gray-900"
+            ]}
+          >
+            Uses
+          </a>
+          <a
+            href="/about"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              currentPath === "/about" ? "text-indigo-600" : "text-gray-600 hover:text-gray-900"
+            ]}
+          >
+            About
+          </a>
+          <a
+            href="/contact"
+            class:list={[
+              "text-sm font-medium transition-colors",
+              currentPath === "/contact" ? "text-indigo-600" : "text-gray-600 hover:text-gray-900"
+            ]}
+          >
+            Contact
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="border-t border-gray-200 mt-20">
+      <div class="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-sm text-gray-500">
+        <span>
+          Built with <a href="https://astro.build" class="text-indigo-600 hover:underline">Astro</a>
+          + <a href="https://sonicjs.com" class="text-indigo-600 hover:underline">Flare CMS</a>
+          on Cloudflare
+        </span>
+        <span
+          id="version-badge"
+          class="font-mono text-xs text-gray-400 cursor-pointer hover:text-gray-600 transition-colors"
+          title="Click to copy"
+        >
+          v{__APP_VERSION__} &middot; {__GIT_HASH__}
+        </span>
+      </div>
+    </footer>
+    <script is:inline define:vars={{ version: `v${__APP_VERSION__} · ${__GIT_HASH__}` }}>
+      document.getElementById('version-badge')?.addEventListener('click', function() {
+        navigator.clipboard.writeText(version).then(() => {
+          const el = this;
+          const orig = el.textContent;
+          el.textContent = 'Copied!';
+          setTimeout(() => { el.textContent = orig; }, 1500);
+        });
+      });
+    </script>
+  </body>
+</html>

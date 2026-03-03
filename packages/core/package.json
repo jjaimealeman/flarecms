@@ -1,0 +1,133 @@
+{
+  "name": "@flare-cms/core",
+  "version": "1.0.0",
+  "description": "Flare CMS - Edge-first, TypeScript-native headless CMS built for Cloudflare Workers",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "flare-db-reset": "./bin/db-reset.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./services": {
+      "types": "./dist/services.d.ts",
+      "import": "./dist/services.js",
+      "require": "./dist/services.cjs"
+    },
+    "./middleware": {
+      "types": "./dist/middleware.d.ts",
+      "import": "./dist/middleware.js",
+      "require": "./dist/middleware.cjs"
+    },
+    "./routes": {
+      "types": "./dist/routes.d.ts",
+      "import": "./dist/routes.js",
+      "require": "./dist/routes.cjs"
+    },
+    "./templates": {
+      "types": "./dist/templates.d.ts",
+      "import": "./dist/templates.js",
+      "require": "./dist/templates.cjs"
+    },
+    "./plugins": {
+      "types": "./dist/plugins.d.ts",
+      "import": "./dist/plugins.js",
+      "require": "./dist/plugins.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "migrations",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "generate:migrations": "npx tsx scripts/generate-migrations.ts",
+    "prebuild": "npm run generate:migrations",
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "test": "vitest --run",
+    "test:cov": "vitest --run --coverage",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "cms",
+    "headless-cms",
+    "cloudflare",
+    "workers",
+    "edge",
+    "typescript",
+    "hono",
+    "content-management",
+    "api",
+    "flarecms"
+  ],
+  "author": "Jaime Aleman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjaimealeman/flarecms.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/jjaimealeman/flarecms/issues"
+  },
+  "homepage": "https://github.com/jjaimealeman/flarecms",
+  "peerDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "drizzle-orm": "^0.44.0",
+    "hono": "^4.0.0",
+    "zod": "^3.0.0 || ^4.0.0"
+  },
+  "dependencies": {
+    "drizzle-zod": "^0.8.3",
+    "highlight.js": "^11.11.1",
+    "marked": "^16.4.1",
+    "semver": "^7.7.3"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.5",
+    "@cloudflare/workers-types": "^4.20251014.0",
+    "@types/node": "^24.9.2",
+    "@types/semver": "^7.5.8",
+    "@typescript-eslint/eslint-plugin": "^8.50.0",
+    "@typescript-eslint/parser": "^8.50.0",
+    "drizzle-orm": "^0.44.7",
+    "eslint": "^9.39.2",
+    "glob": "^10.5.0",
+    "hono": "^4.11.7",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.5",
+    "zod": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

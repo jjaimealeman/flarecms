@@ -1,0 +1,88 @@
+name: Deploy Flare CMS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-core:
+    name: Build Core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-dist
+          path: packages/core/dist/
+
+  deploy-cms:
+    name: Deploy CMS Worker
+    needs: build-core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: core-dist
+          path: packages/core/dist/
+
+      - name: Deploy CMS to Cloudflare Workers
+        working-directory: packages/cms
+        run: npx wrangler deploy --env production
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+
+  deploy-site:
+    name: Deploy Site to Pages
+    needs: build-core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: core-dist
+          path: packages/core/dist/
+
+      - name: Build Astro site
+        working-directory: packages/site
+        run: pnpm run build
+
+      - name: Deploy to Cloudflare Pages
+        working-directory: packages/site
+        run: npx wrangler pages deploy ./dist --project-name flare-site --branch main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}

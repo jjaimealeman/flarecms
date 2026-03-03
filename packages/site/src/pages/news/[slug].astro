@@ -1,0 +1,61 @@
+---
+import { getNewsArticleBySlug } from '../../lib/flare';
+import Layout from '../../layouts/Layout.astro';
+
+const { slug } = Astro.params;
+const article = await getNewsArticleBySlug(slug!);
+
+if (!article) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not Found',
+  });
+}
+---
+
+<Layout title={article.data.title}>
+  <article class="max-w-3xl mx-auto px-6 pt-12 pb-20">
+    <header class="mb-10">
+      <a href="/news" class="inline-flex items-center text-sm text-gray-500 hover:text-indigo-600 transition-colors mb-6">
+        &larr; Back to News
+      </a>
+      <div class="flex items-center gap-3 mb-4">
+        {article.data.category && (
+          <span class:list={[
+            "inline-block px-2.5 py-0.5 rounded-full text-xs font-medium",
+            article.data.category === 'technology' && "bg-blue-100 text-blue-700",
+            article.data.category === 'business' && "bg-amber-100 text-amber-700",
+            article.data.category === 'general' && "bg-gray-100 text-gray-700",
+          ]}>
+            {article.data.category}
+          </span>
+        )}
+      </div>
+      <h1 class="text-4xl font-bold tracking-tight text-gray-900 leading-tight">
+        {article.data.title}
+      </h1>
+      <div class="mt-4 flex items-center gap-4 text-sm text-gray-500">
+        {article.data.author && (
+          <span>By {article.data.author}</span>
+        )}
+        {article.data.publish_date && (
+          <time datetime={article.data.publish_date}>
+            {new Date(article.data.publish_date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+        )}
+      </div>
+    </header>
+
+    <div class="prose prose-lg prose-gray max-w-none prose-headings:tracking-tight prose-a:text-indigo-600 prose-pre:bg-gray-900 prose-pre:rounded-xl" set:html={article.data.content} />
+
+    <footer class="mt-16 pt-8 border-t border-gray-200">
+      <a href="/news" class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+        &larr; Back to News
+      </a>
+    </footer>
+  </article>
+</Layout>
