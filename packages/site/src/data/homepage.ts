@@ -118,4 +118,5 @@ export const navLinks = [
   { label: 'Blog', href: '/blog' },
   { label: 'News', href: '/news' },
   { label: 'Changelog', href: '/changelog' },
+  { label: 'About', href: '/about' },
 ]

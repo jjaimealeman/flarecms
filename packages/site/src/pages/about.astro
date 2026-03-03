@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="About">
+  <div class="max-w-3xl mx-auto px-6 pt-12 pb-20">
+    <header class="mb-12">
+      <h1 class="text-4xl font-heading font-bold tracking-tight">About Flare CMS</h1>
+      <p class="mt-4 text-lg text-slate-400 leading-relaxed">
+        An open-source headless CMS built for the Cloudflare ecosystem.
+      </p>
+    </header>
+
+    <div class="prose prose-lg prose-invert max-w-none prose-headings:font-heading prose-headings:tracking-tight prose-headings:text-slate-50 prose-p:text-slate-300 prose-p:leading-relaxed prose-a:text-flare-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-100 prose-li:marker:text-flare-500 prose-ul:text-slate-300">
+      <h2>The Story</h2>
+      <p>
+        Flare CMS started as a fork of <a href="https://sonicjs.com">SonicJS v2.8.0</a>, an excellent
+        headless CMS for Cloudflare Workers built by the SonicJS team. After months of building on top of it —
+        adding collections, fixing bugs, deploying to production — the project had evolved enough to stand on its own.
+      </p>
+      <p>
+        In March 2026, four separate repositories were consolidated into a single pnpm monorepo,
+        rebranded as Flare CMS, and deployed under the <strong>flarecms.dev</strong> domain.
+      </p>
+
+      <h2>Architecture</h2>
+      <p>Flare CMS runs entirely on Cloudflare's edge network:</p>
+      <ul>
+        <li><strong>Cloudflare Workers</strong> — The CMS backend (Hono web framework)</li>
+        <li><strong>D1</strong> — SQLite database for content, collections, users, and workflow</li>
+        <li><strong>R2</strong> — Object storage for media uploads (images, files)</li>
+        <li><strong>KV</strong> — Key-value cache for rate limiting and performance</li>
+        <li><strong>Pages</strong> — Astro 5 SSR frontend with edge rendering</li>
+      </ul>
+      <p>
+        No origin server, no cold starts, no scaling concerns. Content is served from 300+ edge
+        locations globally with sub-50ms latency.
+      </p>
+
+      <h2>The Monorepo</h2>
+      <p>Three packages, one repository:</p>
+      <ul>
+        <li><strong>@flare-cms/core</strong> — The engine. Collections, API routes, admin UI, database schema, migrations. Built with tsup (8 entry points).</li>
+        <li><strong>@flare-cms/cms</strong> — The Cloudflare Worker backend. Collection configs, custom middleware, wrangler bindings.</li>
+        <li><strong>@flare-cms/site</strong> — The Astro frontend. SSR on Cloudflare Pages, consuming the CMS API.</li>
+      </ul>
+
+      <h2>Credits</h2>
+      <p>
+        Flare CMS is built on the shoulders of great open-source projects:
+      </p>
+      <ul>
+        <li><a href="https://sonicjs.com">SonicJS</a> — The original CMS engine this project is forked from</li>
+        <li><a href="https://hono.dev">Hono</a> — Ultrafast web framework for Cloudflare Workers</li>
+        <li><a href="https://orm.drizzle.team">Drizzle ORM</a> — TypeScript ORM for D1/SQLite</li>
+        <li><a href="https://astro.build">Astro</a> — The web framework for content-driven websites</li>
+        <li><a href="https://developers.cloudflare.com/workers/">Cloudflare Workers</a> — The runtime that makes it all possible</li>
+      </ul>
+
+      <h2>Built By</h2>
+      <p>
+        Flare CMS is built and maintained by <strong>Jaime Aleman</strong> in El Paso, TX.
+        It's MIT licensed and open source on <a href="https://github.com/jjaimealeman/flarecms">GitHub</a>.
+      </p>
+    </div>
+  </div>
+</Layout>
