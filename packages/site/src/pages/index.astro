@@ -2,14 +2,24 @@
 import Layout from '../layouts/Layout.astro';
 import { getBlogPosts, getNewsArticles } from '../lib/flare';
 
-const posts = await getBlogPosts();
-const recentPosts = posts.slice(0, 3);
+let posts: any[] = [];
+let news: any[] = [];
+let debugError = '';
 
-const news = await getNewsArticles();
+try {
+  posts = await getBlogPosts();
+  news = await getNewsArticles();
+} catch (e: any) {
+  debugError = `API_URL: ${import.meta.env.FLARE_API_URL || 'NOT SET'} | Error: ${e.message}`;
+  console.error('Flare API error:', debugError);
+}
+
+const recentPosts = posts.slice(0, 3);
 const latestNews = news.slice(0, 3);
 ---
 
 <Layout title="Home">
+  {debugError && <div class="bg-red-100 text-red-800 p-4 m-4 rounded font-mono text-sm">{debugError}</div>}
   <section class="max-w-5xl mx-auto px-6 pt-20 pb-16">
     <div class="max-w-2xl">
       <h1 class="text-5xl font-bold tracking-tight text-gray-900 leading-tight">
