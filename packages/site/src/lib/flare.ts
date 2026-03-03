@@ -1,7 +1,8 @@
 // src/lib/flare.ts
 
-const API_URL = import.meta.env.FLARE_API_URL || "http://localhost:8787";
-const API_TOKEN = import.meta.env.FLARE_API_TOKEN;
+// PUBLIC_ prefix ensures Astro inlines this at build time (works in SSR on Cloudflare)
+const API_URL = import.meta.env.PUBLIC_FLARE_API_URL || "http://localhost:8787";
+const API_TOKEN = import.meta.env.PUBLIC_FLARE_API_TOKEN;
 
 interface FlareResponse<T> {
   data: T;
