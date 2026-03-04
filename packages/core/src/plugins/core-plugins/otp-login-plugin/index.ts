@@ -9,7 +9,7 @@ import { Hono } from 'hono'
 import { setCookie } from 'hono/cookie'
 import { z } from 'zod'
 import { PluginBuilder } from '../../sdk/plugin-builder'
-import type { Plugin } from '@sonicjs-cms/core'
+import type { Plugin } from '@flare-cms/core'
 import { OTPService, type OTPSettings } from './otp-service'
 import { renderOTPEmail } from './email-templates'
 import { AuthManager } from '../../../middleware'
@@ -43,8 +43,8 @@ export function createOTPLoginPlugin(): Plugin {
 
   builder.metadata({
     author: {
-      name: 'SonicJS Team',
-      email: 'team@sonicjs.com'
+      name: 'Flare CMS Team',
+      email: 'team@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^2.0.0'

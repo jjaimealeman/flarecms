@@ -1,14 +1,14 @@
 /**
  * Cache Plugin
  *
- * Three-tiered caching system for SonicJS
+ * Three-tiered caching system for Flare CMS
  * - Tier 1: In-Memory (fastest, region-specific)
  * - Tier 2: Cloudflare KV (fast, global)
  * - Tier 3: Database (source of truth)
  */
 
 import type { Context } from 'hono'
-import type { PluginContext } from '@sonicjs-cms/core'
+import type { PluginContext } from '@flare-cms/core'
 import { getCacheService, clearAllCaches, getAllCacheStats } from './services/cache.js'
 import { CACHE_CONFIGS } from './services/cache-config.js'
 import { setupCacheInvalidation } from './services/cache-invalidation.js'

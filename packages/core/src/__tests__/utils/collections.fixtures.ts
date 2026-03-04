@@ -98,13 +98,13 @@ export const mockContent = {
   blog_post_1: {
     id: 'content-blog-1',
     collectionId: 'collection-blog-posts-1',
-    slug: 'welcome-to-sonicjs',
-    title: 'Welcome to SonicJS AI',
+    slug: 'welcome-to-flarecms',
+    title: 'Welcome to Flare CMS',
     data: {
-      title: 'Welcome to SonicJS AI',
-      content: '<h1>Welcome to SonicJS AI</h1><p>This is your first blog post.</p>',
-      excerpt: 'Welcome to SonicJS AI, a modern headless CMS.',
-      tags: ['welcome', 'cms', 'sonicjs'],
+      title: 'Welcome to Flare CMS',
+      content: '<h1>Welcome to Flare CMS</h1><p>This is your first blog post.</p>',
+      excerpt: 'Welcome to Flare CMS, a modern headless CMS.',
+      tags: ['welcome', 'cms', 'flarecms'],
       status: 'published'
     },
     status: 'published',
@@ -153,7 +153,7 @@ export const mockContent = {
 export const mockUsers = {
   admin: {
     id: 'admin-user-id',
-    email: 'admin@sonicjs.com',
+    email: 'admin@flarecms.dev',
     username: 'admin',
     firstName: 'Admin',
     lastName: 'User',
@@ -165,7 +165,7 @@ export const mockUsers = {
 
   editor: {
     id: 'editor-user-id',
-    email: 'editor@sonicjs.com',
+    email: 'editor@flarecms.dev',
     username: 'editor',
     firstName: 'Editor',
     lastName: 'User',

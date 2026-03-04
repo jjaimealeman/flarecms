@@ -1,10 +1,10 @@
 import { PluginBuilder } from '../../sdk/plugin-builder'
-import type { Plugin, PluginContext, HookHandler } from '@sonicjs-cms/core'
+import type { Plugin, PluginContext, HookHandler } from '@flare-cms/core'
 
 /**
  * Demo Login Plugin
  *
- * Prefills the login form with demo credentials (admin@sonicjs.com/sonicjs!)
+ * Prefills the login form with demo credentials (admin@flarecms.dev/flarecms!)
  * when activated, making it easy for demo site visitors to log in.
  */
 
@@ -19,8 +19,8 @@ const demoLoginAssets = {
         const passwordInput = document.getElementById('password');
         
         if (emailInput && passwordInput) {
-          emailInput.value = 'admin@sonicjs.com';
-          passwordInput.value = 'sonicjs!';
+          emailInput.value = 'admin@flarecms.dev';
+          passwordInput.value = 'flarecms!';
           
           // Add visual indication that form is prefilled
           const form = emailInput.closest('form');
@@ -71,15 +71,15 @@ const demoLoginPlugin = PluginBuilder.create({
   version: '1.0.0-beta.1',
   description: 'Prefills login form with demo credentials for easy site demonstration',
   author: {
-    name: 'SonicJS'
+    name: 'Flare CMS'
   }
 })
   .addHook('template:render', loginPrefillHook)
   .addHook('page:before-render', loginPrefillHook)
   .metadata({
-    description: 'Prefills login form with demo credentials (admin@sonicjs.com/sonicjs!) for easy site demonstration',
+    description: 'Prefills login form with demo credentials (admin@flarecms.dev/flarecms!) for easy site demonstration',
     author: {
-      name: 'SonicJS'
+      name: 'Flare CMS'
     },
     dependencies: []
   })

@@ -12,7 +12,7 @@ INSERT OR IGNORE INTO plugins (
     'EasyMDE Markdown Editor',
     'Lightweight markdown editor with live preview. Provides a simple and efficient editor with markdown support for richtext fields.',
     '1.0.0',
-    'SonicJS Team',
+    'Flare CMS Team',
     'editor',
     '📝',
     'active',

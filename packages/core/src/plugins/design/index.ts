@@ -1,4 +1,4 @@
-import { Plugin } from '@sonicjs-cms/core'
+import { Plugin } from '@flare-cms/core'
 // import { designRoutes } from './routes'
 
 export const designPlugin: Plugin = {

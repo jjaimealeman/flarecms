@@ -53,7 +53,7 @@ describe.skip('API Routes', () => {
       
       expect(res.status).toBe(200)
       expect(data.openapi).toBe('3.0.0')
-      expect(data.info.title).toBe('SonicJS AI API')
+      expect(data.info.title).toBe('Flare CMS API')
       expect(data.info.version).toBe('0.1.0')
       expect(data.paths).toHaveProperty('/api/')
       expect(data.paths).toHaveProperty('/api/health')

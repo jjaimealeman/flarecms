@@ -7,7 +7,7 @@
 import { Hono } from 'hono'
 // import { z } from 'zod'
 import { PluginBuilder, PluginHelpers } from '../../sdk/plugin-builder'
-import { Plugin, HOOKS } from '@sonicjs-cms/core'
+import { Plugin, HOOKS } from '@flare-cms/core'
 
 export function createAnalyticsPlugin(): Plugin {
   const builder = PluginBuilder.create({
@@ -19,8 +19,8 @@ export function createAnalyticsPlugin(): Plugin {
   // Add analytics metadata
   builder.metadata({
     author: {
-      name: 'SonicJS Team',
-      email: 'team@sonicjs.com'
+      name: 'Flare CMS Team',
+      email: 'team@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^0.1.0',

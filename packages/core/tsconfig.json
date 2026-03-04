@@ -10,8 +10,8 @@
     "moduleResolution": "bundler",
     "baseUrl": "./",
     "paths": {
-      "@sonicjs-cms/templates": ["../templates/src/index.ts"],
-      "@sonicjs-cms/templates/*": ["../templates/src/*"]
+      "@flare-cms/templates": ["../templates/src/index.ts"],
+      "@flare-cms/templates/*": ["../templates/src/*"]
     },
     "resolveJsonModule": true,
     "types": ["@cloudflare/workers-types", "node"],

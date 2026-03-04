@@ -11,7 +11,7 @@ INSERT OR IGNORE INTO plugins (
     'Email',
     'Send transactional emails using Resend',
     '1.0.0-beta.1',
-    'SonicJS Team',
+    'Flare CMS Team',
     'utilities',
     '📧',
     'inactive',

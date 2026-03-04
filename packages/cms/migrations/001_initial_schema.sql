@@ -1,4 +1,4 @@
--- Initial schema for SonicJS AI
+-- Initial schema for Flare CMS
 -- Create users table for authentication
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,

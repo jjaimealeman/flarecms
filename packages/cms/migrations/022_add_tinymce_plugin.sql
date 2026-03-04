@@ -12,7 +12,7 @@ INSERT OR IGNORE INTO plugins (
     'TinyMCE Rich Text Editor',
     'Powerful WYSIWYG rich text editor for content creation. Provides a full-featured editor with formatting, media embedding, and customizable toolbars for richtext fields.',
     '1.0.0',
-    'SonicJS Team',
+    'Flare CMS Team',
     'editor',
     '✏️',
     'active',

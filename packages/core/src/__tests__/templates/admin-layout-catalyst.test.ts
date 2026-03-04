@@ -166,7 +166,7 @@ describe('renderAdminLayoutCatalyst', () => {
   it('should render page title', () => {
     const html = renderAdminLayoutCatalyst(baseData);
 
-    expect(html).toContain('<title>Test Page - SonicJS AI Admin</title>');
+    expect(html).toContain('<title>Test Page - Flare CMS Admin</title>');
   });
 
   it('should render content', () => {
@@ -505,14 +505,14 @@ describe('renderAdminLayoutCatalyst', () => {
     it('should render logo in desktop sidebar', () => {
       const html = renderAdminLayoutCatalyst(baseData);
 
-      expect(html).toContain('SonicJS');
+      expect(html).toContain('Flare CMS');
     });
 
     it('should render logo in mobile header', () => {
       const html = renderAdminLayoutCatalyst(baseData);
 
       // Mobile header should have logo - check both desktop and mobile sections
-      expect(html).toContain('SonicJS');
+      expect(html).toContain('Flare CMS');
     });
   });
 

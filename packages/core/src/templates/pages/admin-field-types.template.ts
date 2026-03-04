@@ -718,7 +718,7 @@ export function renderFieldTypesPage(data: FieldTypesPageData): string {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'sonicjs-field-types-reference.json';
+        a.download = 'flarecms-field-types-reference.json';
         a.click();
         URL.revokeObjectURL(url);
       }

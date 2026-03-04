@@ -1,5 +1,5 @@
 -- Stage 7: Workflow & Automation Migration
--- This migration adds workflow and automation capabilities to SonicJS
+-- This migration adds workflow and automation capabilities to Flare CMS
 
 -- Workflow States Table
 CREATE TABLE IF NOT EXISTS workflow_states (
