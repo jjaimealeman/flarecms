@@ -64,5 +64,5 @@ export const ROUTES_INFO = {
     'adminApiTokensRoutes'
   ],
   status: 'Core package routes ready',
-  reference: 'https://github.com/sonicjs/sonicjs'
+  reference: 'https://github.com/jjaimealeman/flarecms'
 } as const

@@ -126,10 +126,6 @@ export interface FlareConfig {
 }
 
 export type FlareApp = Hono<{ Bindings: Bindings; Variables: Variables }>
-/** @deprecated Use FlareConfig */
-export type SonicJSConfig = FlareConfig
-/** @deprecated Use FlareApp */
-export type SonicJSApp = FlareApp
 
 // ============================================================================
 // Application Factory
@@ -209,7 +205,7 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
             warn: (...args: any[]) => console.warn(...args),
             error: (...args: any[]) => console.error(...args)
           },
-          // Cast required: SonicJSApp is Hono<{Bindings,Variables}> which is not
+          // Cast required: FlareApp is Hono<{Bindings,Variables}> which is not
           // assignable to PluginContext.app type Hono<BlankEnv> — same pattern
           // used in bootstrap.ts for getAppReference() (decision [04-01])
           app: app as any
@@ -445,5 +441,3 @@ export function setupCoreRoutes(_app: FlareApp): void {
   // Backward compatibility implementation
 }
 
-/** @deprecated Use createFlareApp */
-export const createSonicJSApp = createFlareApp

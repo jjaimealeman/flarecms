@@ -440,8 +440,8 @@ adminPluginRoutes.post('/install', async (c) => {
         dependencies: [],
         settings: {
           enableNotice: true,
-          demoEmail: 'admin@sonicjs.com',
-          demoPassword: 'sonicjs!'
+          demoEmail: 'admin@flarecms.dev',
+          demoPassword: 'flarecms!'
         }
       })
 

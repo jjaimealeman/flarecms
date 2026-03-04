@@ -235,13 +235,13 @@ export class TelemetryService {
   }
 
   /**
-   * Get SonicJS version
+   * Get Flare CMS version
    */
   private getVersion(): string {
     try {
       // Safe environment access for Cloudflare Workers compatibility
       if (typeof process !== 'undefined' && process.env) {
-        return process.env.SONICJS_VERSION || '2.0.0'
+        return process.env.FLARE_VERSION || '2.0.0'
       }
       return '2.0.0'
     } catch {
