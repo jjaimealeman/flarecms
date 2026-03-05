@@ -30,7 +30,7 @@ INSERT OR IGNORE INTO plugins (
     'Magic Link Authentication',
     'Passwordless authentication via email magic links. Users receive a secure one-time link to sign in without entering a password.',
     '1.0.0',
-    'SonicJS Team',
+    'Flare CMS Team',
     'security',
     '🔗',
     'inactive',

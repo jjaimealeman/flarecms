@@ -359,9 +359,9 @@ export class PluginValidator implements IPluginValidator {
   }
 
   /**
-   * Validate plugin compatibility with SonicJS version
+   * Validate plugin compatibility with Flare CMS version
    */
-  validateCompatibility(plugin: Plugin, sonicVersion: string): PluginValidationResult {
+  validateCompatibility(plugin: Plugin, flareVersion: string): PluginValidationResult {
     const errors: string[] = []
     const warnings: string[] = []
 
@@ -371,8 +371,8 @@ export class PluginValidator implements IPluginValidator {
     }
 
     try {
-      if (!semver.satisfies(sonicVersion, plugin.compatibility)) {
-        errors.push(`Plugin requires SonicJS ${plugin.compatibility}, but current version is ${sonicVersion}`)
+      if (!semver.satisfies(flareVersion, plugin.compatibility)) {
+        errors.push(`Plugin requires Flare CMS ${plugin.compatibility}, but current version is ${flareVersion}`)
       }
     } catch (error) {
       errors.push(`Invalid compatibility version format: ${plugin.compatibility}`)

@@ -35,7 +35,7 @@ export class PluginManager implements IPluginManager {
     console.info('Initializing plugin system...')
 
     // Thread app reference into context so plugin activate() callbacks receive it
-    // app is set by createSonicJSApp() -> bootstrapMiddleware(config, app)
+    // app is set by createFlareApp() -> bootstrapMiddleware(config, app)
     if (!context.app) {
       const appRef = getAppReference()
       if (appRef) {

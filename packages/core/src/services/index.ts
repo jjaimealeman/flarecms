@@ -1,7 +1,7 @@
 /**
  * Services Module Exports
  *
- * Core business logic services for SonicJS
+ * Core business logic services for Flare CMS
  */
 
 // Collection Management

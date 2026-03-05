@@ -2,7 +2,7 @@ import { Context, Hono, Next, Env } from "hono";
 import { syncCollections } from "../services/collection-sync";
 import { MigrationService } from "../services/migrations";
 import { PluginBootstrapService } from "../services/plugin-bootstrap";
-import type { SonicJSConfig } from "../app";
+import type { FlareConfig } from "../app";
 
 type Bindings = {
   DB: D1Database;
@@ -12,7 +12,7 @@ type Bindings = {
 // Track if bootstrap has been run in this worker instance
 let bootstrapComplete = false;
 
-// Module-level app reference — set by createSonicJSApp() so PluginManager
+// Module-level app reference — set by createFlareApp() so PluginManager
 // can include it in PluginContext during initialize()
 // Typed as Hono<any> to accept any Hono app regardless of env generics
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +32,7 @@ export function getAppReference(): Hono<any> | undefined {
  * Runs once per worker instance
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function bootstrapMiddleware(config: SonicJSConfig = {}, app?: Hono<any>) {
+export function bootstrapMiddleware(config: FlareConfig = {}, app?: Hono<any>) {
   // Store app reference at module level so PluginManager can access it
   if (app) {
     appReference = app;

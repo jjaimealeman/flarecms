@@ -1,7 +1,7 @@
 /**
  * Admin Cache Dashboard Template
  *
- * Moved from @sonicjs-cms/templates to avoid circular dependency
+ * Moved from @flare-cms/templates to avoid circular dependency
  * during build (templates imports from core, core can't import from templates)
  */
 

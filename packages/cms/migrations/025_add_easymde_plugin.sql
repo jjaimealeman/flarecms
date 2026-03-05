@@ -12,7 +12,7 @@ INSERT OR IGNORE INTO plugins (
     'EasyMDE Editor',
     'Lightweight markdown editor for content creation. Simple, elegant WYSIWYG markdown editor with live preview, toolbar, and dark mode support for richtext fields.',
     '1.0.0',
-    'SonicJS Team',
+    'Flare CMS Team',
     'editor',
     '✍️',
     'inactive',

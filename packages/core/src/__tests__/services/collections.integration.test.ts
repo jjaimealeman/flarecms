@@ -205,7 +205,7 @@ describe.skip('Collections Integration Tests', () => {
 
       expect(response.collection).toBe('blog_posts')
       expect(response.content).toHaveLength(2)
-      expect(response.content[0].title).toBe('Welcome to SonicJS AI')
+      expect(response.content[0].title).toBe('Welcome to Flare CMS')
       expect(response.content[0].author).toBe('admin')
       expect(response.content[1].status).toBe('draft')
     })

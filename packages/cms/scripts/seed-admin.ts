@@ -1,4 +1,4 @@
-import { createDb, users } from '@sonicjs-cms/core'
+import { createDb, users } from '@flare-cms/core'
 import { eq } from 'drizzle-orm'
 import * as crypto from 'crypto'
 import { getPlatformProxy } from 'wrangler'
@@ -47,7 +47,7 @@ async function seed() {
       return
     }
 
-    // Hash password using SHA-256 (same as SonicJS auth system)
+    // Hash password using SHA-256 (same as Flare CMS auth system)
     const data = 'R3yK15VnqFTFFp' + 'salt-change-in-production'
     const passwordHash = crypto.createHash('sha256').update(data).digest('hex')
     const now = Date.now()

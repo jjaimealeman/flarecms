@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { Plugin } from '@sonicjs-cms/core'
+import { Plugin } from '@flare-cms/core'
 import { PluginBuilder } from '../../sdk/plugin-builder'
 
 const codeExampleSchema = z.object({
@@ -283,8 +283,8 @@ export function createCodeExamplesPlugin(): Plugin {
 
   builder.metadata({
     author: {
-      name: 'SonicJS',
-      email: 'info@sonicjs.com'
+      name: 'Flare CMS',
+      email: 'info@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^1.0.0'

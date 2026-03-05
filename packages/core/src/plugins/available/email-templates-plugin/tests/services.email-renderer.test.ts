@@ -62,7 +62,7 @@ describe('EmailTemplateRenderer', () => {
       name: 'Welcome Email',
       subject: 'Welcome {{user.name}}!',
       markdownContent: '# Hello {{user.name}}\n\nWelcome to our platform!',
-      variables: '{"company": "SonicJS"}',
+      variables: '{"company": "Flare CMS"}',
       themeId: 'theme-1',
       isActive: true
     }
@@ -160,8 +160,8 @@ describe('EmailTemplateRenderer', () => {
       const systemVars = (renderer as any).getSystemVariables()
 
       expect(systemVars).toHaveProperty('site')
-      expect(systemVars.site).toHaveProperty('name', 'SonicJS AI')
-      expect(systemVars.site).toHaveProperty('url', 'https://sonicjs-ai.com')
+      expect(systemVars.site).toHaveProperty('name', 'Flare CMS')
+      expect(systemVars.site).toHaveProperty('url', 'https://flarecms.dev')
       expect(systemVars.site).toHaveProperty('logo')
 
       expect(systemVars).toHaveProperty('date')

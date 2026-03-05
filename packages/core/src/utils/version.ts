@@ -8,8 +8,6 @@
 import pkg from '../../package.json'
 
 export const FLARE_VERSION = pkg.version
-/** @deprecated Use FLARE_VERSION */
-export const SONICJS_VERSION = FLARE_VERSION
 export const GIT_HASH = process.env.GIT_HASH || ''
 
 /**

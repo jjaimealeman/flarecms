@@ -673,12 +673,12 @@ authRoutes.post('/seed-admin',
     
     // Check if admin user already exists
     const existingAdmin = await db.prepare('SELECT id FROM users WHERE email = ? OR username = ?')
-      .bind('admin@sonicjs.com', 'admin')
+      .bind('admin@flarecms.dev', 'admin')
       .first()
 
     if (existingAdmin) {
       // Update the password to ensure it's correct for testing
-      const passwordHash = await AuthManager.hashPassword('sonicjs!')
+      const passwordHash = await AuthManager.hashPassword('flarecms!')
       await db.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
         .bind(passwordHash, Date.now(), existingAdmin.id)
         .run()
@@ -687,7 +687,7 @@ authRoutes.post('/seed-admin',
         message: 'Admin user already exists (password updated)',
         user: {
           id: existingAdmin.id,
-          email: 'admin@sonicjs.com',
+          email: 'admin@flarecms.dev',
           username: 'admin',
           role: 'admin'
         }
@@ -695,12 +695,12 @@ authRoutes.post('/seed-admin',
     }
 
     // Hash password
-    const passwordHash = await AuthManager.hashPassword('sonicjs!')
+    const passwordHash = await AuthManager.hashPassword('flarecms!')
     
     // Create admin user
     const userId = 'admin-user-id'
     const now = Date.now()
-    const adminEmail = 'admin@sonicjs.com'.toLowerCase()
+    const adminEmail = 'admin@flarecms.dev'.toLowerCase()
     
     await db.prepare(`
       INSERT INTO users (id, email, username, first_name, last_name, password_hash, role, is_active, created_at, updated_at)

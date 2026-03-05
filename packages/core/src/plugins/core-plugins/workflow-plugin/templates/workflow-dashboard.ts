@@ -1,4 +1,4 @@
-import { renderAdminLayout } from '@sonicjs-cms/core/templates'
+import { renderAdminLayout } from '@flare-cms/core/templates'
 
 export interface WorkflowDashboardData {
   user: any
@@ -141,7 +141,7 @@ export function renderWorkflowDashboard(data: WorkflowDashboardData): string {
   `
 
   return renderAdminLayout({
-    title: 'Workflow Dashboard - SonicJS AI',
+    title: 'Workflow Dashboard - Flare CMS',
     pageTitle: 'Workflow Dashboard',
     content,
     user: data.user,

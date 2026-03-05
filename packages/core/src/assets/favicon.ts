@@ -1,5 +1,5 @@
 /**
- * SonicJS Favicon SVG
+ * Flare CMS Favicon SVG
  *
  * Embedded SVG favicon for the admin interface and auth pages.
  * This ensures the favicon is always available without external dependencies.

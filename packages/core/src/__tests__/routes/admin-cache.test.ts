@@ -2,7 +2,7 @@
  * Admin Cache Routes Tests
  *
  * Tests for the cache management admin routes
- * Issue #461: https://github.com/SonicJs-Org/sonicjs/issues/461
+ * Issue #461: https://github.com/SonicJs-Org/sonicjs/issues/461 (legacy)
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'

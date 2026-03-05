@@ -17,7 +17,7 @@ export function renderSettingsPage(settings: TurnstileSettings | null): string {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Turnstile Settings - SonicJS</title>
+      <title>Turnstile Settings - Flare CMS</title>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     </head>
@@ -228,7 +228,7 @@ export function renderSettingsPage(settings: TurnstileSettings | null): string {
                   Usage Guide
                 </h5>
                 <p>Once enabled, Turnstile will automatically protect forms that use the verification middleware:</p>
-                <pre class="bg-light p-3 rounded"><code>import { verifyTurnstile } from '@sonicjs-cms/core/plugins'
+                <pre class="bg-light p-3 rounded"><code>import { verifyTurnstile } from '@flare-cms/core/plugins'
 
 // Protect a route with Turnstile
 app.post('/api/contact', verifyTurnstile, async (c) => {

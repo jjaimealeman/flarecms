@@ -14,7 +14,7 @@ import manifest from './manifest.json'
  * 
  * @example
  * ```typescript
- * import { verifyTurnstile } from '@sonicjs-cms/core/plugins'
+ * import { verifyTurnstile } from '@flare-cms/core/plugins'
  * 
  * app.post('/api/contact', verifyTurnstile, async (c) => {
  *   // Process form after Turnstile verification

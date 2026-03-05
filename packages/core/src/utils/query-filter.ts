@@ -1,5 +1,5 @@
 /**
- * Query Filter Builder for SonicJS AI
+ * Query Filter Builder for Flare CMS
  * Supports comprehensive filtering with AND/OR logic
  * Compatible with D1 Database (SQLite)
  */

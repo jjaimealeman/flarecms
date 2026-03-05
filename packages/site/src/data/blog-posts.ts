@@ -23,7 +23,7 @@ export const blogPosts: StaticBlogPost[] = [
     content: `
 <h2>What is Flare CMS?</h2>
 <p>Flare CMS is an open-source headless content management system built to run entirely on <strong>Cloudflare Workers</strong>. It uses D1 for database storage, R2 for media files, and KV for caching — no origin server required.</p>
-<p>Forked from <a href="https://sonicjs.com">SonicJS</a> and rebuilt as a pnpm monorepo, Flare CMS gives you a complete CMS backend with a built-in admin UI, RESTful API, and Astro frontend — all deployed to the edge.</p>
+<p>Forked from <a href="https://flarecms.dev">Flare CMS</a> and rebuilt as a pnpm monorepo, Flare CMS gives you a complete CMS backend with a built-in admin UI, RESTful API, and Astro frontend — all deployed to the edge.</p>
 
 <h2>Prerequisites</h2>
 <ul>
@@ -151,7 +151,7 @@ const posts = await getBlogPosts()
 &lt;/Layout&gt;</code></pre>
 
 <h2>Client-Side Filtering</h2>
-<p>One thing to be aware of: the Flare CMS API's filter parameters are currently broken (inherited from SonicJS v2.8.0). Query parameters like <code>?filter[status][equals]=published</code> are ignored server-side.</p>
+<p>One thing to be aware of: the Flare CMS API's filter parameters are currently broken (inherited from Flare CMS v2.8.0). Query parameters like <code>?filter[status][equals]=published</code> are ignored server-side.</p>
 <p>The workaround is simple — fetch all content and filter in your API client:</p>
 <pre><code>return result.data.filter(post =&gt; post.status === 'published')</code></pre>
 
@@ -165,15 +165,15 @@ wrangler pages deploy ./dist --branch main</code></pre>
   {
     slug: 'flare-cms-v1-released',
     title: 'Flare CMS v1.0 Released',
-    excerpt: "Forked from SonicJS and rebuilt as a monorepo. Here's what changed and why.",
+    excerpt: "Forked from Flare CMS and rebuilt as a monorepo. Here's what changed and why.",
     category: 'Announcement',
     categoryColor: 'amber',
     author: 'Jaime Aleman',
     date: '2026-02-28',
     readTime: '4 min read',
     content: `
-<h2>From SonicJS to Flare CMS</h2>
-<p>Flare CMS started as a fork of <a href="https://sonicjs.com">SonicJS v2.8.0</a>, an excellent headless CMS for Cloudflare Workers. After months of building on top of it — adding collections, fixing bugs, deploying to production — it became clear that the project had evolved enough to stand on its own.</p>
+<h2>The Birth of Flare CMS</h2>
+<p>Flare CMS started as a fork of <a href="https://flarecms.dev">Flare CMS v2.8.0</a>, an excellent headless CMS for Cloudflare Workers. After months of building on top of it — adding collections, fixing bugs, deploying to production — it became clear that the project had evolved enough to stand on its own.</p>
 
 <h2>What Changed</h2>
 <p>The migration from four separate repositories into one pnpm monorepo was the biggest structural change:</p>
@@ -184,7 +184,7 @@ wrangler pages deploy ./dist --branch main</code></pre>
 </ul>
 
 <h2>Admin UI Rebranding</h2>
-<p>Every user-visible "SonicJS" string in the admin dashboard, login page, API docs, and plugin system was replaced with "Flare CMS". The version badge now shows <code>v1.0.0</code> instead of inheriting from upstream.</p>
+<p>Every user-visible "Flare CMS" string in the admin dashboard, login page, API docs, and plugin system was updated. The version badge now shows <code>v1.0.0</code> instead of inheriting from upstream.</p>
 
 <h2>CI/CD Pipeline</h2>
 <p>GitHub Actions deploys automatically on push to <code>main</code>:</p>
@@ -203,21 +203,21 @@ wrangler pages deploy ./dist --branch main</code></pre>
 </ul>
 
 <h2>Known Issues</h2>
-<p>Some bugs were inherited from SonicJS v2.8.0 and remain in v1.0:</p>
+<p>Some bugs were inherited from Flare CMS v2.8.0 and remain in v1.0:</p>
 <ul>
 <li>API filter parameters are ignored server-side (must filter client-side)</li>
 <li>Select field defaults don't pre-populate in the admin UI</li>
 <li>Content status is one-way — can't unpublish once published</li>
 <li>Soft-delete doesn't cascade to child records</li>
 </ul>
-<p>These will be addressed in future releases, either as fixes in <code>@flare-cms/core</code> or as upstream PRs to SonicJS.</p>
+<p>These will be addressed in future releases, either as fixes in <code>@flare-cms/core</code> or as upstream PRs to Flare CMS.</p>
 
 <h2>What's Next</h2>
 <p>The roadmap for v1.x includes:</p>
 <ul>
 <li>Full documentation site (dogfooding Flare CMS itself)</li>
 <li>Fix the broken API filters</li>
-<li>Redesigned admin UI (replacing the inherited SonicJS look)</li>
+<li>Redesigned admin UI (replacing the inherited Flare CMS look)</li>
 <li>Image optimization via Cloudflare Images</li>
 </ul>
 `,

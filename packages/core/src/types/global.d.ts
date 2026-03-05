@@ -1,4 +1,4 @@
-// Global type definitions for SonicJS AI
+// Global type definitions for Flare CMS
 
 // Cloudflare Workers environment bindings
 interface CloudflareBindings {

@@ -14,7 +14,7 @@ export function createSeedDataAdminRoutes() {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Seed Data - SonicJS Admin</title>
+          <title>Seed Data - Flare CMS Admin</title>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
