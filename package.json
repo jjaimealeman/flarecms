@@ -8,9 +8,9 @@
   "scripts": {
     "build": "pnpm --filter @flare-cms/core build",
     "build:site": "pnpm --filter @flare-cms/site build",
-    "deploy:cms": "pnpm --filter @flare-cms/cms deploy",
-    "deploy:site": "pnpm --filter @flare-cms/site deploy",
-    "deploy:all": "pnpm deploy:cms && pnpm deploy:site",
+    "deploy:cms": "echo '⚠️  Deploy via CI/CD: merge develop → main, then git push. GitHub Actions handles the rest.'",
+    "deploy:site": "echo '⚠️  Deploy via CI/CD: merge develop → main, then git push. GitHub Actions handles the rest.'",
+    "deploy:all": "echo '⚠️  Deploy via CI/CD: merge develop → main, then git push. GitHub Actions handles the rest.'",
     "dev:cms": "echo 'Run wrangler dev in packages/cms/ tmux pane'",
     "dev:site": "echo 'Run pnpm dev in packages/site/ tmux pane'",
     "test": "pnpm --filter @flare-cms/core test"
