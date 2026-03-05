@@ -1,5 +1,5 @@
 import { EmailTemplate, EmailTheme } from '../schema';
-import { renderTemplate } from '@sonicjs-cms/core';
+import { renderTemplate } from '@flare-cms/core';
 import { marked, Renderer } from 'marked';
 
 export interface EmailRenderResult {
@@ -82,8 +82,8 @@ export class EmailTemplateRenderer {
     const now = new Date();
     return {
       site: {
-        name: 'SonicJS AI',
-        url: 'https://sonicjs-ai.com',
+        name: 'Flare CMS',
+        url: 'https://flarecms.dev',
         logo: '/favicon.svg',
       },
       date: {
@@ -247,9 +247,9 @@ export class EmailTemplateRenderer {
       
       // Content specific
       content: {
-        title: 'Getting Started with SonicJS AI',
+        title: 'Getting Started with Flare CMS',
         url: 'https://example.com/content/123',
-        excerpt: 'Learn how to build amazing web applications with SonicJS AI...',
+        excerpt: 'Learn how to build amazing web applications with Flare CMS...',
       },
       
       // Contact form specific
@@ -260,7 +260,7 @@ export class EmailTemplateRenderer {
         submittedAt: new Date().toISOString(),
       },
       submissionId: 'SUB-12345',
-      replyToEmail: 'support@sonicjs-ai.com',
+      replyToEmail: 'support@flarecms.dev',
     };
   }
 }

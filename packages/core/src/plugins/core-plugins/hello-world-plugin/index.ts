@@ -7,7 +7,7 @@
 import { Hono } from 'hono'
 import { html } from 'hono/html'
 import { PluginBuilder } from '../../sdk/plugin-builder'
-import type { Plugin } from '@sonicjs-cms/core'
+import type { Plugin } from '@flare-cms/core'
 
 export function createHelloWorldPlugin(): Plugin {
   const builder = PluginBuilder.create({
@@ -19,8 +19,8 @@ export function createHelloWorldPlugin(): Plugin {
   // Add plugin metadata
   builder.metadata({
     author: {
-      name: 'SonicJS Team',
-      email: 'team@sonicjs.com'
+      name: 'Flare CMS Team',
+      email: 'team@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^2.0.0'
@@ -38,7 +38,7 @@ export function createHelloWorldPlugin(): Plugin {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, 1.0">
-          <title>Hello World - SonicJS</title>
+          <title>Hello World - Flare CMS</title>
           <script src="https://cdn.tailwindcss.com"></script>
           <script>
             tailwind.config = {
@@ -51,7 +51,7 @@ export function createHelloWorldPlugin(): Plugin {
             <!-- Sidebar -->
             <aside class="w-64 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800">
               <div class="p-4">
-                <h2 class="text-xl font-bold mb-4">SonicJS</h2>
+                <h2 class="text-xl font-bold mb-4">Flare CMS</h2>
                 <nav>
                   <a href="/admin/dashboard" class="block px-4 py-2 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 mb-1">
                     Dashboard
@@ -83,7 +83,7 @@ export function createHelloWorldPlugin(): Plugin {
                         Hello World!
                       </h2>
                       <p class="text-lg text-zinc-600 dark:text-zinc-400 mb-6">
-                        This is a simple demonstration plugin for SonicJS.
+                        This is a simple demonstration plugin for Flare CMS.
                       </p>
                       <div class="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4 text-left">
                         <h3 class="font-semibold mb-2">Plugin Information:</h3>
@@ -107,7 +107,7 @@ export function createHelloWorldPlugin(): Plugin {
                       <li>✓ Registered in the plugin registry at build time</li>
                       <li>✓ Added to left navigation via adminMenu config</li>
                       <li>✓ Route handler defined using PluginBuilder</li>
-                      <li>✓ Fully integrated with SonicJS plugin system</li>
+                      <li>✓ Fully integrated with Flare CMS plugin system</li>
                     </ul>
                   </div>
                 </div>

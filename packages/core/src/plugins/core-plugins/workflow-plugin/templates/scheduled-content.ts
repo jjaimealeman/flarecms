@@ -1,4 +1,4 @@
-import { renderAdminLayout } from '@sonicjs-cms/core/templates'
+import { renderAdminLayout } from '@flare-cms/core/templates'
 
 export interface ScheduledContentData {
   user: any
@@ -399,7 +399,7 @@ export function renderScheduledContent(data: ScheduledContentData): string {
   `
 
   return renderAdminLayout({
-    title: 'Scheduled Content - SonicJS AI',
+    title: 'Scheduled Content - Flare CMS',
     pageTitle: 'Scheduled Content',
     content,
     user: data.user,

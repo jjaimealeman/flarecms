@@ -20,8 +20,8 @@
 // Main Application API (Phase 2 Week 1)
 // ============================================================================
 
-export { createFlareApp, createSonicJSApp, setupCoreMiddleware, setupCoreRoutes } from './app'
-export type { FlareConfig, FlareApp, SonicJSConfig, SonicJSApp, Bindings, Variables } from './app'
+export { createFlareApp, setupCoreMiddleware, setupCoreRoutes } from './app'
+export type { FlareConfig, FlareApp, Bindings, Variables } from './app'
 
 // ============================================================================
 // Placeholders - To be populated in Phase 2
@@ -236,7 +236,6 @@ export {
   metricsTracker,
   // Version
   FLARE_VERSION,
-  SONICJS_VERSION,
   getCoreVersion,
 } from './utils'
 
@@ -339,7 +338,7 @@ export const VERSION = packageJson.version
 // ============================================================================
 
 /**
- * This is a work-in-progress package being extracted from the main SonicJS codebase.
+ * This is a work-in-progress package being extracted from the main codebase.
  *
  * Current Phase: 2 (Core Module Migration)
  * Current Week: 1 (Types, Utils, Database)

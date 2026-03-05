@@ -1,7 +1,7 @@
 /**
  * Plugins Module Exports
  *
- * Plugin system and SDK for SonicJS
+ * Plugin system and SDK for Flare CMS
  */
 
 // Hook System

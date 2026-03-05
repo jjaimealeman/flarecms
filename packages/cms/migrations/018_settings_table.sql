@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS settings (
 -- Insert default general settings
 INSERT OR IGNORE INTO settings (id, category, key, value, created_at, updated_at)
 VALUES
-  (lower(hex(randomblob(16))), 'general', 'siteName', '"SonicJS AI"', unixepoch() * 1000, unixepoch() * 1000),
+  (lower(hex(randomblob(16))), 'general', 'siteName', '"Flare CMS"', unixepoch() * 1000, unixepoch() * 1000),
   (lower(hex(randomblob(16))), 'general', 'siteDescription', '"A modern headless CMS powered by AI"', unixepoch() * 1000, unixepoch() * 1000),
   (lower(hex(randomblob(16))), 'general', 'timezone', '"UTC"', unixepoch() * 1000, unixepoch() * 1000),
   (lower(hex(randomblob(16))), 'general', 'language', '"en"', unixepoch() * 1000, unixepoch() * 1000),

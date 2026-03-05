@@ -63,14 +63,14 @@ function findWranglerToml() {
 }
 
 async function main() {
-  log('\n🔧 SonicJS Database Reset Tool', colors.cyan + colors.bold);
+  log('\n🔧 Flare CMS Database Reset Tool', colors.cyan + colors.bold);
   log('================================\n', colors.cyan);
 
   // Find wrangler.toml
   const wranglerInfo = findWranglerToml();
   if (!wranglerInfo) {
     log('Error: Could not find wrangler.toml in current or parent directories', colors.red);
-    log('Please run this command from your SonicJS project directory.', colors.yellow);
+    log('Please run this command from your Flare CMS project directory.', colors.yellow);
     process.exit(1);
   }
 
@@ -95,7 +95,7 @@ async function main() {
 
   // Create a safe database name from branch
   const safeBranch = branchName.replace(/[^a-zA-Z0-9-]/g, '-').slice(0, 50);
-  const dbName = `sonicjs-worktree-${safeBranch}`;
+  const dbName = `flarecms-worktree-${safeBranch}`;
 
   log(`Setting up fresh D1 database for worktree: ${branchName}`, colors.cyan);
   log(`Database name: ${dbName}\n`, colors.cyan);

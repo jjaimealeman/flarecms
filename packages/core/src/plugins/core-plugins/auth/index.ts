@@ -6,7 +6,7 @@
 
 import { Hono } from 'hono'
 import { PluginBuilder } from '../../sdk/plugin-builder'
-import { Plugin, HOOKS } from '@sonicjs-cms/core'
+import { Plugin, HOOKS } from '@flare-cms/core'
 
 export function createAuthPlugin(): Plugin {
   const builder = PluginBuilder.create({
@@ -18,8 +18,8 @@ export function createAuthPlugin(): Plugin {
   // Add auth metadata
   builder.metadata({
     author: {
-      name: 'SonicJS Team',
-      email: 'team@sonicjs.com'
+      name: 'Flare CMS Team',
+      email: 'team@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^0.1.0'

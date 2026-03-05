@@ -206,7 +206,7 @@ describe('Email Service', () => {
       it('should send templated email successfully', async () => {
         // Mock template rendering
         mockRenderTemplate.mockResolvedValue({
-          subject: 'Welcome to SonicJS',
+          subject: 'Welcome to Flare CMS',
           html: '<h1>Welcome John!</h1>',
           text: 'Welcome John!'
         })
@@ -224,7 +224,7 @@ describe('Email Service', () => {
         const result = await emailService.sendTemplatedEmail({
           to: 'john@example.com',
           templateSlug: 'welcome-email',
-          variables: { name: 'John', company: 'SonicJS' },
+          variables: { name: 'John', company: 'Flare CMS' },
           metadata: { campaign: 'welcome-series' }
         })
 
@@ -235,13 +235,13 @@ describe('Email Service', () => {
         // Verify template was rendered with correct variables
         expect(mockRenderTemplate).toHaveBeenCalledWith(
           'welcome-email',
-          { name: 'John', company: 'SonicJS' }
+          { name: 'John', company: 'Flare CMS' }
         )
 
         // Verify email was sent with rendered content
         const callArgs = vi.mocked(fetch).mock.calls[0]
         const requestBody = JSON.parse(callArgs[1].body as string)
-        expect(requestBody.personalizations[0].subject).toBe('Welcome to SonicJS')
+        expect(requestBody.personalizations[0].subject).toBe('Welcome to Flare CMS')
         expect(requestBody.content[1].value).toBe('<h1>Welcome John!</h1>')
       })
 

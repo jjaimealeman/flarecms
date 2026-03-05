@@ -1,6 +1,6 @@
 /**
- * SonicJS Plugin System Types
- * 
+ * Flare CMS Plugin System Types
+ *
  * Defines the core interfaces and types for the plugin system
  */
 
@@ -24,7 +24,7 @@ export interface Plugin {
   }
   /** Plugin dependencies (other plugins required) */
   dependencies?: string[]
-  /** SonicJS version compatibility */
+  /** Flare CMS version compatibility */
   compatibility?: string
   /** Plugin license */
   license?: string
@@ -47,7 +47,7 @@ export interface Plugin {
   configure?: (config: PluginConfig) => Promise<void>
 }
 
-// Plugin context provides access to SonicJS APIs
+// Plugin context provides access to Flare CMS APIs
 export interface PluginContext {
   /** Database instance */
   db: D1Database
@@ -57,7 +57,7 @@ export interface PluginContext {
   r2?: R2Bucket
   /** Plugin configuration */
   config: PluginConfig
-  /** Core SonicJS services */
+  /** Core Flare CMS services */
   services: {
     auth: AuthService
     content: ContentService

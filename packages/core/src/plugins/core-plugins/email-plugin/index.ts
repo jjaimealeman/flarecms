@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono'
 import { PluginBuilder } from '../../sdk/plugin-builder'
-import type { Plugin } from '@sonicjs-cms/core'
+import type { Plugin } from '@flare-cms/core'
 
 export function createEmailPlugin(): Plugin {
   const builder = PluginBuilder.create({
@@ -19,8 +19,8 @@ export function createEmailPlugin(): Plugin {
   // Add plugin metadata
   builder.metadata({
     author: {
-      name: 'SonicJS Team',
-      email: 'team@sonicjs.com'
+      name: 'Flare CMS Team',
+      email: 'team@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^2.0.0'
@@ -102,11 +102,11 @@ export function createEmailPlugin(): Plugin {
         body: JSON.stringify({
           from: `${settings.fromName} <${settings.fromEmail}>`,
           to: [toEmail],
-          subject: 'Test Email from SonicJS',
+          subject: 'Test Email from Flare CMS',
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h1 style="color: #667eea;">Test Email Successful! 🎉</h1>
-              <p>This is a test email from your SonicJS Email plugin.</p>
+              <p>This is a test email from your Flare CMS Email plugin.</p>
               <p><strong>Configuration:</strong></p>
               <ul>
                 <li>From: ${settings.fromName} &lt;${settings.fromEmail}&gt;</li>

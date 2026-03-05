@@ -31,7 +31,7 @@ INSERT OR IGNORE INTO plugins (
     'OTP Login',
     'Passwordless authentication via email one-time codes',
     '1.0.0-beta.1',
-    'SonicJS Team',
+    'Flare CMS Team',
     'security',
     '🔢',
     'inactive',

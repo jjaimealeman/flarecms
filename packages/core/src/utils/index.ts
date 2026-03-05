@@ -1,7 +1,7 @@
 /**
  * Utils Module Exports
  *
- * Utility functions for SonicJS
+ * Utility functions for Flare CMS
  */
 
 // HTML Sanitization Utilities
@@ -28,7 +28,7 @@ export {
 export { metricsTracker } from './metrics'
 
 // Version Info
-export { FLARE_VERSION, SONICJS_VERSION, getCoreVersion } from './version'
+export { FLARE_VERSION, getCoreVersion } from './version'
 
 // Telemetry Utilities
 export {

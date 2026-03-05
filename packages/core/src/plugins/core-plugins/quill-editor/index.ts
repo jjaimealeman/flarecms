@@ -1,12 +1,12 @@
 /**
  * Quill Rich Text Editor Plugin
  *
- * Provides Quill editor integration for rich text editing in SonicJS
+ * Provides Quill editor integration for rich text editing in Flare CMS
  * https://quilljs.com/
  */
 
 import { PluginBuilder } from '../../sdk/plugin-builder'
-import type { Plugin } from '@sonicjs-cms/core'
+import type { Plugin } from '@flare-cms/core'
 
 /**
  * Quill Editor Configuration Options
@@ -294,14 +294,14 @@ export function createQuillEditorPlugin(): Plugin {
   const builder = PluginBuilder.create({
     name: 'quill-editor',
     version: '1.0.0',
-    description: 'Quill rich text editor integration for SonicJS'
+    description: 'Quill rich text editor integration for Flare CMS'
   })
 
   // Add plugin metadata
   builder.metadata({
     author: {
-      name: 'SonicJS Team',
-      email: 'team@sonicjs.com'
+      name: 'Flare CMS Team',
+      email: 'team@flarecms.dev'
     },
     license: 'MIT',
     compatibility: '^2.0.0'

@@ -71,7 +71,7 @@ app.post('/test-cleanup', async (c: Context) => {
       DELETE FROM api_tokens
       WHERE user_id IN (
         SELECT id FROM users
-        WHERE email != 'admin@sonicjs.com' AND (email LIKE '%test%' OR email LIKE '%example.com%')
+        WHERE email != 'admin@flarecms.dev' AND (email LIKE '%test%' OR email LIKE '%example.com%')
       )
     `).run()
 
@@ -79,14 +79,14 @@ app.post('/test-cleanup', async (c: Context) => {
       DELETE FROM media
       WHERE uploaded_by IN (
         SELECT id FROM users
-        WHERE email != 'admin@sonicjs.com' AND (email LIKE '%test%' OR email LIKE '%example.com%')
+        WHERE email != 'admin@flarecms.dev' AND (email LIKE '%test%' OR email LIKE '%example.com%')
       )
     `).run()
 
     // Step 4: Delete test users
     const usersResult = await db.prepare(`
       DELETE FROM users
-      WHERE email != 'admin@sonicjs.com' AND (email LIKE '%test%' OR email LIKE '%example.com%')
+      WHERE email != 'admin@flarecms.dev' AND (email LIKE '%test%' OR email LIKE '%example.com%')
     `).run()
     deletedCount += usersResult.meta?.changes || 0
 
@@ -192,7 +192,7 @@ app.post('/test-cleanup/users', async (c: Context) => {
     // Delete test users (preserve admin)
     const result = await db.prepare(`
       DELETE FROM users
-      WHERE email != 'admin@sonicjs.com'
+      WHERE email != 'admin@flarecms.dev'
       AND (
         email LIKE '%test%'
         OR email LIKE '%example.com%'

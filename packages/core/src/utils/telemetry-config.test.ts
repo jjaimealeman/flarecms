@@ -24,18 +24,18 @@ describe('telemetry-config', () => {
 
   describe('getDefaultTelemetryConfig', () => {
     it('should return default configuration with telemetry enabled', () => {
-      delete process.env.SONICJS_TELEMETRY_ENDPOINT
+      delete process.env.FLARE_TELEMETRY_ENDPOINT
       delete process.env.NODE_ENV
 
       const config = getDefaultTelemetryConfig()
 
       expect(config.enabled).toBe(true)
-      expect(config.host).toBe('https://stats.sonicjs.com')
+      expect(config.host).toBe('https://stats.flarecms.dev')
       expect(config.debug).toBe(false)
     })
 
     it('should use custom endpoint from environment variable', () => {
-      process.env.SONICJS_TELEMETRY_ENDPOINT = 'https://custom.endpoint.com'
+      process.env.FLARE_TELEMETRY_ENDPOINT = 'https://custom.endpoint.com'
 
       const config = getDefaultTelemetryConfig()
 
@@ -61,7 +61,7 @@ describe('telemetry-config', () => {
 
   describe('isTelemetryEnabled', () => {
     it('should return true by default (opt-out model)', () => {
-      delete process.env.SONICJS_TELEMETRY
+      delete process.env.FLARE_TELEMETRY
       delete process.env.DO_NOT_TRACK
 
       const enabled = isTelemetryEnabled()
@@ -69,24 +69,24 @@ describe('telemetry-config', () => {
       expect(enabled).toBe(true)
     })
 
-    it('should return false when SONICJS_TELEMETRY is "false"', () => {
-      process.env.SONICJS_TELEMETRY = 'false'
+    it('should return false when FLARE_TELEMETRY is "false"', () => {
+      process.env.FLARE_TELEMETRY = 'false'
 
       const enabled = isTelemetryEnabled()
 
       expect(enabled).toBe(false)
     })
 
-    it('should return false when SONICJS_TELEMETRY is "0"', () => {
-      process.env.SONICJS_TELEMETRY = '0'
+    it('should return false when FLARE_TELEMETRY is "0"', () => {
+      process.env.FLARE_TELEMETRY = '0'
 
       const enabled = isTelemetryEnabled()
 
       expect(enabled).toBe(false)
     })
 
-    it('should return false when SONICJS_TELEMETRY is "disabled"', () => {
-      process.env.SONICJS_TELEMETRY = 'disabled'
+    it('should return false when FLARE_TELEMETRY is "disabled"', () => {
+      process.env.FLARE_TELEMETRY = 'disabled'
 
       const enabled = isTelemetryEnabled()
 
@@ -111,15 +111,15 @@ describe('telemetry-config', () => {
 
     it('should return true when DO_NOT_TRACK has other values', () => {
       process.env.DO_NOT_TRACK = '0'
-      delete process.env.SONICJS_TELEMETRY
+      delete process.env.FLARE_TELEMETRY
 
       const enabled = isTelemetryEnabled()
 
       expect(enabled).toBe(true)
     })
 
-    it('should return true when SONICJS_TELEMETRY has other values like "true"', () => {
-      process.env.SONICJS_TELEMETRY = 'true'
+    it('should return true when FLARE_TELEMETRY has other values like "true"', () => {
+      process.env.FLARE_TELEMETRY = 'true'
       delete process.env.DO_NOT_TRACK
 
       const enabled = isTelemetryEnabled()
@@ -130,17 +130,17 @@ describe('telemetry-config', () => {
 
   describe('getTelemetryConfig', () => {
     it('should merge default config with enabled state', () => {
-      delete process.env.SONICJS_TELEMETRY
+      delete process.env.FLARE_TELEMETRY
       delete process.env.DO_NOT_TRACK
 
       const config = getTelemetryConfig()
 
       expect(config.enabled).toBe(true)
-      expect(config.host).toBe('https://stats.sonicjs.com')
+      expect(config.host).toBe('https://stats.flarecms.dev')
     })
 
     it('should reflect disabled telemetry in config', () => {
-      process.env.SONICJS_TELEMETRY = 'false'
+      process.env.FLARE_TELEMETRY = 'false'
 
       const config = getTelemetryConfig()
 

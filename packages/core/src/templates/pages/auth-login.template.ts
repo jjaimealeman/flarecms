@@ -146,8 +146,8 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
             const passwordInput = document.getElementById('password');
 
             if (emailInput && passwordInput) {
-              emailInput.value = 'admin@sonicjs.com';
-              passwordInput.value = 'sonicjs!';
+              emailInput.value = 'admin@flarecms.dev';
+              passwordInput.value = 'flarecms!';
 
               // Add visual indication that form is prefilled (only if not already present)
               const form = emailInput.closest('form');

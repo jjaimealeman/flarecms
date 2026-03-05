@@ -1,7 +1,7 @@
 /**
  * Telemetry Service
  *
- * Privacy-first telemetry service using custom SonicJS stats endpoint
+ * Privacy-first telemetry service using custom Flare CMS stats endpoint
  * - No PII collection
  * - Opt-out by default
  * - Silent failures (never blocks app)
@@ -89,7 +89,7 @@ export class TelemetryService {
         return
       }
 
-      // Send to custom SonicJS stats endpoint
+      // Send to custom Flare CMS stats endpoint
       if (this.identity && this.config.host) {
         const payload = {
           data: {
@@ -235,13 +235,13 @@ export class TelemetryService {
   }
 
   /**
-   * Get SonicJS version
+   * Get Flare CMS version
    */
   private getVersion(): string {
     try {
       // Safe environment access for Cloudflare Workers compatibility
       if (typeof process !== 'undefined' && process.env) {
-        return process.env.SONICJS_VERSION || '2.0.0'
+        return process.env.FLARE_VERSION || '2.0.0'
       }
       return '2.0.0'
     } catch {

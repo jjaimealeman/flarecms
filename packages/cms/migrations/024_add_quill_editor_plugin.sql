@@ -12,7 +12,7 @@ INSERT OR IGNORE INTO plugins (
     'Quill Rich Text Editor',
     'Modern rich text editor for content creation. Provides a clean, intuitive WYSIWYG editor with customizable toolbars for richtext fields.',
     '1.0.0',
-    'SonicJS Team',
+    'Flare CMS Team',
     'editor',
     '✍️',
     'active',

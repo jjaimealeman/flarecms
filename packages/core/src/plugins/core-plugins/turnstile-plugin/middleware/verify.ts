@@ -6,7 +6,7 @@ import { TurnstileService } from '../services/turnstile'
  * 
  * Usage:
  * ```typescript
- * import { verifyTurnstile } from '@sonicjs-cms/core/plugins'
+ * import { verifyTurnstile } from '@flare-cms/core/plugins'
  * 
  * app.post('/api/contact', verifyTurnstile, async (c) => {
  *   // Token already verified, process form...

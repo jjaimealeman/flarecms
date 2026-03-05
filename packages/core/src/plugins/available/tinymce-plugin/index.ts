@@ -17,8 +17,8 @@ const builder = PluginBuilder.create({
 
 builder.metadata({
   author: {
-    name: 'SonicJS Team',
-    email: 'team@sonicjs.com'
+    name: 'Flare CMS Team',
+    email: 'team@flarecms.dev'
   },
   license: 'MIT',
   compatibility: '^2.0.0'

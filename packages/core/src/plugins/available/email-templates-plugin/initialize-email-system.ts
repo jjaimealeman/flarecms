@@ -16,7 +16,7 @@ interface InitOptions {
 }
 
 export async function initializeEmailSystem(_options: InitOptions = {}) {
-  console.log('🚀 Initializing SonicJS AI Email System...\n');
+  console.log('🚀 Initializing Flare CMS Email System...\n');
 
   try {
     // In a CLI context, we'd need to connect to the database differently

@@ -1,7 +1,7 @@
 /**
  * Plugin SDK
  *
- * Exports the plugin builder and helper utilities for creating SonicJS plugins.
+ * Exports the plugin builder and helper utilities for creating Flare CMS plugins.
  *
  * @packageDocumentation
  */
