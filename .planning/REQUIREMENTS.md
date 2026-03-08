@@ -14,11 +14,11 @@
 
 ### Layout & Navigation
 
-- [ ] **NAV-01**: 3-column responsive layout (sidebar, content, TOC) per Stitch v2 mockups
-- [ ] **NAV-02**: Left sidebar navigation generated from CMS docs-sections data with collapsible sections and active state
-- [ ] **NAV-03**: Breadcrumbs showing Docs > Section > Page path
-- [ ] **NAV-04**: Prev/next navigation at bottom of each docs page
-- [ ] **NAV-05**: Mobile responsive — sidebar collapses to hamburger menu, content reflows, TOC hidden/expandable on small screens
+- [x] **NAV-01**: 3-column responsive layout (sidebar, content, TOC) per Stitch v2 mockups
+- [x] **NAV-02**: Left sidebar navigation generated from CMS docs-sections data with collapsible sections and active state
+- [x] **NAV-03**: Breadcrumbs showing Docs > Section > Page path
+- [x] **NAV-04**: Prev/next navigation at bottom of each docs page
+- [x] **NAV-05**: Mobile responsive — sidebar collapses to hamburger menu, content reflows, TOC hidden/expandable on small screens
 
 ### Content Rendering
 

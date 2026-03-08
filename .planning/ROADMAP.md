@@ -49,8 +49,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Data layer (API functions, nav tree builder) and layout/navigation components (DocsLayout, sidebar, breadcrumbs, prev/next)
-- [ ] 02-02-PLAN.md — Route wiring (docs landing page, catch-all route) and visual verification
+- [x] 02-01-PLAN.md — Data layer (API functions, nav tree builder) and layout/navigation components (DocsLayout, sidebar, breadcrumbs, prev/next)
+- [x] 02-02-PLAN.md — Route wiring (docs landing page, catch-all route) and visual verification
 
 ### Phase 3: Content Rendering & Route
 **Goal**: A visitor can read any docs page with properly highlighted code blocks, copy buttons, callout boxes, and tabbed code examples
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
-| 2. Docs Layout & Navigation | 0/2 | Not started | - |
+| 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
 | 3. Content Rendering & Route | 0/TBD | Not started | - |
 | 4. Site Shell & Homepage | 0/TBD | Not started | - |
 | 5. Documentation Content | 0/TBD | Not started | - |
