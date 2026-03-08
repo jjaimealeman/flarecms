@@ -30,11 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Admin user can create a docs entry with title, slug, content (markdown), section reference, order, and prev/next fields
   3. Admin user can write markdown with fenced code blocks in 5+ languages using EasyMDE — content round-trips correctly (create, save, reload, edit)
   4. Content with code examples, blockquote-based callouts, and tables renders correctly when fetched via the REST API
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Create docs-sections and docs collections, register in CMS, fix FieldType union
+- [ ] 01-02-PLAN.md — Enhance EasyMDE with code block button and R2 image upload, verify full workflow
 
 ### Phase 2: Docs Layout & Navigation
 **Goal**: A visitor navigating to /docs sees a responsive 3-column layout with working sidebar navigation, breadcrumbs, and prev/next links — all generated from CMS data
