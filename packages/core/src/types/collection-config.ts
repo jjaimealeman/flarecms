@@ -28,6 +28,9 @@ export type FieldType =
   | 'slug'
   | 'color'
   | 'file'
+  | 'quill'
+  | 'tinymce'
+  | 'mdxeditor'
 
 export interface BlockDefinition {
   label?: string
