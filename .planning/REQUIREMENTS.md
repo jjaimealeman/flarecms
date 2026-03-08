@@ -93,40 +93,40 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CMS-01 | TBD | Pending |
-| CMS-02 | TBD | Pending |
-| CMS-03 | TBD | Pending |
-| CMS-04 | TBD | Pending |
-| NAV-01 | TBD | Pending |
-| NAV-02 | TBD | Pending |
-| NAV-03 | TBD | Pending |
-| NAV-04 | TBD | Pending |
-| NAV-05 | TBD | Pending |
-| RENDER-01 | TBD | Pending |
-| RENDER-02 | TBD | Pending |
-| RENDER-03 | TBD | Pending |
-| RENDER-04 | TBD | Pending |
-| SITE-01 | TBD | Pending |
-| SITE-02 | TBD | Pending |
-| SITE-03 | TBD | Pending |
-| SITE-04 | TBD | Pending |
-| SITE-05 | TBD | Pending |
-| SITE-06 | TBD | Pending |
-| DOCS-01 | TBD | Pending |
-| DOCS-02 | TBD | Pending |
-| DOCS-03 | TBD | Pending |
-| DOCS-04 | TBD | Pending |
-| DOCS-05 | TBD | Pending |
-| DOCS-06 | TBD | Pending |
-| DOCS-07 | TBD | Pending |
-| DOCS-08 | TBD | Pending |
-| DEPLOY-01 | TBD | Pending |
+| CMS-01 | Phase 1: CMS Content Foundation | Pending |
+| CMS-02 | Phase 1: CMS Content Foundation | Pending |
+| CMS-03 | Phase 1: CMS Content Foundation | Pending |
+| CMS-04 | Phase 5: Documentation Content | Pending |
+| NAV-01 | Phase 2: Docs Layout & Navigation | Pending |
+| NAV-02 | Phase 2: Docs Layout & Navigation | Pending |
+| NAV-03 | Phase 2: Docs Layout & Navigation | Pending |
+| NAV-04 | Phase 2: Docs Layout & Navigation | Pending |
+| NAV-05 | Phase 2: Docs Layout & Navigation | Pending |
+| RENDER-01 | Phase 3: Content Rendering & Route | Pending |
+| RENDER-02 | Phase 3: Content Rendering & Route | Pending |
+| RENDER-03 | Phase 3: Content Rendering & Route | Pending |
+| RENDER-04 | Phase 3: Content Rendering & Route | Pending |
+| SITE-01 | Phase 4: Site Shell & Homepage | Pending |
+| SITE-02 | Phase 6: Search & Deploy | Pending |
+| SITE-03 | Phase 4: Site Shell & Homepage | Pending |
+| SITE-04 | Phase 4: Site Shell & Homepage | Pending |
+| SITE-05 | Phase 4: Site Shell & Homepage | Pending |
+| SITE-06 | Phase 4: Site Shell & Homepage | Pending |
+| DOCS-01 | Phase 5: Documentation Content | Pending |
+| DOCS-02 | Phase 5: Documentation Content | Pending |
+| DOCS-03 | Phase 5: Documentation Content | Pending |
+| DOCS-04 | Phase 5: Documentation Content | Pending |
+| DOCS-05 | Phase 5: Documentation Content | Pending |
+| DOCS-06 | Phase 5: Documentation Content | Pending |
+| DOCS-07 | Phase 5: Documentation Content | Pending |
+| DOCS-08 | Phase 5: Documentation Content | Pending |
+| DEPLOY-01 | Phase 6: Search & Deploy | Pending |
 
 **Coverage:**
 - v1 requirements: 28 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 28
+- Mapped to phases: 28
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-08*
-*Last updated: 2026-03-08 after initial definition*
+*Last updated: 2026-03-08 after roadmap phase mapping*
