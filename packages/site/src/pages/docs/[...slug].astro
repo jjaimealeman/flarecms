@@ -1,0 +1,83 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro'
+import { getDocsSections, getDocsPages } from '../../lib/flare'
+import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
+
+const { slug } = Astro.params
+
+// Parse slug into section and page parts
+const parts = slug ? slug.split('/') : []
+
+if (parts.length !== 2) {
+  return Astro.redirect('/docs')
+}
+
+const [sectionSlug, pageSlug] = parts
+
+// Fetch all data
+const [sections, docs] = await Promise.all([
+  getDocsSections(),
+  getDocsPages(),
+])
+
+// Build navigation tree
+const navSections = buildNavTree(sections, docs)
+
+// Find current section
+const currentSection = navSections.find((s) => s.slug === sectionSlug)
+
+if (!currentSection) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+// Find current page in section
+const currentPage = currentSection.pages.find((p) => p.slug === pageSlug)
+
+if (!currentPage) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+// Normalize current path (strip trailing slash)
+const currentPath = Astro.url.pathname.replace(/\/$/, '')
+
+// Build prev/next navigation
+const allPages = flattenForPrevNext(navSections)
+const currentIndex = allPages.findIndex((p) => p.href === currentPath)
+
+const prev = currentIndex > 0
+  ? { title: allPages[currentIndex - 1].title, section: allPages[currentIndex - 1].sectionName, href: allPages[currentIndex - 1].href }
+  : undefined
+
+const next = currentIndex < allPages.length - 1
+  ? { title: allPages[currentIndex + 1].title, section: allPages[currentIndex + 1].sectionName, href: allPages[currentIndex + 1].href }
+  : undefined
+
+// Build breadcrumbs
+const breadcrumbs = [
+  { label: 'Docs', href: '/docs' },
+  { label: currentSection.name, href: currentSection.pages[0]?.href || '/docs' },
+  { label: currentPage.title, href: currentPath },
+]
+
+// Find the original doc object for content rendering
+const sectionRecord = sections.find((s) => (s.data.slug || s.slug) === sectionSlug)
+const doc = docs.find(
+  (d) => (d.data.slug || d.slug) === pageSlug && d.data.section === sectionRecord?.id,
+)
+
+if (!doc) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+---
+
+<DocsLayout
+  title={currentPage.title}
+  section={{ name: currentSection.name, slug: currentSection.slug }}
+  breadcrumbs={breadcrumbs}
+  prev={prev}
+  next={next}
+  sections={navSections}
+  currentPath={currentPath}
+>
+  <Fragment set:html={doc.data.content} />
+</DocsLayout>
