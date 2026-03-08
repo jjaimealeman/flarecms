@@ -366,7 +366,8 @@ adminContentRoutes.get('/', async (c) => {
     
     // Get content items
     const contentStmt = db.prepare(`
-      SELECT c.id, c.title, c.slug, c.status, c.created_at, c.updated_at,
+      SELECT c.id, COALESCE(NULLIF(c.title, 'Untitled'), json_extract(c.data, '$.name'), c.title) as title,
+             c.slug, c.status, c.created_at, c.updated_at,
              col.name as collection_name, col.display_name as collection_display_name,
              u.first_name, u.last_name, u.email as author_email
       FROM content c

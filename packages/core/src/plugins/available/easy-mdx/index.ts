@@ -225,7 +225,7 @@ export function getMDXEditorInitScript(config?: {
             imageUploadFunction: function(file, onSuccess, onError) {
               const formData = new FormData();
               formData.append('file', file);
-              fetch('/api/v1/media/upload', {
+              fetch('/api/media/upload', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include'
