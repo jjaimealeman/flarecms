@@ -102,9 +102,9 @@ apiMediaRoutes.post('/upload', async (c) => {
       return c.json({ error: 'Failed to upload file to storage' }, 500)
     }
 
-    // Generate public URL using environment variable for bucket name
-    const bucketName = c.env.BUCKET_NAME || 'flarecms-media-dev'
-    const publicUrl = `https://pub-${bucketName}.r2.dev/${r2Key}`
+    // Generate public URL using custom media domain
+    const mediaDomain = c.env.MEDIA_DOMAIN || 'images.flarecms.dev'
+    const publicUrl = `https://${mediaDomain}/${r2Key}`
 
     // Extract image dimensions if it's an image (arrayBuffer is populated for images)
     let width: number | undefined
