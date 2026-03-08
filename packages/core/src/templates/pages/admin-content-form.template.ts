@@ -421,7 +421,7 @@ export function renderContentFormPage(data: ContentFormData): string {
 
     ${getConfirmationDialogScript()}
 
-    ${data.tinymceEnabled ? getTinyMCEScript(data.tinymceSettings?.apiKey) : '<!-- TinyMCE plugin not active -->'}
+    ${data.tinymceEnabled && !data.mdxeditorEnabled ? getTinyMCEScript(data.tinymceSettings?.apiKey) : '<!-- TinyMCE not loaded (inactive or superseded by EasyMDE) -->'}
 
     ${data.quillEnabled ? getQuillCDN(data.quillSettings?.version) : '<!-- Quill plugin not active -->'}
 

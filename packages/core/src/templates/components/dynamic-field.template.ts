@@ -148,14 +148,18 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
 
           // Add auto-slug generation for slug fields
           if (fieldName === 'slug') {
-            patternHelp += '<button type="button" class="mt-1 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300" onclick="generateSlugFromTitle(\'${fieldId}\')">Generate from title</button>'
+            patternHelp += '<button type="button" class="mt-1 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300" onclick="generateSlugFromTitle(\'${fieldId}\')">Regenerate from title</button>'
             autoSlugScript = `
               <script>
+                function findSlugSourceField() {
+                  return document.querySelector('input[name="title"]') || document.querySelector('input[name="name"]');
+                }
+
                 function generateSlugFromTitle(slugFieldId) {
-                  const titleField = document.querySelector('input[name="title"]');
+                  const sourceField = findSlugSourceField();
                   const slugField = document.getElementById(slugFieldId);
-                  if (titleField && slugField) {
-                    const slug = titleField.value
+                  if (sourceField && slugField) {
+                    const slug = sourceField.value
                       .toLowerCase()
                       .replace(/[^a-z0-9\\s_-]/g, '')
                       .replace(/\\s+/g, '-')
@@ -164,13 +168,13 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
                     slugField.value = slug;
                   }
                 }
-                
-                // Auto-generate slug when title changes
+
+                // Auto-generate slug when source field changes
                 document.addEventListener('DOMContentLoaded', function() {
-                  const titleField = document.querySelector('input[name="title"]');
+                  const sourceField = findSlugSourceField();
                   const slugField = document.getElementById('${fieldId}');
-                  if (titleField && slugField && !slugField.value) {
-                    titleField.addEventListener('input', function() {
+                  if (sourceField && slugField && !slugField.value) {
+                    sourceField.addEventListener('input', function() {
                       if (!slugField.value) {
                         generateSlugFromTitle('${fieldId}');
                       }
@@ -503,18 +507,23 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
               checkSlugAvailability(slugField.value);
             }
             
+            // Find the source field for slug generation (title or name)
+            function findSourceField() {
+              return document.querySelector('input[name="title"]') || document.querySelector('input[name="name"]');
+            }
+
             // Auto-generate only in create mode
             // Wait for all fields to be rendered before attaching listeners
             if (!isEditMode) {
               // Use setTimeout to ensure all fields in the form are rendered
               setTimeout(() => {
-                const titleField = document.querySelector('input[name="title"]');
-                if (titleField) {
-                  titleField.addEventListener('input', function() {
+                const sourceField = findSourceField();
+                if (sourceField) {
+                  sourceField.addEventListener('input', function() {
                     if (!manuallyEdited) {
                       const slug = generateSlug(this.value);
                       slugField.value = slug;
-                      
+
                       // Trigger validation and duplicate check
                       slugField.dispatchEvent(new Event('input', { bubbles: true }));
                     }
@@ -522,15 +531,15 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
                 }
               }, 0);
             }
-            
+
             // Global function for regenerate button
             window.regenerateSlugFromTitle_${fieldId.replace(/-/g, '_')} = function() {
-              const titleField = document.querySelector('input[name="title"]');
-              if (titleField && slugField) {
-                const slug = generateSlug(titleField.value);
+              const sourceField = findSourceField();
+              if (sourceField && slugField) {
+                const slug = generateSlug(sourceField.value);
                 slugField.value = slug;
                 manuallyEdited = false;
-                
+
                 // Trigger validation and duplicate check
                 slugField.dispatchEvent(new Event('input', { bubbles: true }));
               }
