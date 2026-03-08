@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 1 complete — ready for Phase 2
+**Current focus:** Phase 2 in progress — docs layout and navigation
 
 ## Current Position
 
-Phase: 1 of 6 (CMS Content Foundation) — COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase 1 verified, ready to plan Phase 2
-Last activity: 2026-03-08 — Phase 1 execution complete
+Phase: 2 of 6 (Docs Layout & Navigation)
+Plan: 1 of 2 in current phase
+Status: Plan 02-01 complete, ready for 02-02
+Last activity: 2026-03-08 — Completed 02-01-PLAN.md
 
-Progress: [████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 17%
+Progress: [██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: ~24 min
-- Total execution time: ~48 min
+- Total plans completed: 3
+- Average duration: ~17 min
+- Total execution time: ~51 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 2 | ~48min | ~24min |
+| 2 | 1 | ~3min | ~3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3min), 01-02 (45min)
-- Trend: 01-02 included extensive bug fixing during human verification
+- Last 5 plans: 01-01 (3min), 01-02 (45min), 02-01 (3min)
+- Trend: Pure code generation plans execute fast; plans with human verification take longer
 
 *Updated after each plan completion*
 
@@ -51,6 +52,8 @@ Recent decisions affecting current work:
 - [01-02]: images.flarecms.dev custom domain for R2 media URLs (MEDIA_DOMAIN env var)
 - [01-02]: Slug regeneration falls back to name field when title doesn't exist
 - [01-02]: TinyMCE suppressed when EasyMDE is active
+- [02-01]: Nav tree uses content ID matching (doc.data.section === section.id)
+- [02-01]: Hardcoded slug-to-Lucide-icon map with book-open fallback
 
 ### Pending Todos
 
@@ -66,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Phase 1 complete — ready to plan Phase 2
+Stopped at: Completed 02-01-PLAN.md — ready for 02-02
 Resume file: None
