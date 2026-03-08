@@ -1,0 +1,60 @@
+// src/lib/docs-nav.ts
+
+import type { DocsSection, DocsPage } from './flare'
+
+export interface NavPage {
+  title: string
+  slug: string
+  href: string
+  sectionSlug: string
+  sectionName: string
+}
+
+export interface NavSection {
+  name: string
+  slug: string
+  icon?: string
+  pages: NavPage[]
+}
+
+/**
+ * Build a navigation tree from sections and pages.
+ * Groups pages under their parent section using doc.data.section (content ID).
+ */
+export function buildNavTree(
+  sections: DocsSection[],
+  docs: DocsPage[],
+): NavSection[] {
+  return sections.map((section) => {
+    const sectionSlug = section.data.slug || section.slug
+    const sectionName = section.data.name || section.title
+
+    const pages = docs
+      .filter((doc) => doc.data.section === section.id)
+      .map((doc) => {
+        const pageSlug = doc.data.slug || doc.slug
+        return {
+          title: doc.data.title || doc.title,
+          slug: pageSlug,
+          href: `/docs/${sectionSlug}/${pageSlug}`,
+          sectionSlug,
+          sectionName,
+        }
+      })
+
+    return {
+      name: sectionName,
+      slug: sectionSlug,
+      icon: section.data.icon,
+      pages,
+    }
+  })
+}
+
+/**
+ * Flatten all pages from all sections into a single ordered array
+ * for prev/next navigation. Order is preserved from the sorted input.
+ */
+export function flattenForPrevNext(navSections: NavSection[]): NavPage[] {
+  return navSections.flatMap((section) => section.pages)
+}
