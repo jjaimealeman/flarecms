@@ -19,6 +19,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
+    "marked": "^16.4.2",
     "tailwindcss": "^4.1.18",
     "unplugin-icons": "^23.0.1"
   }

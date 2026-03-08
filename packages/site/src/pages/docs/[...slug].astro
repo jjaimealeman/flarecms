@@ -1,4 +1,5 @@
 ---
+import { marked } from 'marked'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 import { getDocsSections, getDocsPages } from '../../lib/flare'
 import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
@@ -79,5 +80,6 @@ if (!doc) {
   sections={navSections}
   currentPath={currentPath}
 >
-  <Fragment set:html={doc.data.content} />
+  <h1>{currentPage.title}</h1>
+  <Fragment set:html={await marked.parse(doc.data.content || '')} />
 </DocsLayout>
