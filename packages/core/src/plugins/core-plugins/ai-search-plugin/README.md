@@ -1,4 +1,4 @@
-# AI Search Plugin for SonicJS
+# AI Search Plugin for Flare CMS
 
 Advanced search capabilities using Cloudflare AI Search. Provides semantic search, full-text search, and advanced filtering across all content collections.
 
@@ -16,7 +16,7 @@ Advanced search capabilities using Cloudflare AI Search. Provides semantic searc
 
 ## Installation
 
-The AI Search plugin is a core plugin and is included by default in SonicJS.
+The AI Search plugin is a core plugin and is included by default in Flare CMS.
 
 ### 1. Configure Cloudflare AI Search
 
@@ -60,7 +60,7 @@ The AI Search plugin is a core plugin and is included by default in SonicJS.
 ### API Usage
 
 ```typescript
-import { AISearchService } from '@sonicjs-cms/core/plugins'
+import { AISearchService } from '@flare-cms/core/plugins'
 
 const service = new AISearchService(db, aiSearch)
 
@@ -192,4 +192,4 @@ View search analytics in **Admin → Plugins → AI Search**:
 ## References
 
 - [Cloudflare AI Search Documentation](https://developers.cloudflare.com/ai-search/)
-- [Issue #362: Advanced search with Cloudflare Search](https://github.com/lane711/sonicjs/issues/362)
+- [Issue #362: Advanced search with Cloudflare Search](https://github.com/flarecms/flarecms/issues/362)

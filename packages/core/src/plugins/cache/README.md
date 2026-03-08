@@ -1,6 +1,6 @@
 # Cache Plugin
 
-Three-tiered caching system for SonicJS that provides automatic caching for content, users, media, and API responses.
+Three-tiered caching system for Flare CMS that provides automatic caching for content, users, media, and API responses.
 
 ## Features
 
