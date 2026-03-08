@@ -1,8 +1,11 @@
 ---
-import { marked } from 'marked'
+import { renderMarkdown } from '../../lib/markdown'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 import { getDocsSections, getDocsPages } from '../../lib/flare'
 import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
+import '../../styles/code-blocks.css'
+import '../../styles/callouts.css'
+import '../../styles/prose.css'
 
 const { slug } = Astro.params
 
@@ -69,6 +72,8 @@ const doc = docs.find(
 if (!doc) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
+
+const { html, headings } = await renderMarkdown(doc.data.content || '')
 ---
 
 <DocsLayout
@@ -79,7 +84,8 @@ if (!doc) {
   next={next}
   sections={navSections}
   currentPath={currentPath}
+  headings={headings}
 >
   <h1>{currentPage.title}</h1>
-  <Fragment set:html={await marked.parse(doc.data.content || '')} />
+  <Fragment set:html={html} />
 </DocsLayout>

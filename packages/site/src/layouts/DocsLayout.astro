@@ -15,9 +15,10 @@ interface Props {
   next?: { title: string; section: string; href: string }
   sections: NavSection[]
   currentPath: string
+  headings?: Array<{ id: string; text: string; level: number }>
 }
 
-const { title, section, breadcrumbs, prev, next, sections, currentPath } = Astro.props
+const { title, section, breadcrumbs, prev, next, sections, currentPath, headings } = Astro.props
 ---
 
 <Layout title={title}>
