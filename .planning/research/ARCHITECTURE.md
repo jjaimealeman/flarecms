@@ -1,919 +1,733 @@
-# Architecture Research
+# Architecture: CMS-Driven Documentation Site
 
-**Domain:** Edge-native headless CMS on Cloudflare Workers
-**Researched:** 2026-03-01
-**Confidence:** HIGH (verified against actual source code + official Cloudflare docs)
-
----
-
-## Standard Architecture
-
-### System Overview
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                    CLOUDFLARE EDGE NETWORK                        │
-│                                                                   │
-│  ┌──────────────────────────────────────────────────────────┐    │
-│  │               MIDDLEWARE STACK (Hono)                     │    │
-│  │                                                           │    │
-│  │  1. Metrics  2. Bootstrap  3. Security  4. CORS           │    │
-│  │  5. Rate Limit  6. [beforeAuth]  7. Auth  8. [afterAuth]  │    │
-│  └─────────────────────────┬─────────────────────────────────┘   │
-│                            │                                      │
-│  ┌──────────┬──────────────┼──────────────┬────────────────┐     │
-│  │          │              │              │                │     │
-│  │  /api/*  │  /admin/*    │  /auth/*     │  /files/*      │     │
-│  │  (Public │  (HTMX UI   │  (JWT login  │  (R2 media     │     │
-│  │   REST)  │   + Admin    │   + OTP)     │   serve)       │     │
-│  │          │   API)       │              │                │     │
-│  └────┬─────┴──────┬───────┴──────┬───────┴───────┬────────┘     │
-│       │            │              │               │               │
-│  ┌────▼────────────▼──────────────▼───────────────▼────────┐     │
-│  │                    SERVICE LAYER                          │    │
-│  │                                                           │    │
-│  │  ContentService   MediaService   AuthService              │    │
-│  │  CacheService     PluginManager  MigrationService         │    │
-│  └─────┬────────────────┬────────────────┬───────────────────┘   │
-│        │                │                │                       │
-│  ┌─────▼──────┐  ┌──────▼──────┐  ┌─────▼──────────────────┐   │
-│  │ D1 SQLite  │  │  R2 Bucket  │  │    Three-Tier Cache      │   │
-│  │ (via       │  │  (media     │  │                          │   │
-│  │  Drizzle)  │  │   files)    │  │  Memory → KV → Database  │   │
-│  └────────────┘  └─────────────┘  └──────────────────────────┘  │
-│                                                                   │
-│  ┌──────────────────────────────────────────────────────────┐    │
-│  │               PLUGIN HOOK SYSTEM                          │    │
-│  │                                                           │    │
-│  │  HookSystemImpl  →  Priority Queue  →  ScopedHookSystem   │    │
-│  │  22 named hooks  →  content:*, media:*, auth:*, app:*     │    │
-│  └──────────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-### Component Responsibilities
-
-| Component | Responsibility | Current State | Communicates With |
-|-----------|----------------|---------------|-------------------|
-| Hono App | Route dispatch, middleware chain | Working | All layers |
-| Middleware Stack | Security, auth, rate limiting | Partially wired | Routes |
-| Bootstrap Middleware | Migrations, collection sync, plugin init | Working (once per instance) | DB, PluginManager |
-| Auth Middleware | JWT verify via cookie/header, KV caching | Working | KV, Hono context |
-| Metrics Middleware | Request counting for analytics | Working | In-memory only |
-| API Routes (`/api/*`) | Public REST endpoints for content/media | Partial (filters broken) | Services, Cache |
-| Admin Routes (`/admin/*`) | HTMX-driven admin UI | Working | Services, DB |
-| Plugin System | Hook-based extensibility, route injection | Architecture solid, wiring gaps | All services |
-| Cache Plugin | Three-tier memory/KV/DB cache | Architecture solid, KV not wired | KV binding, DB |
-| Media Pipeline | R2 upload, metadata to D1, public serve | Upload works; R2 binding gap in instance | R2, D1 |
-| HookSystem | Priority-ordered event dispatch | Working | Plugins, Services |
+**Domain:** Documentation pages for FlareCMS, powered by CMS collections
+**Researched:** 2026-03-08
+**Confidence:** HIGH (based on existing codebase patterns + Astro 5 SSR conventions)
 
 ---
 
-## Middleware Stack: Current vs Target
+## Recommended Architecture
 
-### Current Order (what exists in `app.ts`)
-
-```
-1. appVersion setter
-2. metricsMiddleware()         ← tracks all requests
-3. bootstrapMiddleware()       ← migrations + plugin init (once per instance)
-4. config.middleware.beforeAuth[]   ← user extension point (empty placeholder)
-5. logging (no-op placeholder)
-6. security (no-op placeholder)    ← ⚠ NOTHING ACTUALLY SET
-7. config.middleware.afterAuth[]   ← user extension point (empty placeholder)
-8. route handlers
-```
-
-### Target Order (production-grade)
+A 3-column documentation layout served by Astro 5 SSR, fetching content from the FlareCMS REST API at request time. Two new CMS collections (`docs` and `docs-sections`) provide all content and navigation structure. The site renders rich HTML content with styled prose, table of contents extraction, and sequential navigation -- all computed server-side in Astro frontmatter.
 
 ```
-1. appVersion setter           ← existing
-2. metricsMiddleware()         ← existing
-3. bootstrapMiddleware()       ← existing (once per instance guard)
-4. securityHeadersMiddleware() ← NEW: CSP, HSTS, X-Frame, COEP
-5. corsMiddleware()            ← NEW: built-in Hono cors()
-6. rateLimitMiddleware()       ← NEW: Cloudflare Rate Limiting binding
-7. config.middleware.beforeAuth[]
-8. authMiddleware()            ← existing requireAuth() on protected routes
-9. config.middleware.afterAuth[]
-10. route handlers
-```
-
-**Why this order matters:**
-- Security headers must fire before auth checks (defense in depth)
-- CORS preflight (OPTIONS) must resolve before hitting auth (avoids CORS errors on 401)
-- Rate limiting before auth prevents DoS on the auth verification path itself
-- Bootstrap before everything else because plugins may register middleware
-
----
-
-## Middleware Stack: Detailed Specification
-
-### Security Headers Middleware
-
-**What to set** (verified: [Cloudflare security headers docs](https://developers.cloudflare.com/workers/examples/security-headers/)):
-
-```typescript
-// Headers to ADD
-'X-Content-Type-Options': 'nosniff'
-'X-Frame-Options': 'DENY'
-'X-XSS-Protection': '0'           // Disable broken XSS auditor
-'Referrer-Policy': 'strict-origin-when-cross-origin'
-'Cross-Origin-Opener-Policy': 'same-site'
-'Cross-Origin-Embedder-Policy': 'require-corp'
-'Cross-Origin-Resource-Policy': 'same-site'
-'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload'
-'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
-
-// Headers to REMOVE (information leakage)
-'X-Powered-By'          // reveals runtime
-'X-AspNet-Version'      // reveals framework
-
-// CSP (HTMX-aware — must allow unsafe-inline for HTMX attrs)
-'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://pub-*.r2.dev"
-```
-
-**HTMX constraint:** HTMX attributes are inline; strict CSP requires `'unsafe-inline'` for scripts. This is a known HTMX limitation. Nonce-based CSP is the alternative but complex.
-
-**Media URLs constraint:** Public R2 URLs (`pub-{name}.r2.dev`) must be in `img-src`.
-
-### CORS Middleware
-
-Use Hono's built-in `cors()` — do NOT write custom CORS logic.
-
-```typescript
-import { cors } from 'hono/cors'
-
-// Different policy for API vs Admin
-app.use('/api/*', cors({
-  origin: (origin) => origin, // or restrict to known frontends
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  exposeHeaders: ['X-Cache-Status', 'X-Response-Time'],
-  maxAge: 86400,
-  credentials: false,  // API is stateless JWT
-}))
-
-app.use('/admin/*', cors({
-  origin: ['http://localhost:8787', 'https://your-domain.workers.dev'],
-  credentials: true,   // Admin uses cookies
-}))
-```
-
-### Rate Limiting Middleware
-
-Use Cloudflare's native Rate Limiting binding (declared in `wrangler.toml`), not application-level rate limiting. Native rate limiting has zero latency overhead — it reads from locally-cached counters, not network calls.
-
-```toml
-# wrangler.toml
-[[unsafe.bindings]]
-type = "ratelimit"
-name = "RATE_LIMITER"
-namespace_id = "1001"
-simple = { limit = 100, period = 60 }
-```
-
-**Key design decision:** Rate limit by user ID for authenticated requests, by IP prefix for anonymous. Do NOT use raw IP as key — Cloudflare docs note IPs may be shared by many valid users.
-
-**Important caveat:** Cloudflare native rate limits are per-edge-location with eventual consistency. They are intentionally "permissive" — not designed for exact accounting. Perfect for DDoS protection, not for billing-critical limits.
-
----
-
-## Content Lifecycle State Machine
-
-### Current State (from schema.ts + CLAUDE.md)
-
-The `content` table already has multiple state-tracking columns:
-
-```sql
-status          TEXT  -- 'draft', 'published', 'archived'
-review_status   TEXT  -- 'none', 'pending', 'approved', 'rejected'
-workflow_state_id TEXT -- FK (nullable)
-published_at    INT
-scheduled_publish_at INT
-scheduled_unpublish_at INT
-embargo_until   INT
-expires_at      INT
-```
-
-The `workflow_history` table tracks transitions:
-```
-workflow_history(id, content_id, action, from_status, to_status, user_id, comment, created_at)
-```
-
-### Current Bug: Status is One-Way
-
-Confirmed in SONICJS-ISSUES.md: published content cannot be unpublished. This is a missing state transition, not an architectural flaw.
-
-### Target State Machine
-
-```
-                    DRAFT
-                   /     \
-            save()         submit-for-review()
-              |                    |
-           DRAFT             REVIEW-PENDING
-              |              /         \
-         auto-save()    approve()    reject()
-              |              |           |
-           DRAFT         SCHEDULED    DRAFT (with notes)
-                            |
-                        publish()
-                            |
-                        PUBLISHED ──── unpublish() ──── DRAFT
-                            |
-                        archive()
-                            |
-                        ARCHIVED ──── restore() ──── DRAFT
-```
-
-**Valid transitions (what to enforce):**
-
-| From | To | Who |
-|------|----|-----|
-| draft | draft (autosave) | author |
-| draft | review-pending | author |
-| draft | published | editor, admin |
-| draft | scheduled | editor, admin |
-| review-pending | approved (→ published/scheduled) | reviewer, admin |
-| review-pending | rejected (→ draft) | reviewer, admin |
-| published | archived | editor, admin |
-| published | draft (unpublish) | editor, admin |
-| archived | draft (restore) | admin |
-| scheduled | published | system (cron) |
-| scheduled | draft (cancel) | editor, admin |
-
-**Hook integration points for state transitions:**
-
-```
-content:before-publish  → validate, SEO check, notify
-content:after-publish   → invalidate cache, webhook, search index
-content:before-archive  → check references
-content:before-delete   → cascade children (content_versions, workflow_history)
-```
-
-### Workflow State Machine: Build as Pure Function
-
-The state machine logic should be a pure function (no side effects) with transitions as data:
-
-```typescript
-// Pure transition validator — no DB calls
-function canTransition(
-  currentStatus: ContentStatus,
-  targetStatus: ContentStatus,
-  userRole: UserRole
-): { allowed: boolean; reason?: string } {
-  const transitions = ALLOWED_TRANSITIONS[currentStatus]
-  if (!transitions) return { allowed: false, reason: 'Unknown current status' }
-  const transition = transitions.find(t => t.to === targetStatus)
-  if (!transition) return { allowed: false, reason: `Cannot transition from ${currentStatus} to ${targetStatus}` }
-  if (!transition.roles.includes(userRole)) return { allowed: false, reason: 'Insufficient permissions' }
-  return { allowed: true }
-}
-```
-
-Side effects (cache invalidation, event firing) happen in the route handler after DB write.
-
----
-
-## Media Pipeline
-
-### Current Implementation (verified from `api-media.ts`)
-
-```
-Client → POST /api/media/upload
-  → requireAuth() middleware
-  → validate file type + size (Zod schema)
-  → generate UUID-based filename
-  → upload ArrayBuffer to R2 (c.env.MEDIA_BUCKET.put)
-  → extract image dimensions (manual JPEG/PNG header parsing)
-  → INSERT record into media table (D1)
-  → return { id, publicUrl, r2Key, ... }
-
-Client → GET /files/{r2-key}
-  → no auth required
-  → c.env.MEDIA_BUCKET.get(objectKey)
-  → stream response with 1-year Cache-Control
-```
-
-### Current Gap: R2 Binding Name Mismatch
-
-The app code uses `c.env.MEDIA_BUCKET` but `wrangler.toml` in `my-astro-cms` binds as `BUCKET`. This causes the R2 operations to silently fail. This is the "R2 binding currently broken" issue from the project context.
-
-**Fix:** Either rename the binding in `wrangler.toml` to `MEDIA_BUCKET`, or update the core to accept a configurable binding name.
-
-### Target Media Pipeline
-
-```
-UPLOAD FLOW:
-Client → POST /api/media/upload
-  → Auth gate (requireAuth)
-  → File validation (type, size, malware sig check)
-  → Generate ID + R2 key: {folder}/{uuid}.{ext}
-  → Stream upload to R2 (avoid buffering full file in memory)    ← use TransformStream
-  → Extract metadata (dimensions, content hash)                   ← header parsing, not library
-  → Fire MEDIA_UPLOAD hook (plugins can transform, watermark)
-  → Write media record to D1
-  → Invalidate media cache
-  → Return { id, publicUrl, thumbnailUrl? }
-
-SERVE FLOW:
-Client → GET /files/{key}
-  → Check Cache API first (local edge cache)                     ← NEW
-  → Fetch from R2 if not cached
-  → Put response in Cache API with Cache-Control
-  → Stream to client (never buffer)
-
-IMAGE TRANSFORM FLOW (optional, future):
-Client → GET /files/{key}?w=800&h=600&fit=cover
-  → Use Cloudflare Images binding (c.env.IMAGES)                ← conditional on binding
-  → Transform on-the-fly with Images API
-  → Cache transformed result in Cache API
-```
-
-### Cache API for Media Serving
-
-Use **Cache API** (not KV) for media files:
-- Media files are binary, large; KV is better for small JSON values
-- Cache API is free (KV has per-read costs)
-- Media rarely changes after upload; Cache API's local-only scope is fine
-- Use `Cache-Control: public, max-age=31536000, immutable` (files are content-addressed by UUID)
-
-### Presigned URL Pattern (for large uploads)
-
-For files > 10MB, proxy through Workers is wasteful (128MB memory limit). Use presigned URLs:
-
-```typescript
-// Worker generates presigned URL
-// Client uploads directly to R2 (bypasses Worker memory)
-// Worker receives notification, creates DB record
-```
-
-Requires `aws4fetch` library (not AWS SDK — not Worker-compatible).
-
----
-
-## Caching Strategy
-
-### Three-Tier Architecture (already designed in cache plugin)
-
-```
-Request for content
-    ↓
-[Tier 1] In-Memory Cache (Map, per-instance, ~100ms TTL for hot data)
-    ↓ MISS
-[Tier 2] KV Cache (global, eventually consistent, 5min-2hr TTL)
-    ↓ MISS
-[Tier 3] D1 Database (source of truth, always consistent)
-    ↓
-Write back to KV + Memory
-```
-
-### When to Use Each Cache Layer
-
-| Layer | What to cache | TTL | Notes |
-|-------|--------------|-----|-------|
-| Memory (Map) | Auth token payloads, hot content, collection schemas | 60-300s | Lost on worker restart/scale |
-| KV | API list responses, rendered content, user sessions | 5min-2hr | Global, ~60s propagation lag |
-| Cache API | Binary media files, static assets, HTML fragments | 1 year (immutable) | Local edge only, free |
-| D1 | Everything (source of truth) | N/A | Always consistent |
-
-### Cache Invalidation Strategy
-
-The cache plugin already implements event-based invalidation via an internal event bus. The gap is wiring it to actual content mutations.
-
-**Pattern: Write-through invalidation**
-
-```
-Content updated in D1
-  → emitEvent('content.update', { id, collectionId })
-  → cache-invalidation.ts listeners fire
-  → delete specific item key
-  → invalidate list pattern: 'content:list:*'
-  → invalidate api pattern: 'api:*'
-  → KV.delete() for KV-backed keys            ← needs KV binding wired
-```
-
-**KV invalidation gap:** KV global propagation takes up to 60 seconds. For admin workflows where an editor publishes content and immediately checks the frontend, they may see stale content. This is expected behavior — document it, don't fight it.
-
-### Cache Key Design
-
-Follow the existing pattern from `cache-config.ts`:
-
-```
-Format: {namespace}:{type}:{identifier}:{version}
-Examples:
-  content:item:abc123:v1
-  content:list:blog-posts:v1
-  api:collection:blog-posts:v1
-  media:item:xyz789:v1
-  auth:{token-prefix-20chars}    ← already implemented in auth.ts
-```
-
-Version in the key enables cache busting without invalidation: bump `version` in config to instantly invalidate all old keys.
-
-### What NOT to Cache
-
-- Content in `draft` or `review-pending` status (unpublished content must never reach CDN)
-- Auth tokens themselves (only verified payloads)
-- Mutation responses (POST/PUT/DELETE)
-- Admin routes (always serve fresh from DB)
-
----
-
-## Plugin Hook Integration Points
-
-### Current Hook Registry (from `types.ts` HOOKS constant)
-
-```typescript
-// Application lifecycle
-APP_INIT, APP_READY, APP_SHUTDOWN
-
-// Request lifecycle
-REQUEST_START, REQUEST_END, REQUEST_ERROR
-
-// Authentication
-AUTH_LOGIN, AUTH_LOGOUT, AUTH_REGISTER, USER_LOGIN, USER_LOGOUT
-
-// Content lifecycle
-CONTENT_CREATE, CONTENT_UPDATE, CONTENT_DELETE, CONTENT_PUBLISH, CONTENT_SAVE
-
-// Media lifecycle
-MEDIA_UPLOAD, MEDIA_DELETE, MEDIA_TRANSFORM
-
-// Plugin lifecycle
-PLUGIN_INSTALL, PLUGIN_UNINSTALL, PLUGIN_ACTIVATE, PLUGIN_DEACTIVATE
-
-// Admin interface
-ADMIN_MENU_RENDER, ADMIN_PAGE_RENDER
-
-// Database
-DB_MIGRATE, DB_SEED
-```
-
-### Missing Hooks for Production (gaps to fill)
-
-```typescript
-// Content workflow (not yet in HOOKS)
-CONTENT_BEFORE_PUBLISH = 'content:before-publish'
-CONTENT_AFTER_PUBLISH = 'content:after-publish'
-CONTENT_SUBMIT_REVIEW = 'content:submit-review'
-CONTENT_APPROVE = 'content:approve'
-CONTENT_REJECT = 'content:reject'
-CONTENT_UNPUBLISH = 'content:unpublish'
-CONTENT_SCHEDULE = 'content:schedule'
-
-// Media pipeline
-MEDIA_BEFORE_UPLOAD = 'media:before-upload'    // validate, virus scan
-MEDIA_AFTER_UPLOAD = 'media:after-upload'      // thumbnails, CDN notify
-MEDIA_SERVE = 'media:serve'                    // access logging
-
-// Cache
-CACHE_HIT = 'cache:hit'
-CACHE_MISS = 'cache:miss'
-CACHE_INVALIDATE = 'cache:invalidate'
-```
-
-### Hook Execution Pattern in Routes
-
-The gap between hook definitions and route code: routes call `emitEvent()` (a simplified logger), not the actual `HookSystemImpl`. The wiring between content mutations and the hook system needs to be completed.
-
-**Current (route code):**
-```typescript
-// In api-media.ts
-await emitEvent('media.upload', { id, filename })  // just console.log
-```
-
-**Target:**
-```typescript
-// In route handlers
-const hookSystem = getHookSystem()  // singleton
-await hookSystem.execute(HOOKS.MEDIA_UPLOAD, { id, filename }, { user, env: c.env })
-```
-
-### Plugin Middleware Registration Gap
-
-Plugins can declare `middleware` in their definition, but `app.ts` does not iterate plugin middleware during route setup. Only plugin routes are registered. Plugin middleware must be explicitly registered by the plugin in its `activate()` lifecycle hook.
-
-**Recommended pattern:**
-```typescript
-// In plugin activate()
-async activate(context: PluginContext) {
-  // Plugins register middleware through the app reference
-  // NOT available in current PluginContext — needs to be added
-  context.app.use('/api/*', this.rateLimitMiddleware)
-}
-```
-
-This requires `app` reference in `PluginContext`, which does not currently exist.
-
----
-
-## Recommended Project Structure
-
-### sonicjs-fork (engine)
-
-```
-packages/core/src/
-├── app.ts                    # Factory: createSonicJSApp()
-├── middleware/
-│   ├── bootstrap.ts          # Migrations + plugin init (existing)
-│   ├── auth.ts               # JWT verify + KV cache (existing)
-│   ├── metrics.ts            # Request counting (existing)
-│   ├── security-headers.ts   # NEW: CSP, HSTS, X-Frame, etc.
-│   ├── cors.ts               # NEW: Hono cors() wrapper
-│   └── rate-limit.ts         # NEW: CF native rate limiting binding
-├── plugins/
-│   ├── hook-system.ts        # Priority-ordered event dispatch (existing)
-│   ├── plugin-manager.ts     # Plugin lifecycle (existing)
-│   ├── cache/                # Three-tier cache (existing, wire KV)
-│   └── core-plugins/         # Email, OTP, AI Search (existing)
-├── services/
-│   ├── content-workflow.ts   # NEW: State machine transitions
-│   ├── cache.ts              # Cache service (existing)
-│   ├── migrations.ts         # DB migration runner (existing)
-│   └── media.ts              # NEW: Extract media logic from route
-├── routes/
-│   ├── api.ts                # Content CRUD REST
-│   ├── api-media.ts          # Media upload/serve
-│   ├── auth.ts               # JWT + OTP login
-│   └── admin-*.ts            # HTMX admin UI routes
-└── types/
-    └── index.ts              # Shared types + HOOKS constant
-```
-
-### my-astro-cms (instance)
-
-```
-src/
-├── index.ts                  # createSonicJSApp() + registerCollections()
-├── collections/
-│   ├── blog-posts.collection.ts
-│   ├── news.collection.ts
-│   └── pages.collection.ts
-├── plugins/                  # Custom plugins (autoLoad: false currently)
-└── wrangler.toml             # Bindings: DB, MEDIA_BUCKET, CACHE_KV, RATE_LIMITER
+CMS Admin (author writes docs)
+       |
+       v
+  FlareCMS REST API
+  /api/collections/docs/content
+  /api/collections/docs-sections/content
+       |
+       v
+  Astro SSR (packages/site)
+  +----------------------------------------------+
+  |  flare.ts (API client)                       |
+  |    getDocs(), getDocBySlug(), getDocSections()|
+  |       |                                      |
+  |       v                                      |
+  |  docs/[...slug].astro (page route)           |
+  |    - Fetches doc + all sections              |
+  |    - Computes sidebar nav tree               |
+  |    - Extracts TOC from HTML headings         |
+  |    - Resolves prev/next links                |
+  |       |                                      |
+  |       v                                      |
+  |  DocsLayout.astro                            |
+  |    +---------+----------+----------+         |
+  |    | Sidebar | Content  |   TOC    |         |
+  |    |  Nav    |  Area    |  Panel   |         |
+  |    +---------+----------+----------+         |
+  +----------------------------------------------+
 ```
 
 ---
 
-## Architectural Patterns
+## CMS Collection Schemas
 
-### Pattern 1: Layered Cache with Write-Through Invalidation
+### `docs-sections` Collection
 
-**What:** Cache reads cascade through memory → KV → DB. Writes always go to DB, then invalidate relevant cache keys via events.
+Groups docs into navigable sections. Each section is a category in the sidebar (e.g., "Getting Started", "API Reference", "Deployment").
 
-**When to use:** All read-heavy API endpoints (content listing, single item fetch, collection schemas).
-
-**Trade-offs:**
-- Pro: Dramatic read performance improvement at edge
-- Pro: Memory cache serves repeat requests within the same Worker instance at zero cost
-- Con: KV has ~60s global propagation lag (acceptable for content, not for auth)
-- Con: Memory cache is per-instance; not shared between Worker instances
-
-**Example:**
 ```typescript
-async function getContent(id: string, db: D1Database, kv: KVNamespace) {
-  const key = generateCacheKey('content', 'item', id)
+// packages/cms/src/collections/docs-sections.collection.ts
+import type { CollectionConfig } from '@flare-cms/core'
 
-  // Tier 1: Memory
-  const memHit = memoryCache.get(key)
-  if (memHit) return memHit
+export default {
+  name: 'docs-sections',
+  displayName: 'Doc Sections',
+  description: 'Navigation groups for documentation',
+  icon: '📂',
 
-  // Tier 2: KV
-  if (kv) {
-    const kvHit = await kv.get(key, 'json')
-    if (kvHit) {
-      memoryCache.set(key, kvHit)  // populate memory tier
-      return kvHit
-    }
+  schema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'Section Title',
+        required: true,
+        maxLength: 100,
+        helpText: 'e.g., "Getting Started", "API Reference"'
+      },
+      slug: {
+        type: 'slug',
+        title: 'URL Slug',
+        required: true,
+        maxLength: 100,
+        helpText: 'Used in URL path: /docs/{section-slug}/{doc-slug}'
+      },
+      description: {
+        type: 'textarea',
+        title: 'Description',
+        maxLength: 300,
+        helpText: 'Brief description shown in section headers'
+      },
+      sortOrder: {
+        type: 'string',
+        title: 'Sort Order',
+        helpText: 'Numeric string for ordering (e.g., "10", "20", "30")'
+      },
+      icon: {
+        type: 'string',
+        title: 'Icon',
+        helpText: 'Lucide icon name for sidebar display'
+      }
+    },
+    required: ['title', 'slug']
+  },
+
+  listFields: ['title', 'slug', 'sortOrder', 'status'],
+  searchFields: ['title'],
+  defaultSort: 'createdAt',
+  defaultSortOrder: 'asc'
+} satisfies CollectionConfig
+```
+
+### `docs` Collection
+
+Individual documentation pages. Each doc belongs to a section via `sectionSlug`.
+
+```typescript
+// packages/cms/src/collections/docs.collection.ts
+import type { CollectionConfig } from '@flare-cms/core'
+
+export default {
+  name: 'docs',
+  displayName: 'Documentation',
+  description: 'Documentation pages',
+  icon: '📖',
+
+  schema: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        title: 'Title',
+        required: true,
+        maxLength: 200
+      },
+      slug: {
+        type: 'slug',
+        title: 'URL Slug',
+        required: true,
+        maxLength: 200,
+        helpText: 'Used in URL: /docs/{section-slug}/{this-slug}'
+      },
+      sectionSlug: {
+        type: 'string',
+        title: 'Section Slug',
+        required: true,
+        helpText: 'Must match a docs-sections slug exactly'
+      },
+      content: {
+        type: 'quill',
+        title: 'Content',
+        required: true
+      },
+      excerpt: {
+        type: 'textarea',
+        title: 'Excerpt',
+        maxLength: 300,
+        helpText: 'Short summary for meta description and search'
+      },
+      sortOrder: {
+        type: 'string',
+        title: 'Sort Order',
+        helpText: 'Numeric string for ordering within section'
+      }
+    },
+    required: ['title', 'slug', 'sectionSlug', 'content']
+  },
+
+  listFields: ['title', 'sectionSlug', 'sortOrder', 'status'],
+  searchFields: ['title', 'excerpt'],
+  defaultSort: 'createdAt',
+  defaultSortOrder: 'asc'
+} satisfies CollectionConfig
+```
+
+**Why `sectionSlug` as a string, not a relational FK:**
+FlareCMS (inherited from SonicJS) uses a flat content model -- every collection item has `id`, `title`, `slug`, `status`, `data`, `created_at`, `updated_at`. There is no built-in relational/reference field type. Using `sectionSlug` as a string that matches a `docs-sections` slug is the pragmatic approach. The relationship is resolved at query time in the Astro frontend by grouping docs by their `sectionSlug` value.
+
+**Why `sortOrder` is a string, not number:**
+FlareCMS schema types don't include a native `number` type for content fields. Use string with numeric values ("10", "20", "30") and parse to int when sorting. Using gaps (10, 20, 30) allows inserting pages between existing ones without renumbering.
+
+---
+
+## Component Boundaries
+
+### Layer 1: API Client (`src/lib/flare.ts`)
+
+Extend the existing API client with docs-specific functions. Follow the same pattern used by `getBlogPosts()`, `getNewsArticles()`, and `getPages()`.
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `getDocSections()` | Fetch all published doc sections, sorted by sortOrder | `DocSection[]` |
+| `getDocs()` | Fetch all published docs, sorted by sortOrder | `Doc[]` |
+| `getDocBySlug(sectionSlug, docSlug)` | Find a single doc by section + slug combo | `Doc \| null` |
+
+```typescript
+// Types to add to flare.ts
+
+interface DocSection {
+  id: string
+  title: string
+  slug: string
+  status: string
+  data: {
+    title: string
+    slug: string
+    description?: string
+    sortOrder?: string
+    icon?: string
   }
+  created_at: number
+  updated_at: number
+}
 
-  // Tier 3: DB
-  const result = await db.prepare('SELECT * FROM content WHERE id = ?').bind(id).first()
-  if (result) {
-    await kv?.put(key, JSON.stringify(result), { expirationTtl: 3600 })
-    memoryCache.set(key, result)
+interface Doc {
+  id: string
+  title: string
+  slug: string
+  status: string
+  data: {
+    title: string
+    slug: string
+    sectionSlug: string
+    content: string
+    excerpt?: string
+    sortOrder?: string
   }
-  return result
+  created_at: number
+  updated_at: number
 }
 ```
 
-### Pattern 2: Hook-Mediated Side Effects
+**Critical pattern from existing code:** The API filters are broken (see CLAUDE.md "Known Bugs"). All existing fetch functions get ALL items and filter client-side with `.filter((item) => item.status === 'published')`. The docs functions must follow the same pattern: fetch all, filter to published, sort by `sortOrder`.
 
-**What:** Route handlers mutate data, then fire hooks. Plugins subscribe to hooks to add behavior (cache invalidation, webhooks, search indexing) without coupling to route code.
+### Layer 2: Data Processing Utilities (`src/lib/docs-utils.ts`)
 
-**When to use:** Any content lifecycle operation (create, update, publish, delete).
+Pure functions that transform raw API data into structures the UI needs. Separating these from the API client keeps concerns clean and makes them testable.
 
-**Trade-offs:**
-- Pro: Plugins can add behavior without modifying core routes
-- Pro: Hooks can be cancelled (e.g., block publish if validation fails)
-- Con: Hook errors can silently swallow if not handled (use try/catch in hook handlers)
-- Con: Async hook execution in Workers must complete within the request lifetime or use `ctx.waitUntil()`
+| Function | Input | Output | Purpose |
+|----------|-------|--------|---------|
+| `buildNavTree(sections, docs)` | Raw API arrays | `NavSection[]` (sections with nested doc links) | Sidebar navigation structure |
+| `extractTOC(htmlContent)` | HTML string | `TOCItem[]` (heading text + id + level) | Right column table of contents |
+| `resolveAdjacentDocs(navTree, currentDoc)` | Nav tree + current doc | `{ prev, next }` | Previous/next navigation |
+| `addHeadingIds(htmlContent)` | HTML string | HTML string with id attributes on headings | Anchor links for TOC |
 
-**Example:**
 ```typescript
-// In route handler
-await db.prepare('UPDATE content SET status = ? WHERE id = ?')
-  .bind('published', id).run()
+// src/lib/docs-utils.ts
 
-// Fire hook — plugins react
-await hookSystem.execute(HOOKS.CONTENT_PUBLISH, { id, title, collectionId }, { env: c.env })
-// Hook handlers: cache invalidation, sitemap update, webhook delivery
-```
+interface NavSection {
+  title: string
+  slug: string
+  icon?: string
+  items: NavItem[]
+}
 
-### Pattern 3: State Machine as Pure Data
+interface NavItem {
+  title: string
+  slug: string        // doc slug
+  sectionSlug: string // parent section slug
+  href: string        // computed: /docs/{sectionSlug}/{slug}
+}
 
-**What:** Define all valid content status transitions as a plain data structure. Validate transitions with a pure function. Apply side effects separately.
+interface TOCItem {
+  id: string     // heading element id (e.g., "installation")
+  text: string   // heading text content
+  level: number  // 2 or 3 (h2 or h3)
+}
 
-**When to use:** Any workflow with restricted state transitions (content status, plugin states, media states).
-
-**Trade-offs:**
-- Pro: Testable without DB or Workers runtime
-- Pro: Adding new transitions is a data change, not code change
-- Con: Business logic lives in data; harder to discover by reading code
-
-**Example:**
-```typescript
-const ALLOWED_TRANSITIONS: Record<ContentStatus, Array<{
-  to: ContentStatus
-  roles: UserRole[]
-}>> = {
-  draft: [
-    { to: 'published', roles: ['editor', 'admin'] },
-    { to: 'scheduled', roles: ['editor', 'admin'] },
-    { to: 'review-pending', roles: ['author', 'editor', 'admin'] },
-  ],
-  published: [
-    { to: 'archived', roles: ['editor', 'admin'] },
-    { to: 'draft', roles: ['editor', 'admin'] },  // unpublish (fixes existing bug)
-  ],
-  // ...
+interface AdjacentDocs {
+  prev: NavItem | null
+  next: NavItem | null
 }
 ```
 
-### Pattern 4: Streaming for Large Payloads
+**`extractTOC` implementation approach:** Parse the HTML string with regex to find `<h2>` and `<h3>` tags. This runs server-side in Astro frontmatter, so no DOM API is available. A regex approach is sufficient for CMS-generated HTML (which is well-structured Quill output). Extract heading text and generate slug-based IDs.
 
-**What:** Never buffer large request/response bodies. Use `TransformStream` to pipe data through the Worker without holding it in memory.
+**`addHeadingIds` implementation approach:** Transform `<h2>Foo Bar</h2>` into `<h2 id="foo-bar">Foo Bar</h2>`. Run this before rendering content so TOC anchor links work. This pairs with `extractTOC` -- both use the same ID generation logic (slugify the heading text).
 
-**When to use:** File uploads, large content exports, bulk operations.
+### Layer 3: Layouts
 
-**Trade-offs:**
-- Pro: Prevents 128MB memory limit crashes on large uploads
-- Pro: Better time-to-first-byte for responses
-- Con: Cannot inspect full body before streaming (must validate metadata separately)
+| Layout | Purpose | Used By |
+|--------|---------|---------|
+| `Layout.astro` (existing) | Site-wide shell (nav, footer) | All pages including docs |
+| `DocsLayout.astro` (new) | 3-column docs grid inside Layout | All doc pages |
 
-**Current gap:** The media upload route uses `file.arrayBuffer()` which buffers the entire file. For files > a few MB, this is problematic.
+**`DocsLayout.astro` responsibilities:**
+- Receives `navTree`, `currentDoc`, `tocItems`, `adjacentDocs` as props
+- Renders the 3-column CSS grid (sidebar, content, TOC)
+- Wraps content area in `<Layout>` for consistent site nav/footer
+- Highlights current page in sidebar
+- Handles responsive collapse (sidebar becomes toggle on mobile, TOC hides on tablet)
+
+```
+DocsLayout props:
+  navTree: NavSection[]        -- sidebar data
+  currentSection: string       -- active section slug (for highlighting)
+  currentSlug: string          -- active doc slug (for highlighting)
+  tocItems: TOCItem[]          -- right column TOC
+  adjacentDocs: AdjacentDocs   -- prev/next links
+  title: string                -- page title for <head>
+  description?: string         -- meta description
+```
+
+### Layer 4: Page Route (`src/pages/docs/[...slug].astro`)
+
+The catch-all route handles `/docs`, `/docs/{section}`, and `/docs/{section}/{page}`.
+
+```
+URL pattern:
+  /docs                           -> redirect to first doc page
+  /docs/{sectionSlug}             -> redirect to first doc in that section
+  /docs/{sectionSlug}/{docSlug}   -> render the doc page
+```
+
+**Using `[...slug].astro` (rest parameter)** because docs URLs are 2 segments deep under `/docs/`. A rest parameter captures both segments as an array.
+
+**Frontmatter data flow (the complete pipeline for each request):**
+```
+1. Parse Astro.params.slug -> [sectionSlug, docSlug] (or undefined for index)
+2. Fetch sections = await getDocSections()
+3. Fetch docs = await getDocs()
+4. Build navTree = buildNavTree(sections, docs)
+5. Handle redirects:
+   - No slug segments -> redirect to first doc in first section
+   - One slug segment -> redirect to first doc in that section
+6. Find currentDoc = docs matching sectionSlug + docSlug
+7. If no currentDoc -> return 404
+8. Process content = addHeadingIds(currentDoc.data.content)
+9. Extract tocItems = extractTOC(content)
+10. Resolve adjacentDocs = resolveAdjacentDocs(navTree, currentDoc)
+11. Render DocsLayout with all computed data
+```
+
+**Note on the existing `docs.astro`:** The current `/docs` page is a placeholder with links to GitHub. It will be replaced by `docs/[...slug].astro` which catches the `/docs` path via the rest parameter (empty slug array). The old `docs.astro` file should be deleted.
+
+### Layer 5: UI Components
+
+| Component | Type | Purpose |
+|-----------|------|---------|
+| `DocsSidebar.astro` | Astro | Left column nav tree with section groups and doc links |
+| `DocsTOC.astro` | Astro | Right column table of contents from page headings |
+| `DocsContent.astro` | Astro | Center column content wrapper with prose styling |
+| `DocsPrevNext.astro` | Astro | Previous/next navigation cards at bottom of content |
+| `DocsBreadcrumb.astro` | Astro | Breadcrumb trail: Docs > Section > Page |
+| `DocsCallout.astro` | Astro | Info/warning/tip callout boxes (phase 2+) |
+| `DocsMobileNav.astro` | Astro | Mobile sidebar toggle |
+
+**All components are `.astro` files -- no client-side framework needed.** The docs pages are read-only rendered content. The only interactive elements are:
+- Mobile sidebar toggle (CSS-only `<details>` element or minimal vanilla JS)
+- TOC active heading tracking (optional `IntersectionObserver` via inline `<script>` tag)
+- Code copy button (vanilla JS `<script>` tag)
+
+These use Astro's `<script>` tags for progressive enhancement, not a UI framework.
 
 ---
 
-## Data Flow
-
-### API Read Request Flow
+## Data Flow: CMS to Rendered Page
 
 ```
-GET /api/collections/blog-posts/content
-    ↓
-metricsMiddleware (count++)
-    ↓
-bootstrapMiddleware (skip if already done)
-    ↓
-securityHeadersMiddleware (set headers on response)
-    ↓
-corsMiddleware (if cross-origin, add CORS headers)
-    ↓
-rateLimitMiddleware (check counter; pass through)
-    ↓
-Route handler: apiRoutes
-    ↓
-Check Cache API (for GET requests)          [NEW]
-    ↓ MISS
-Check KV cache (content:list:blog-posts:v1)
-    ↓ MISS
-D1 query: SELECT * FROM content WHERE collection_id = ?
-    ↓
-Filter to status = 'published'             [client-side currently; fix in DB query]
-    ↓
-Write to KV (TTL 300s)
-    ↓
-Write to Cache API (TTL 300s)              [NEW]
-    ↓
-Return JSON with X-Cache-Status: MISS
+Author writes doc in CMS Admin UI (Quill rich text editor)
+  |
+  v
+Saved to D1 database via CMS Worker API
+  |
+  v
+Visitor requests /docs/getting-started/installation
+  |
+  v
+Astro SSR handles request on Cloudflare Pages
+  |
+  v
+[...slug].astro frontmatter runs:
+  +-- fetch /api/collections/docs-sections/content -> all sections
+  +-- fetch /api/collections/docs/content -> all docs
+  +-- filter both to status === 'published'
+  +-- sort both by data.sortOrder (parsed as int)
+  +-- buildNavTree(sections, docs) -> sidebar structure
+  +-- find matching doc by sectionSlug + slug
+  +-- addHeadingIds(doc.data.content) -> content with anchor IDs
+  +-- extractTOC(processedContent) -> heading list for right column
+  +-- resolveAdjacentDocs(navTree, currentDoc) -> prev/next links
+  |
+  v
+DocsLayout.astro renders 3-column grid:
+  +-- DocsSidebar.astro (left) -- nav tree, current page highlighted
+  +-- DocsContent.astro (center) -- prose-styled HTML via set:html
+  |     +-- DocsBreadcrumb.astro -- Docs > Section > Title
+  |     +-- <div class="prose ..."> content </div>
+  |     +-- DocsPrevNext.astro -- prev/next cards at bottom
+  +-- DocsTOC.astro (right) -- heading links
+  |
+  v
+HTML response sent to browser
 ```
 
-### Content Publish Flow
+### Performance: Fetching All Docs Per Request
 
-```
-PUT /admin/content/:id/publish
-    ↓
-requireAuth() → requireRole('editor', 'admin')
-    ↓
-Load current content: SELECT status FROM content WHERE id = ?
-    ↓
-canTransition('draft', 'published', user.role)  ← pure function, no DB
-    ↓ ALLOWED
-Fire CONTENT_BEFORE_PUBLISH hook
-    ↓ (plugins may cancel, e.g., SEO validation)
-D1: UPDATE content SET status='published', published_at=? WHERE id=?
-    ↓
-D1: INSERT INTO workflow_history (from='draft', to='published', user_id=?)
-    ↓
-Fire CONTENT_AFTER_PUBLISH hook
-    ↓
-HookHandler: invalidate cache (content:*, api:*)
-HookHandler: KV.delete('content:item:{id}:v1')
-HookHandler: KV.delete pattern 'content:list:*'
-    ↓
-Return { success: true, newStatus: 'published' }
-```
+The existing pattern (fetch all, filter client-side) means every docs page request fetches ALL docs from the API. For a documentation site with 20-50 pages, this is acceptable:
 
-### Media Upload Flow
+- **Payload size:** ~50 docs at ~2KB each = ~100KB JSON, compressed to ~20KB on the wire
+- **CMS caching:** KV cache on the CMS Worker means repeat API calls are fast (~5ms)
+- **Benefit:** A single fetch gives us everything needed for sidebar nav, TOC, and prev/next -- no N+1 queries
 
-```
-POST /api/media/upload (multipart/form-data)
-    ↓
-requireAuth()
-    ↓
-Parse FormData → File object
-    ↓
-Validate: type in allowlist, size < 50MB (Zod)
-    ↓
-Generate: fileId = crypto.randomUUID(), r2Key = {folder}/{fileId}.{ext}
-    ↓
-Fire MEDIA_BEFORE_UPLOAD hook (plugins: malware scan, image optimization)
-    ↓
-Stream to R2: MEDIA_BUCKET.put(r2Key, file.stream(), metadata)    [fix: use stream not arrayBuffer]
-    ↓
-Extract dimensions: header parsing (JPEG/PNG — existing implementation)
-    ↓
-D1: INSERT INTO media (id, r2_key, public_url, ...)
-    ↓
-Fire MEDIA_AFTER_UPLOAD hook (plugins: thumbnail generation, CDN notify)
-    ↓
-Return { id, publicUrl }
-```
+This is consistent with how blog, news, and pages already work in the codebase. No optimization needed until doc count exceeds ~100.
 
 ---
 
-## Anti-Patterns
+## Navigation Architecture
 
-### Anti-Pattern 1: Using Module-Level State as Worker State
+### Sidebar (Left Column)
 
-**What people do:** Use module-level variables (outside the handler) to store request data or cache.
+Built from `navTree` -- an array of sections, each containing ordered doc links.
 
-**Why it's wrong:** Workers share module scope across requests in the same instance. Module-level state can leak between requests (e.g., `bootstrapComplete = false` reset causing re-bootstrap).
+```
+Getting Started           <-- section (from docs-sections collection)
+  Introduction            <-- doc link (from docs, sorted by sortOrder)
+  Installation            <-- highlighted if current page
+  Quick Start
 
-**Do this instead:** Module-level variables are acceptable for true process-lifetime data (like the `bootstrapComplete` flag). Request-scoped data must stay in Hono's `c` context or be passed explicitly.
+Core Concepts
+  Collections
+  Content API
+  Authentication
 
-### Anti-Pattern 2: Buffering Large Files in Memory
+Deployment
+  Cloudflare Workers
+  Environment Variables
+```
 
-**What people do:** `const buffer = await file.arrayBuffer()` then `bucket.put(key, buffer)`.
-
-**Why it's wrong:** The 128MB Worker memory limit applies. A 50MB upload plus Worker overhead can crash the instance. Current implementation does this.
-
-**Do this instead:** Use streaming upload: `bucket.put(key, file.stream(), metadata)`. R2 `put()` accepts ReadableStream.
-
-### Anti-Pattern 3: Rate Limiting After Auth
-
-**What people do:** Apply rate limiting middleware only to authenticated routes.
-
-**Why it's wrong:** The auth verification path (JWT decode, KV lookup) is itself expensive. Unauthenticated DoS can overwhelm auth middleware.
-
-**Do this instead:** Apply rate limiting before auth. Use a looser limit for unauthenticated paths, stricter for mutation endpoints.
-
-### Anti-Pattern 4: Global Cache Invalidation on Every Mutation
-
-**What people do:** `await cache.invalidate('content:*')` on every content update.
-
-**Why it's wrong:** Nukes the entire content cache for a single item update. Cold cache causes a thundering herd on the DB.
-
-**Do this instead:** Precise invalidation: delete the specific item key, then invalidate list patterns that include that collection. Keep schema/config caches intact.
-
-### Anti-Pattern 5: Blocking Hook Execution
-
-**What people do:** Long-running operations (webhook delivery, email sending) inside hook handlers, blocking the response.
-
-**Why it's wrong:** Workers have a 30-second CPU limit. Webhook delivery to slow external services can time out.
-
-**Do this instead:** Use `ctx.waitUntil()` for non-critical post-response work. The hook can fire the async work without blocking the HTTP response.
-
+The sidebar is fully server-rendered. Current page highlighting uses simple string comparison:
 ```typescript
-// In route handler
-c.executionCtx.waitUntil(
-  hookSystem.execute(HOOKS.CONTENT_PUBLISH, data)
-)
-return c.json({ success: true })  // responds immediately
+const isActive = item.slug === currentSlug && item.sectionSlug === currentSection
 ```
 
-### Anti-Pattern 6: String 'null' in FK Columns
+Active state styling uses Tailwind classes: `text-flare-400 bg-slate-800/50` for active item vs `text-slate-400 hover:text-slate-50` for inactive (matching existing nav patterns in Layout.astro).
 
-**What people do:** Insert the string `'null'` into nullable FK columns in D1.
+### Table of Contents (Right Column)
 
-**Why it's wrong:** D1 interprets it as a string value, causing FK constraint violations on related tables.
+Extracted from the current page's HTML content. Shows `h2` and `h3` headings as a nested list.
 
-**Do this instead:** Always use SQL `NULL` for nullable FKs. Confirmed issue in this project — see SONICJS-ISSUES.md.
+```
+On this page
+  Overview                <-- h2
+  Prerequisites           <-- h2
+    Node.js               <-- h3 (indented)
+    Wrangler CLI          <-- h3 (indented)
+  Installation            <-- h2
+  Configuration           <-- h2
+```
 
----
+Links use `#heading-id` anchors that match the IDs injected by `addHeadingIds()`. The right column uses `position: sticky` to stay visible while scrolling content.
 
-## Scaling Considerations
+Optional enhancement: client-side `IntersectionObserver` to highlight the currently visible heading as the user scrolls.
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| 0-1k req/day | Current architecture is fine. KV not needed; in-memory cache sufficient. |
-| 1k-100k req/day | Wire KV cache. Enable Cache API for media. Rate limiting becomes important. |
-| 100k+ req/day | KV cache for all content API responses. Durable Objects for real-time features. Consider Queues for webhook delivery. Media via Cloudflare Images (not R2 direct). |
+### Breadcrumbs (Top of Content Area)
 
-### First Bottleneck: D1 Read Latency
+```
+Docs  >  Getting Started  >  Installation
+```
 
-D1 is SQLite on distributed infrastructure. Cold reads (cache miss) can be 100-300ms. The three-tier cache solves this for the happy path, but cache warming matters.
+Computed from `currentSection` and `currentDoc` in the page frontmatter -- no separate data fetch needed. Each segment is a link: "Docs" links to `/docs`, section name links to the first doc in that section.
 
-The current `cache-warming.ts` file exists but needs to be triggered at bootstrap (currently not wired).
+### Previous/Next (Bottom of Content Area)
 
-### Second Bottleneck: Bootstrap Overhead
+```
+<- Previous                              Next ->
+  Introduction                    Quick Start
+  Getting Started              Getting Started
+```
 
-The `bootstrapMiddleware` runs migrations + collection sync + plugin init on the first request per Worker instance. On cold starts under load, multiple instances may bootstrap simultaneously, causing a burst of D1 writes.
-
-**Fix:** Make bootstrap idempotent (already mostly is) and add a KV-based distributed lock for the migration step to prevent concurrent migration runs.
-
----
-
-## Build Order Implications
-
-The architecture has these dependency layers. Work must proceed in this order:
-
-**Layer 1 — Foundation (no dependencies):**
-- Fix R2 binding name mismatch in `wrangler.toml`
-- Add security headers middleware
-- Add CORS middleware (Hono built-in)
-- Add rate limiting middleware (CF native binding)
-
-**Layer 2 — Core Services (depends on Layer 1):**
-- Wire KV binding into cache plugin
-- Implement content workflow state machine (pure function)
-- Fix API filter bug (server-side WHERE clause instead of client-side filter)
-
-**Layer 3 — Content Lifecycle (depends on Layer 2):**
-- Connect route handlers to HookSystem (replace `emitEvent` stubs)
-- Implement write-through cache invalidation
-- Implement content state transitions with workflow_history audit trail
-- Fix unpublish (status one-way bug)
-
-**Layer 4 — Media Pipeline (depends on Layer 1):**
-- Fix upload to use streaming (not arrayBuffer)
-- Wire MEDIA_BEFORE_UPLOAD / MEDIA_AFTER_UPLOAD hooks
-- Add Cache API for media serve route
-
-**Layer 5 — Plugin Integration (depends on Layers 2-4):**
-- Add `app` reference to PluginContext (enables plugin middleware registration)
-- Add missing workflow hooks to HOOKS constant
-- Wire plugin-declared middleware into app.use()
-
-**Cross-cutting:**
-- Security headers can be added independently of all layers
-- Cache warming should be added when KV is wired (Layer 2)
-- Rate limiting is independent of content/media work
+Resolved by `resolveAdjacentDocs()`: flatten the nav tree into an ordered list, find the current doc's index, return `items[index - 1]` and `items[index + 1]`. Navigation wraps across section boundaries (last page of section A links to first page of section B).
 
 ---
 
-## Integration Points
+## 3-Column Layout Structure
 
-### External Services
+```
++----------------------------------------------------------+
+|  Site Nav (existing Layout.astro)                        |
++----------+-------------------------------+---------------+
+|          |                               |               |
+| Sidebar  |  Content Area                 |  TOC          |
+| 256px    |  flex-1 (max-w-3xl)           |  200px        |
+| fixed    |                               |  sticky       |
+|          |  +- Breadcrumb --------+      |               |
+| Section  |  | Docs > Section > T  |      |  On this page |
+|  Link    |  +---------------------+      |   Heading 1   |
+|  Link    |                               |   Heading 2   |
+|  Link*   |  <h1>Page Title</h1>          |     Sub 1     |
+|          |                               |     Sub 2     |
+| Section  |  Content with prose styling   |   Heading 3   |
+|  Link    |  ...                          |               |
+|  Link    |                               |               |
+|          |  +- Prev/Next ---------+      |               |
+|          |  | <- Prev    Next ->  |      |               |
+|          |  +---------------------+      |               |
++----------+-------------------------------+---------------+
+|  Footer (existing Layout.astro)                          |
++----------------------------------------------------------+
+```
 
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| Cloudflare D1 | `c.env.DB` — Drizzle ORM | Direct binding, no network hop |
-| Cloudflare R2 | `c.env.MEDIA_BUCKET` — native API | Binding name mismatch currently |
-| Cloudflare KV | `c.env.CACHE_KV` — native API | Not yet wired into cache plugin |
-| Cloudflare Images | `c.env.IMAGES` — native API | Optional; requires separate binding |
-| Cloudflare Rate Limit | `c.env.RATE_LIMITER` — native API | Not yet added |
-| SendGrid | Via Queue + email plugin | Worker → Queue → email plugin consumer |
+**Responsive breakpoints:**
+- **Desktop** (1280px+): 3 columns as shown
+- **Tablet** (768px-1279px): 2 columns (sidebar + content, TOC hidden)
+- **Mobile** (<768px): 1 column (sidebar behind toggle, content only)
 
-### Internal Boundaries
+**Tailwind CSS v4 implementation:**
 
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| Middleware → Routes | Hono context `c` (user, requestId, startTime) | Well-defined via Variables type |
-| Routes → Services | Direct function call | No abstraction layer currently |
-| Services → Cache | CacheService.getOrSet() | Consistent key format needed |
-| Services → HookSystem | hookSystem.execute() | Currently stubbed as emitEvent() |
-| Plugins → Core | PluginContext (db, kv, r2, hooks, services) | app reference missing |
-| Cache Plugin → KV | KV.get/put/delete | KV namespace not passed to cache plugin yet |
-| Media Route → R2 | c.env.MEDIA_BUCKET | Binding name fix needed |
+The grid container uses Tailwind utilities. The `@theme` tokens are already defined in `global.css`.
+
+```html
+<!-- DocsLayout.astro grid -->
+<div class="mx-auto max-w-[1400px] grid grid-cols-1 md:grid-cols-[256px_1fr] xl:grid-cols-[256px_1fr_200px]">
+  <!-- Sidebar: hidden on mobile, shown on md+ -->
+  <aside class="hidden md:block sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-slate-800">
+    <DocsSidebar ... />
+  </aside>
+
+  <!-- Content area -->
+  <main class="px-8 py-10 max-w-3xl">
+    <DocsBreadcrumb ... />
+    <DocsContent ... />
+    <DocsPrevNext ... />
+  </main>
+
+  <!-- TOC: hidden below xl -->
+  <aside class="hidden xl:block sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-10 pr-4">
+    <DocsTOC ... />
+  </aside>
+</div>
+```
+
+**Key detail:** The sidebar and TOC use `sticky top-16` (matching the 64px/4rem nav height from Layout.astro) and `h-[calc(100vh-4rem)]` to fill the viewport below the nav. Both get independent scroll via `overflow-y-auto`.
+
+---
+
+## Content Rendering Pipeline
+
+The CMS stores content as HTML (Quill editor output). The rendering pipeline transforms this HTML for documentation display.
+
+```
+Raw Quill HTML from CMS
+  |
+  v
+addHeadingIds()           -- add id attrs to h2/h3 for TOC anchors
+  |
+  v
+[future] processCallouts() -- convert blockquote patterns to styled callouts
+  |
+  v
+[future] processCodeBlocks() -- add copy buttons, language labels
+  |
+  v
+set:html={processedContent}  -- Astro renders as raw HTML
+  |
+  v
+Tailwind @tailwindcss/typography prose classes style the output
+```
+
+### Prose Styling (Reuse from Blog)
+
+The blog `[slug].astro` already defines a comprehensive set of prose overrides for the dark theme. These exact classes should be extracted into `DocsContent.astro` for reuse:
+
+```
+prose prose-lg prose-invert max-w-none
+prose-headings:font-heading prose-headings:tracking-tight prose-headings:text-slate-50
+prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4
+prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+prose-p:text-slate-300 prose-p:leading-relaxed
+prose-a:text-flare-400 prose-a:no-underline hover:prose-a:underline
+prose-strong:text-slate-100
+prose-ul:text-slate-300 prose-ol:text-slate-300
+prose-li:marker:text-flare-500
+prose-code:text-flare-300 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5
+  prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl
+  prose-pre:text-sm prose-pre:leading-7
+prose-hr:border-slate-800
+prose-blockquote:border-flare-500 prose-blockquote:text-slate-400
+```
+
+This class list is already proven to work with the site's dark theme and font stack. No new CSS design work needed for content styling.
+
+### Content Enhancement Patterns
+
+**Callout boxes (phase 2+):** The Quill editor produces `<blockquote>` elements. Authors can use a convention like starting a blockquote with `**Note:**`, `**Warning:**`, or `**Tip:**`. A `processCallouts()` function transforms these into styled divs with colored left borders and icons. This is a progressive enhancement -- works as plain blockquotes even without processing.
+
+**Code blocks:** Quill generates `<pre><code>` blocks. The existing prose styles already make these look good (dark background, border, rounded corners, JetBrains Mono font). Syntax highlighting is a phase 2+ enhancement -- add Shiki server-side processing in frontmatter using `codeToHtml()`.
+
+**Recommendation:** Start without syntax highlighting or callout processing. The base prose styling is already solid. Add enhancements incrementally.
+
+---
+
+## File Structure
+
+```
+packages/site/src/
+  layouts/
+    Layout.astro               (existing - site shell with nav + footer)
+    DocsLayout.astro            (new - 3-column docs grid)
+
+  pages/
+    docs.astro                  (existing - DELETE, replaced by catch-all)
+    docs/
+      [...slug].astro           (new - catch-all docs route)
+
+  components/
+    docs/                       (new directory for docs components)
+      DocsSidebar.astro
+      DocsTOC.astro
+      DocsContent.astro
+      DocsPrevNext.astro
+      DocsBreadcrumb.astro
+      DocsMobileNav.astro
+      DocsCallout.astro          (phase 2+)
+
+  lib/
+    flare.ts                    (existing - extend with docs API functions)
+    docs-utils.ts               (new - buildNavTree, extractTOC, etc.)
+
+packages/cms/src/collections/
+  blog-posts.collection.ts      (existing)
+  docs.collection.ts            (new)
+  docs-sections.collection.ts   (new)
+```
+
+---
+
+## Build Order (Dependency Chain)
+
+Components have clear dependencies. Build in this order:
+
+```
+Phase 1: CMS Foundation (no frontend dependencies)
+  1. docs-sections.collection.ts     -- collection config, no deps
+  2. docs.collection.ts              -- collection config, no deps
+  3. Seed 3-5 doc pages + 2 sections -- content to test against
+
+  WHY FIRST: Cannot test any frontend code without CMS content to fetch.
+
+Phase 2: API + Utilities (no UI dependencies)
+  4. Doc types + API functions in flare.ts  -- depends on collections existing
+  5. docs-utils.ts                           -- depends on API types from step 4
+     - buildNavTree()
+     - extractTOC()
+     - addHeadingIds()
+     - resolveAdjacentDocs()
+
+  WHY SECOND: All UI components consume these. Get the data layer right first.
+
+Phase 3: Layout Shell (depends on Phase 2 types)
+  6. DocsLayout.astro (3-column grid)     -- the structural container
+  7. DocsSidebar.astro                     -- needs NavSection type
+  8. DocsTOC.astro                         -- needs TOCItem type
+  9. DocsBreadcrumb.astro                  -- trivial, no complex deps
+
+  WHY THIRD: Layout must exist before the route can render into it.
+
+Phase 4: Route + Content (depends on ALL above)
+  10. docs/[...slug].astro                 -- orchestrates everything
+  11. DocsContent.astro (prose wrapper)    -- extracts prose classes from blog
+  12. DocsPrevNext.astro                   -- needs AdjacentDocs type
+
+  WHY FOURTH: This is the integration point. All other pieces must exist first.
+
+Phase 5: Polish (progressive enhancement)
+  13. DocsMobileNav.astro                  -- responsive sidebar toggle
+  14. Delete old docs.astro                -- superseded by catch-all route
+  15. Active TOC scroll tracking           -- IntersectionObserver script
+  16. Code copy buttons                    -- vanilla JS script
+  17. DocsCallout.astro                    -- content post-processing
+```
+
+**Key insight:** The CMS collections must exist and have seed data BEFORE any frontend work can be tested. Create the collections and seed content first.
+
+---
+
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Client-Side Routing for Docs
+**What:** Using React Router, Vue Router, or any SPA framework for docs navigation.
+**Why bad:** Breaks SSR benefits, hurts SEO, adds JS bundle weight for zero benefit on a content site.
+**Instead:** Use Astro's file-based routing with full page loads. Docs pages are static content -- SSR is the correct approach.
+
+### Anti-Pattern 2: Separate Layout That Doesn't Reuse Site Shell
+**What:** Creating a completely independent HTML document structure for docs.
+**Why bad:** Inconsistent navigation between docs and rest of site, duplicated footer/nav code, maintenance burden.
+**Instead:** DocsLayout wraps inside the existing Layout.astro via `<Layout title={title}>`. The site nav and footer remain consistent across all pages.
+
+### Anti-Pattern 3: Hard-Coding Navigation in TypeScript
+**What:** Maintaining a `docs-nav.ts` file with the sidebar structure.
+**Why bad:** Every new doc page requires a code change and redeploy. Content authors can't reorder pages.
+**Instead:** Derive navigation entirely from CMS data (sections + docs with sortOrder). Authors can add/reorder pages from the admin UI without code changes.
+
+### Anti-Pattern 4: Over-Engineering Content Processing
+**What:** Building a full Markdown/MDX pipeline with custom remark/rehype plugins to process CMS content.
+**Why bad:** The CMS already outputs HTML from the Quill editor. Converting HTML to AST and back to HTML is wasteful and introduces bugs.
+**Instead:** Work with the HTML the CMS gives you. Use simple string transforms (regex for heading IDs, pattern matching for callouts) rather than full AST parsing. The content is well-structured Quill output, not arbitrary user HTML.
+
+### Anti-Pattern 5: Fetching Only the Current Doc
+**What:** Making a single API call for just the current doc page, then separate calls for sidebar data.
+**Why bad:** The sidebar needs ALL docs to build the nav tree. You'd need multiple API requests anyway, and the API filters are broken.
+**Instead:** Fetch all docs + all sections in parallel (2 API calls), build everything from that. The KV cache on the CMS Worker makes this fast, and the total payload is small.
+
+### Anti-Pattern 6: Using a UI Framework for Interactivity
+**What:** Adding React/Vue/Svelte islands for the sidebar toggle or TOC scroll tracking.
+**Why bad:** Adds framework runtime JS (~30-50KB) for interactions that need ~20 lines of vanilla JS.
+**Instead:** Use Astro's inline `<script>` tags for the 2-3 interactive behaviors (mobile nav toggle, TOC scroll tracking, code copy buttons). These are progressive enhancements, not core functionality.
+
+---
+
+## Scalability Considerations
+
+| Concern | 10 docs | 50 docs | 200+ docs |
+|---------|---------|---------|-----------|
+| API payload size | ~5KB | ~25KB | ~100KB, consider pagination |
+| Nav tree computation | Trivial | Trivial | Still fast (simple sort/group) |
+| TOC extraction | Instant | Instant | Instant (per-page only) |
+| Sidebar scrolling | No scroll needed | Some scrolling | Needs collapsible sections |
+| Content discoverability | Browse sidebar | Browse sidebar | Search becomes important |
+
+The architecture handles 50+ docs without any changes. At 200+ docs, add:
+- Collapsible sidebar sections (CSS-only with `<details>` elements)
+- Client-side search (Fuse.js indexing doc titles + excerpts, loaded as a small JS module)
+- Paginated API calls if JSON payload becomes an issue (but this requires fixing the API filter bug first)
 
 ---
 
 ## Sources
 
-- Cloudflare Workers Best Practices (Feb 2026): https://developers.cloudflare.com/workers/best-practices/workers-best-practices/
-- Cloudflare Cache API docs: https://developers.cloudflare.com/workers/runtime-apis/cache/
-- Cloudflare Security Headers example: https://developers.cloudflare.com/workers/examples/security-headers/
-- Cloudflare Rate Limiting binding: https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
-- Cloudflare KV docs: https://developers.cloudflare.com/kv/
-- Hono CORS middleware: https://hono.dev/docs/middleware/builtin/cors
-- SonicJS source: `sonicjs-fork/packages/core/src/` (verified directly)
-- SonicJS schema: `sonicjs-fork/packages/core/src/db/schema.ts` (verified directly)
-- SonicJS app factory: `sonicjs-fork/packages/core/src/app.ts` (verified directly)
+- **Existing codebase: `packages/site/src/lib/flare.ts`** -- API client patterns, FlareResponse type, client-side filtering approach (HIGH confidence)
+- **Existing codebase: `packages/cms/src/collections/blog-posts.collection.ts`** -- CollectionConfig schema format, field types available (HIGH confidence)
+- **Existing codebase: `packages/site/src/pages/blog/[slug].astro`** -- Content rendering with `set:html`, prose class list, CMS-first with fallback pattern (HIGH confidence)
+- **Existing codebase: `packages/site/src/layouts/Layout.astro`** -- Site shell structure, nav height (4rem), footer, slot pattern (HIGH confidence)
+- **Existing codebase: `packages/site/src/styles/global.css`** -- Tailwind v4 theme tokens, font stack, color palette (HIGH confidence)
+- **Existing codebase: `packages/site/astro.config.mjs`** -- SSR output mode, Cloudflare adapter, Tailwind vite plugin (HIGH confidence)
+- **CLAUDE.md project instructions** -- Known API filter bug requiring client-side filtering, collection naming conventions, schema field types (HIGH confidence)
 
 ---
-*Architecture research for: edge-native headless CMS on Cloudflare Workers (SonicJS fork)*
-*Researched: 2026-03-01*
+*Architecture research for: CMS-driven documentation site on Astro 5 SSR*
+*Researched: 2026-03-08*

@@ -1,209 +1,279 @@
-# Stack Research
+# Technology Stack: Documentation Site
 
-**Domain:** Hardening and productionizing a headless CMS on Cloudflare Workers (SonicJS v2.8.0 soft fork)
-**Researched:** 2026-03-01
-**Confidence:** MEDIUM-HIGH (core platform HIGH, some library versions MEDIUM)
+**Project:** FlareCMS Documentation Website
+**Milestone:** Add CMS-driven docs to existing Astro 5 frontend
+**Researched:** 2026-03-08
+
+## Context
+
+This is an additive milestone. The core stack already exists and is deployed:
+- Astro 5.17+ SSR on Cloudflare Pages (`packages/site/`)
+- Tailwind CSS v4 with `@tailwindcss/typography`
+- `@astrojs/cloudflare` adapter v12.6+
+- FlareCMS backend on Cloudflare Workers (Hono + D1 + R2 + KV)
+- Quill rich-text editor in CMS admin (outputs HTML)
+- `unplugin-icons` with Lucide icon set
+- JetBrains Mono + Inter + Space Grotesk fonts already loaded
+
+This document covers **only the new libraries needed** for the documentation site features.
 
 ---
 
-## Context: What This Research Is NOT
+## Critical Architecture Decision: NOT Using Starlight
 
-The base stack is already decided and locked:
+**Starlight is wrong for this project.** Starlight is Astro's documentation framework, but it is designed for markdown files in the repository, not CMS-driven content. While Starlight has experimental support for custom content sources via Astro's Content Layer API, that API runs at **build time only** -- it populates a store during `astro build`. Since FlareCMS content is managed through an admin UI and fetched via REST API at runtime (SSR), Starlight's architecture is fundamentally incompatible.
 
-| Decided | Version | Notes |
-|---------|---------|-------|
-| Hono | current | Web framework — do not replace |
-| Drizzle ORM | current | D1 ORM — do not replace |
-| D1 (SQLite) | — | Database — do not replace |
-| R2 | — | Media storage — do not replace |
-| KV | — | Cache store — do not replace |
-| Cloudflare Workers | — | Runtime — do not replace |
+**Confidence: HIGH** -- verified via official Astro Content Loader Reference docs.
 
-This research covers only the **security, caching, media, migration, and observability layers** that need to be added or wired up.
+**What to do instead:** Build the docs layout as standard Astro pages/components within the existing site. The 3-column layout (sidebar, content, TOC) is straightforward to build with Tailwind CSS and does not require a framework.
+
+---
+
+## Critical Architecture Decision: NOT Using Astro Content Collections
+
+Same reasoning as Starlight. Content Collections and the Content Layer API are build-time constructs. The `loader` function runs during `astro build` and populates a store. For SSR with dynamic CMS content, use direct `fetch()` calls in Astro page frontmatter -- the existing `flare.ts` pattern already does this correctly.
+
+**Confidence: HIGH** -- verified via official Astro Content Loader Reference.
 
 ---
 
 ## Recommended Stack
 
-### Auth / Security Layer
+### Syntax Highlighting: Shiki (built into Astro)
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Hono built-in `jwt` middleware | Hono v4.x | JWT verification with env secret | Already in dependency tree; supports `c.env.JWT_SECRET` via factory pattern; no new dependency needed | HIGH |
-| Web Crypto API (`crypto.subtle`) | Workers built-in | PBKDF2 password hashing | Native to Workers runtime; no library needed; supports `PBKDF2` algorithm | HIGH |
-| Hono `secureHeaders` middleware | Hono v4.x built-in | Security response headers | Sets HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, CORP, COOP by default; inspired by Helmet | HIGH |
-| Hono `cors` middleware | Hono v4.x built-in | Restrict CORS to explicit origins | Built-in; already used — just needs `origin` list instead of wildcard | HIGH |
-| Hono `csrf` middleware | Hono v4.x built-in | CSRF protection for admin forms | Header-based (Origin + Sec-Fetch-Site); no token storage needed; note: known issue with old browsers that strip Origin | HIGH |
+| Attribute | Value |
+|-----------|-------|
+| **Package** | `shiki` (bundled with Astro) |
+| **Version** | Ships with Astro 5.17+ (Shiki 3.x+ internally) |
+| **Install** | None needed -- already available |
+| **Confidence** | HIGH |
 
-**PBKDF2 specifics — critical note:**
+**Why Shiki:** Astro ships with Shiki built-in and exposes a `<Code />` component that accepts dynamic `code` and `lang` props. For CMS-driven content where code blocks are extracted from HTML at render time, Shiki's programmatic `codeToHtml()` API is the right tool. No additional dependency required.
 
-The mmcintosh PR #659 uses 100,000 iterations of PBKDF2-SHA256. The Cloudflare Workers production runtime **caps PBKDF2 at 100,000 iterations** (GitHub issue #1346 in cloudflare/workerd). OWASP recommends 600,000 for SHA-256 — this is unachievable on Workers today. The cap has been removed in open-source workerd but not deployed to production CF. **100,000 iterations with PBKDF2-SHA256 is the correct pragmatic choice for now.** This is still vastly superior to the current SHA-256 without iterations.
+**Why NOT Expressive Code:** `astro-expressive-code` (v0.41.5) is excellent for markdown-based sites, but its primary value -- frame decorations, file tabs, diff markers -- is not needed for v1 docs. Shiki's programmatic API is simpler for our use case of extracting `<pre><code>` blocks from Quill HTML and highlighting them server-side. Expressive Code can be added later if desired.
 
-Storage format from PR #659: `pbkdf2:<iterations>:<salt_hex>:<hash_hex>` — backward compatible, re-hashes legacy SHA-256 on next successful login.
+**Why NOT Prism:** Shiki has better theme support, more languages, and is already bundled with Astro. Prism requires a separate install (`@astrojs/prism`).
 
-### Rate Limiting
+**How it works in this architecture:**
+1. CMS stores doc content as Quill HTML (with code in `<pre>` tags)
+2. At SSR render time, the rehype pipeline extracts code blocks
+3. Code runs through `shiki.codeToHtml()` with the chosen theme
+4. Highlighted output replaces original `<pre>` blocks
+5. Processed HTML is rendered into the page
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| `@elithrar/workers-hono-rate-limit` | latest | Rate limiting for auth endpoints | Wraps Cloudflare's native Rate Limiting binding; Hono middleware interface; authored by a Cloudflare employee | MEDIUM |
-| Cloudflare Workers Rate Limiting binding | platform native | Actual rate limit enforcement | Runs on CF infrastructure; configured via `wrangler.jsonc`; requires wrangler v4.36.0+; period must be 10s or 60s | HIGH |
+```typescript
+import { codeToHtml } from 'shiki'
 
-**Configuration required in `wrangler.jsonc`:**
-```json
-[[unsafe.bindings]]
-name = "RATE_LIMITER"
-type = "ratelimit"
-namespace_id = "1"
-simple = { limit = 10, period = 60 }
+async function highlightCodeBlocks(html: string): Promise<string> {
+  const highlighted = await codeToHtml(code, {
+    lang: 'typescript',
+    theme: 'github-dark',
+  })
+  return highlighted
+}
 ```
 
-**Alternative considered:** `@hono-rate-limiter/cloudflare` — also uses CF native bindings but `@elithrar/workers-hono-rate-limit` is more commonly referenced in CF documentation itself.
+### HTML Processing: unified + rehype
 
-### Input Validation
+| Package | Version | Purpose | Install? |
+|---------|---------|---------|----------|
+| `unified` | ^11.0 | Processing pipeline orchestrator | Yes |
+| `rehype-parse` | ^9.0 | Parse HTML string to AST | Yes |
+| `rehype-stringify` | ^10.0 | Serialize AST back to HTML | Yes |
+| `rehype-sanitize` | ^6.0 | XSS protection for CMS HTML | Yes |
+| `rehype-slug` | ^6.0 | Add `id` attributes to headings | Yes |
+| `rehype-autolink-headings` | ^7.0 | Add anchor links to headings | Yes |
+| `rehype-external-links` | ^3.0 | Add `target="_blank"` + `rel="noopener"` to external links | Yes |
+| **Confidence** | HIGH | | |
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Zod | ^3.x | Schema validation on API inputs | De facto standard for TypeScript runtime validation; `@hono/zod-validator` integrates directly as Hono middleware; prevents injection via type coercion | HIGH |
-| `@hono/zod-validator` | latest | Hono middleware wrapper for Zod | Validates request body/query/params with typed result; error formatting built in | HIGH |
+**Why unified/rehype:** The CMS outputs Quill HTML. We need to:
+1. **Sanitize** it -- Quill 2.0.3 has a known XSS vulnerability (CVE-2025-15056) in HTML export
+2. **Add IDs** to headings for deep linking and TOC generation
+3. **Extract headings** for the right-column table of contents
+4. **Highlight code blocks** with Shiki
+5. **Add anchor links** to headings for easy sharing
+6. **Mark external links** with proper security attributes
 
-**SQL injection note:** Drizzle ORM uses parameterized queries by default — SQL injection is prevented at the ORM level when you use Drizzle's query builder. Only raw `.prepare()` with user-concatenated strings is dangerous. Zod adds a layer for API surface validation (XSS prevention, type enforcement). Use both.
+The unified/rehype ecosystem handles all of this in a single pipeline pass. It is the standard approach for HTML-to-HTML transformation in the Node.js ecosystem. All packages are pure JavaScript -- no Node.js native APIs -- so they run perfectly on Cloudflare Workers.
 
-### Caching Strategy
+**Why NOT just `set:html` with raw Quill output:** Security. Quill HTML must be sanitized server-side before rendering. `rehype-sanitize` with a custom schema allows safe HTML while stripping dangerous attributes. Never render unsanitized CMS content.
 
-| Technology | Purpose | When to Use | Confidence |
-|------------|---------|-------------|------------|
-| In-memory cache (existing) | Sub-millisecond hot path | Current request isolation only; lost on worker restart | HIGH |
-| Cloudflare KV | Cross-request persistent cache | Content API responses with TTL; global read-heavy data; up to 60s eventual consistency acceptable | HIGH |
-| Cloudflare Cache API (`caches.default`) | Edge cache for public responses | Public GET endpoints only (no auth); free; tied to datacenter | HIGH |
-
-**Recommendation — two-tier approach:**
-
-1. **KV for CMS content** (`/api/collections/*/content` responses): TTL 60-300s, invalidated on write. Already partially wired in SonicJS — just needs the KV binding connected.
-2. **Cache API for R2 media responses**: Cache public image/media responses at the edge. Free, fast, appropriate for public binary assets.
-3. **Do NOT use KV for session/auth data**: KV's eventual consistency (up to 60s lag) means a revoked token could still be accepted. Use short JWT expiry instead.
-
-**KV consistency warning:** KV is eventually consistent globally. A content editor publishing an update may see stale API responses from another region for up to 60 seconds. This is acceptable for a CMS serving read-heavy public content. If immediate consistency is required, use the Cache API with short TTLs (10-30s) instead.
-
-### Media Serving (R2)
-
-| Feature | Implementation | Notes | Confidence |
-|---------|---------------|-------|------------|
-| Range requests | R2 `get()` with `range: { offset, length }` option | Native to Workers R2 binding; required for video/audio streaming; return `Content-Range` header manually | HIGH |
-| ETag / conditional GET | R2 object returns `httpEtag` field; use `If-None-Match` conditional | CF docs confirm `httpEtag` is RFC 9110 compliant (quoted); reduces bandwidth for unchanged assets | HIGH |
-| Content-Type passthrough | R2 `httpMetadata.contentType` returned with object | Set during upload; return as-is in response | HIGH |
-| Cache-Control headers | Set in Worker response | Public assets: `max-age=31536000, immutable` (hash in filename); vary per asset type | MEDIUM |
-| Public bucket vs Worker | Worker-mediated access preferred | Enables auth checks, transformation, range request handling; public bucket has known range request header issues | MEDIUM |
-
-**Range request implementation pattern (from community + CF docs):**
 ```typescript
-const rangeHeader = request.headers.get('Range')
-if (rangeHeader) {
-  const match = rangeHeader.match(/bytes=(\d+)-(\d*)/)
-  const offset = parseInt(match[1])
-  const end = match[2] ? parseInt(match[2]) : object.size - 1
-  const length = end - offset + 1
-  const ranged = await env.MEDIA_BUCKET.get(key, { range: { offset, length } })
-  return new Response(ranged.body, {
-    status: 206,
-    headers: {
-      'Content-Range': `bytes ${offset}-${end}/${object.size}`,
-      'Content-Length': String(length),
-      'Accept-Ranges': 'bytes',
+import { unified } from 'unified'
+import rehypeParse from 'rehype-parse'
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeExternalLinks from 'rehype-external-links'
+import rehypeStringify from 'rehype-stringify'
+
+const processor = unified()
+  .use(rehypeParse, { fragment: true })
+  .use(rehypeSanitize, customSchema)       // XSS protection
+  .use(rehypeSlug)                          // id="heading-text"
+  .use(rehypeAutolinkHeadings)              // <a href="#heading-text">
+  .use(rehypeExternalLinks, {               // external link safety
+    target: '_blank',
+    rel: ['noopener', 'noreferrer']
+  })
+  .use(rehypeShikiPlugin)                   // custom: highlight code blocks
+  .use(rehypeStringify)
+```
+
+### AST Utilities
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `unist-util-visit` | ^5.0 | Walk AST nodes (for TOC extraction, code block finding) |
+| `hast-util-to-string` | ^3.0 | Extract text content from HAST nodes |
+| **Confidence** | HIGH | |
+
+These are part of the unified ecosystem and are used to build the TOC extractor and the Shiki code-highlighting rehype plugin.
+
+### TOC Generation: Custom extraction from rehype AST
+
+| Attribute | Value |
+|-----------|-------|
+| **Package** | None additional -- extract from rehype pipeline |
+| **Confidence** | HIGH |
+
+**Why no library:** The right-column table of contents is simply a list of `h2` and `h3` elements with their IDs and text. After `rehype-slug` runs, we walk the AST to collect headings. This is ~20 lines of code and does not warrant a dependency like `rehype-toc` or `@microflash/rehype-toc`.
+
+```typescript
+import { visit } from 'unist-util-visit'
+import { toString } from 'hast-util-to-string'
+
+interface TOCItem {
+  depth: number
+  id: string
+  text: string
+}
+
+function extractTOC(tree: Node): TOCItem[] {
+  const headings: TOCItem[] = []
+  visit(tree, 'element', (node) => {
+    if (node.tagName === 'h2' || node.tagName === 'h3') {
+      headings.push({
+        depth: parseInt(node.tagName[1]),
+        id: node.properties.id,
+        text: toString(node),
+      })
     }
   })
+  return headings
 }
 ```
 
-**Binding name fix required:** Current SonicJS uses `BUCKET`; the binding needs to be `MEDIA_BUCKET` per PROJECT.md tracking or a consistent name must be set in `wrangler.jsonc`.
+### Client-Side Search: MiniSearch
 
-### Database Migrations (D1)
+| Attribute | Value |
+|-----------|-------|
+| **Package** | `minisearch` |
+| **Version** | ^7.1 |
+| **Bundle size** | ~7KB minified+gzipped |
+| **Zero dependencies** | Yes |
+| **Confidence** | MEDIUM |
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Drizzle Kit | ^0.31.x | Migration generation and application | Already in project; `drizzle-kit generate` creates SQL migration files; `drizzle-kit migrate` applies via D1 HTTP API | HIGH |
-| `wrangler d1 migrations apply` | wrangler v4.x | Alternative: apply migrations via wrangler CLI | Official CF approach; works with local `--local` flag for dev; without flag for production | HIGH |
+**Why MiniSearch over alternatives:**
 
-**Recommended workflow:**
+| Criterion | MiniSearch | Fuse.js | FlexSearch | Pagefind |
+|-----------|-----------|---------|------------|----------|
+| **Full-text search** | Yes | Fuzzy only | Yes | Yes |
+| **Bundle size** | ~7KB | ~5KB | ~6KB | ~2KB + WASM |
+| **Fuzzy matching** | Yes | Yes (primary) | Partial | Yes |
+| **Prefix search** | Yes | No | Yes | Yes |
+| **Ranking quality** | Excellent | Poor on docs | Good | Excellent |
+| **SSR compatible** | Yes (client) | Yes (client) | Yes (client) | No (build-time) |
+| **Zero dependencies** | Yes | Yes | Yes | No |
+| **Dynamic content** | Yes | Yes | Yes | No |
 
-```bash
-# 1. Generate migration from schema change
-npx drizzle-kit generate
+**Why NOT Pagefind:** Pagefind generates its search index at build time by crawling static HTML files. Our content is SSR -- pages are rendered on request from the CMS API. There are no static HTML files to crawl at build time. Pagefind is architecturally incompatible with SSR + CMS content.
 
-# 2. Apply to local D1 (development)
-npx wrangler d1 migrations apply DB --local
+**Why NOT Fuse.js:** Fuse.js is a fuzzy-match library, not a full-text search engine. It does not tokenize, stem, or rank by relevance. On documentation content, search quality is poor -- a query for "collections" might rank a page mentioning it once higher than the actual collections reference page.
 
-# 3. Apply to production D1
-npx wrangler d1 migrations apply DB
-```
+**Why NOT FlexSearch:** FlexSearch has had maintenance gaps and its API is more complex. MiniSearch offers a better balance of performance, API simplicity, and search quality for documentation.
 
-**Do not use `drizzle-kit push` in production** — it bypasses migration history and applies schema diffs directly. Use `generate` + `migrate` for auditable migration trail.
+**How it works:**
+1. Build a search index endpoint on the CMS (or a server-side Astro endpoint) that returns doc titles, slugs, sections, and excerpts
+2. On first search interaction, fetch the index and initialize MiniSearch client-side
+3. Search is instant after initial load
+4. Cache index in localStorage for repeat visits
 
-**D1 migration config in `drizzle.config.ts`:**
 ```typescript
-export default {
-  dialect: 'sqlite',
-  schema: './src/db/schema.ts',
-  out: './drizzle/migrations',
-  driver: 'd1-http',
-  dbCredentials: {
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-    databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID,
-    token: process.env.CLOUDFLARE_D1_TOKEN,
-  }
-}
-```
+import MiniSearch from 'minisearch'
 
-### Secrets Management
-
-| Technology | Purpose | Why | Confidence |
-|------------|---------|-----|------------|
-| `wrangler secret put JWT_SECRET` | Store JWT signing secret | Encrypted at rest; not visible in dashboard after set; accessed via `c.env.JWT_SECRET` at runtime | HIGH |
-| `.dev.vars` file (local only) | Local development secrets | Equivalent of `.env` for `wrangler dev`; never committed | HIGH |
-
-**Never use:** Plaintext `[vars]` in `wrangler.toml` for secrets — CF docs explicitly warn against this. Secrets go through `wrangler secret put`.
-
-**Access pattern:**
-```typescript
-// JWT middleware — must be factory pattern to access c.env
-app.use('/protected/*', (c, next) => {
-  return jwt({ secret: c.env.JWT_SECRET, alg: 'HS256' })(c, next)
+const miniSearch = new MiniSearch({
+  fields: ['title', 'content', 'section'],
+  storeFields: ['title', 'slug', 'section'],
+  searchOptions: {
+    boost: { title: 3, section: 2 },
+    fuzzy: 0.2,
+    prefix: true,
+  },
 })
+
+// Populate from search index endpoint
+miniSearch.addAll(docsIndex)
 ```
 
-### Observability / Monitoring
+### SEO: @astrojs/sitemap
 
-| Technology | Purpose | Plan Required | Configuration | Confidence |
-|------------|---------|---------------|---------------|------------|
-| Workers Logs (native) | Capture `console.log`, errors, invocation metadata | Free + Paid (200k/day free, 20M/mo paid) | `[observability] enabled = true` in wrangler.toml; min wrangler v3.78.6 | HIGH |
-| Workers Logpush | Export logs to R2 / S3 / external provider | Workers Paid | Sends trace event logs; useful for persistent audit trail | MEDIUM |
-| Workers Traces | Request flow tracing (beta) | Paid | Distributed tracing across Workers | LOW (beta) |
+| Attribute | Value |
+|-----------|-------|
+| **Package** | `@astrojs/sitemap` |
+| **Version** | ^3.3 |
+| **Confidence** | HIGH |
 
-**Recommended for this project:** Enable Workers Logs with `head_sampling_rate = 1` during initial production phase. Add structured `console.log` at auth events (login, token refresh, failed attempts). Free tier sufficient for personal/client use.
+**Why:** Standard Astro integration for generating `sitemap.xml`. Essential for documentation SEO. Lightweight, official, well-maintained.
 
-**No external monitoring tool recommended at this stage.** Sentry, Datadog, etc. add bundle size and egress cost. Workers Logs + Logpush to R2 is sufficient for a solo-operated CMS.
+**SSR note:** For SSR sites, `@astrojs/sitemap` requires a `customPages` array or `site` set in `astro.config.mjs`. Since doc pages are dynamic (fetched from CMS), we need to provide the URL list. Approach: fetch the docs navigation structure at build time for the sitemap, while still rendering pages via SSR at request time.
 
-### Production Deployment
+### Navigation (sidebar, breadcrumbs, prev/next): No library needed
 
-| Tool | Purpose | Notes | Confidence |
-|------|---------|-------|------------|
-| Wrangler v4.36.0+ | Deploy Workers to production | Required for Rate Limiting binding; `npx wrangler deploy` | HIGH |
-| Wrangler environments (`[env.production]`) | Per-client deployment configs | Different D1/R2/KV IDs per client in same `wrangler.toml`; deploy with `--env production` | HIGH |
-| Cloudflare Pages | Deploy Astro frontend | `npx wrangler pages deploy`; connect to git for CI | HIGH |
+| Attribute | Value |
+|-----------|-------|
+| **Package** | None -- custom Astro components |
+| **Confidence** | HIGH |
 
-**Per-client deployment pattern (single-tenant):**
-```toml
-# wrangler.toml
-[env.client-acme]
-name = "cms-acme"
-[[env.client-acme.d1_databases]]
-binding = "DB"
-database_name = "cms-acme-db"
-database_id = "..."
-```
+**Why no library:** Documentation navigation is CMS-driven. The sidebar tree, breadcrumb path, and prev/next links are all derived from a navigation structure stored in the CMS. This is a data-fetching + component rendering problem, not something that requires a library.
 
-Deploy with: `npx wrangler deploy --env client-acme`
+**Architecture:**
+1. CMS stores a navigation structure (ordered tree of sections and pages)
+2. Astro fetches the nav tree on each request (cached via CMS KV layer)
+3. Sidebar component renders the tree with current-page highlighting
+4. Breadcrumbs computed from the current page's path in the tree
+5. Prev/next computed from the flattened ordered list
+6. All pure Astro components + Tailwind -- no client-side JS needed for nav rendering
 
-This avoids Workers for Platforms (which is for SaaS multi-tenancy at scale) — separate wrangler environments per client is simpler and appropriate for 1-10 clients.
+---
+
+## Full Dependency List
+
+### New packages to install
+
+| Package | Version | Category |
+|---------|---------|----------|
+| `unified` | ^11.0 | HTML processing |
+| `rehype-parse` | ^9.0 | HTML processing |
+| `rehype-stringify` | ^10.0 | HTML processing |
+| `rehype-sanitize` | ^6.0 | HTML processing |
+| `rehype-slug` | ^6.0 | HTML processing |
+| `rehype-autolink-headings` | ^7.0 | HTML processing |
+| `rehype-external-links` | ^3.0 | HTML processing |
+| `unist-util-visit` | ^5.0 | AST utility |
+| `hast-util-to-string` | ^3.0 | AST utility |
+| `minisearch` | ^7.1 | Client-side search |
+| `@astrojs/sitemap` | ^3.3 | SEO |
+
+### Already available (no install)
+
+| Package | Source | Purpose |
+|---------|--------|---------|
+| `shiki` | Bundled with Astro | Syntax highlighting |
+| `tailwindcss` v4 | Already installed | Styling |
+| `@tailwindcss/typography` | Already installed | Prose content styling |
+| `unplugin-icons` + `@iconify-json/lucide` | Already installed | Icons |
+| JetBrains Mono / Inter / Space Grotesk | Already installed | Fonts |
 
 ---
 
@@ -211,101 +281,82 @@ This avoids Workers for Platforms (which is for SaaS multi-tenancy at scale) —
 
 | Category | Recommended | Alternative | Why Not |
 |----------|-------------|-------------|---------|
-| Password hashing | Web Crypto PBKDF2 | bcrypt / argon2 | bcrypt and argon2 require Node.js native modules; not available in Workers runtime |
-| Rate limiting | CF native Rate Limit binding + `@elithrar/workers-hono-rate-limit` | In-memory counter | In-memory counters reset per Worker instance; not effective across distributed Workers |
-| CSRF protection | Hono `csrf` middleware (header-based) | Double-submit cookie token | Double-submit requires stateful token storage; header-based works with SPA + admin UI without cookies |
-| Caching | KV (content) + Cache API (media) | Only in-memory | In-memory is per-isolate; KV is globally consistent (with eventual lag); Cache API is free for public responses |
-| Input validation | Zod + `@hono/zod-validator` | Manual validation | Manual validation is error-prone and verbose; Zod provides schema-as-source-of-truth for types and runtime |
-| Migrations | Drizzle Kit generate+migrate | Wrangler `d1 execute --file` | `d1 execute` works but lacks migration tracking; Drizzle Kit integrates with existing Drizzle setup |
-| Logging | Workers Logs (native) | Sentry / Datadog | External services add latency, cost, and bundle size; Workers Logs is zero-config and sufficient |
-
----
-
-## What NOT to Use
-
-| Avoid | Why | Use Instead |
-|-------|-----|-------------|
-| bcrypt, argon2 | Require Node.js native bindings; will throw at runtime in Workers | Web Crypto `crypto.subtle.deriveBits` with PBKDF2 |
-| SHA-256 for passwords (no iterations) | Not a KDF; trivially brutable; current SonicJS bug | PBKDF2-SHA256 with 100k iterations + per-user salt |
-| Hardcoded JWT secret in source code | Exposed in git history; current SonicJS bug | `wrangler secret put JWT_SECRET` |
-| `[vars]` in wrangler.toml for secrets | Plaintext in config file; CF explicitly warns against | `wrangler secret put` |
-| Workers for Platforms | Designed for SaaS multi-tenancy at scale; overkill for 1-10 clients | Wrangler environments per client |
-| `drizzle-kit push` in production | Bypasses migration history; destructive diffs possible | `drizzle-kit generate` + `drizzle-kit migrate` |
-| TinyMCE | Requires paid API key; existing CLAUDE.md guidance | Quill (already decided) |
-| Public R2 bucket for all media | No auth layer; known range-request header issues with public buckets | Worker-mediated R2 access |
-| KV for auth token revocation | Eventually consistent (60s lag); revoked tokens may still work | Short JWT expiry (15min access token) |
+| Docs framework | Custom Astro pages | Starlight | Content comes from CMS API at runtime, not markdown files at build time |
+| Content loading | Direct fetch (`flare.ts`) | Astro Content Layer | Content Layer is build-time only; we need runtime SSR |
+| Syntax highlighting | Shiki (built-in) | Expressive Code v0.41.5 | Extra dependency; frame/tab features not needed for v1 |
+| Syntax highlighting | Shiki (built-in) | Prism | Shiki has better theme support, more languages, already bundled |
+| HTML processing | unified/rehype | cheerio | rehype is purpose-built for HTML transformation; cheerio is for scraping |
+| HTML processing | unified/rehype | DOMParser | Not available in Cloudflare Workers runtime |
+| TOC generation | Custom AST walk | `rehype-toc` / `@microflash/rehype-toc` | 20 lines of code; no dependency warranted |
+| Search | MiniSearch | Pagefind | Pagefind requires build-time HTML crawling; incompatible with SSR |
+| Search | MiniSearch | Algolia | External service; overkill for project docs; vendor dependency |
+| Search | MiniSearch | Fuse.js | Fuzzy-only; poor ranking on documentation content |
+| Navigation | Custom components | Any nav library | Navigation is CMS-driven data, not a component concern |
 
 ---
 
 ## Installation
 
 ```bash
-# Input validation
-npm install zod @hono/zod-validator
+# From packages/site/
+cd /home/jaime/www/_github/flarecms/packages/site
 
-# Rate limiting (Hono middleware for CF native binding)
-npm install @elithrar/workers-hono-rate-limit
+# HTML processing pipeline
+pnpm add unified rehype-parse rehype-stringify rehype-sanitize rehype-slug rehype-autolink-headings rehype-external-links
 
-# No new installs needed for:
-# - JWT (hono/jwt — already in hono)
-# - Security headers (hono/secure-headers — already in hono)
-# - CSRF (hono/csrf — already in hono)
-# - PBKDF2 (Web Crypto — Workers built-in)
-# - Workers Logs (wrangler.toml config only)
-# - Drizzle migrations (drizzle-kit already present)
+# AST utilities
+pnpm add unist-util-visit hast-util-to-string
+
+# Client-side search
+pnpm add minisearch
+
+# SEO
+pnpm add @astrojs/sitemap
 ```
 
 ---
 
-## Version Compatibility
+## Cloudflare Workers Runtime Compatibility
 
-| Package | Compatible With | Notes |
-|---------|-----------------|-------|
-| `@elithrar/workers-hono-rate-limit` | Hono v4.x, wrangler >=4.36.0 | Requires CF Rate Limit binding in wrangler.jsonc |
-| `@hono/zod-validator` | Hono v4.x, Zod ^3.x | Use `zValidator` import |
-| `drizzle-kit` ^0.31.x | `drizzle-orm` ^0.39.x | Versions must stay in sync — check drizzle-team/drizzle-orm releases |
-| Hono `jwt` middleware | Hono v4.x | Use factory pattern for `c.env.JWT_SECRET` access |
-| Workers Rate Limit binding | wrangler v4.36.0+ | `period` must be exactly 10 or 60 seconds |
-| Workers Logs | wrangler v3.78.6+ | Free plan: 200k logs/day, 3-day retention |
+All server-side packages are compatible with the Cloudflare Workers runtime:
+
+| Package | Runs Where | Compatible? | Notes |
+|---------|-----------|-------------|-------|
+| unified / rehype-* | Workers (SSR) | Yes | Pure JS, no Node.js native APIs |
+| shiki | Workers (SSR) | Yes | Bundled with Astro, WASM-based |
+| unist-util-visit | Workers (SSR) | Yes | Pure JS |
+| hast-util-to-string | Workers (SSR) | Yes | Pure JS |
+| minisearch | Browser only | N/A | Client-side search, never runs on Workers |
+| @astrojs/sitemap | Build-time only | N/A | Runs during `astro build`, not at runtime |
+
+**Known incompatibility to avoid:** `DOMParser`, `jsdom`, and `linkedom` are NOT available in Cloudflare Workers. Always use `rehype-parse` (which builds its own AST without DOM APIs) for HTML parsing.
 
 ---
 
-## Key Security PRs to Cherry-Pick
+## Theme Strategy
 
-These PRs are open on upstream `lane711/sonicjs` as of 2026-03-01. All seven were submitted by mmcintosh in February 2026 and are not merged. Cherry-pick directly into `sonicjs-fork/`:
+**Shiki theme:** Use `github-dark` (already the Astro default) to match the dark-themed docs site. Consider `github-dark-dimmed` for softer contrast if the full-black background is too harsh on code blocks. Both ship with Shiki out of the box.
 
-| PR | Title | What It Fixes |
-|----|-------|---------------|
-| #660 | security: move JWT secret to environment variable | Hardcoded JWT secret bug |
-| #659 | security: replace SHA-256 password hashing with PBKDF2 | Weak password storage |
-| #662 | security: add rate limiting to auth endpoints | No brute-force protection |
-| #661 | security: restrict CORS to explicit allowed origins | Wildcard CORS |
-| #663 | security: add real security headers middleware | Missing security headers |
-| #668 | security: add CSRF token protection (signed double-submit cookie) | CSRF on admin forms |
-| #671 | hotfix: sanitize public form submission data to prevent stored XSS | XSS via form inputs |
+**Tailwind prose:** Use `@tailwindcss/typography` prose classes for body text styling. Apply `prose-invert` for dark mode. Wrap rendered Quill HTML in a `prose` container for automatic typographic styling of headings, paragraphs, lists, blockquotes, and tables.
 
-**Note on PR #659 iteration count:** The PR uses 100,000 iterations, reduced from an initial 600,000 to accommodate the Workers production limit. This is the pragmatic maximum achievable. Accept this as correct, do not attempt to increase it.
+```html
+<article class="prose prose-invert prose-lg max-w-none">
+  <Fragment set:html={processedHtml} />
+</article>
+```
 
 ---
 
 ## Sources
 
-- [Cloudflare Workers Secrets docs](https://developers.cloudflare.com/workers/configuration/secrets/) — HIGH confidence; verified secrets vs env vars distinction
-- [Cloudflare Workers Rate Limiting API docs](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) — HIGH confidence; wrangler v4.36.0 requirement, period constraints
-- [Workers Logs docs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/) — HIGH confidence; pricing, configuration, wrangler version requirements
-- [R2 Workers API reference](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/) — HIGH confidence; range request options, ETag handling, conditional headers
-- [D1 Prepared Statements docs](https://developers.cloudflare.com/d1/worker-api/prepared-statements/) — HIGH confidence; SQL injection prevention via bind()
-- [Hono JWT middleware docs](https://hono.dev/docs/middleware/builtin/jwt) — HIGH confidence; factory pattern for env secret access
-- [Hono Secure Headers middleware docs](https://hono.dev/docs/middleware/builtin/secure-headers) — HIGH confidence; default headers list
-- [Hono CSRF middleware docs](https://hono.dev/docs/middleware/builtin/csrf) — HIGH confidence; known browser limitation noted
-- [cloudflare/workerd issue #1346](https://github.com/cloudflare/workerd/issues/1346) — HIGH confidence; 100k PBKDF2 iteration cap confirmed, not yet lifted in production
-- [lane711/sonicjs PRs](https://github.com/lane711/sonicjs/pulls) — HIGH confidence; all 7 mmcintosh security PRs confirmed open as of 2026-02-24
-- [@elithrar/workers-hono-rate-limit](https://github.com/elithrar/workers-hono-rate-limit) — MEDIUM confidence; repo verified, npm install path confirmed
-- [Drizzle ORM D1 docs](https://orm.drizzle.team/docs/connect-cloudflare-d1) — MEDIUM confidence; migration workflow confirmed, exact versions not pinned in docs
-- [WebSearch: Hono v4.12.0 release] — MEDIUM confidence; current version via GitHub releases
-- [WebSearch: drizzle-orm@0.39.0, drizzle-kit@0.31.1] — MEDIUM confidence; from search result citing Dec 2025 source
-
----
-
-*Stack research for: SonicJS fork — security hardening + production deployment on Cloudflare Workers*
-*Researched: 2026-03-01*
+- [Astro Syntax Highlighting Docs](https://docs.astro.build/en/guides/syntax-highlighting/) -- verified Shiki built-in, `<Code />` component (HIGH confidence)
+- [Astro Content Loader Reference](https://docs.astro.build/en/reference/content-loader-reference/) -- verified build-time only behavior (HIGH confidence)
+- [Expressive Code - Code Component](https://expressive-code.com/key-features/code-component/) -- dynamic `<Code>` props confirmed (HIGH confidence)
+- [Shiki Official Site](https://shiki.style/) -- programmatic API, theme support (HIGH confidence)
+- [rehype-sanitize GitHub](https://github.com/rehypejs/rehype-sanitize) -- HTML sanitization (HIGH confidence)
+- [rehype-slug GitHub](https://github.com/rehypejs/rehype-slug) -- heading IDs (HIGH confidence)
+- [Quill 2.0.3 XSS Vulnerability (CVE-2025-15056)](https://fluidattacks.com/advisories/diomedes/) -- confirms need for sanitization (HIGH confidence)
+- [MiniSearch GitHub](https://github.com/lucaong/minisearch) -- zero-dep search library (MEDIUM confidence, version from search)
+- [Pagefind](https://pagefind.app/) -- static-site search; confirmed incompatible with SSR (HIGH confidence)
+- [Starlight CMS Discussion #1790](https://github.com/withastro/starlight/discussions/1790) -- community confirms CMS content source limitations (MEDIUM confidence)
+- [npm-compare: fuse.js vs flexsearch vs minisearch](https://npm-compare.com/elasticlunr,flexsearch,fuse.js,minisearch) -- feature comparison (MEDIUM confidence)
