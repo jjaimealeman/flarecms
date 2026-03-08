@@ -1,89 +1,100 @@
-# SonicJS Fork — Production Edge CMS
+# Flare CMS — Documentation Site
 
 ## What This Is
 
-A soft fork of SonicJS v2.8.0 to build a production-ready headless CMS for Jaime's personal sites and 915website.com client projects. Runs entirely on Cloudflare Workers with D1 (database), R2 (media), KV (caching), and Durable Objects (real-time/sessions). Fixes critical security flaws, wires up broken features, and maintains plugin extensibility for future growth.
+A full documentation website for Flare CMS at flarecms.dev, built with Astro 5 on Cloudflare Pages and powered entirely by the FlareCMS backend (100% dogfooding). Replaces the current landing page with comprehensive technical documentation covering every feature of the CMS — from quickstart to deployment. All content is managed through the CMS admin UI, not static markdown files.
 
 ## Core Value
 
-A secure, reliable CMS that Jaime can deploy per-client and trust in production — no hardcoded secrets, no broken APIs, no manual workarounds.
+Prove that Flare CMS works by using it to power its own documentation — every page, every code example, every section managed through the admin at admin.flarecms.dev.
 
 ## Requirements
 
-### Validated
+### Validated (v1 Milestone — Complete)
 
-- ✓ Blog posts collection with CRUD + Quill editor — existing
-- ✓ News collection with CRUD + category field — existing
-- ✓ Pages collection (About, Contact, Uses) — existing
-- ✓ Astro 5 SSR frontend consuming CMS API — existing (v0.2.0)
-- ✓ Admin UI with collection management — existing (HTMX-based)
-- ✓ D1 database with Drizzle ORM — existing
-- ✓ Plugin system with 22 lifecycle hooks — existing
-- ✓ Two-tier caching (memory + KV) — existing (KV not yet wired)
-- ✓ Scalar API docs at /docs — existing
+- ✓ CMS backend with D1, R2, KV on Cloudflare Workers — v1
+- ✓ Admin UI with collection management (HTMX-based) — v1
+- ✓ Content CRUD with Quill editor — v1
+- ✓ Plugin system with 22 lifecycle hooks — v1
+- ✓ Three-tier caching (memory → KV → D1) — v1
+- ✓ PBKDF2 auth with JWT, rate limiting, CSRF, CORS — v1
+- ✓ Content workflow (publish/unpublish/schedule) — v1
+- ✓ Collection-level RBAC — v1
+- ✓ R2 media uploads with streaming — v1
+- ✓ Hook system with outgoing webhooks — v1
+- ✓ Astro 5 SSR frontend on Cloudflare Pages — v1
+- ✓ CI/CD via GitHub Actions — v1
+- ✓ SonicJS → Flare CMS rebrand complete — v1.2.0
 
-### Active
+### Active (Docs Site Milestone)
 
-- [ ] Fix hardcoded JWT secret — move to environment variable
-- [ ] Replace SHA-256 password hashing with PBKDF2 + per-user salt
-- [ ] Wire up API query filtering (QueryFilterBuilder exists, not connected)
-- [ ] Fix R2 media binding (BUCKET → MEDIA_BUCKET)
-- [ ] Wire up KV caching (CACHE_KV binding)
-- [ ] CORS with explicit allowed origins
-- [ ] Rate limiting on auth endpoints
-- [ ] Security headers middleware
-- [ ] CSRF token protection
-- [ ] SQL injection sanitization
-- [ ] XSS prevention on form submissions
-- [ ] Content status lifecycle (publish/unpublish/archive)
-- [ ] Soft-delete cascade for FK children
-- [ ] Deploy CMS backend to Cloudflare Workers (production)
-- [ ] Deploy Astro frontend to Cloudflare Pages (production)
-- [ ] CLI scaffolding for new client instances
-- [ ] Per-client deployment template (wrangler.toml + D1 + R2)
+- [ ] New `docs` collection with fields: title, slug, content (rich text), section, order, prev/next
+- [ ] New `docs-sections` collection for navigation grouping (name, slug, description, icon, order)
+- [ ] Homepage redesign: hero, feature cards, comparison table, CTA (per Stitch v2 mockup)
+- [ ] Docs layout: left sidebar nav, breadcrumbs, "On this page" TOC, prev/next navigation
+- [ ] Docs detail template: rich content rendering (headings, code blocks with tabs, callout boxes, tables)
+- [ ] Search functionality across documentation content
+- [ ] Dark theme with brand colors (navy #0F172A, cyan #29BDD9, orange #F5A623)
+- [ ] Code block syntax highlighting with copy button
+- [ ] Responsive design (mobile sidebar collapse)
+- [ ] Getting Started docs (quickstart, installation, project structure)
+- [ ] Core Concepts docs (architecture, collections, content workflow, media)
+- [ ] API Reference docs (REST endpoints, filtering, authentication, API tokens)
+- [ ] Admin docs (dashboard, content management, collection builder, plugins)
+- [ ] Security docs (auth system, rate limiting, CSRF, CORS, headers)
+- [ ] Plugins docs (plugin system, core plugins, building plugins)
+- [ ] Deployment docs (Cloudflare Workers, D1, R2, wrangler config, CI/CD)
+- [ ] Configuration docs (environment variables, bindings, settings)
+- [ ] Header: logo + nav links (Docs, API, Plugins, GitHub) + search
+- [ ] Footer: GitHub, Discord, MIT License, "Built with Flare CMS" badge
+- [ ] Seed all documentation content through CMS admin API
+- [ ] Deploy updated site to Cloudflare Pages
 
 ### Out of Scope
 
-- Multi-tenancy (single DB, multiple tenants) — too complex for v1, revisit in v2+
-- Custom admin UI rebuild — HTMX admin works, improve incrementally
-- TinyMCE integration — requires API key, Quill is sufficient
-- Upstream PR contributions — watch upstream, but don't block on merging
-- Mobile app / native clients — API-first already enables this later
-- Real-time collaboration (Durable Objects) — v2+ feature
-- Automated CI/CD pipeline — manual deploy via wrangler for now
+- Blog section — separate milestone after docs site is live
+- Community/contributors pages — add when community exists
+- npm package publishing — separate concern, not docs site work
+- Logo finalization — Jaime's Inkscape SVG, independent of this milestone
+- Stitch MCP integration — interesting but not needed for the build
+- Pricing page — no paid tier exists yet
+- Showcase page — no showcase projects yet
+- Dark/light mode toggle — dark mode only for v1 docs
 
 ## Context
 
-**Origin:** SonicJS is the only headless CMS built natively for Cloudflare Workers. v2.8.0 is functional but has critical security issues and broken features. Upstream maintainer (Lane Campbell) hasn't merged PRs in 2+ months. Community contributor @mmcintosh submitted 10+ security PRs that remain unmerged.
+**Origin:** SonicJS built their docs in Next.js — a project claiming to be for Cloudflare/Astro doesn't use its own product. FlareCMS should dogfood: the docs site IS the proof the product works.
 
-**Prior work:** Jaime has built two client sites (BabsBoutique with Astro+Nuxt, AutoPlusElPaso with Nuxt) each with custom backends. The goal is to stop rebuilding backends and have one CMS that works across clients.
+**Design reference:** Stitch v2 mockups at `/stitch-mockups-v2/` — 3 screens: homepage, docs page, docs detail. Dark navy theme with cyan/orange accents. Layout inspired by Astro docs and Tailwind docs.
 
-**Current state:**
-- `my-astro-cms/` — Working CMS instance with 3 collections, running locally
-- `my-astro-site/` — Astro frontend at v0.2.0 with blog, news, pages
-- `sonicjs-fork/` — Fork of upstream for core engine modifications
+**Existing site:** `packages/site/` is an Astro 5 SSR frontend with blog, news, pages routes. This milestone evolves it into a docs site while keeping existing functionality.
 
-**Payload CMS comparison:** Evaluated Payload's D1 template. Good patterns to cherry-pick (PBKDF2, login lockout, range requests, ETag caching) but Payload itself has CF Workers incompatibilities (Node.js streams, sharp dependency, memory usage).
+**Content strategy:** All docs content managed through FlareCMS admin. New collections (`docs`, `docs-sections`) provide structured content. Astro fetches from CMS API and renders with the docs layout.
+
+**Placeholder logo:** SVG at `packages/site/public/logo.svg` — cyan F with orange flare star. Final logo coming from Jaime's Inkscape work.
+
+**Future goals:** Claude for OSS program application (needs polished docs site), npm package publishing, flarecms.dev as the primary project identity.
 
 ## Constraints
 
-- **Runtime**: Cloudflare Workers only — no Node.js APIs, 128MB memory, 30s CPU time
-- **Database**: D1 (SQLite) — no JOINs across databases, 10GB max per DB
-- **Stack lock**: Must maintain SonicJS plugin system compatibility (22 hooks)
-- **Solo developer**: Jaime is the only maintainer — favor simplicity over features
-- **Budget**: Cloudflare free/Workers Paid tier — no expensive external services
-- **Security**: Must pass basic security audit before any client deployment
+- **Stack**: Astro 5 + Cloudflare Pages frontend, FlareCMS backend — no other frameworks
+- **Content**: 100% CMS-managed — no Astro content collections or static markdown
+- **Dogfooding**: Every page must be served from CMS API data — this is the point
+- **Solo developer**: Jaime is the only maintainer — favor clean, maintainable templates
+- **Budget**: Cloudflare free/Workers Paid tier — no paid external services
+- **Design**: Follow Stitch v2 mockups as closely as possible
+- **License**: MIT — all docs content is open source
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Soft fork (not hard fork) | Watch upstream for useful changes, diverge where needed | — Pending |
-| Single-tenant per client | Simpler, more secure, easier to reason about | — Pending |
-| Cherry-pick @mmcintosh PRs | Battle-tested security fixes, well-structured | — Pending |
-| Static images in Astro public/ | R2 binding broken, static is simpler for blog/page images | ✓ Good |
-| Quill over TinyMCE | No API key needed, built-in support | ✓ Good |
-| Skip codebase mapping | Deep context already gathered through manual exploration | ✓ Good |
+| 100% CMS content, no static markdown | Dogfooding is the core value — proves the product works | — Pending |
+| Dark theme only (no light mode toggle) | Simpler, matches brand, developer audience prefers dark | — Pending |
+| Two new collections (docs + docs-sections) | Structured nav + content separation, flexible ordering | — Pending |
+| Evolve existing packages/site, not rebuild | Leverage existing Astro setup, Cloudflare Pages deploy | — Pending |
+| Stitch v2 mockups as design reference | Professional, tested design — saves design iteration time | — Pending |
+| Seed docs via API, not manual entry | Reproducible, version-controlled content seeding | — Pending |
 
 ---
-*Last updated: 2026-03-01 after initialization*
+*Last updated: 2026-03-08 after initialization*
