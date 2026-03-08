@@ -215,7 +215,7 @@ export function getMDXEditorInitScript(config?: {
             spellChecker: false,
             minHeight: height + 'px',
             toolbar: toolbarButtons,
-            status: ['lines', 'words', 'cursor'],
+            status: ['upload-image', 'lines', 'words', 'cursor'],
             renderingConfig: {
               singleLineBreaks: false,
               codeSyntaxHighlighting: true
@@ -235,7 +235,7 @@ export function getMDXEditorInitScript(config?: {
                 return response.json();
               })
               .then(function(data) {
-                const imageUrl = data.url || (data.data && data.data.url) || (data.file && data.file.url);
+                const imageUrl = data.url || (data.file && (data.file.publicUrl || data.file.url)) || (data.data && data.data.url);
                 if (imageUrl) {
                   onSuccess(imageUrl);
                 } else {
