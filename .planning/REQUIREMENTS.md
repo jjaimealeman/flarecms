@@ -7,9 +7,9 @@
 
 ### Content Model
 
-- [ ] **CMS-01**: `docs` collection created with fields: title, slug, content (markdown), section, order, prev/next
-- [ ] **CMS-02**: `docs-sections` collection created with fields: name, slug, description, icon, order
-- [ ] **CMS-03**: EasyMDE (markdown) editor configured for docs collection instead of Quill
+- [x] **CMS-01**: `docs` collection created with fields: title, slug, content (markdown), section, order, prev/next
+- [x] **CMS-02**: `docs-sections` collection created with fields: name, slug, description, icon, order
+- [x] **CMS-03**: EasyMDE (markdown) editor configured for docs collection instead of Quill
 - [ ] **CMS-04**: All documentation content seeded via reproducible API script
 
 ### Layout & Navigation

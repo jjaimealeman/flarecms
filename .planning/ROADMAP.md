@@ -12,7 +12,7 @@ Transform the existing Astro 5 frontend into a full documentation website for Fl
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: CMS Content Foundation** - Collections, schemas, and EasyMDE editor for code-heavy docs
+- [x] **Phase 1: CMS Content Foundation** - Collections, schemas, and EasyMDE editor for code-heavy docs
 - [ ] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
 - [ ] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
 - [ ] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
@@ -33,8 +33,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Create docs-sections and docs collections, register in CMS, fix FieldType union
-- [ ] 01-02-PLAN.md — Enhance EasyMDE with code block button and R2 image upload, verify full workflow
+- [x] 01-01-PLAN.md — Create docs-sections and docs collections, register in CMS, fix FieldType union
+- [x] 01-02-PLAN.md — Enhance EasyMDE with code block button and R2 image upload, verify full workflow
 
 ### Phase 2: Docs Layout & Navigation
 **Goal**: A visitor navigating to /docs sees a responsive 3-column layout with working sidebar navigation, breadcrumbs, and prev/next links — all generated from CMS data
@@ -120,7 +120,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. CMS Content Foundation | 0/TBD | Not started | - |
+| 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
 | 2. Docs Layout & Navigation | 0/TBD | Not started | - |
 | 3. Content Rendering & Route | 0/TBD | Not started | - |
 | 4. Site Shell & Homepage | 0/TBD | Not started | - |
