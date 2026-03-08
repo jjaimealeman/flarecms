@@ -22,10 +22,10 @@
 
 ### Content Rendering
 
-- [ ] **RENDER-01**: Syntax highlighting via Shiki with dark theme matching site palette
-- [ ] **RENDER-02**: Code copy button on all code blocks
-- [ ] **RENDER-03**: Callout boxes (info, warning, tip, caution) with distinct icons and styling
-- [ ] **RENDER-04**: Tabbed code examples (TypeScript/JavaScript) per Stitch v2 mockups
+- [x] **RENDER-01**: Syntax highlighting via Shiki with dark theme matching site palette
+- [x] **RENDER-02**: Code copy button on all code blocks
+- [x] **RENDER-03**: Callout boxes (info, warning, tip, caution) with distinct icons and styling
+- [x] **RENDER-04**: Tabbed code examples (TypeScript/JavaScript) per Stitch v2 mockups
 
 ### Site
 
@@ -93,19 +93,19 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CMS-01 | Phase 1: CMS Content Foundation | Pending |
-| CMS-02 | Phase 1: CMS Content Foundation | Pending |
-| CMS-03 | Phase 1: CMS Content Foundation | Pending |
+| CMS-01 | Phase 1: CMS Content Foundation | Complete |
+| CMS-02 | Phase 1: CMS Content Foundation | Complete |
+| CMS-03 | Phase 1: CMS Content Foundation | Complete |
 | CMS-04 | Phase 5: Documentation Content | Pending |
-| NAV-01 | Phase 2: Docs Layout & Navigation | Pending |
-| NAV-02 | Phase 2: Docs Layout & Navigation | Pending |
-| NAV-03 | Phase 2: Docs Layout & Navigation | Pending |
-| NAV-04 | Phase 2: Docs Layout & Navigation | Pending |
-| NAV-05 | Phase 2: Docs Layout & Navigation | Pending |
-| RENDER-01 | Phase 3: Content Rendering & Route | Pending |
-| RENDER-02 | Phase 3: Content Rendering & Route | Pending |
-| RENDER-03 | Phase 3: Content Rendering & Route | Pending |
-| RENDER-04 | Phase 3: Content Rendering & Route | Pending |
+| NAV-01 | Phase 2: Docs Layout & Navigation | Complete |
+| NAV-02 | Phase 2: Docs Layout & Navigation | Complete |
+| NAV-03 | Phase 2: Docs Layout & Navigation | Complete |
+| NAV-04 | Phase 2: Docs Layout & Navigation | Complete |
+| NAV-05 | Phase 2: Docs Layout & Navigation | Complete |
+| RENDER-01 | Phase 3: Content Rendering & Route | Complete |
+| RENDER-02 | Phase 3: Content Rendering & Route | Complete |
+| RENDER-03 | Phase 3: Content Rendering & Route | Complete |
+| RENDER-04 | Phase 3: Content Rendering & Route | Complete |
 | SITE-01 | Phase 4: Site Shell & Homepage | Pending |
 | SITE-02 | Phase 6: Search & Deploy | Pending |
 | SITE-03 | Phase 4: Site Shell & Homepage | Pending |

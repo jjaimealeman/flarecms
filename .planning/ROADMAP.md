@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: CMS Content Foundation** - Collections, schemas, and EasyMDE editor for code-heavy docs
 - [ ] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
-- [ ] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
+- [x] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
 - [ ] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
 - [ ] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
 - [ ] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K and production deployment to Cloudflare Pages
@@ -64,9 +64,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Unified/rehype rendering pipeline (Shiki, callouts, heading anchors) + CSS styling + route wiring
-- [ ] 03-02-PLAN.md — Table of Contents component + client-side scripts (copy, tabs, scroll-spy, lightbox)
-- [ ] 03-03-PLAN.md — Visual verification of all rendering features
+- [x] 03-01-PLAN.md — Unified/rehype rendering pipeline (Shiki, callouts, heading anchors) + CSS styling + route wiring
+- [x] 03-02-PLAN.md — Table of Contents component + client-side scripts (copy, tabs, scroll-spy, lightbox)
+- [x] 03-03-PLAN.md — Visual verification of all rendering features
 
 ### Phase 4: Site Shell & Homepage
 **Goal**: The site has a polished header, footer, redesigned homepage per Stitch v2 mockups, proper SEO metadata, and "Edit in CMS" links on every docs page
@@ -123,7 +123,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
 | 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
-| 3. Content Rendering & Route | 0/3 | Planned | - |
+| 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
 | 4. Site Shell & Homepage | 0/TBD | Not started | - |
 | 5. Documentation Content | 0/TBD | Not started | - |
 | 6. Search & Deploy | 0/TBD | Not started | - |
