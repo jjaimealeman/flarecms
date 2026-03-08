@@ -174,14 +174,13 @@ function processChildren(node: Root | Element): void {
 const processor = unified()
   .use(remarkParse)
   .use(remarkRehype, { allowDangerousHtml: true })
-  .use(rehypeRaw)
   .use(rehypeCallouts, { theme: 'github' })
   .use(rehypePrettyCode, {
     theme: {
       dark: 'catppuccin-mocha',
       light: 'catppuccin-latte',
     },
-    defaultLang: { block: 'plaintext', inline: 'plaintext' },
+    defaultLang: { block: 'plaintext' },
     keepBackground: false,
     filterMetaString(meta: string) {
       // Strip tab="..." from meta so rehype-pretty-code ignores it
@@ -207,6 +206,7 @@ const processor = unified()
       children: [{ type: 'text', value: '#' }],
     },
   })
+  .use(rehypeRaw)
   .use(rehypeExternalLinks, {
     target: '_blank',
     rel: ['noopener', 'noreferrer'],
@@ -222,7 +222,8 @@ export interface RenderResult {
 }
 
 export async function renderMarkdown(markdown: string): Promise<RenderResult> {
-  const result = await processor.process(markdown)
+  // Strip \r from Windows-style line endings (CMS stores \r\n which breaks meta string parsing)
+  const result = await processor.process(markdown.replace(/\r\n?/g, '\n'))
   const html = String(result)
   const headings = extractHeadings(html)
   return { html, headings }
@@ -235,7 +236,10 @@ export function extractHeadings(
   const regex = /<h([23])\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/h[23]>/gi
   let match
   while ((match = regex.exec(html)) !== null) {
-    const text = match[3].replace(/<[^>]+>/g, '').trim()
+    const text = match[3]
+      .replace(/<a[^>]*class="heading-anchor"[^>]*>[\s\S]*?<\/a>/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .trim()
     headings.push({ id: match[2], text, level: parseInt(match[1]) })
   }
   return headings

@@ -21,13 +21,13 @@
   border-top-right-radius: 0;
 }
 
-/* Pre element */
+/* Pre element -- !important to override Tailwind prose-invert pre bg */
 [data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
   padding: 1rem 0;
   border-radius: 0.5rem;
-  border: 1px solid rgb(51 65 85 / 0.5);
-  background: rgb(15 23 42);
+  border: 1px solid rgb(71 85 105 / 0.7) !important;
+  background-color: rgb(30 41 59) !important;
 }
 
 /* Code inside pre -- ensure no extra background from prose */
@@ -88,12 +88,15 @@
 }
 
 /* Dual theme switching via CSS variables (dark-first since site is dark) */
+/* Dark mode (default): use dark theme vars */
+[data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-dark) !important;
+}
+
 /* Light mode: use light theme vars */
 @media (prefers-color-scheme: light) {
-  .shiki,
-  .shiki span {
+  [data-rehype-pretty-code-figure] code span {
     color: var(--shiki-light) !important;
-    background-color: var(--shiki-light-bg) !important;
   }
 
   [data-rehype-pretty-code-figure] pre {

@@ -1,30 +1,43 @@
 ---
-import Layout from './Layout.astro'
-import DocsSidebar from '../components/docs/DocsSidebar.astro'
-import Breadcrumbs from '../components/docs/Breadcrumbs.astro'
-import PrevNext from '../components/docs/PrevNext.astro'
-import IconMenu from '~icons/lucide/menu'
-import IconX from '~icons/lucide/x'
-import type { NavSection } from '../lib/docs-nav'
+import Layout from "./Layout.astro";
+import DocsSidebar from "../components/docs/DocsSidebar.astro";
+import Breadcrumbs from "../components/docs/Breadcrumbs.astro";
+import PrevNext from "../components/docs/PrevNext.astro";
+import IconMenu from "~icons/lucide/menu";
+import IconX from "~icons/lucide/x";
+import type { NavSection } from "../lib/docs-nav";
 
 interface Props {
-  title: string
-  section: { name: string; slug: string }
-  breadcrumbs: Array<{ label: string; href: string }>
-  prev?: { title: string; section: string; href: string }
-  next?: { title: string; section: string; href: string }
-  sections: NavSection[]
-  currentPath: string
-  headings?: Array<{ id: string; text: string; level: number }>
+  title: string;
+  section: { name: string; slug: string };
+  breadcrumbs: Array<{ label: string; href: string }>;
+  prev?: { title: string; section: string; href: string };
+  next?: { title: string; section: string; href: string };
+  sections: NavSection[];
+  currentPath: string;
+  headings?: Array<{ id: string; text: string; level: number }>;
 }
 
-const { title, section, breadcrumbs, prev, next, sections, currentPath, headings } = Astro.props
+const {
+  title,
+  section,
+  breadcrumbs,
+  prev,
+  next,
+  sections,
+  currentPath,
+  headings,
+} = Astro.props;
 ---
 
 <Layout title={title}>
-  <div class="max-w-[1400px] mx-auto min-h-[calc(100vh-65px)] grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_220px]">
+  <div
+    class="max-w-[1400px] mx-auto min-h-[calc(100vh-65px)] grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_220px]"
+  >
     <!-- Desktop sidebar -->
-    <aside class="hidden md:block border-r border-slate-800 py-6 px-4 overflow-y-auto sticky top-[65px] h-[calc(100vh-65px)]">
+    <aside
+      class="hidden md:block border-r border-slate-800 py-6 px-4 overflow-y-auto sticky top-[65px] h-[calc(100vh-65px)]"
+    >
       <DocsSidebar sections={sections} currentPath={currentPath} />
     </aside>
 
@@ -40,7 +53,9 @@ const { title, section, breadcrumbs, prev, next, sections, currentPath, headings
     </div>
 
     <!-- TOC column (placeholder for Phase 3) -->
-    <aside class="hidden xl:block sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto py-8 px-4 border-l border-slate-800">
+    <aside
+      class="hidden xl:block sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto py-8 px-4 border-l border-slate-800"
+    >
       <slot name="toc" />
     </aside>
   </div>
@@ -57,11 +72,19 @@ const { title, section, breadcrumbs, prev, next, sections, currentPath, headings
   <!-- Mobile overlay -->
   <div id="docs-mobile-overlay" class="fixed inset-0 z-50 hidden">
     <!-- Backdrop -->
-    <div id="docs-mobile-backdrop" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+    <div
+      id="docs-mobile-backdrop"
+      class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+    >
+    </div>
 
     <!-- Slide-in panel -->
-    <div class="absolute left-0 top-0 bottom-0 w-80 bg-slate-900 border-r border-slate-800 overflow-y-auto">
-      <div class="flex items-center justify-between p-4 border-b border-slate-800">
+    <div
+      class="absolute left-0 top-0 bottom-0 w-80 bg-slate-900 border-r border-slate-800 overflow-y-auto"
+    >
+      <div
+        class="flex items-center justify-between p-4 border-b border-slate-800"
+      >
         <span class="text-sm font-semibold text-slate-300">Documentation</span>
         <button
           id="docs-mobile-close-btn"
@@ -78,191 +101,202 @@ const { title, section, breadcrumbs, prev, next, sections, currentPath, headings
   </div>
 
   <script is:inline>
-    ;(function () {
-      var btn = document.getElementById('docs-mobile-menu-btn')
-      var overlay = document.getElementById('docs-mobile-overlay')
-      var backdrop = document.getElementById('docs-mobile-backdrop')
-      var closeBtn = document.getElementById('docs-mobile-close-btn')
+    (function () {
+      var btn = document.getElementById("docs-mobile-menu-btn");
+      var overlay = document.getElementById("docs-mobile-overlay");
+      var backdrop = document.getElementById("docs-mobile-backdrop");
+      var closeBtn = document.getElementById("docs-mobile-close-btn");
 
       function open() {
-        overlay && overlay.classList.remove('hidden')
+        overlay && overlay.classList.remove("hidden");
       }
       function close() {
-        overlay && overlay.classList.add('hidden')
+        overlay && overlay.classList.add("hidden");
       }
 
-      btn && btn.addEventListener('click', open)
-      backdrop && backdrop.addEventListener('click', close)
-      closeBtn && closeBtn.addEventListener('click', close)
+      btn && btn.addEventListener("click", open);
+      backdrop && backdrop.addEventListener("click", close);
+      closeBtn && closeBtn.addEventListener("click", close);
 
       // Close when any nav link is clicked
       if (overlay) {
-        overlay.addEventListener('click', function (e) {
-          if (e.target && e.target.closest && e.target.closest('a')) {
-            close()
+        overlay.addEventListener("click", function (e) {
+          if (e.target && e.target.closest && e.target.closest("a")) {
+            close();
           }
-        })
+        });
       }
-    })()
+    })();
   </script>
 
   <!-- Copy button for code blocks -->
   <script is:inline>
-    ;(function () {
-      var figures = document.querySelectorAll('[data-rehype-pretty-code-figure]')
+    (function () {
+      var figures = document.querySelectorAll(
+        "[data-rehype-pretty-code-figure]",
+      );
       figures.forEach(function (figure) {
-        var pre = figure.querySelector('pre')
-        var code = figure.querySelector('code')
-        if (!pre || !code) return
+        var pre = figure.querySelector("pre");
+        var code = figure.querySelector("code");
+        if (!pre || !code) return;
 
-        var btn = document.createElement('button')
-        btn.className = 'copy-btn'
-        btn.setAttribute('aria-label', 'Copy code')
-        btn.textContent = 'Copy'
+        var btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.setAttribute("aria-label", "Copy code");
+        btn.textContent = "Copy";
 
-        btn.addEventListener('click', function () {
-          navigator.clipboard.writeText(code.textContent || '').then(function () {
-            btn.textContent = 'Copied!'
-            btn.classList.add('copied')
-            setTimeout(function () {
-              btn.textContent = 'Copy'
-              btn.classList.remove('copied')
-            }, 2000)
-          })
-        })
+        btn.addEventListener("click", function () {
+          navigator.clipboard
+            .writeText(code.textContent || "")
+            .then(function () {
+              btn.textContent = "Copied!";
+              btn.classList.add("copied");
+              setTimeout(function () {
+                btn.textContent = "Copy";
+                btn.classList.remove("copied");
+              }, 2000);
+            });
+        });
 
-        pre.style.position = 'relative'
-        pre.appendChild(btn)
-      })
-    })()
+        pre.style.position = "relative";
+        pre.appendChild(btn);
+      });
+    })();
   </script>
 
   <!-- Tab groups -->
   <script is:inline>
-    ;(function () {
-      var groups = document.querySelectorAll('[data-tab-group]')
-      if (!groups.length) return
+    (function () {
+      var groups = document.querySelectorAll("[data-tab-group]");
+      if (!groups.length) return;
 
-      var prefs = {}
+      var prefs = {};
       try {
-        prefs = JSON.parse(localStorage.getItem('tabPreferences') || '{}')
+        prefs = JSON.parse(localStorage.getItem("tabPreferences") || "{}");
       } catch (e) {}
 
       function activateTab(group, tabName) {
-        var tabs = group.querySelectorAll('[data-tab]')
-        var panels = group.querySelectorAll('[data-tab-panel]')
+        var tabs = group.querySelectorAll("[data-tab]");
+        var panels = group.querySelectorAll("[data-tab-panel]");
 
         tabs.forEach(function (t) {
-          var isActive = t.getAttribute('data-tab') === tabName
-          t.classList.toggle('active', isActive)
-          t.setAttribute('aria-selected', isActive ? 'true' : 'false')
-        })
+          var isActive = t.getAttribute("data-tab") === tabName;
+          t.classList.toggle("active", isActive);
+          t.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
 
         panels.forEach(function (p) {
-          var isActive = p.getAttribute('data-tab-panel') === tabName
-          p.style.display = isActive ? '' : 'none'
-        })
+          var isActive = p.getAttribute("data-tab-panel") === tabName;
+          p.style.display = isActive ? "" : "none";
+        });
       }
 
       groups.forEach(function (group) {
-        var category = group.getAttribute('data-tab-group')
-        var tabs = group.querySelectorAll('[data-tab]')
-        if (!tabs.length) return
+        var category = group.getAttribute("data-tab-group");
+        var tabs = group.querySelectorAll("[data-tab]");
+        if (!tabs.length) return;
 
         // Restore preference or use first tab
-        var preferred = prefs[category] || tabs[0].getAttribute('data-tab')
+        var preferred = prefs[category] || tabs[0].getAttribute("data-tab");
         // Verify preferred tab exists in this group
         var hasPreferred = Array.from(tabs).some(function (t) {
-          return t.getAttribute('data-tab') === preferred
-        })
-        if (!hasPreferred) preferred = tabs[0].getAttribute('data-tab')
+          return t.getAttribute("data-tab") === preferred;
+        });
+        if (!hasPreferred) preferred = tabs[0].getAttribute("data-tab");
 
-        activateTab(group, preferred)
+        activateTab(group, preferred);
 
         tabs.forEach(function (tab) {
-          tab.addEventListener('click', function () {
-            var name = tab.getAttribute('data-tab')
-            activateTab(group, name)
+          tab.addEventListener("click", function () {
+            var name = tab.getAttribute("data-tab");
+            activateTab(group, name);
 
             // Persist preference
-            prefs[category] = name
+            prefs[category] = name;
             try {
-              localStorage.setItem('tabPreferences', JSON.stringify(prefs))
+              localStorage.setItem("tabPreferences", JSON.stringify(prefs));
             } catch (e) {}
 
             // Sync other groups with same category
             groups.forEach(function (otherGroup) {
-              if (otherGroup !== group && otherGroup.getAttribute('data-tab-group') === category) {
-                activateTab(otherGroup, name)
+              if (
+                otherGroup !== group &&
+                otherGroup.getAttribute("data-tab-group") === category
+              ) {
+                activateTab(otherGroup, name);
               }
-            })
-          })
-        })
-      })
-    })()
+            });
+          });
+        });
+      });
+    })();
   </script>
 
   <!-- Scroll-spy for TOC -->
   <script is:inline>
-    ;(function () {
-      var headings = document.querySelectorAll('.prose h2[id], .prose h3[id]')
-      var tocLinks = document.querySelectorAll('[data-toc-link]')
-      if (!headings.length || !tocLinks.length) return
+    (function () {
+      var headings = document.querySelectorAll(".prose h2[id], .prose h3[id]");
+      var tocLinks = document.querySelectorAll("[data-toc-link]");
+      if (!headings.length || !tocLinks.length) return;
 
       var observer = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (entry) {
             if (entry.isIntersecting) {
               tocLinks.forEach(function (link) {
-                link.classList.remove('text-flare-400', 'font-medium')
-              })
-              var active = document.querySelector('[data-toc-link="' + entry.target.id + '"]')
+                link.classList.remove("toc-active");
+              });
+              var active = document.querySelector(
+                '[data-toc-link="' + entry.target.id + '"]',
+              );
               if (active) {
-                active.classList.add('text-flare-400', 'font-medium')
+                active.classList.add("toc-active");
               }
             }
-          })
+          });
         },
-        { rootMargin: '-80px 0px -80% 0px' }
-      )
+        { rootMargin: "-80px 0px -80% 0px" },
+      );
 
       headings.forEach(function (h) {
-        observer.observe(h)
-      })
-    })()
+        observer.observe(h);
+      });
+    })();
   </script>
 
   <!-- Lightbox for images -->
   <script is:inline>
-    ;(function () {
-      var images = document.querySelectorAll('.prose img')
+    (function () {
+      var images = document.querySelectorAll(".prose img");
       images.forEach(function (img) {
-        img.style.cursor = 'pointer'
-        img.addEventListener('click', function () {
-          var overlay = document.createElement('div')
-          overlay.className = 'fixed inset-0 z-[60] bg-slate-950/90 flex items-center justify-center cursor-pointer'
+        img.style.cursor = "pointer";
+        img.addEventListener("click", function () {
+          var overlay = document.createElement("div");
+          overlay.className =
+            "fixed inset-0 z-[60] bg-slate-950/90 flex items-center justify-center cursor-pointer";
 
-          var fullImg = document.createElement('img')
-          fullImg.src = img.src
-          fullImg.alt = img.alt || ''
-          fullImg.className = 'max-w-[90vw] max-h-[90vh] object-contain rounded-lg'
+          var fullImg = document.createElement("img");
+          fullImg.src = img.src;
+          fullImg.alt = img.alt || "";
+          fullImg.className =
+            "max-w-[90vw] max-h-[90vh] object-contain rounded-lg";
 
-          overlay.appendChild(fullImg)
-          document.body.appendChild(overlay)
+          overlay.appendChild(fullImg);
+          document.body.appendChild(overlay);
 
-          overlay.addEventListener('click', function () {
-            overlay.remove()
-          })
+          overlay.addEventListener("click", function () {
+            overlay.remove();
+          });
 
           function onEscape(e) {
-            if (e.key === 'Escape') {
-              overlay.remove()
-              document.removeEventListener('keydown', onEscape)
+            if (e.key === "Escape") {
+              overlay.remove();
+              document.removeEventListener("keydown", onEscape);
             }
           }
-          document.addEventListener('keydown', onEscape)
-        })
-      })
-    })()
+          document.addEventListener("keydown", onEscape);
+        });
+      });
+    })();
   </script>
 </Layout>
