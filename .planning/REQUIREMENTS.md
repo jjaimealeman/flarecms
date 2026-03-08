@@ -1,142 +1,132 @@
-# Requirements: SonicJS Fork — Production Edge CMS
+# Requirements: Flare CMS — Documentation Site
 
-**Defined:** 2026-03-01
-**Core Value:** A secure, reliable CMS that Jaime can deploy per-client and trust in production
+**Defined:** 2026-03-08
+**Core Value:** Prove that Flare CMS works by using it to power its own documentation
 
 ## v1 Requirements
 
-### Foundation
+### Content Model
 
-- [x] **FOUND-01**: Fix R2 binding mismatch (BUCKET → MEDIA_BUCKET in wrangler.toml)
-- [x] **FOUND-02**: Establish fork tracking (FORK-CHANGES.md, upstream remote, `[fork-patch]` commit convention)
-- [x] **FOUND-03**: Cherry-pick 7 @mmcintosh security PRs (#659, #660, #661, #662, #663, #668, #671)
-- [x] **FOUND-04**: Add startup binding validation (fail fast if D1/R2/KV bindings missing)
-- [x] **FOUND-05**: Create staging D1 database for migration testing
+- [ ] **CMS-01**: `docs` collection created with fields: title, slug, content (markdown), section, order, prev/next
+- [ ] **CMS-02**: `docs-sections` collection created with fields: name, slug, description, icon, order
+- [ ] **CMS-03**: EasyMDE (markdown) editor configured for docs collection instead of Quill
+- [ ] **CMS-04**: All documentation content seeded via reproducible API script
 
-### Security
+### Layout & Navigation
 
-- [x] **SEC-01**: JWT secret from environment variable (wrangler secret put, startup assertion rejects hardcoded default)
-- [x] **SEC-02**: PBKDF2 password hashing with per-user salt (100k iterations via Web Crypto, backward-compatible re-hash on login)
-- [x] **SEC-03**: Rate limiting on auth endpoints (CF native binding, 10s/60s periods)
-- [x] **SEC-04**: Security headers middleware (HSTS, X-Frame-Options, X-Content-Type-Options via Hono secureHeaders)
-- [x] **SEC-05**: CORS with explicit allowed origins (replace wildcard * with configured domains)
-- [x] **SEC-06**: CSRF protection on admin routes (Hono built-in header-based CSRF)
+- [ ] **NAV-01**: 3-column responsive layout (sidebar, content, TOC) per Stitch v2 mockups
+- [ ] **NAV-02**: Left sidebar navigation generated from CMS docs-sections data with collapsible sections and active state
+- [ ] **NAV-03**: Breadcrumbs showing Docs > Section > Page path
+- [ ] **NAV-04**: Prev/next navigation at bottom of each docs page
+- [ ] **NAV-05**: Mobile responsive — sidebar collapses to hamburger menu, content reflows, TOC hidden/expandable on small screens
 
-### Content Workflow
+### Content Rendering
 
-- [x] **CONT-01**: Fix API query filtering (parse filter[field][op]=value into D1 WHERE clauses)
-- [x] **CONT-02**: Content unpublish (published → draft bidirectional transition with state machine)
-- [x] **CONT-03**: Workflow history audit trail (log all status transitions with user + timestamp)
-- [x] **CONT-04**: Content versioning UI fix (modal close bug #666, stable rollback)
-- [x] **CONT-05**: Content scheduling (publish at future date via Workers scheduled triggers)
-- [x] **CONT-06**: Slug uniqueness enforcement (per-collection unique constraint)
+- [ ] **RENDER-01**: Syntax highlighting via Shiki with dark theme matching site palette
+- [ ] **RENDER-02**: Code copy button on all code blocks
+- [ ] **RENDER-03**: Callout boxes (info, warning, tip, caution) with distinct icons and styling
+- [ ] **RENDER-04**: Tabbed code examples (TypeScript/JavaScript) per Stitch v2 mockups
 
-### Access Control
+### Site
 
-- [x] **AUTH-01**: Collection-level RBAC (admin, editor, author, viewer roles with per-collection permissions)
-- [x] **AUTH-02**: Read-only API tokens for frontend queries (scoped tokens, no write access)
+- [ ] **SITE-01**: Homepage redesign with hero, feature cards, comparison table, CTA per Stitch v2 mockup
+- [ ] **SITE-02**: Client-side search with MiniSearch and Cmd+K keyboard shortcut
+- [ ] **SITE-03**: "Edit in CMS" link on every docs page linking to admin edit URL
+- [ ] **SITE-04**: SEO — auto-generated sitemap, proper meta tags, Open Graph tags per page
+- [ ] **SITE-05**: Header with logo, nav links (Docs, API, Plugins, GitHub), search bar
+- [ ] **SITE-06**: Footer with GitHub, Discord, MIT License badge, "Built with Flare CMS" badge
 
-### Media
+### Documentation Content
 
-- [x] **MEDIA-01**: Fix R2 media uploads (depends on FOUND-01 binding fix, fix PDF upload)
-- [x] **MEDIA-02**: Streaming upload (replace file.arrayBuffer() with file.stream() to avoid 128MB limit)
-- [x] **MEDIA-03**: Cache API for media serving (immutable CDN caching with ETag support)
-
-### Caching
-
-- [x] **CACHE-01**: Wire KV namespace into three-tier cache (memory → KV → D1)
-- [x] **CACHE-02**: Write-through cache invalidation on content mutations
-
-### Integration
-
-- [x] **INTG-01**: Wire hook system (replace emitEvent() stubs with hookSystem.execute() calls in routes)
-- [x] **INTG-02**: Outgoing webhooks (trigger Astro rebuild on content publish)
+- [ ] **DOCS-01**: Getting Started docs (quickstart, installation, project structure)
+- [ ] **DOCS-02**: Core Concepts docs (architecture, collections, content workflow, media)
+- [ ] **DOCS-03**: API Reference docs (REST endpoints, filtering, authentication, API tokens)
+- [ ] **DOCS-04**: Admin docs (dashboard, content management, collection builder, plugins)
+- [ ] **DOCS-05**: Security docs (auth system, rate limiting, CSRF, CORS, security headers)
+- [ ] **DOCS-06**: Plugins docs (plugin system, core plugins, building custom plugins)
+- [ ] **DOCS-07**: Deployment docs (Cloudflare Workers, D1, R2, wrangler config, CI/CD)
+- [ ] **DOCS-08**: Configuration docs (environment variables, bindings, settings)
 
 ### Deployment
 
-- [x] **DEPLOY-01**: Deploy CMS backend to Cloudflare Workers (production)
-- [x] **DEPLOY-02**: Deploy Astro frontend to Cloudflare Pages (production)
-- [x] **DEPLOY-03**: Per-client wrangler environment template (reusable setup for new client instances)
-- [x] **DEPLOY-04**: Workers Logs observability (structured logging for auth events and errors)
+- [ ] **DEPLOY-01**: Deploy updated site to Cloudflare Pages with docs routes live
 
 ## v2 Requirements
 
-### Access Control
+### Blog
 
-- **AUTH-03**: Field-level permissions (Directus-style granular per-field RBAC)
-- **AUTH-04**: 2FA for admin users
-- **AUTH-05**: Login attempt lockout (lock_until + login_attempts columns)
+- **BLOG-01**: Blog collection and listing/detail pages
+- **BLOG-02**: Blog categories and tag filtering
+- **BLOG-03**: RSS feed
 
-### Content
+### Community
 
-- **CONT-07**: TypeScript SDK with auto-generated types from collection config
-- **CONT-08**: Content calendar view for editorial teams
-- **CONT-09**: Import/Export (JSON/CSV) for client onboarding
+- **COMM-01**: Contributors page
+- **COMM-02**: Discord integration widget
+- **COMM-03**: Changelog page (auto-generated from git)
 
-### Integration
+### Advanced Docs
 
-- **INTG-03**: API token management UI in admin dashboard
-- **INTG-04**: Live content preview in admin (iframe bridge to frontend)
+- **ADV-01**: Version selector (docs per CMS version)
+- **ADV-02**: Interactive API playground / try-it-out
+- **ADV-03**: Dark/light mode toggle
 
-### Platform
+### Distribution
 
-- **PLAT-01**: Multi-tenancy (single DB, multiple tenants with isolation)
-- **PLAT-02**: GraphQL API
-- **PLAT-03**: i18n / localization support
+- **DIST-01**: npm package publishing guide
+- **DIST-02**: `npx create-flare-app` CLI scaffolding tool
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Full WYSIWYG page builder | Design-driven content modeling anti-pattern; creates unmaintainable content types |
-| Multi-database support (MySQL/Postgres) | D1/SQLite is an edge-native feature, not a limitation |
-| Built-in ecommerce | Separate vertical; recommend Shopify + API integration |
-| Real-time collaborative editing | Durable Objects complexity; marginal benefit for CMS use case |
-| TinyMCE integration | Requires API key; Quill is sufficient |
-| Custom admin UI rebuild | HTMX admin works; improve incrementally |
-| Generative AI content creation | Better as optional plugin, not core feature |
-| Headless email/newsletter | Separate concern; use Mailchimp/Buttondown via webhooks |
+| Starlight integration | Incompatible — requires build-time markdown, not runtime CMS content |
+| Astro Content Collections | Build-time only — we need SSR fetching from CMS API |
+| Pagefind search | Requires build-time HTML crawling — incompatible with CMS-driven content |
+| i18n / localization | No international audience yet — add when demand exists |
+| AI chatbot for docs | High complexity, low value at current scale |
+| Pricing page | No paid tier exists |
+| Showcase page | No showcase projects exist yet |
+| Static markdown fallback | Defeats dogfooding purpose — 100% CMS or nothing |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 0 | Complete |
-| FOUND-02 | Phase 0 | Complete |
-| FOUND-03 | Phase 0 | Complete |
-| FOUND-04 | Phase 0 | Complete |
-| FOUND-05 | Phase 0 | Complete |
-| SEC-01 | Phase 1 | Complete |
-| SEC-02 | Phase 1 | Complete |
-| SEC-03 | Phase 1 | Complete |
-| SEC-04 | Phase 1 | Complete |
-| SEC-05 | Phase 1 | Complete |
-| SEC-06 | Phase 1 | Complete |
-| CONT-01 | Phase 2 | Complete |
-| CONT-02 | Phase 2 | Complete |
-| CONT-03 | Phase 2 | Complete |
-| CONT-04 | Phase 2 | Complete |
-| CONT-05 | Phase 2 + 6 | Complete |
-| CONT-06 | Phase 2 | Complete |
-| AUTH-01 | Phase 2 + 6 | Complete |
-| AUTH-02 | Phase 2 | Complete |
-| MEDIA-01 | Phase 3 | Complete |
-| MEDIA-02 | Phase 3 | Complete |
-| MEDIA-03 | Phase 3 | Complete |
-| CACHE-01 | Phase 3 | Complete |
-| CACHE-02 | Phase 3 | Complete |
-| INTG-01 | Phase 4 | Complete |
-| INTG-02 | Phase 4 | Complete |
-| DEPLOY-01 | Phase 5 | Complete |
-| DEPLOY-02 | Phase 5 | Complete |
-| DEPLOY-03 | Phase 5 | Complete |
-| DEPLOY-04 | Phase 5 | Complete |
+| CMS-01 | TBD | Pending |
+| CMS-02 | TBD | Pending |
+| CMS-03 | TBD | Pending |
+| CMS-04 | TBD | Pending |
+| NAV-01 | TBD | Pending |
+| NAV-02 | TBD | Pending |
+| NAV-03 | TBD | Pending |
+| NAV-04 | TBD | Pending |
+| NAV-05 | TBD | Pending |
+| RENDER-01 | TBD | Pending |
+| RENDER-02 | TBD | Pending |
+| RENDER-03 | TBD | Pending |
+| RENDER-04 | TBD | Pending |
+| SITE-01 | TBD | Pending |
+| SITE-02 | TBD | Pending |
+| SITE-03 | TBD | Pending |
+| SITE-04 | TBD | Pending |
+| SITE-05 | TBD | Pending |
+| SITE-06 | TBD | Pending |
+| DOCS-01 | TBD | Pending |
+| DOCS-02 | TBD | Pending |
+| DOCS-03 | TBD | Pending |
+| DOCS-04 | TBD | Pending |
+| DOCS-05 | TBD | Pending |
+| DOCS-06 | TBD | Pending |
+| DOCS-07 | TBD | Pending |
+| DOCS-08 | TBD | Pending |
+| DEPLOY-01 | TBD | Pending |
 
 **Coverage:**
-- v1 requirements: 30 total
-- Mapped to phases: 30
-- Unmapped: 0 — full coverage
+- v1 requirements: 28 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 28
 
 ---
-*Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 — traceability mapped after roadmap creation*
+*Requirements defined: 2026-03-08*
+*Last updated: 2026-03-08 after initial definition*
