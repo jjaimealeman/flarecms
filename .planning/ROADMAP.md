@@ -46,11 +46,11 @@ Plans:
   3. Breadcrumbs display the path Docs > Section Name > Page Title on every docs page
   4. Prev/next navigation at the bottom of each docs page links to the correct adjacent pages based on section and order
   5. Mobile sidebar collapses to a hamburger toggle and content reflows to full width
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Data layer (API functions, nav tree builder) and layout/navigation components (DocsLayout, sidebar, breadcrumbs, prev/next)
+- [ ] 02-02-PLAN.md — Route wiring (docs landing page, catch-all route) and visual verification
 
 ### Phase 3: Content Rendering & Route
 **Goal**: A visitor can read any docs page with properly highlighted code blocks, copy buttons, callout boxes, and tabbed code examples
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
-| 2. Docs Layout & Navigation | 0/TBD | Not started | - |
+| 2. Docs Layout & Navigation | 0/2 | Not started | - |
 | 3. Content Rendering & Route | 0/TBD | Not started | - |
 | 4. Site Shell & Homepage | 0/TBD | Not started | - |
 | 5. Documentation Content | 0/TBD | Not started | - |
