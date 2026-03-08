@@ -105,4 +105,164 @@ const { title, section, breadcrumbs, prev, next, sections, currentPath, headings
       }
     })()
   </script>
+
+  <!-- Copy button for code blocks -->
+  <script is:inline>
+    ;(function () {
+      var figures = document.querySelectorAll('[data-rehype-pretty-code-figure]')
+      figures.forEach(function (figure) {
+        var pre = figure.querySelector('pre')
+        var code = figure.querySelector('code')
+        if (!pre || !code) return
+
+        var btn = document.createElement('button')
+        btn.className = 'copy-btn'
+        btn.setAttribute('aria-label', 'Copy code')
+        btn.textContent = 'Copy'
+
+        btn.addEventListener('click', function () {
+          navigator.clipboard.writeText(code.textContent || '').then(function () {
+            btn.textContent = 'Copied!'
+            btn.classList.add('copied')
+            setTimeout(function () {
+              btn.textContent = 'Copy'
+              btn.classList.remove('copied')
+            }, 2000)
+          })
+        })
+
+        pre.style.position = 'relative'
+        pre.appendChild(btn)
+      })
+    })()
+  </script>
+
+  <!-- Tab groups -->
+  <script is:inline>
+    ;(function () {
+      var groups = document.querySelectorAll('[data-tab-group]')
+      if (!groups.length) return
+
+      var prefs = {}
+      try {
+        prefs = JSON.parse(localStorage.getItem('tabPreferences') || '{}')
+      } catch (e) {}
+
+      function activateTab(group, tabName) {
+        var tabs = group.querySelectorAll('[data-tab]')
+        var panels = group.querySelectorAll('[data-tab-panel]')
+
+        tabs.forEach(function (t) {
+          var isActive = t.getAttribute('data-tab') === tabName
+          t.classList.toggle('active', isActive)
+          t.setAttribute('aria-selected', isActive ? 'true' : 'false')
+        })
+
+        panels.forEach(function (p) {
+          var isActive = p.getAttribute('data-tab-panel') === tabName
+          p.style.display = isActive ? '' : 'none'
+        })
+      }
+
+      groups.forEach(function (group) {
+        var category = group.getAttribute('data-tab-group')
+        var tabs = group.querySelectorAll('[data-tab]')
+        if (!tabs.length) return
+
+        // Restore preference or use first tab
+        var preferred = prefs[category] || tabs[0].getAttribute('data-tab')
+        // Verify preferred tab exists in this group
+        var hasPreferred = Array.from(tabs).some(function (t) {
+          return t.getAttribute('data-tab') === preferred
+        })
+        if (!hasPreferred) preferred = tabs[0].getAttribute('data-tab')
+
+        activateTab(group, preferred)
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            var name = tab.getAttribute('data-tab')
+            activateTab(group, name)
+
+            // Persist preference
+            prefs[category] = name
+            try {
+              localStorage.setItem('tabPreferences', JSON.stringify(prefs))
+            } catch (e) {}
+
+            // Sync other groups with same category
+            groups.forEach(function (otherGroup) {
+              if (otherGroup !== group && otherGroup.getAttribute('data-tab-group') === category) {
+                activateTab(otherGroup, name)
+              }
+            })
+          })
+        })
+      })
+    })()
+  </script>
+
+  <!-- Scroll-spy for TOC -->
+  <script is:inline>
+    ;(function () {
+      var headings = document.querySelectorAll('.prose h2[id], .prose h3[id]')
+      var tocLinks = document.querySelectorAll('[data-toc-link]')
+      if (!headings.length || !tocLinks.length) return
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              tocLinks.forEach(function (link) {
+                link.classList.remove('text-flare-400', 'font-medium')
+              })
+              var active = document.querySelector('[data-toc-link="' + entry.target.id + '"]')
+              if (active) {
+                active.classList.add('text-flare-400', 'font-medium')
+              }
+            }
+          })
+        },
+        { rootMargin: '-80px 0px -80% 0px' }
+      )
+
+      headings.forEach(function (h) {
+        observer.observe(h)
+      })
+    })()
+  </script>
+
+  <!-- Lightbox for images -->
+  <script is:inline>
+    ;(function () {
+      var images = document.querySelectorAll('.prose img')
+      images.forEach(function (img) {
+        img.style.cursor = 'pointer'
+        img.addEventListener('click', function () {
+          var overlay = document.createElement('div')
+          overlay.className = 'fixed inset-0 z-[60] bg-slate-950/90 flex items-center justify-center cursor-pointer'
+
+          var fullImg = document.createElement('img')
+          fullImg.src = img.src
+          fullImg.alt = img.alt || ''
+          fullImg.className = 'max-w-[90vw] max-h-[90vh] object-contain rounded-lg'
+
+          overlay.appendChild(fullImg)
+          document.body.appendChild(overlay)
+
+          overlay.addEventListener('click', function () {
+            overlay.remove()
+          })
+
+          function onEscape(e) {
+            if (e.key === 'Escape') {
+              overlay.remove()
+              document.removeEventListener('keydown', onEscape)
+            }
+          }
+          document.addEventListener('keydown', onEscape)
+        })
+      })
+    })()
+  </script>
 </Layout>
