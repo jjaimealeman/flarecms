@@ -1,0 +1,107 @@
+---
+import Layout from './Layout.astro'
+import DocsSidebar from '../components/docs/DocsSidebar.astro'
+import Breadcrumbs from '../components/docs/Breadcrumbs.astro'
+import PrevNext from '../components/docs/PrevNext.astro'
+import IconMenu from '~icons/lucide/menu'
+import IconX from '~icons/lucide/x'
+import type { NavSection } from '../lib/docs-nav'
+
+interface Props {
+  title: string
+  section: { name: string; slug: string }
+  breadcrumbs: Array<{ label: string; href: string }>
+  prev?: { title: string; section: string; href: string }
+  next?: { title: string; section: string; href: string }
+  sections: NavSection[]
+  currentPath: string
+}
+
+const { title, section, breadcrumbs, prev, next, sections, currentPath } = Astro.props
+---
+
+<Layout title={title}>
+  <div class="max-w-[1400px] mx-auto min-h-[calc(100vh-65px)] grid grid-cols-1 md:grid-cols-[260px_1fr] xl:grid-cols-[260px_1fr_220px]">
+    <!-- Desktop sidebar -->
+    <aside class="hidden md:block border-r border-slate-800 py-6 px-4 overflow-y-auto sticky top-[65px] h-[calc(100vh-65px)]">
+      <DocsSidebar sections={sections} currentPath={currentPath} />
+    </aside>
+
+    <!-- Main content -->
+    <div class="px-6 md:px-10 py-8">
+      <Breadcrumbs items={breadcrumbs} />
+      <div class="prose prose-invert max-w-[65ch] mx-auto">
+        <slot />
+      </div>
+      <div class="max-w-[65ch] mx-auto">
+        <PrevNext prev={prev} next={next} />
+      </div>
+    </div>
+
+    <!-- TOC column (placeholder for Phase 3) -->
+    <aside class="hidden xl:block sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto py-8 px-4 border-l border-slate-800">
+      <slot name="toc" />
+    </aside>
+  </div>
+
+  <!-- Mobile menu button -->
+  <button
+    id="docs-mobile-menu-btn"
+    class="md:hidden fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-flare-500 text-slate-950 flex items-center justify-center shadow-lg hover:bg-flare-400 transition-colors"
+    aria-label="Open navigation"
+  >
+    <IconMenu class="w-5 h-5" />
+  </button>
+
+  <!-- Mobile overlay -->
+  <div id="docs-mobile-overlay" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div id="docs-mobile-backdrop" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+
+    <!-- Slide-in panel -->
+    <div class="absolute left-0 top-0 bottom-0 w-80 bg-slate-900 border-r border-slate-800 overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-800">
+        <span class="text-sm font-semibold text-slate-300">Documentation</span>
+        <button
+          id="docs-mobile-close-btn"
+          class="text-slate-400 hover:text-slate-200 transition-colors"
+          aria-label="Close navigation"
+        >
+          <IconX class="w-5 h-5" />
+        </button>
+      </div>
+      <div class="p-4">
+        <DocsSidebar sections={sections} currentPath={currentPath} />
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    ;(function () {
+      var btn = document.getElementById('docs-mobile-menu-btn')
+      var overlay = document.getElementById('docs-mobile-overlay')
+      var backdrop = document.getElementById('docs-mobile-backdrop')
+      var closeBtn = document.getElementById('docs-mobile-close-btn')
+
+      function open() {
+        overlay && overlay.classList.remove('hidden')
+      }
+      function close() {
+        overlay && overlay.classList.add('hidden')
+      }
+
+      btn && btn.addEventListener('click', open)
+      backdrop && backdrop.addEventListener('click', close)
+      closeBtn && closeBtn.addEventListener('click', close)
+
+      // Close when any nav link is clicked
+      if (overlay) {
+        overlay.addEventListener('click', function (e) {
+          if (e.target && e.target.closest && e.target.closest('a')) {
+            close()
+          }
+        })
+      }
+    })()
+  </script>
+</Layout>
