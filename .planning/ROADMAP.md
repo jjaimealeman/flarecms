@@ -61,11 +61,12 @@ Plans:
   2. Every code block has a copy button that copies the code content to clipboard on click
   3. Callout boxes (info, warning, tip, caution) render with distinct icons, colors, and styling when authored as blockquotes with a prefix convention
   4. Tabbed code examples (TypeScript/JavaScript) switch between variants on click and persist the user's language preference across pages
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md — Unified/rehype rendering pipeline (Shiki, callouts, heading anchors) + CSS styling + route wiring
+- [ ] 03-02-PLAN.md — Table of Contents component + client-side scripts (copy, tabs, scroll-spy, lightbox)
+- [ ] 03-03-PLAN.md — Visual verification of all rendering features
 
 ### Phase 4: Site Shell & Homepage
 **Goal**: The site has a polished header, footer, redesigned homepage per Stitch v2 mockups, proper SEO metadata, and "Edit in CMS" links on every docs page
@@ -122,7 +123,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
 | 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
-| 3. Content Rendering & Route | 0/TBD | Not started | - |
+| 3. Content Rendering & Route | 0/3 | Planned | - |
 | 4. Site Shell & Homepage | 0/TBD | Not started | - |
 | 5. Documentation Content | 0/TBD | Not started | - |
 | 6. Search & Deploy | 0/TBD | Not started | - |
