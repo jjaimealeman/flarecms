@@ -606,9 +606,9 @@ export function renderContentFormPage(data: ContentFormData): string {
         document.querySelector('.fixed.inset-0')?.remove();
       }
 
-      // Reference field functions
-      let currentReferenceFieldId = null;
-      let referenceSearchTimeout = null;
+      // Reference field functions (use var to avoid redeclaration errors on HTMX re-processing)
+      var currentReferenceFieldId = currentReferenceFieldId || null;
+      var referenceSearchTimeout = referenceSearchTimeout || null;
 
       function getReferenceContainer(fieldId) {
         const input = document.getElementById(fieldId);
@@ -1066,7 +1066,8 @@ export function renderContentFormPage(data: ContentFormData): string {
           const formData = new FormData(form);
           formData.append('action', 'autosave');
           
-          fetch(form.action, {
+          const autoSaveUrl = form.getAttribute('hx-post') || form.getAttribute('hx-put') || form.getAttribute('action') || '/admin/content';
+          fetch(autoSaveUrl, {
             method: 'POST',
             body: formData
           })

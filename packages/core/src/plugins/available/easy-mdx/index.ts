@@ -220,6 +220,7 @@ export function getMDXEditorInitScript(config?: {
               singleLineBreaks: false,
               codeSyntaxHighlighting: true
             },
+            uploadImage: true,
             imageAccept: 'image/png, image/jpeg, image/gif, image/svg+xml, image/webp',
             imageUploadFunction: function(file, onSuccess, onError) {
               const formData = new FormData();
