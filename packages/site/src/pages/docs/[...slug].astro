@@ -1,6 +1,7 @@
 ---
 import { renderMarkdown } from '../../lib/markdown'
 import DocsLayout from '../../layouts/DocsLayout.astro'
+import TableOfContents from '../../components/docs/TableOfContents.astro'
 import { getDocsSections, getDocsPages } from '../../lib/flare'
 import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
 import '../../styles/code-blocks.css'
@@ -88,4 +89,5 @@ const { html, headings } = await renderMarkdown(doc.data.content || '')
 >
   <h1>{currentPage.title}</h1>
   <Fragment set:html={html} />
+  <TableOfContents slot="toc" headings={headings} />
 </DocsLayout>
