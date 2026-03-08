@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 3 of 6 (Content Rendering & Route) — IN PROGRESS
-Plan: 1 of 3 in current phase
-Status: Plan 03-01 complete, ready for 03-02
-Last activity: 2026-03-08 — Completed 03-01-PLAN.md
+Plan: 2 of 3 in current phase
+Status: Plan 03-02 complete, ready for 03-03
+Last activity: 2026-03-08 — Completed 03-02-PLAN.md
 
-Progress: [██████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 42%
+Progress: [████████████████░░░░░░░░░░░░░░░░░░░░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~13 min
-- Total execution time: ~64 min
+- Total plans completed: 6
+- Average duration: ~11 min
+- Total execution time: ~68 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [██████████░░░░░░░░░░░░░
 |-------|-------|-------|----------|
 | 1 | 2 | ~48min | ~24min |
 | 2 | 2 | ~11min | ~5.5min |
-| 3 | 1 | ~5min | ~5min |
+| 3 | 2 | ~9min | ~4.5min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (45min), 02-01 (3min), 02-02 (8min), 03-01 (5min)
+- Last 5 plans: 02-01 (3min), 02-02 (8min), 03-01 (5min), 03-02 (4min)
 - Trend: Pure code generation plans execute fast; plans with human verification take longer
 
 *Updated after each plan completion*
@@ -61,6 +61,9 @@ Recent decisions affecting current work:
 - [03-01]: Dual themes catppuccin-mocha/latte with CSS variables
 - [03-01]: rehype-callouts github theme with dark slate palette overrides
 - [03-01]: Tab group plugin uses data-tab meta string with category inference
+- [03-02]: All client interactivity via vanilla JS inline scripts (is:inline for per-page execution)
+- [03-02]: Tab preferences stored as JSON in localStorage under tabPreferences key
+- [03-02]: TOC scroll-spy uses IntersectionObserver with -80px/80% rootMargin
 
 ### Pending Todos
 
@@ -77,5 +80,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Completed 03-01-PLAN.md
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
