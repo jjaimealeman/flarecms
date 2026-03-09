@@ -28,6 +28,8 @@ function mapItemToEntry(item: FlareContentItem): { id: string; data: Record<stri
   return {
     id: item.id,
     data: {
+      title: item.title,
+      slug: item.slug,
       ...item.data,
       _status: item.status,
       _createdAt: new Date(item.created_at),

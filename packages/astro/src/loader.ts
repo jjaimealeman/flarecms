@@ -70,8 +70,11 @@ export function flareLoader(options: FlareLoaderOptions): Loader {
       store.clear()
 
       for (const item of filtered) {
-        // Flatten item.data to top level, merge system fields
+        // Flatten item.data to top level, merge top-level fields and system fields
+        // The CMS API returns title/slug at root level AND user fields inside item.data
         const flatData = {
+          title: item.title,
+          slug: item.slug,
           ...item.data,
           _status: item.status,
           _createdAt: new Date(item.created_at),
