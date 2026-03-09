@@ -5,7 +5,7 @@
  * with optional git commit hash for build identification
  */
 
-import pkg from '../../package.json'
+import pkg from '../../../../package.json'
 
 export const FLARE_VERSION = pkg.version
 export const GIT_HASH = process.env.GIT_HASH || ''

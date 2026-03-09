@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite"
 import Icons from "unplugin-icons/vite"
 
 const pkg = JSON.parse(
-  (await import("fs")).readFileSync("./package.json", "utf-8"),
+  (await import("fs")).readFileSync("../../package.json", "utf-8"),
 )
 const gitHash = execSync("git rev-parse --short HEAD").toString().trim()
 
