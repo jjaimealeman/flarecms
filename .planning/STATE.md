@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 
 Phase: 9 of 9 (Schema Migrations UI)
 Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-03-09 -- Completed 09-04-PLAN.md (rollback & safety warnings)
+Status: Phase 9 complete, verified
+Last activity: 2026-03-09 — Phase 9 complete (migration table, tracking, history UI, rollback)
 
 Progress: [████████████████████████████████████████████████████] 100% (28/28 plans)
 

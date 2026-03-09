@@ -131,6 +131,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
 | 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
 | 6. Search & Deploy | 3/3 | Complete | 2026-03-09 |
+| 7. Astro Content Layer Loader | 3/3 | Complete | 2026-03-09 |
+| 8. Live Preview API | 3/3 | Complete | 2026-03-09 |
+| 9. Schema Migrations UI | 4/4 | Complete | 2026-03-09 |
 
 ---
 
@@ -162,14 +165,14 @@ Future phases to close the remaining gaps and reach 5/5 across all dimensions.
 **Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
 **Impact**: Content Modeling 4→5, broadens user base beyond developers
 **Effort**: High (dedicated phase, 4 plans)
-**Status**: Planned
+**Status**: Complete (2026-03-09)
 **Plans**: 4 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Schema migrations table DDL + SchemaMigrationService (record, query, validate)
-- [ ] 09-02-PLAN.md — Wire migration tracking into field add/edit/delete routes
-- [ ] 09-03-PLAN.md — Migration history page with human-readable descriptions, filtering, pagination
-- [ ] 09-04-PLAN.md — Rollback support + destructive change warnings with content impact counts
+- [x] 09-01-PLAN.md — Schema migrations table DDL + SchemaMigrationService (record, query, validate)
+- [x] 09-02-PLAN.md — Wire migration tracking into field add/edit/delete routes
+- [x] 09-03-PLAN.md — Migration history page with human-readable descriptions, filtering, pagination
+- [x] 09-04-PLAN.md — Rollback support + destructive change warnings with content impact counts
 
 ### DX Note: AI-Assisted Development
 This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.
