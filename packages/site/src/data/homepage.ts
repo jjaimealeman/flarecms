@@ -2,7 +2,7 @@ export const features = [
   {
     icon: 'globe',
     title: 'Edge-native Performance',
-    description: 'Runs on Cloudflare Workers across 300+ locations. Sub-50ms latency globally with zero cold starts.',
+    description: 'Runs on Cloudflare Workers across 330+ locations. Sub-50ms latency globally with zero cold starts.',
   },
   {
     icon: 'database',
@@ -23,8 +23,8 @@ export const features = [
 
 export const comparisonRows = [
   { feature: 'Cold Starts', traditional: 'Common (500ms+)', flare: 'Zero', flareHighlight: true },
-  { feature: 'Pricing', traditional: 'Expensive Tiered', flare: 'Pay-as-you-go', flareHighlight: true },
-  { feature: 'Global Distribution', traditional: 'Region-based', flare: '275+ Locations', flareHighlight: true },
+  { feature: 'Pricing', traditional: 'Expensive Tiered', flare: 'Free Tier Included', flareHighlight: true },
+  { feature: 'Global Distribution', traditional: 'Region-based', flare: '330+ Locations', flareHighlight: true },
   { feature: 'Infrastructure', traditional: 'External Servers', flare: 'Cloudflare Native', flareHighlight: true },
   { feature: 'Database', traditional: 'External (Postgres/MySQL)', flare: 'D1 (Built-in)', flareHighlight: true },
   { feature: 'Media Storage', traditional: 'S3 / External', flare: 'R2 (Built-in)', flareHighlight: true },
@@ -32,9 +32,9 @@ export const comparisonRows = [
 
 export const stats = [
   { value: '<50ms', label: 'Global Latency' },
-  { value: '300+', label: 'Edge Locations' },
+  { value: '330+', label: 'Edge Locations' },
   { value: '0', label: 'Cold Starts' },
-  { value: '99.9%', label: 'Uptime' },
+  { value: '99.95%', label: 'Uptime SLA' },
 ]
 
 export const blogPosts = [
