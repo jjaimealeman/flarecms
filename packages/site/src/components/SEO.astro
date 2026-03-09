@@ -1,0 +1,43 @@
+---
+interface Props {
+  title: string
+  description?: string
+  ogImage?: string
+  ogType?: string
+  canonicalUrl?: string
+  noindex?: boolean
+}
+
+const {
+  title,
+  description = 'Edge-native headless CMS for Cloudflare Workers.',
+  ogImage = '/logo.svg',
+  ogType = 'website',
+  canonicalUrl,
+  noindex = false,
+} = Astro.props
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://flare-site.pages.dev'
+const pageUrl = canonicalUrl || `${siteUrl}${Astro.url.pathname.replace(/\/$/, '') || '/'}`
+const fullTitle = `${title} | Flare CMS`
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={pageUrl} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={pageUrl} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content="Flare CMS" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />

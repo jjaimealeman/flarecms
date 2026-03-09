@@ -1,6 +1,6 @@
 # AI Search Plugin - Custom RAG Setup Guide
 
-**GitHub Issue**: [#362 - Advanced search with Cloudflare Search](https://github.com/lane711/sonicjs/issues/362)
+**GitHub Issue**: [#362 - Advanced search with Cloudflare Search](https://github.com/flarecms/flarecms/issues/362)
 
 ## 🎉 Features Delivered
 
@@ -15,7 +15,7 @@
 
 ## Architecture: Custom RAG with Vectorize
 
-Unlike traditional approaches that require manual dashboard configuration, this plugin implements a **Custom RAG (Retrieval-Augmented Generation)** pipeline that works automatically for any SonicJS user.
+Unlike traditional approaches that require manual dashboard configuration, this plugin implements a **Custom RAG (Retrieval-Augmented Generation)** pipeline that works automatically for any Flare CMS user.
 
 ### Components:
 
@@ -29,7 +29,7 @@ Unlike traditional approaches that require manual dashboard configuration, this 
 ### Step 1: Run Setup Script
 
 ```bash
-cd my-sonicjs-app
+cd my-flare-app
 bash ../packages/core/src/plugins/core-plugins/ai-search-plugin/setup/vectorize-setup.sh
 ```
 
@@ -146,7 +146,7 @@ GET /api/search/suggest?q=cloudflare
 ### Search from Code
 
 ```typescript
-import { AISearchService } from '@sonicjs-cms/core/plugins'
+import { AISearchService } from '@flare-cms/core/plugins'
 
 const service = new AISearchService(db, ai, vectorize)
 
@@ -243,7 +243,7 @@ vs. Cloudflare AI Search: $5/mo for 5,000 docs
 1. **Check Vectorize setup**:
    ```bash
    npx wrangler vectorize list
-   # Should show: sonicjs-search
+   # Should show: flare-search
    ```
 
 2. **Check bindings in wrangler.toml**:
@@ -253,7 +253,7 @@ vs. Cloudflare AI Search: $5/mo for 5,000 docs
    
    [[vectorize]]
    binding = "VECTORIZE"
-   index_name = "sonicjs-search"
+   index_name = "flare-search"
    ```
 
 3. **Restart dev server**:
@@ -415,12 +415,12 @@ No migration needed - this IS the implementation!
 
 - [Cloudflare Vectorize](https://developers.cloudflare.com/vectorize/)
 - [Workers AI](https://developers.cloudflare.com/workers-ai/)
-- [SonicJS AI Search](./README.md)
+- [Flare CMS AI Search](./README.md)
 
 ### Issues:
 
-- [GitHub Issues](https://github.com/lane711/sonicjs/issues)
-- [Issue #362](https://github.com/lane711/sonicjs/issues/362)
+- [GitHub Issues](https://github.com/flarecms/flarecms/issues)
+- [Issue #362](https://github.com/flarecms/flarecms/issues/362)
 
 ## What's Next?
 
@@ -438,7 +438,7 @@ No migration needed - this IS the implementation!
 
 ✅ **Custom RAG with Vectorize delivers**:
 - No manual dashboard setup
-- Works for ANY SonicJS user
+- Works for ANY Flare CMS user
 - Full semantic search capabilities
 - Excellent performance
 - Cost-effective (likely FREE)

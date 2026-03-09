@@ -26,15 +26,15 @@ WHERE title LIKE 'Test %' OR title LIKE '%E2E%' OR title LIKE '%Playwright%' OR 
 
 -- Step 3: Delete test user data
 DELETE FROM api_tokens WHERE user_id IN (
-  SELECT id FROM users WHERE email != 'admin@sonicjs.com' AND (email LIKE '%test%' OR email LIKE '%example.com%')
+  SELECT id FROM users WHERE email != 'admin@flarecms.dev' AND (email LIKE '%test%' OR email LIKE '%example.com%')
 );
 
 DELETE FROM media WHERE uploaded_by IN (
-  SELECT id FROM users WHERE email != 'admin@sonicjs.com' AND (email LIKE '%test%' OR email LIKE '%example.com%')
+  SELECT id FROM users WHERE email != 'admin@flarecms.dev' AND (email LIKE '%test%' OR email LIKE '%example.com%')
 );
 
 -- Step 4: Delete test users
-DELETE FROM users WHERE email != 'admin@sonicjs.com' AND (email LIKE '%test%' OR email LIKE '%example.com%');
+DELETE FROM users WHERE email != 'admin@flarecms.dev' AND (email LIKE '%test%' OR email LIKE '%example.com%');
 
 -- Step 5: Delete test collection data
 DELETE FROM collection_fields WHERE collection_id IN (

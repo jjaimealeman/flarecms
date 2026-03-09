@@ -1,157 +1,177 @@
-# Roadmap: SonicJS Fork — Production Edge CMS
+# Roadmap: Flare CMS Documentation Site
 
 ## Overview
 
-A soft fork of SonicJS v2.8.0 is hardened from a developer demo into a production-grade headless CMS deployable per-client on Cloudflare Workers. The build sequence is dictated by a strict dependency graph: infrastructure must be correctly wired before security can be layered on, security must be complete before content workflow improvements are trustworthy, and media/caching infrastructure feeds the integration layer that makes the CMS composable for Astro frontends. The result is a CMS Jaime can hand to agency clients with confidence — no hardcoded secrets, no broken APIs, no manual workarounds.
+Transform the existing Astro 5 frontend into a full documentation website for Flare CMS, with all content managed through the CMS itself (100% dogfooding). The build progresses from CMS content foundation through layout, rendering, and site shell to documentation authoring and search — each phase delivering a coherent, verifiable capability that unblocks the next. The dependency chain is strict: collections must exist before layout can fetch data, layout must exist before content renders into it, and content must exist before search can index it.
 
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (0, 1, 2, 3, 4, 5): Planned milestone work
-- Decimal phases (e.g., 2.1): Urgent insertions via `/gsd:insert-phase`
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [x] **Phase 0: Foundation** - Repo hygiene, R2 binding fix, fork tracking, security PR cherry-picks
-- [x] **Phase 1: Security Hardening** - Production-safe auth layer: PBKDF2, JWT env var, rate limiting, CORS, CSRF, security headers
-- [x] **Phase 2: Content Workflow** - Fix API filtering, bidirectional status transitions, RBAC, audit trail, scheduling, slug uniqueness
-- [x] **Phase 3: Media Pipeline + Caching** - Streaming R2 uploads, Cache API for media serve, KV cache wired, write-through invalidation
-- [x] **Phase 4: Hook System + Integration** - Wire hook system, outgoing webhooks, plugin middleware
-- [x] **Phase 5: Production Deployment** - Deploy CMS + Astro frontend, per-client wrangler template, observability
-- [x] **Phase 6: Audit Gap Closure** - Fix RBAC collection guard, wire hooks into scheduled publish, fix binding validation return
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [x] **Phase 1: CMS Content Foundation** - Collections, schemas, and EasyMDE editor for code-heavy docs
+- [x] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
+- [x] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
+- [x] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
+- [x] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
+- [x] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K, comparison pages, and Astro integration page
 
 ## Phase Details
 
-### Phase 0: Foundation
-**Goal**: The repository is clean, the fork is trackable, and the infrastructure bindings are correctly wired — every subsequent phase builds on a stable base
+### Phase 1: CMS Content Foundation
+**Goal**: Docs and docs-sections collections exist in the CMS with a validated EasyMDE editor workflow for code-heavy documentation content
 **Depends on**: Nothing (first phase)
-**Requirements**: FOUND-01, FOUND-02, FOUND-03, FOUND-04, FOUND-05
+**Requirements**: CMS-01, CMS-02, CMS-03
 **Success Criteria** (what must be TRUE):
-  1. R2 media binding is renamed to `MEDIA_BUCKET` and wrangler logs no binding errors on startup
-  2. Startup validation rejects missing D1, R2, or KV bindings with a clear error before handling any request
-  3. `FORK-CHANGES.md` exists, upstream remote is configured, and all 7 mmcintosh security PRs (#659-#663, #668, #671) are cherry-picked with `[fork-patch]` tags
-  4. A staging D1 database exists and the migration review workflow (grep for `BEGIN TRANSACTION` before applying) is documented
-  5. Local `wrangler dev` starts without errors and the `/api/health` endpoint returns 200
-**Plans**: 3 plans (2 waves)
+  1. Admin user can create a docs-sections entry with name, slug, description, icon, and order fields in the CMS admin UI
+  2. Admin user can create a docs entry with title, slug, content (markdown), section reference, order, and prev/next fields
+  3. Admin user can write markdown with fenced code blocks in 5+ languages using EasyMDE — content round-trips correctly (create, save, reload, edit)
+  4. Content with code examples, blockquote-based callouts, and tables renders correctly when fetched via the REST API
+**Plans**: 2 plans
 
 Plans:
-- [x] 00-01: Fix R2 binding mismatch and add startup binding validation
-- [x] 00-02: Establish fork tracking (FORK-CHANGES.md, upstream remote, commit convention)
-- [x] 00-03: Cherry-pick 7 mmcintosh security PRs and document staging migration workflow
+- [x] 01-01-PLAN.md — Create docs-sections and docs collections, register in CMS, fix FieldType union
+- [x] 01-02-PLAN.md — Enhance EasyMDE with code block button and R2 image upload, verify full workflow
 
-### Phase 1: Security Hardening
-**Goal**: Users can trust the CMS with real credentials — no hardcoded secrets, passwords are not crackable from a DB dump, and auth endpoints are protected from brute force
-**Depends on**: Phase 0
-**Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06
-**Success Criteria** (what must be TRUE):
-  1. `JWT_SECRET` is read from `c.env.JWT_SECRET`; a startup assertion blocks all requests if the value matches the hardcoded default string
-  2. New user passwords are stored as PBKDF2-SHA256 with per-user random salt; existing users are transparently re-hashed on next successful login
-  3. Repeated failed login attempts (>5 in 10 seconds) receive 429 responses from the CF Rate Limiting binding
-  4. All responses include HSTS, X-Frame-Options, and X-Content-Type-Options headers from Hono `secureHeaders` middleware
-  5. CORS rejects requests from origins not in the configured allowlist; wildcard `*` is gone
-  6. Admin route mutations are rejected without a valid CSRF token header
-**Plans**: 2 plans (2 waves)
-
-Plans:
-- [x] 01-01-PLAN.md — Wire fork dependency, configure environment, JWT assertion, PBKDF2 migration log
-- [x] 01-02-PLAN.md — End-to-end verification of all 6 SEC controls
-
-### Phase 2: Content Workflow
-**Goal**: Editors can manage the full lifecycle of content — create, publish, unpublish, schedule, and query — without workarounds, and access is scoped to each user's role
+### Phase 2: Docs Layout & Navigation
+**Goal**: A visitor navigating to /docs sees a responsive 3-column layout with working sidebar navigation, breadcrumbs, and prev/next links — all generated from CMS data
 **Depends on**: Phase 1
-**Requirements**: CONT-01, CONT-02, CONT-03, CONT-04, CONT-05, CONT-06, AUTH-01, AUTH-02
+**Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05
 **Success Criteria** (what must be TRUE):
-  1. API query params (`filter[field][op]=value`, `sort`, `limit`, `offset`) produce correct D1 WHERE clauses — fetching all content and filtering client-side is no longer necessary
-  2. Published content can be transitioned back to draft (unpublish); the admin UI reflects the new state immediately
-  3. Every status transition (draft → published, published → draft, etc.) is recorded in `workflow_history` with the acting user ID and timestamp
-  4. The content versioning modal closes correctly and rollback to a previous version produces the expected content state
-  5. Content scheduled for a future publish date is automatically published by the Workers scheduled trigger at the correct time
-  6. Creating two content items with the same slug in the same collection returns a validation error, not a silent duplicate
-  7. An `editor` role user can create and edit content in assigned collections but cannot modify collection schemas or user accounts; a `viewer` role user receives read-only API responses
-  8. A read-only API token scoped to a collection returns content without exposing write endpoints
-**Plans**: 7 plans (2 waves)
+  1. Visitor sees a 3-column layout (sidebar, content area, TOC placeholder) at desktop widths, 2-column at tablet, and single-column with hamburger menu on mobile
+  2. Left sidebar shows navigation grouped by docs-sections with collapsible groups and active page highlighting, generated entirely from CMS API data
+  3. Breadcrumbs display the path Docs > Section Name > Page Title on every docs page
+  4. Prev/next navigation at the bottom of each docs page links to the correct adjacent pages based on section and order
+  5. Mobile sidebar collapses to a hamburger toggle and content reflows to full width
+**Plans**: 2 plans
 
 Plans:
-- [x] 02-01-PLAN.md — Fix API query filtering (bracket-syntax into D1 WHERE clauses)
-- [x] 02-02-PLAN.md — Content state machine (bidirectional transitions, slug lock, slug uniqueness)
-- [x] 02-03-PLAN.md — Workflow history audit trail (status changes + content edits)
-- [x] 02-04-PLAN.md — Content versioning UI fix (modal close bug #666, stable rollback)
-- [x] 02-05-PLAN.md — Content scheduling via Workers cron trigger
-- [x] 02-06-PLAN.md — Collection-level RBAC (admin, editor, author, viewer)
-- [x] 02-07-PLAN.md — Read-only API tokens (hashed, collection-scoped)
+- [x] 02-01-PLAN.md — Data layer (API functions, nav tree builder) and layout/navigation components (DocsLayout, sidebar, breadcrumbs, prev/next)
+- [x] 02-02-PLAN.md — Route wiring (docs landing page, catch-all route) and visual verification
 
-### Phase 3: Media Pipeline + Caching
-**Goal**: Media uploads work reliably for all file types including large files, media is served efficiently from the edge, and content API responses are cached to reduce D1 reads
-**Depends on**: Phase 0 (R2 binding), Phase 1 (security headers for CORS on media)
-**Requirements**: MEDIA-01, MEDIA-02, MEDIA-03, CACHE-01, CACHE-02
+### Phase 3: Content Rendering & Route
+**Goal**: A visitor can read any docs page with properly highlighted code blocks, copy buttons, callout boxes, and tabbed code examples
+**Depends on**: Phase 2
+**Requirements**: RENDER-01, RENDER-02, RENDER-03, RENDER-04
 **Success Criteria** (what must be TRUE):
-  1. PDF and image uploads succeed in the admin UI and files appear in R2; the `MEDIA_BUCKET is not available!` error is gone
-  2. A 50MB file upload completes without a memory error; uploads are streamed to R2 rather than buffered in Workers memory
-  3. Media files served from R2 include `Cache-Control: public, max-age=31536000, immutable` and ETag headers; repeat requests within TTL return a cached response
-  4. Content API responses are served from KV cache on cache hit; a content mutation (create, update, delete) immediately invalidates the relevant KV keys
-  5. The KV cache hit/miss status is visible in `X-Cache-Status` response headers
-**Plans**: 3 plans (2 waves)
+  1. Code blocks render with Shiki syntax highlighting in a dark theme matching the site palette, with language labels visible
+  2. Every code block has a copy button that copies the code content to clipboard on click
+  3. Callout boxes (info, warning, tip, caution) render with distinct icons, colors, and styling when authored as blockquotes with a prefix convention
+  4. Tabbed code examples (TypeScript/JavaScript) switch between variants on click and persist the user's language preference across pages
+**Plans**: 3 plans
 
 Plans:
-- [x] 03-01-PLAN.md — Fix R2 media uploads and switch to streaming for large files
-- [x] 03-02-PLAN.md — Cache API for media serving and wire KV namespace into three-tier cache
-- [x] 03-03-PLAN.md — End-to-end verification of all 5 success criteria
+- [x] 03-01-PLAN.md — Unified/rehype rendering pipeline (Shiki, callouts, heading anchors) + CSS styling + route wiring
+- [x] 03-02-PLAN.md — Table of Contents component + client-side scripts (copy, tabs, scroll-spy, lightbox)
+- [x] 03-03-PLAN.md — Visual verification of all rendering features
 
-### Phase 4: Hook System + Integration
-**Goal**: The CMS is composable — plugins receive real lifecycle events, Astro frontends are notified on content publish, and the versioning UI is stable
-**Depends on**: Phase 2 (content state machine must exist for hooks to fire on state transitions), Phase 3 (media hooks need working pipeline)
-**Requirements**: INTG-01, INTG-02
+### Phase 4: Site Shell & Homepage
+**Goal**: The site has a polished header, footer, redesigned homepage per Stitch v2 mockups, proper SEO metadata, and "Edit in CMS" links on every docs page
+**Depends on**: Phase 1 (homepage uses CMS data), Phase 3 (docs pages must exist for "Edit in CMS")
+**Requirements**: SITE-01, SITE-03, SITE-04, SITE-05, SITE-06
 **Success Criteria** (what must be TRUE):
-  1. Route handlers call `hookSystem.execute()` — not `emitEvent()` stubs; a registered plugin that listens to `content:after-publish` receives the event payload after a content item is published
-  2. Publishing or unpublishing content triggers an outgoing HTTP POST webhook to a configured URL (e.g., Astro rebuild endpoint); the webhook payload includes the content ID and event type
-  3. A plugin registered in `sonicjs.config.ts` can register its own Hono middleware by receiving the `app` reference through `PluginContext`
-**Plans**: 3 plans (2 waves)
+  1. Header displays logo, navigation links (Docs, Blog, GitHub), search placeholder, and CTA buttons across all pages
+  2. Footer displays GitHub link, MIT License badge, "Built with Flare CMS" badge, and legal page links across all pages
+  3. Homepage shows hero section, feature cards, comparison table, and CTA per Stitch v2 mockup with dark navy/cyan/orange theme
+  4. Every docs page has an "Edit in CMS" link that opens the correct admin edit URL for that content item
+  5. Every page has proper meta tags and Open Graph tags, and the site generates an auto-updated sitemap
+**Plans**: 3 plans
 
 Plans:
-- [x] 04-01-PLAN.md — Extend hook constants, cancellation result type, hooks singleton, plugin middleware wiring
-- [x] 04-02-PLAN.md — Wire hooks into content/media routes, webhook delivery service with HMAC-SHA256
-- [x] 04-03-PLAN.md — Gap closure: wire PluginManager to hook singleton, activate lifecycle, plugin registration in config
+- [x] 04-01-PLAN.md — SEO component, Edit-in-CMS component, sitemap endpoint, astro.config site property
+- [x] 04-02-PLAN.md — Layout.astro header/footer redesign with mobile nav, SEO integration, legal pages
+- [x] 04-03-PLAN.md — Homepage redesign: Hero, Features, ComparisonTable, CTA per Stitch v2 mockups
 
-### Phase 5: Production Deployment
-**Goal**: The CMS and Astro frontend are live in production, every deploy is observable, and spinning up a new client instance takes minutes not hours
-**Depends on**: Phases 1-4 (all prior phases must be stable before client deployment)
-**Requirements**: DEPLOY-01, DEPLOY-02, DEPLOY-03, DEPLOY-04
+### Phase 5: Documentation Content
+**Goal**: All 8 documentation sections are authored with substantive technical content and seeded via a reproducible API script
+**Depends on**: Phase 3 (rendering pipeline must work), Phase 4 (site shell for full visual context)
+**Requirements**: CMS-04, DOCS-01, DOCS-02, DOCS-03, DOCS-04, DOCS-05, DOCS-06, DOCS-07, DOCS-08
 **Success Criteria** (what must be TRUE):
-  1. The CMS backend is deployed to Cloudflare Workers production and returns a healthy response from the production URL
-  2. The Astro frontend is deployed to Cloudflare Pages and loads blog, news, and pages routes from the production CMS API
-  3. A new client instance can be provisioned by copying the wrangler environment template, running `wrangler d1 create`, and executing `wrangler deploy --env client-name` — no per-client code changes required
-  4. Auth events (login, logout, failed login) and errors appear in Workers Logs with structured JSON fields; `observability.enabled = true` is set in wrangler.toml
-**Plans**: 4 plans (3 waves)
+  1. A reproducible seed script populates all documentation content via the CMS API and can be re-run to reset content to a known state
+  2. Getting Started section has quickstart, installation, and project structure pages that a new developer can follow from zero to a running FlareCMS instance
+  3. All 8 documentation sections (Getting Started, Core Concepts, API Reference, Admin, Security, Plugins, Deployment, Configuration) are navigable from the sidebar and contain substantive, accurate technical content
+  4. Code examples in docs are accurate and reflect the current FlareCMS API surface
+**Plans**: 5 plans
 
 Plans:
-- [x] 05-01-PLAN.md — Structured logging utility + instrument auth/content routes (DEPLOY-04)
-- [x] 05-02-PLAN.md — Per-client provisioning script (DEPLOY-03)
-- [x] 05-03-PLAN.md — CMS backend production deploy: wrangler.toml config + deploy runbook (DEPLOY-01)
-- [x] 05-04-PLAN.md — Astro frontend deploy to Cloudflare Pages (DEPLOY-02)
+- [x] 05-01-PLAN.md — Seed script, prompt generator, content directory structure with 8 section metadata files
+- [x] 05-02-PLAN.md — Author Getting Started (3 pages), Core Concepts (4 pages), Configuration (3 pages)
+- [x] 05-03-PLAN.md — Author Admin (5 pages), API Reference (4 pages)
+- [x] 05-04-PLAN.md — Author Plugins (3 pages), Security (4 pages), Deployment (5 pages)
+- [x] 05-05-PLAN.md — Run seed script, verify all content renders, confirm idempotency
 
-### Phase 6: Audit Gap Closure
-**Goal**: Close the 2 blocker gaps and 1 high-severity integration bug identified by the v1 milestone audit — AUTH-01 RBAC enforcement, scheduled publish hook/webhook/cache pipeline, and binding validation error response
-**Depends on**: Phases 2, 4 (RBAC and hook system must exist)
-**Requirements**: AUTH-01 (complete), CONT-05 (complete), FOUND-04 (complete)
-**Gap Closure**: Closes gaps from v1-MILESTONE-AUDIT.md
+### Phase 6: Search & Deploy
+**Goal**: Visitors can search all documentation content via keyboard shortcut and the complete docs site is live on Cloudflare Pages
+**Depends on**: Phase 5 (search needs content to index, deploy needs everything complete)
+**Requirements**: SITE-02, DEPLOY-01
 **Success Criteria** (what must be TRUE):
-  1. An `editor` role user receives 403 when attempting to create, update, or delete a collection schema via admin-api.ts — only `admin` role can modify schemas
-  2. When scheduled content is auto-published by the cron trigger, `AFTER_CONTENT_PUBLISH` hook fires, outgoing webhooks are delivered, and the KV cache for that collection is invalidated — matching the behavior of manual publish via the API
-  3. If D1, R2, or KV bindings are missing, the binding validation middleware returns a 500 JSON response to the client (not a silently dropped response)
-**Plans**: 1 plan (1 wave)
+  1. Visitor can press Cmd/Ctrl+K to open a search modal and find docs pages by title or content with fuzzy matching
+  2. Search results show relevant page titles with section context and link directly to the correct docs page
+  3. The complete docs site is deployed to Cloudflare Pages with all routes functional — homepage, all docs pages, and search working in production
+**Plans**: 3 plans
 
 Plans:
-- [x] 06-01-PLAN.md — Verify admin-only guard, wire hooks/webhooks/cache into scheduled publish, fix binding validation return
+- [x] 06-01-PLAN.md — Install MiniSearch, shared search config, server-side search index endpoint
+- [x] 06-02-PLAN.md — Search modal UI with keyboard navigation, match highlighting, Text Fragments API
+- [x] 06-03-PLAN.md — Production seed safety, homepage positioning, comparison pages, Astro integration page
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Foundation | 3/3 | Complete | 2026-03-02 |
-| 1. Security Hardening | 2/2 | Complete | 2026-03-02 |
-| 2. Content Workflow | 7/7 | Complete | 2026-03-02 |
-| 3. Media Pipeline + Caching | 3/3 | Complete | 2026-03-02 |
-| 4. Hook System + Integration | 3/3 | Complete | 2026-03-02 |
-| 5. Production Deployment | 4/4 | Complete | 2026-03-02 |
-| 6. Audit Gap Closure | 1/1 | Complete | 2026-03-02 |
+| 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
+| 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
+| 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
+| 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
+| 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
+| 6. Search & Deploy | 3/3 | Complete | 2026-03-09 |
+
+---
+
+## v2 Roadmap: Platform Maturity
+
+Future phases to close the remaining gaps and reach 5/5 across all dimensions.
+
+### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`)
+**Goal**: A dedicated Astro integration package that plugs into Astro's Content Layer API, enabling `getCollection('blog-posts')` with full type safety — no manual fetch calls
+**Impact**: Astro Integration 4→5, Developer Experience 4→5
+**Effort**: Low (200-400 lines)
+**Key deliverables**:
+  - `@flare-cms/astro` package with `loader()` function for `astro.config.mjs`
+  - Auto-generated TypeScript types from CMS collection schemas
+  - Build-time + SSR on-demand fetching with caching
+  - Developer docs: "Add one line to your config, query content like local files"
+
+### Phase 8: Live Preview API
+**Goal**: Content editors see real-time preview of draft changes rendered through the actual Astro frontend, leveraging same-edge-network latency (<50ms round-trip)
+**Impact**: Developer Experience 4→5, competitive moat (unique edge advantage)
+**Effort**: Medium (dedicated phase, 3-4 plans)
+**Key deliverables**:
+  - Draft content API endpoint on CMS Worker
+  - Preview client script for Astro frontend (listens for changes, re-renders)
+  - Admin UI "Preview" button that opens live preview panel
+  - Sub-50ms preview latency (both services on same Cloudflare edge)
+
+### Phase 9: Schema Migrations UI
+**Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
+**Impact**: Content Modeling 4→5, broadens user base beyond developers
+**Effort**: High (dedicated phase, 4-5 plans)
+**Key deliverables**:
+  - Admin UI for adding/editing/removing collection fields
+  - Runtime D1 migration generation and application
+  - Migration history view in admin
+  - Rollback support for failed migrations
+
+### DX Note: AI-Assisted Development
+This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.
+
+---
+*Roadmap created: 2026-03-08*
+*v1 coverage: 28/28 requirements mapped*
+*v2 roadmap added: 2026-03-09*

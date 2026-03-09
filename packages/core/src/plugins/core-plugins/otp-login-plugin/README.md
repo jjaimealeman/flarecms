@@ -1,6 +1,6 @@
 # OTP Login Plugin
 
-Passwordless authentication for SonicJS via email one-time codes (OTP). Users sign in by entering a 6-digit code sent to their email - no password required.
+Passwordless authentication for Flare CMS via email one-time codes (OTP). Users sign in by entering a 6-digit code sent to their email - no password required.
 
 ## Features
 
@@ -10,7 +10,7 @@ Passwordless authentication for SonicJS via email one-time codes (OTP). Users si
 - ✅ **Brute Force Protection**: Max 3 attempts per code
 - ✅ **Auto Expiry**: Codes expire after 10 minutes (configurable)
 - ✅ **Mobile Friendly**: Easy to copy/paste codes
-- ✅ **Email Integration**: Uses SonicJS email plugin
+- ✅ **Email Integration**: Uses Flare CMS email plugin
 
 ## API Endpoints
 

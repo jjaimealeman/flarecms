@@ -11,12 +11,15 @@ import { validateBindingsMiddleware } from './middleware/validate-bindings'
 // Import your collection configurations
 // Add new collections here after creating them in src/collections/
 import blogPostsCollection from './collections/blog-posts.collection'
+import docsSectionsCollection from './collections/docs-sections.collection'
+import docsCollection from './collections/docs.collection'
 
 // Register collections BEFORE creating the app
 // This ensures they are synced to the database on startup
 registerCollections([
   blogPostsCollection,
-  // Add more collections here as you create them
+  docsSectionsCollection,
+  docsCollection,
 ])
 
 // Application configuration

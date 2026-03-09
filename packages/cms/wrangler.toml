@@ -27,6 +27,7 @@ id = "7dacbabdf6aa4896b0c9b0bc7b9125fe"
 [vars]
 ENVIRONMENT = "development"
 CORS_ORIGINS = "http://localhost:4321,http://localhost:8787"
+MEDIA_DOMAIN = "images.flarecms.dev"
 
 # Webhook configuration (Phase 4)
 # Comma-separated URLs to POST on content publish/unpublish events

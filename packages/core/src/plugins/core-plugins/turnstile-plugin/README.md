@@ -1,6 +1,6 @@
 # Cloudflare Turnstile Plugin
 
-CAPTCHA-free bot protection using Cloudflare Turnstile. Provides reusable verification middleware for any form in your SonicJS application.
+CAPTCHA-free bot protection using Cloudflare Turnstile. Provides reusable verification middleware for any form in your Flare CMS application.
 
 ## Features
 
@@ -13,7 +13,7 @@ CAPTCHA-free bot protection using Cloudflare Turnstile. Provides reusable verifi
 
 ## Installation
 
-The Turnstile plugin is a core plugin and is included by default in SonicJS.
+The Turnstile plugin is a core plugin and is included by default in Flare CMS.
 
 ### 1. Get Turnstile Keys
 
@@ -36,7 +36,7 @@ The Turnstile plugin is a core plugin and is included by default in SonicJS.
 The easiest way to protect a form is using the `verifyTurnstile` middleware:
 
 ```typescript
-import { verifyTurnstile } from '@sonicjs-cms/core/plugins'
+import { verifyTurnstile } from '@flare-cms/core/plugins'
 
 // Protect your form endpoint
 app.post('/api/contact', verifyTurnstile, async (c) => {
@@ -74,7 +74,7 @@ Add the Turnstile widget to your HTML form:
 Use the widget helper functions:
 
 ```typescript
-import { renderInlineTurnstile } from '@sonicjs-cms/core/plugins'
+import { renderInlineTurnstile } from '@flare-cms/core/plugins'
 
 const widget = renderInlineTurnstile('YOUR_SITE_KEY', {
   theme: 'auto',
@@ -89,7 +89,7 @@ const widget = renderInlineTurnstile('YOUR_SITE_KEY', {
 Create a middleware with custom error responses:
 
 ```typescript
-import { createTurnstileMiddleware } from '@sonicjs-cms/core/plugins'
+import { createTurnstileMiddleware } from '@flare-cms/core/plugins'
 
 const customTurnstile = createTurnstileMiddleware({
   onError: (c, error) => {
@@ -108,7 +108,7 @@ app.post('/api/secure-endpoint', customTurnstile, handler)
 Manually verify tokens in your code:
 
 ```typescript
-import { TurnstileService } from '@sonicjs-cms/core/plugins'
+import { TurnstileService } from '@flare-cms/core/plugins'
 
 async function myHandler(c: Context) {
   const db = c.get('db')
@@ -132,7 +132,7 @@ async function myHandler(c: Context) {
 ```typescript
 // routes/contact.ts
 import { Hono } from 'hono'
-import { verifyTurnstile, renderInlineTurnstile } from '@sonicjs-cms/core/plugins'
+import { verifyTurnstile, renderInlineTurnstile } from '@flare-cms/core/plugins'
 
 const app = new Hono()
 
@@ -169,7 +169,7 @@ export default app
 ### Example 2: User Registration
 
 ```typescript
-import { verifyTurnstile } from '@sonicjs-cms/core/plugins'
+import { verifyTurnstile } from '@flare-cms/core/plugins'
 
 app.post('/auth/register', verifyTurnstile, async (c) => {
   const { email, password } = await c.req.json()
@@ -181,7 +181,7 @@ app.post('/auth/register', verifyTurnstile, async (c) => {
 ### Example 3: Comment Submission
 
 ```typescript
-import { verifyTurnstile } from '@sonicjs-cms/core/plugins'
+import { verifyTurnstile } from '@flare-cms/core/plugins'
 
 app.post('/api/comments', verifyTurnstile, async (c) => {
   const { postId, comment } = await c.req.json()

@@ -62,6 +62,10 @@ pre, code {
   font-family: var(--font-mono);
 }
 
+pre {
+  overflow-x: auto;
+}
+
 /* Selection color */
 ::selection {
   background-color: rgba(246, 130, 31, 0.3);

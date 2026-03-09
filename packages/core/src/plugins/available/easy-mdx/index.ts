@@ -159,7 +159,7 @@ export function getMDXEditorInitScript(config?: {
   toolbar?: string
   placeholder?: string
 }): string {
-  const defaultHeight = config?.defaultHeight || 400
+  const defaultHeight = config?.defaultHeight || 500
   const toolbar = config?.toolbar || 'full'
   const placeholder = config?.placeholder || 'Start writing your content...'
 
@@ -189,9 +189,25 @@ export function getMDXEditorInitScript(config?: {
 
         // Initialize EasyMDE
         try {
+          // Custom code block toolbar button
+          const codeBlockButton = {
+            name: 'code-block',
+            action: function(editor) {
+              const cm = editor.codemirror;
+              const cursor = cm.getCursor();
+              const codeTemplate = '\`\`\`ts\\n// code here\\n\`\`\`';
+              cm.replaceSelection(codeTemplate);
+              // Position cursor on the code line
+              cm.setCursor({ line: cursor.line + 1, ch: 0 });
+              cm.focus();
+            },
+            className: 'fa fa-code',
+            title: 'Insert Code Block'
+          };
+
           const toolbarButtons = editorToolbar === 'minimal'
             ? ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'preview']
-            : ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'table', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'];
+            : ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'table', codeBlockButton, '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'];
 
           const easyMDE = new EasyMDE({
             element: textarea,
@@ -199,10 +215,37 @@ export function getMDXEditorInitScript(config?: {
             spellChecker: false,
             minHeight: height + 'px',
             toolbar: toolbarButtons,
-            status: ['lines', 'words', 'cursor'],
+            status: ['upload-image', 'lines', 'words', 'cursor'],
             renderingConfig: {
               singleLineBreaks: false,
               codeSyntaxHighlighting: true
+            },
+            uploadImage: true,
+            imageAccept: 'image/png, image/jpeg, image/gif, image/svg+xml, image/webp',
+            imageUploadFunction: function(file, onSuccess, onError) {
+              const formData = new FormData();
+              formData.append('file', file);
+              fetch('/api/media/upload', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+              })
+              .then(function(response) {
+                if (!response.ok) throw new Error('Upload failed: ' + response.status);
+                return response.json();
+              })
+              .then(function(data) {
+                const imageUrl = data.url || (data.file && (data.file.publicUrl || data.file.url)) || (data.data && data.data.url);
+                if (imageUrl) {
+                  onSuccess(imageUrl);
+                } else {
+                  onError('No URL in upload response');
+                }
+              })
+              .catch(function(err) {
+                console.error('Image upload error:', err);
+                onError(err.message || 'Upload failed');
+              });
             }
           });
 

@@ -62,6 +62,7 @@ export interface Bindings {
   JWT_SECRET?: string
   CORS_ORIGINS?: string
   BUCKET_NAME?: string
+  MEDIA_DOMAIN?: string
   GOOGLE_MAPS_API_KEY?: string
 }
 

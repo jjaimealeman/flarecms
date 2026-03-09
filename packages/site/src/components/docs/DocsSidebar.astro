@@ -1,0 +1,65 @@
+---
+import type { NavSection } from '../../lib/docs-nav'
+import IconRocket from '~icons/lucide/rocket'
+import IconLayers from '~icons/lucide/layers'
+import IconCode from '~icons/lucide/code'
+import IconSettings from '~icons/lucide/settings'
+import IconShield from '~icons/lucide/shield'
+import IconPuzzle from '~icons/lucide/puzzle'
+import IconCloud from '~icons/lucide/cloud'
+import IconSliders from '~icons/lucide/sliders'
+import IconBookOpen from '~icons/lucide/book-open'
+
+interface Props {
+  sections: NavSection[]
+  currentPath: string
+}
+
+const { sections, currentPath } = Astro.props
+
+const iconMap: Record<string, any> = {
+  'getting-started': IconRocket,
+  'core-concepts': IconLayers,
+  'api-reference': IconCode,
+  'admin': IconSettings,
+  'security': IconShield,
+  'plugins': IconPuzzle,
+  'deployment': IconCloud,
+  'configuration': IconSliders,
+}
+
+function getIcon(slug: string) {
+  return iconMap[slug] || IconBookOpen
+}
+---
+
+<nav class="space-y-6" aria-label="Docs navigation">
+  {sections.map((section) => {
+    const Icon = getIcon(section.slug)
+    return (
+      <div>
+        <h3 class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 px-2">
+          <Icon class="w-4 h-4" />
+          {section.name}
+        </h3>
+        <ul class="space-y-0.5">
+          {section.pages.map((page) => (
+            <li>
+              <a
+                href={page.href}
+                class:list={[
+                  'block px-2 py-1.5 text-sm transition-colors',
+                  currentPath === page.href
+                    ? 'bg-slate-800 text-flare-400 font-medium rounded-md'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-md',
+                ]}
+              >
+                {page.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  })}
+</nav>

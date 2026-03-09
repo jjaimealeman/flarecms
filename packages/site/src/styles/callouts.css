@@ -1,0 +1,99 @@
+/* Import rehype-callouts github theme as base */
+@import 'rehype-callouts/theme/github';
+
+/* Override callout styles to match the dark slate palette */
+
+.callout {
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+  padding: 1rem 1rem 1rem 1.25rem;
+  border-left-width: 3px;
+  color: rgb(226 232 240);
+}
+
+.callout p {
+  margin: 0.5rem 0;
+}
+
+.callout p:first-child {
+  margin-top: 0;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+/* Note / Info -- cyan */
+.callout[data-callout="note"],
+.callout[data-callout="info"] {
+  background: rgb(30 41 59 / 0.6);
+  border-left-color: rgb(34 211 238);
+}
+
+.callout[data-callout="note"] .callout-title,
+.callout[data-callout="info"] .callout-title {
+  color: rgb(34 211 238);
+}
+
+/* Warning -- amber */
+.callout[data-callout="warning"] {
+  background: rgb(30 41 59 / 0.6);
+  border-left-color: rgb(251 191 36);
+}
+
+.callout[data-callout="warning"] .callout-title {
+  color: rgb(251 191 36);
+}
+
+/* Tip -- emerald */
+.callout[data-callout="tip"] {
+  background: rgb(30 41 59 / 0.6);
+  border-left-color: rgb(52 211 153);
+}
+
+.callout[data-callout="tip"] .callout-title {
+  color: rgb(52 211 153);
+}
+
+/* Caution -- flare/red */
+.callout[data-callout="caution"],
+.callout[data-callout="danger"] {
+  background: rgb(30 41 59 / 0.6);
+  border-left-color: rgb(246 130 31);
+}
+
+.callout[data-callout="caution"] .callout-title,
+.callout[data-callout="danger"] .callout-title {
+  color: rgb(246 130 31);
+}
+
+/* Important -- purple */
+.callout[data-callout="important"] {
+  background: rgb(30 41 59 / 0.6);
+  border-left-color: rgb(168 85 247);
+}
+
+.callout[data-callout="important"] .callout-title {
+  color: rgb(168 85 247);
+}
+
+/* Callout title row */
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.callout-title-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.callout-title-icon svg {
+  width: 100%;
+  height: 100%;
+}
