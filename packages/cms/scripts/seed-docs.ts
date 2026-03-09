@@ -550,6 +550,25 @@ if (args.includes('--direct')) {
   process.exit(1)
 } else {
   const baseUrl = args[0].replace(/\/+$/, '') // Strip trailing slashes
+
+  // Production safety check: require --confirm-production for non-localhost URLs
+  const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?/.test(baseUrl)
+  if (!isLocalhost) {
+    if (!args.includes('--confirm-production')) {
+      console.error('')
+      console.error('WARNING: You are about to seed against a production URL:')
+      console.error(`  ${baseUrl}`)
+      console.error('')
+      console.error('This will DELETE all existing docs content and recreate it.')
+      console.error('')
+      console.error('To confirm, re-run with --confirm-production flag:')
+      console.error(`  npx tsx scripts/seed-docs.ts ${baseUrl} --confirm-production`)
+      console.error('')
+      process.exit(1)
+    }
+    console.log(`\nProduction mode confirmed. Target: ${baseUrl}`)
+  }
+
   runApiMode(baseUrl).catch((err) => {
     console.error('Fatal error:', err)
     process.exit(1)
