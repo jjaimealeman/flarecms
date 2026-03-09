@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 9 in progress -- Schema Migrations UI
+**Current focus:** Phase 9 complete -- Schema Migrations UI
 
 ## Current Position
 
 Phase: 9 of 9 (Schema Migrations UI)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-03-09 — Completed 09-03-PLAN.md (migration history page)
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-03-09 -- Completed 09-04-PLAN.md (rollback & safety warnings)
 
-Progress: [███████████████████████████████████████████████████░] 96% (27/28 plans)
+Progress: [████████████████████████████████████████████████████] 100% (28/28 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27
+- Total plans completed: 28
 - Average duration: ~8 min
-- Total execution time: ~210 min
+- Total execution time: ~214 min
 
 **By Phase:**
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
 | 8 | 3/3 | ~11min | ~3.7min |
-| 9 | 3/4 | ~11min | ~3.7min |
+| 9 | 4/4 | ~15min | ~3.75min |
 
 ## v2 Roadmap
 
@@ -43,7 +43,7 @@ Progress: [███████████████████████
 |-------|---------|--------|--------|
 | 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
 | 8 | Live Preview API | Developer Experience 5/5 | Complete |
-| 9 | Schema Migrations UI | Content Modeling 5/5 | In Progress (3/4) |
+| 9 | Schema Migrations UI | Content Modeling 5/5 | Complete |
 
 ## Accumulated Context
 
@@ -76,10 +76,13 @@ Recent decisions affecting current work:
 - [09-03]: Schema Migrations sidebar in main nav (not Settings sub-page)
 - [09-03]: HTML details/summary for expandable migration details (no-JS progressive enhancement)
 - [09-03]: User display shows email (JWT lacks display name)
+- [09-04]: Rollback creates inverse audit entry for traceability
+- [09-04]: Safe DOM methods (createElement/textContent) for dynamic dialog content
+- [09-04]: Impact endpoint pattern for pre-deletion content count
 
 ### Pending Todos
 
-- v2 Phase 9: Plan 04 remaining (rollback/confirmation UI)
+None -- all v2 phases complete.
 
 ### Blockers/Concerns
 
@@ -90,5 +93,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 09-03-PLAN.md
+Stopped at: Completed 09-04-PLAN.md (all phases complete)
 Resume file: None
