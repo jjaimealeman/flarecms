@@ -1,0 +1,371 @@
+---
+// SearchModal.astro — Client-side search modal with MiniSearch
+// Opens via Cmd/Ctrl+K or clicking the search trigger button
+// Lazy-loads search index on first interaction
+---
+
+<!-- Search Modal Overlay -->
+<div id="search-modal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true" aria-label="Search documentation">
+  <!-- Backdrop -->
+  <div id="search-backdrop" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity duration-200"></div>
+
+  <!-- Modal Panel -->
+  <div class="absolute inset-0 lg:inset-auto lg:top-20 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:max-w-2xl lg:max-h-[min(80vh,600px)] flex flex-col bg-slate-800 lg:rounded-xl lg:border lg:border-slate-700 lg:shadow-2xl overflow-hidden transition-transform duration-200">
+    <!-- Search Input -->
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-700">
+      <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search docs..."
+        autocomplete="off"
+        class="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none"
+      />
+      <button id="search-close-btn" class="text-slate-500 hover:text-slate-300 transition-colors text-xs font-medium" aria-label="Close search">
+        <kbd class="px-1.5 py-0.5 rounded bg-slate-700 border border-slate-600 font-mono">Esc</kbd>
+      </button>
+    </div>
+
+    <!-- Results Container -->
+    <div id="search-results" class="flex-1 overflow-y-auto overscroll-contain px-2 py-2">
+      <!-- Populated by script -->
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center gap-4 px-4 py-2.5 border-t border-slate-700 text-[11px] text-slate-500">
+      <span class="flex items-center gap-1">
+        <kbd class="px-1 py-0.5 rounded bg-slate-700 border border-slate-600 font-mono text-[10px]">&uarr;&darr;</kbd>
+        navigate
+      </span>
+      <span class="flex items-center gap-1">
+        <kbd class="px-1 py-0.5 rounded bg-slate-700 border border-slate-600 font-mono text-[10px]">&crarr;</kbd>
+        select
+      </span>
+      <span class="flex items-center gap-1">
+        <kbd class="px-1 py-0.5 rounded bg-slate-700 border border-slate-600 font-mono text-[10px]">esc</kbd>
+        close
+      </span>
+      <span class="ml-auto text-slate-600">Powered by MiniSearch</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import MiniSearch from 'minisearch'
+  import { MINISEARCH_OPTIONS, type SearchDocument } from '../lib/search-config'
+
+  // --- State ---
+  let searchIndex: MiniSearch<SearchDocument> | null = null
+  let indexLoading = false
+  let selectedIndex = -1
+
+  // --- DOM refs ---
+  const modal = document.getElementById('search-modal')!
+  const backdrop = document.getElementById('search-backdrop')!
+  const input = document.getElementById('search-input') as HTMLInputElement
+  const resultsContainer = document.getElementById('search-results')!
+  const closeBtn = document.getElementById('search-close-btn')!
+  const mainEl = document.getElementById('site-main')
+
+  // --- Platform detection ---
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '')
+  const modKey = isMac ? 'Cmd' : 'Ctrl'
+
+  // Update Cmd+K badge in header search button to match platform
+  const headerKbd = document.querySelector('#search-trigger kbd')
+  if (headerKbd) {
+    headerKbd.textContent = `${modKey}+K`
+  }
+
+  // --- Popular docs links ---
+  const popularDocs = [
+    { title: 'Getting Started', href: '/docs' },
+    { title: 'Installation', href: '/docs/getting-started/installation' },
+    { title: 'Configuration', href: '/docs/getting-started/configuration' },
+    { title: 'Collections', href: '/docs/core-concepts/collections' },
+    { title: 'API Reference', href: '/docs/api-reference/rest-api' },
+    { title: 'Deployment', href: '/docs/deployment/cloudflare-workers' },
+  ]
+
+  // --- Safe DOM helpers ---
+  // All user-provided text is escaped via escapeHtml() before insertion.
+  // Static HTML structure is built from trusted string templates only.
+
+  function renderPopularLinks(): string {
+    const links = popularDocs.map((doc) =>
+      '<a href="' + doc.href + '" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700/50 transition-colors">' +
+        '<svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />' +
+        '</svg>' +
+        escapeHtml(doc.title) +
+      '</a>'
+    ).join('')
+
+    return '<div class="px-2 py-3">' +
+      '<p class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 px-2">Popular pages</p>' +
+      links +
+    '</div>'
+  }
+
+  // --- Lazy index loading ---
+  async function loadIndex(): Promise<void> {
+    if (searchIndex || indexLoading) return
+    indexLoading = true
+    resultsContainer.innerHTML =
+      '<div class="flex items-center justify-center py-12 text-sm text-slate-400">' +
+        '<svg class="w-4 h-4 animate-spin mr-2" fill="none" viewBox="0 0 24 24">' +
+          '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+          '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>' +
+        '</svg>' +
+        'Loading search index...' +
+      '</div>'
+    try {
+      const res = await fetch('/api/search-index.json')
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      const json = await res.text()
+      searchIndex = MiniSearch.loadJSON<SearchDocument>(json, MINISEARCH_OPTIONS)
+      // Show default state after load
+      resultsContainer.innerHTML = renderPopularLinks()
+    } catch (err) {
+      console.error('Failed to load search index:', err)
+      resultsContainer.innerHTML =
+        '<div class="flex flex-col items-center justify-center py-12 text-sm text-slate-400">' +
+          '<p class="text-red-400">Failed to load search index</p>' +
+          '<p class="mt-1 text-xs text-slate-500">Try refreshing the page</p>' +
+        '</div>'
+    } finally {
+      indexLoading = false
+    }
+  }
+
+  // --- Open / Close ---
+  function openSearch() {
+    modal.classList.remove('hidden')
+    input.focus()
+    if (mainEl) mainEl.setAttribute('inert', '')
+    loadIndex()
+    if (!input.value && searchIndex) {
+      resultsContainer.innerHTML = renderPopularLinks()
+    }
+  }
+
+  function closeSearch() {
+    modal.classList.add('hidden')
+    input.value = ''
+    resultsContainer.innerHTML = ''
+    selectedIndex = -1
+    if (mainEl) mainEl.removeAttribute('inert')
+  }
+
+  // --- Match highlighting ---
+  function escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+  }
+
+  function highlightMatches(text: string, terms: string[]): string {
+    let html = escapeHtml(text)
+    for (const term of terms) {
+      if (!term) continue
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const regex = new RegExp('(' + escaped + ')', 'gi')
+      html = html.replace(regex, '<mark class="bg-flare-500/30 text-flare-300 rounded px-0.5">$1</mark>')
+    }
+    return html
+  }
+
+  // --- Build result href ---
+  function buildHref(result: SearchDocument): string {
+    const { sectionSlug, slug, headingId } = result
+    if (sectionSlug === 'blog') return '/blog/' + slug
+    if (sectionSlug === 'news') return '/news/' + slug
+    const anchor = headingId ? '#' + headingId : ''
+    return '/docs/' + sectionSlug + '/' + slug + anchor
+  }
+
+  // --- Section badge color ---
+  function sectionColor(section: string): string {
+    const colors: Record<string, string> = {
+      Blog: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+      News: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    }
+    return colors[section] || 'bg-flare-500/15 text-flare-400 border-flare-500/30'
+  }
+
+  // --- Render results ---
+  // All dynamic text content is sanitized via escapeHtml() and highlightMatches().
+  // The only HTML injected is from trusted static templates and escaped user data.
+  function renderResults(query: string) {
+    if (!searchIndex) return
+
+    if (query.length < 2) {
+      resultsContainer.innerHTML = renderPopularLinks()
+      selectedIndex = -1
+      return
+    }
+
+    const results = searchIndex.search(query, { limit: 10 })
+    selectedIndex = -1
+
+    if (results.length === 0) {
+      resultsContainer.innerHTML =
+        '<div class="px-2 py-6 text-center">' +
+          '<p class="text-sm text-slate-400">No results for &ldquo;<span class="text-slate-300">' + escapeHtml(query) + '</span>&rdquo;</p>' +
+          '<p class="mt-1 text-xs text-slate-500">Try different keywords or browse popular pages</p>' +
+        '</div>' +
+        renderPopularLinks()
+      return
+    }
+
+    // Collect matched terms from all results
+    const allTerms = new Set<string>()
+    for (const r of results) {
+      if (r.match) {
+        for (const [, terms] of Object.entries(r.match)) {
+          for (const t of terms as string[]) allTerms.add(t)
+        }
+      }
+    }
+    const terms = Array.from(allTerms)
+
+    const items = results.map((r, i) => {
+      const doc = r as unknown as SearchDocument & { score: number; match: Record<string, string[]> }
+      const href = buildHref(doc)
+      const titleHtml = highlightMatches(doc.title, terms)
+      const hasHeading = doc.headingText && doc.headingId
+
+      const headingLine = hasHeading
+        ? '<p class="mt-0.5 text-xs text-slate-400 truncate"># ' + highlightMatches(doc.headingText, terms) + '</p>'
+        : ''
+
+      const icon = hasHeading
+        ? '<path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />'
+        : '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />'
+
+      return '<a href="' + href + '" class="search-result flex items-start gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-slate-700/50 border-l-2 border-transparent" data-index="' + i + '">' +
+        '<svg class="w-4 h-4 text-slate-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' + icon + '</svg>' +
+        '<div class="flex-1 min-w-0">' +
+          '<div class="flex items-center gap-2">' +
+            '<span class="text-slate-200 font-medium truncate">' + titleHtml + '</span>' +
+            '<span class="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ' + sectionColor(doc.section) + '">' + escapeHtml(doc.section) + '</span>' +
+          '</div>' +
+          headingLine +
+        '</div>' +
+        '<svg class="w-4 h-4 text-slate-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />' +
+        '</svg>' +
+      '</a>'
+    }).join('')
+
+    resultsContainer.innerHTML = '<div class="py-1">' + items + '</div>'
+  }
+
+  // --- Update active result highlight ---
+  function updateActiveResult() {
+    const items = resultsContainer.querySelectorAll('.search-result')
+    items.forEach((el, i) => {
+      if (i === selectedIndex) {
+        el.setAttribute('data-search-active', '')
+        el.classList.add('bg-slate-700/50', 'border-l-flare-500')
+        el.classList.remove('border-transparent')
+        el.scrollIntoView({ block: 'nearest' })
+      } else {
+        el.removeAttribute('data-search-active')
+        el.classList.remove('bg-slate-700/50', 'border-l-flare-500')
+        el.classList.add('border-transparent')
+      }
+    })
+  }
+
+  // --- Debounce ---
+  function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: number): T {
+    let timer: ReturnType<typeof setTimeout>
+    return ((...args: unknown[]) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => fn(...args), ms)
+    }) as unknown as T
+  }
+
+  // --- Input handler ---
+  const debouncedSearch = debounce(() => {
+    renderResults(input.value.trim())
+  }, 150)
+
+  input.addEventListener('input', debouncedSearch)
+
+  // --- Click handlers ---
+  backdrop.addEventListener('click', closeSearch)
+  closeBtn.addEventListener('click', closeSearch)
+
+  // Trigger buttons
+  const searchTrigger = document.getElementById('search-trigger')
+  searchTrigger?.addEventListener('click', (e) => {
+    e.preventDefault()
+    openSearch()
+  })
+
+  const mobileTrigger = document.querySelector('.search-trigger-mobile')
+  mobileTrigger?.addEventListener('click', (e) => {
+    e.preventDefault()
+    // Close mobile menu if open
+    const mobileOverlay = document.getElementById('site-mobile-overlay')
+    mobileOverlay?.classList.add('hidden')
+    openSearch()
+  })
+
+  // --- Keyboard handlers ---
+  document.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl+K to open
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault()
+      if (modal.classList.contains('hidden')) {
+        openSearch()
+      } else {
+        closeSearch()
+      }
+      return
+    }
+
+    // Only handle these when modal is open
+    if (modal.classList.contains('hidden')) return
+
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      closeSearch()
+      return
+    }
+
+    const items = resultsContainer.querySelectorAll('.search-result')
+    const count = items.length
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      selectedIndex = count > 0 ? (selectedIndex + 1) % count : -1
+      updateActiveResult()
+      return
+    }
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      selectedIndex = count > 0 ? (selectedIndex - 1 + count) % count : -1
+      updateActiveResult()
+      return
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const active = resultsContainer.querySelector('[data-search-active]') as HTMLAnchorElement | null
+      if (active?.href) {
+        closeSearch()
+        window.location.href = active.href
+      }
+      return
+    }
+  })
+</script>
