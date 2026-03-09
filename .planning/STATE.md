@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 7 of 9 (Astro Content Layer Loader)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-09 — Completed 07-01-PLAN.md (scaffold @flare-cms/astro)
+Last activity: 2026-03-09 — Completed 07-02-PLAN.md (build-time loader)
 
-Progress: [███████████████████████████████████████░░░░░] 85% (19/22 plans)
+Progress: [████████████████████████████████████████░░░░] 90% (20/22 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
-- Average duration: ~10 min
-- Total execution time: ~180 min
+- Total plans completed: 20
+- Average duration: ~9 min
+- Total execution time: ~183 min
 
 **By Phase:**
 
@@ -33,13 +33,13 @@ Progress: [███████████████████████
 | 4 | 3 | ~10min | ~3.3min |
 | 5 | 5 | ~37min | ~7.4min |
 | 6 | 3 | ~16min | ~5.3min |
-| 7 | 1/3 | ~2min | ~2min |
+| 7 | 2/3 | ~5min | ~2.5min |
 
 ## v2 Roadmap
 
 | Phase | Feature | Impact | Status |
 |-------|---------|--------|--------|
-| 7 | Astro Content Layer Loader | Astro Integration 5/5 | In Progress (1/3) |
+| 7 | Astro Content Layer Loader | Astro Integration 5/5 | In Progress (2/3) |
 | 8 | Live Preview API | Developer Experience 5/5 | Planned |
 | 9 | Schema Migrations UI | Content Modeling 5/5 | Planned |
 
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 - [07-01]: astro/zod for Zod imports (Astro re-exports Zod for Content Layer compatibility)
 - [07-01]: Graceful API client returns empty data on failure instead of throwing
 - [07-01]: System fields (_status, _createdAt, _updatedAt) always optional in generated schemas
+- [07-02]: Client-side status filtering in loader (API filters broken)
+- [07-02]: Permissive passthrough fallback schema when CMS unreachable
+- [07-02]: store.clear() before each build for clean state
 
 ### Pending Todos
 
@@ -78,5 +81,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 07-01-PLAN.md (scaffold @flare-cms/astro)
+Stopped at: Completed 07-02-PLAN.md (build-time loader)
 Resume file: None

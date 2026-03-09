@@ -6,6 +6,8 @@
  */
 
 export { flareLoader } from './loader'
+/** @experimental Requires Astro 5.10+ with experimental.liveContentCollections */
+export { flareLiveLoader } from './live-loader'
 export { flareSchemaToZod } from './schema'
 export { FlareClient } from './client'
 export type { FlareLoaderOptions, FlareContentItem, FlareApiResponse } from './types'
