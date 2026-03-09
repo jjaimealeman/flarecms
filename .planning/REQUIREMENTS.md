@@ -10,7 +10,7 @@
 - [x] **CMS-01**: `docs` collection created with fields: title, slug, content (markdown), section, order, prev/next
 - [x] **CMS-02**: `docs-sections` collection created with fields: name, slug, description, icon, order
 - [x] **CMS-03**: EasyMDE (markdown) editor configured for docs collection instead of Quill
-- [ ] **CMS-04**: All documentation content seeded via reproducible API script
+- [x] **CMS-04**: All documentation content seeded via reproducible API script
 
 ### Layout & Navigation
 
@@ -38,14 +38,14 @@
 
 ### Documentation Content
 
-- [ ] **DOCS-01**: Getting Started docs (quickstart, installation, project structure)
-- [ ] **DOCS-02**: Core Concepts docs (architecture, collections, content workflow, media)
-- [ ] **DOCS-03**: API Reference docs (REST endpoints, filtering, authentication, API tokens)
-- [ ] **DOCS-04**: Admin docs (dashboard, content management, collection builder, plugins)
-- [ ] **DOCS-05**: Security docs (auth system, rate limiting, CSRF, CORS, security headers)
-- [ ] **DOCS-06**: Plugins docs (plugin system, core plugins, building custom plugins)
-- [ ] **DOCS-07**: Deployment docs (Cloudflare Workers, D1, R2, wrangler config, CI/CD)
-- [ ] **DOCS-08**: Configuration docs (environment variables, bindings, settings)
+- [x] **DOCS-01**: Getting Started docs (quickstart, installation, project structure)
+- [x] **DOCS-02**: Core Concepts docs (architecture, collections, content workflow, media)
+- [x] **DOCS-03**: API Reference docs (REST endpoints, filtering, authentication, API tokens)
+- [x] **DOCS-04**: Admin docs (dashboard, content management, collection builder, plugins)
+- [x] **DOCS-05**: Security docs (auth system, rate limiting, CSRF, CORS, security headers)
+- [x] **DOCS-06**: Plugins docs (plugin system, core plugins, building custom plugins)
+- [x] **DOCS-07**: Deployment docs (Cloudflare Workers, D1, R2, wrangler config, CI/CD)
+- [x] **DOCS-08**: Configuration docs (environment variables, bindings, settings)
 
 ### Deployment
 
@@ -96,7 +96,7 @@
 | CMS-01 | Phase 1: CMS Content Foundation | Complete |
 | CMS-02 | Phase 1: CMS Content Foundation | Complete |
 | CMS-03 | Phase 1: CMS Content Foundation | Complete |
-| CMS-04 | Phase 5: Documentation Content | Pending |
+| CMS-04 | Phase 5: Documentation Content | Complete |
 | NAV-01 | Phase 2: Docs Layout & Navigation | Complete |
 | NAV-02 | Phase 2: Docs Layout & Navigation | Complete |
 | NAV-03 | Phase 2: Docs Layout & Navigation | Complete |
@@ -112,14 +112,14 @@
 | SITE-04 | Phase 4: Site Shell & Homepage | Complete |
 | SITE-05 | Phase 4: Site Shell & Homepage | Complete |
 | SITE-06 | Phase 4: Site Shell & Homepage | Complete |
-| DOCS-01 | Phase 5: Documentation Content | Pending |
-| DOCS-02 | Phase 5: Documentation Content | Pending |
-| DOCS-03 | Phase 5: Documentation Content | Pending |
-| DOCS-04 | Phase 5: Documentation Content | Pending |
-| DOCS-05 | Phase 5: Documentation Content | Pending |
-| DOCS-06 | Phase 5: Documentation Content | Pending |
-| DOCS-07 | Phase 5: Documentation Content | Pending |
-| DOCS-08 | Phase 5: Documentation Content | Pending |
+| DOCS-01 | Phase 5: Documentation Content | Complete |
+| DOCS-02 | Phase 5: Documentation Content | Complete |
+| DOCS-03 | Phase 5: Documentation Content | Complete |
+| DOCS-04 | Phase 5: Documentation Content | Complete |
+| DOCS-05 | Phase 5: Documentation Content | Complete |
+| DOCS-06 | Phase 5: Documentation Content | Complete |
+| DOCS-07 | Phase 5: Documentation Content | Complete |
+| DOCS-08 | Phase 5: Documentation Content | Complete |
 | DEPLOY-01 | Phase 6: Search & Deploy | Pending |
 
 **Coverage:**

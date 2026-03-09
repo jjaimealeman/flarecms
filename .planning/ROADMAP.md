@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
 - [x] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
 - [x] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
-- [ ] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
+- [x] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
 - [ ] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K and production deployment to Cloudflare Pages
 
 ## Phase Details
@@ -97,11 +97,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Seed script, prompt generator, content directory structure with 8 section metadata files
-- [ ] 05-02-PLAN.md — Author Getting Started (3 pages), Core Concepts (4 pages), Configuration (3 pages)
-- [ ] 05-03-PLAN.md — Author Admin (5 pages), API Reference (4 pages)
-- [ ] 05-04-PLAN.md — Author Plugins (3 pages), Security (4 pages), Deployment (5 pages)
-- [ ] 05-05-PLAN.md — Run seed script, verify all content renders, confirm idempotency
+- [x] 05-01-PLAN.md — Seed script, prompt generator, content directory structure with 8 section metadata files
+- [x] 05-02-PLAN.md — Author Getting Started (3 pages), Core Concepts (4 pages), Configuration (3 pages)
+- [x] 05-03-PLAN.md — Author Admin (5 pages), API Reference (4 pages)
+- [x] 05-04-PLAN.md — Author Plugins (3 pages), Security (4 pages), Deployment (5 pages)
+- [x] 05-05-PLAN.md — Run seed script, verify all content renders, confirm idempotency
 
 ### Phase 6: Search & Deploy
 **Goal**: Visitors can search all documentation content via keyboard shortcut and the complete docs site is live on Cloudflare Pages
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
 | 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
 | 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
-| 5. Documentation Content | 0/5 | Not started | - |
+| 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
 | 6. Search & Deploy | 0/TBD | Not started | - |
 
 ---
