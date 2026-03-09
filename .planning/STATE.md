@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 9 of 9 (Schema Migrations UI)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-09 — Completed 09-01-PLAN.md (schema_migrations table + SchemaMigrationService)
+Last activity: 2026-03-09 — Completed 09-02-PLAN.md (wire migration tracking into field CRUD)
 
-Progress: [█████████████████████████████████████████████████░░░] 89% (25/28 plans)
+Progress: [██████████████████████████████████████████████████░░] 93% (26/28 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25
+- Total plans completed: 26
 - Average duration: ~8 min
-- Total execution time: ~202 min
+- Total execution time: ~206 min
 
 **By Phase:**
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
 | 8 | 3/3 | ~11min | ~3.7min |
-| 9 | 1/4 | ~3min | ~3min |
+| 9 | 2/4 | ~7min | ~3.5min |
 
 ## v2 Roadmap
 
@@ -43,7 +43,7 @@ Progress: [███████████████████████
 |-------|---------|--------|--------|
 | 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
 | 8 | Live Preview API | Developer Experience 5/5 | Complete |
-| 9 | Schema Migrations UI | Content Modeling 5/5 | In Progress (1/4) |
+| 9 | Schema Migrations UI | Content Modeling 5/5 | In Progress (2/4) |
 
 ## Accumulated Context
 
@@ -71,10 +71,12 @@ Recent decisions affecting current work:
 - [09-01]: Migration bundle ID 032 (next after 031) for schema_migrations table
 - [09-01]: No FK constraints on schema_migrations -- avoids cascade issues
 - [09-01]: validateFieldChange uses changeType param for selective duplicate checking
+- [09-02]: Best-effort migration recording (try/catch, non-blocking on failure)
+- [09-02]: Schema update moved inside field-exists check for correct variable scoping
 
 ### Pending Todos
 
-- v2 Phase 9: Plans 02-04 remaining (wire service into CRUD, migration history UI, rollback/confirmation)
+- v2 Phase 9: Plans 03-04 remaining (migration history UI, rollback/confirmation)
 
 ### Blockers/Concerns
 
@@ -85,5 +87,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 09-01-PLAN.md
+Stopped at: Completed 09-02-PLAN.md
 Resume file: None
