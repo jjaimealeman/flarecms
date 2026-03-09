@@ -48,6 +48,7 @@ export const GET: APIRoute = async () => {
 
       // Per-heading sub-documents for deep linking
       const headingRegex = /^(#{2,3})\s+(.+)$/gm
+      const seenHeadings = new Set<string>()
       let match
       while ((match = headingRegex.exec(doc.data.content || '')) !== null) {
         const text = match[2].trim()
@@ -55,6 +56,10 @@ export const GET: APIRoute = async () => {
           .toLowerCase()
           .replace(/[^\w]+/g, '-')
           .replace(/^-|-$/g, '')
+
+        // Skip duplicate headings within the same page
+        if (seenHeadings.has(id)) continue
+        seenHeadings.add(id)
 
         documents.push({
           id: `${doc.id}#${id}`,
