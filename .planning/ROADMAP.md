@@ -111,11 +111,12 @@ Plans:
   1. Visitor can press Cmd/Ctrl+K to open a search modal and find docs pages by title or content with fuzzy matching
   2. Search results show relevant page titles with section context and link directly to the correct docs page
   3. The complete docs site is deployed to Cloudflare Pages with all routes functional — homepage, all docs pages, and search working in production
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md — Install MiniSearch, shared search config, server-side search index endpoint
+- [ ] 06-02-PLAN.md — Search modal UI with keyboard navigation, match highlighting, responsive design
+- [ ] 06-03-PLAN.md — Production seed safety flag and deployment verification
 
 ## Progress
 
@@ -129,7 +130,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
 | 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
 | 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
-| 6. Search & Deploy | 0/TBD | Not started | - |
+| 6. Search & Deploy | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-03-08*
