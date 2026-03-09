@@ -23,8 +23,8 @@ const hasCmsData = cmsPosts.length > 0
 // Normalize both sources into a common shape
 const posts = hasCmsData
   ? cmsPosts.map(p => ({
-      slug: p.data.slug,
-      title: p.data.title,
+      slug: p.data.slug || p.slug,
+      title: p.data.title || p.title,
       excerpt: p.data.excerpt || '',
       category: '',
       categoryColor: '',
