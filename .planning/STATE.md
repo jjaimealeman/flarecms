@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 8 complete — Live Preview API
+**Current focus:** Phase 9 in progress -- Schema Migrations UI
 
 ## Current Position
 
-Phase: 8 of 9 (Live Preview API) — COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 8 complete, verified
-Last activity: 2026-03-09 — Phase 8 complete (draft API, preview UI, Astro preview route)
+Phase: 9 of 9 (Schema Migrations UI)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-03-09 — Completed 09-01-PLAN.md (schema_migrations table + SchemaMigrationService)
 
-Progress: [████████████████████████████████████████████████] 100% (24/24 plans)
+Progress: [█████████████████████████████████████████████████░░░] 89% (25/28 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
+- Total plans completed: 25
 - Average duration: ~8 min
-- Total execution time: ~199 min
+- Total execution time: ~202 min
 
 **By Phase:**
 
@@ -35,6 +35,7 @@ Progress: [███████████████████████
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
 | 8 | 3/3 | ~11min | ~3.7min |
+| 9 | 1/4 | ~3min | ~3min |
 
 ## v2 Roadmap
 
@@ -42,7 +43,7 @@ Progress: [███████████████████████
 |-------|---------|--------|--------|
 | 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
 | 8 | Live Preview API | Developer Experience 5/5 | Complete |
-| 9 | Schema Migrations UI | Content Modeling 5/5 | Planned |
+| 9 | Schema Migrations UI | Content Modeling 5/5 | In Progress (1/4) |
 
 ## Accumulated Context
 
@@ -67,10 +68,13 @@ Recent decisions affecting current work:
 - [08-02]: iframe.src replacement for preview updates -- postMessage deferred to Plan 03
 - [08-03]: Generic preview template for all collections (not per-collection templates)
 - [08-03]: 401 for missing token, 410 for expired/not-found (clear HTTP semantics)
+- [09-01]: Migration bundle ID 032 (next after 031) for schema_migrations table
+- [09-01]: No FK constraints on schema_migrations -- avoids cascade issues
+- [09-01]: validateFieldChange uses changeType param for selective duplicate checking
 
 ### Pending Todos
 
-- v2 Phase 9: Schema Migrations UI
+- v2 Phase 9: Plans 02-04 remaining (wire service into CRUD, migration history UI, rollback/confirmation)
 
 ### Blockers/Concerns
 
@@ -81,5 +85,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Phase 8 complete, verified
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
