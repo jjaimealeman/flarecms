@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import SEO from '../components/SEO.astro'
 import { navLinks } from '../data/homepage'
 
 interface Props {
@@ -16,8 +17,7 @@ const currentPath = Astro.url.pathname
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <title>{title} | Flare CMS</title>
+    <SEO title={title} description={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body class="min-h-screen bg-slate-900 text-slate-50 font-sans antialiased">
@@ -30,8 +30,8 @@ const currentPath = Astro.url.pathname
           Flare<span class="text-flare-500">CMS</span>
         </a>
 
-        <!-- Center nav links -->
-        <div class="flex items-center gap-8">
+        <!-- Desktop nav -->
+        <div class="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <a
               href={link.href}
@@ -58,8 +58,19 @@ const currentPath = Astro.url.pathname
           </a>
         </div>
 
-        <!-- Right CTA buttons -->
-        <div class="flex items-center gap-3">
+        <!-- Search placeholder + CTA (desktop) -->
+        <div class="hidden md:flex items-center gap-3">
+          <button
+            class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-500 hover:border-slate-600 transition-colors cursor-pointer"
+            aria-label="Search docs"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <span>Search docs...</span>
+            <kbd class="ml-2 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-500 border border-slate-700">Cmd+K</kbd>
+          </button>
           <a
             href="https://admin.flarecms.dev"
             class="text-sm font-medium text-slate-400 hover:text-slate-50 border border-slate-700 hover:border-slate-500 px-4 py-2 rounded-lg transition-all"
@@ -73,8 +84,86 @@ const currentPath = Astro.url.pathname
             Get Started
           </a>
         </div>
+
+        <!-- Mobile hamburger button -->
+        <button
+          id="site-mobile-menu-btn"
+          class="md:hidden text-slate-400 hover:text-slate-50 transition-colors"
+          aria-label="Open menu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
     </nav>
+
+    <!-- Mobile nav overlay -->
+    <div id="site-mobile-overlay" class="fixed inset-0 z-[55] hidden">
+      <!-- Backdrop -->
+      <div id="site-mobile-backdrop" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
+
+      <!-- Slide-in panel from right -->
+      <div class="absolute right-0 top-0 bottom-0 w-72 bg-slate-900 border-l border-slate-800 overflow-y-auto transform transition-transform">
+        <!-- Close button -->
+        <div class="flex items-center justify-between p-4 border-b border-slate-800">
+          <span class="text-sm font-semibold text-slate-300">Menu</span>
+          <button
+            id="site-mobile-close-btn"
+            class="text-slate-400 hover:text-slate-200 transition-colors"
+            aria-label="Close menu"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Nav links -->
+        <div class="p-4 space-y-1">
+          {navLinks.map((link) => (
+            <a
+              href={link.href}
+              class:list={[
+                'block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                currentPath.startsWith(link.href)
+                  ? 'text-flare-500 bg-flare-500/10'
+                  : 'text-slate-300 hover:text-slate-50 hover:bg-slate-800'
+              ]}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="https://github.com/jjaimealeman/flarecms"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:text-slate-50 hover:bg-slate-800 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+
+        <!-- CTA buttons -->
+        <div class="p-4 border-t border-slate-800 space-y-2">
+          <a
+            href="https://admin.flarecms.dev"
+            class="block text-center text-sm font-medium text-slate-300 border border-slate-700 hover:border-slate-500 px-4 py-2.5 rounded-lg transition-all"
+          >
+            Admin Demo
+          </a>
+          <a
+            href="/docs"
+            class="block text-center text-sm font-medium text-slate-950 bg-flare-500 hover:bg-flare-400 px-4 py-2.5 rounded-lg transition-colors"
+          >
+            Get Started
+          </a>
+        </div>
+      </div>
+    </div>
 
     <main>
       <slot />
@@ -83,15 +172,19 @@ const currentPath = Astro.url.pathname
     <!-- Footer -->
     <footer class="border-t border-slate-800 mt-20 bg-slate-950">
       <div class="max-w-7xl mx-auto px-6 py-16">
-        <div class="grid grid-cols-4 gap-12">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           <!-- Brand column -->
-          <div>
+          <div class="col-span-2 md:col-span-1">
             <a href="/" class="text-lg font-heading font-bold tracking-tight">
               Flare<span class="text-flare-500">CMS</span>
             </a>
             <p class="mt-3 text-sm text-slate-400 leading-relaxed">
               Edge-native headless CMS for Cloudflare Workers.
             </p>
+            <div class="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-flare-500"></span>
+              Built with Flare CMS
+            </div>
           </div>
 
           <!-- Product -->
@@ -100,7 +193,6 @@ const currentPath = Astro.url.pathname
             <ul class="space-y-3">
               <li><a href="/docs" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Documentation</a></li>
               <li><a href="/blog" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Blog</a></li>
-              <li><a href="/changelog" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Changelog</a></li>
               <li><a href="https://admin.flarecms.dev" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Admin Demo</a></li>
             </ul>
           </div>
@@ -110,25 +202,25 @@ const currentPath = Astro.url.pathname
             <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4">Developers</h4>
             <ul class="space-y-3">
               <li><a href="/docs" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Quick Start</a></li>
-              <li><a href="/docs" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">API Reference</a></li>
-              <li><a href="/docs" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Collections</a></li>
-              <li><a href="/docs" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Deployment</a></li>
+              <li><a href="https://github.com/jjaimealeman/flarecms" target="_blank" rel="noopener" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">GitHub</a></li>
+              <li><a href="https://github.com/jjaimealeman/flarecms/issues" target="_blank" rel="noopener" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Issues</a></li>
             </ul>
           </div>
 
-          <!-- Community -->
+          <!-- Legal -->
           <div>
-            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4">Community</h4>
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4">Legal</h4>
             <ul class="space-y-3">
-              <li><a href="https://github.com/jjaimealeman/flarecms" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">GitHub</a></li>
-              <li><a href="https://github.com/jjaimealeman/flarecms/issues" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Issues</a></li>
-              <li><a href="https://github.com/jjaimealeman/flarecms/blob/main/LICENSE" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">MIT License</a></li>
+              <li><a href="/terms" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Terms of Service</a></li>
+              <li><a href="/privacy" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Privacy Policy</a></li>
+              <li><a href="/code-of-conduct" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">Code of Conduct</a></li>
+              <li><a href="https://github.com/jjaimealeman/flarecms/blob/main/LICENSE" target="_blank" rel="noopener" class="text-sm text-slate-400 hover:text-slate-50 transition-colors">MIT License</a></li>
             </ul>
           </div>
         </div>
 
         <!-- Bottom bar -->
-        <div class="mt-12 pt-8 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
+        <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <span>&copy; 2026 Flare CMS &middot; MIT License</span>
           <div class="flex items-center gap-4">
             <span>Built by Jaime Aleman in El Paso, TX</span>
@@ -144,6 +236,37 @@ const currentPath = Astro.url.pathname
       </div>
     </footer>
 
+    <!-- Mobile menu script -->
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById('site-mobile-menu-btn')
+        var overlay = document.getElementById('site-mobile-overlay')
+        var backdrop = document.getElementById('site-mobile-backdrop')
+        var closeBtn = document.getElementById('site-mobile-close-btn')
+
+        function open() {
+          overlay && overlay.classList.remove('hidden')
+        }
+        function close() {
+          overlay && overlay.classList.add('hidden')
+        }
+
+        btn && btn.addEventListener('click', open)
+        backdrop && backdrop.addEventListener('click', close)
+        closeBtn && closeBtn.addEventListener('click', close)
+
+        // Close when any nav link is clicked
+        if (overlay) {
+          overlay.addEventListener('click', function (e) {
+            if (e.target && e.target.closest && e.target.closest('a')) {
+              close()
+            }
+          })
+        }
+      })()
+    </script>
+
+    <!-- Version badge click-to-copy -->
     <script is:inline define:vars={{ version: `v${__APP_VERSION__} · ${__GIT_HASH__}` }}>
       document.getElementById('version-badge')?.addEventListener('click', function() {
         navigator.clipboard.writeText(version).then(() => {

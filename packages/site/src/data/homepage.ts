@@ -116,7 +116,4 @@ export const codeResponse = `GET /api/collections/blog-posts/content
 export const navLinks = [
   { label: 'Docs', href: '/docs' },
   { label: 'Blog', href: '/blog' },
-  { label: 'News', href: '/news' },
-  { label: 'Changelog', href: '/changelog' },
-  { label: 'About', href: '/about' },
 ]
