@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 4 of 6 (Site Shell & Homepage)
-Plan: 1 of 3 in current phase
-Status: In progress
-Last activity: 2026-03-08 — Completed 04-01-PLAN.md
+Plan: 3 of 3 in current phase (wave 2)
+Status: In progress (04-02 may still be running in parallel)
+Last activity: 2026-03-08 — Completed 04-03-PLAN.md
 
-Progress: [████████████████████████████████░░░░░░░░] 80%
+Progress: [██████████████████████████████████████░░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~12 min
-- Total execution time: ~121 min
+- Total plans completed: 9
+- Average duration: ~11 min
+- Total execution time: ~123 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [███████████████████████
 | 1 | 2 | ~48min | ~24min |
 | 2 | 2 | ~11min | ~5.5min |
 | 3 | 3 | ~54min | ~18min |
-| 4 | 1 | ~3min | ~3min |
+| 4 | 2 | ~5min | ~2.5min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (8min), 03-01 (5min), 03-02 (4min), 03-03 (45min), 04-01 (3min)
+- Last 5 plans: 03-01 (5min), 03-02 (4min), 03-03 (45min), 04-01 (3min), 04-03 (2min)
 - Trend: Human verification plans take longest due to interactive bug fixing
 
 *Updated after each plan completion*
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 - [04-01]: Custom SEO component (no astro-seo dependency)
 - [04-01]: Custom SSR sitemap endpoint (not @astrojs/sitemap — incompatible with server mode)
 - [04-01]: Default OG image is /logo.svg until custom OG image created
+- [04-03]: Responsive comparison uses card layout on mobile instead of table
+- [04-03]: Features reduced from 6 to 4 cards to match Stitch v2 mockup
+- [04-03]: Stats and BlogPreview removed from homepage but files preserved
 
 ### Pending Todos
 
@@ -87,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Completed 04-01-PLAN.md
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
