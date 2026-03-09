@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 8 in progress — Live Preview API
+**Current focus:** Phase 8 complete — Live Preview API
 
 ## Current Position
 
-Phase: 8 of 9 (Live Preview API)
+Phase: 8 of 9 (Live Preview API) — COMPLETE
 Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-03-09 — Completed 08-02-PLAN.md (Split-Screen Preview Page)
+Status: Phase 8 complete, verified
+Last activity: 2026-03-09 — Phase 8 complete (draft API, preview UI, Astro preview route)
 
 Progress: [████████████████████████████████████████████████] 100% (24/24 plans)
 
@@ -70,7 +70,6 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- v2 Phase 8: Live Preview API
 - v2 Phase 9: Schema Migrations UI
 
 ### Blockers/Concerns
@@ -82,5 +81,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 08-02-PLAN.md (Split-Screen Preview Page) -- Phase 8 complete
+Stopped at: Phase 8 complete, verified
 Resume file: None
