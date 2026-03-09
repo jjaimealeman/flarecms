@@ -2,6 +2,7 @@
 import { renderMarkdown } from '../../lib/markdown'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 import TableOfContents from '../../components/docs/TableOfContents.astro'
+import EditInCms from '../../components/docs/EditInCms.astro'
 import { getDocsSections, getDocsPages } from '../../lib/flare'
 import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
 import '../../styles/code-blocks.css'
@@ -88,6 +89,9 @@ const { html, headings } = await renderMarkdown(doc.data.content || '')
   headings={headings}
 >
   <h1>{currentPage.title}</h1>
+  <div class="mb-6 not-prose">
+    <EditInCms contentId={doc.id} />
+  </div>
   <Fragment set:html={html} />
   <TableOfContents slot="toc" headings={headings} />
 </DocsLayout>
