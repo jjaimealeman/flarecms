@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 4 complete — ready for Phase 5
+**Current focus:** Phase 5 — Documentation Content
 
 ## Current Position
 
-Phase: 4 of 6 (Site Shell & Homepage) — COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 4 verified, ready to plan Phase 5
-Last activity: 2026-03-08 — Phase 4 execution complete
+Phase: 5 of 6 (Documentation Content)
+Plan: 1 of 5 in current phase
+Status: In progress — Plan 05-01 complete
+Last activity: 2026-03-08 — Completed 05-01-PLAN.md
 
-Progress: [██████████████████████████████████░░░░░░] 67%
+Progress: [████████████████████████████████████░░░░] 73%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~13 min
-- Total execution time: ~128 min
+- Total plans completed: 11
+- Average duration: ~12 min
+- Total execution time: ~132 min
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [███████████████████████
 | 2 | 2 | ~11min | ~5.5min |
 | 3 | 3 | ~54min | ~18min |
 | 4 | 3 | ~10min | ~3.3min |
+| 5 | 1 | ~4min | ~4min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (4min), 03-03 (45min), 04-01 (3min), 04-02 (5min), 04-03 (2min)
-- Trend: Human verification plans take longest due to interactive bug fixing
+- Last 5 plans: 03-03 (45min), 04-01 (3min), 04-02 (5min), 04-03 (2min), 05-01 (4min)
+- Trend: Tooling/infrastructure plans execute quickly
 
 *Updated after each plan completion*
 
@@ -75,6 +76,9 @@ Recent decisions affecting current work:
 - [04-02]: navLinks trimmed to Docs and Blog only (removed News, Changelog, About)
 - [04-02]: Search placeholder visual-only with Cmd+K badge (Phase 6 implements)
 - [04-02]: site-mobile-* IDs for Layout mobile menu (distinct from docs-mobile-* in DocsLayout)
+- [05-01]: Seed script uses URLSearchParams for auth (form-encoded, not JSON)
+- [05-01]: Direct D1 mode uses getPlatformProxy() matching seed-admin.ts pattern
+- [05-01]: _section.md convention for section metadata (frontmatter-only files)
 
 ### Pending Todos
 
@@ -93,5 +97,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Phase 4 complete — ready to plan Phase 5
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
