@@ -22,10 +22,19 @@ jobs:
 
       - run: pnpm build
 
+      - name: Build Astro integration
+        working-directory: packages/astro
+        run: pnpm build
+
       - uses: actions/upload-artifact@v4
         with:
           name: core-dist
           path: packages/core/dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astro-dist
+          path: packages/astro/dist/
 
   deploy-cms:
     name: Deploy CMS Worker
@@ -75,6 +84,11 @@ jobs:
         with:
           name: core-dist
           path: packages/core/dist/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: astro-dist
+          path: packages/astro/dist/
 
       - name: Build Astro site
         working-directory: packages/site
