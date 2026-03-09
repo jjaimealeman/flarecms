@@ -1,0 +1,115 @@
+---
+import { getDraftContent } from '../../../lib/flare'
+import Layout from '../../../layouts/Layout.astro'
+
+const { collection, slug } = Astro.params
+const token = Astro.url.searchParams.get('token')
+
+if (!token) {
+  return new Response('Preview token required', { status: 401 })
+}
+
+const draft = await getDraftContent(token)
+if (!draft) {
+  return new Response('Preview expired or not found', { status: 410 })
+}
+
+// Normalize draft data into what the template expects
+const post = {
+  title: draft.title || draft.data.title || 'Untitled',
+  content: draft.data.content || '',
+  excerpt: draft.data.excerpt || '',
+  author: draft.data.author || '',
+  date: draft.data.publishedAt || draft.data.publish_date || new Date().toISOString(),
+  featuredImage: draft.data.featuredImage || '',
+  slug: draft.slug || slug,
+  collection: draft.collectionId || collection,
+}
+---
+
+<Layout title={`Preview: ${post.title}`} description={post.excerpt}>
+  <!-- Preview mode banner -->
+  <div class="fixed top-0 left-0 right-0 z-50 bg-amber-500 text-black text-center text-xs py-1 font-medium">
+    PREVIEW MODE - This is a draft preview
+  </div>
+
+  <article class="max-w-4xl mx-auto px-6 pt-16 pb-20">
+    <!-- Featured image -->
+    {post.featuredImage && (
+      <img
+        src={post.featuredImage}
+        alt={post.title}
+        class="w-full max-h-[400px] object-cover rounded-xl mb-10"
+      />
+    )}
+
+    <!-- Article header -->
+    <header class="mb-12">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="inline-block px-2.5 py-1 rounded-md text-xs font-medium bg-slate-700 text-slate-300">
+          {post.collection}
+        </span>
+      </div>
+
+      <h1 class="text-4xl md:text-5xl font-heading font-bold tracking-tight leading-[1.15]">
+        {post.title}
+      </h1>
+
+      {post.excerpt && (
+        <p class="mt-4 text-lg text-slate-400 leading-relaxed">{post.excerpt}</p>
+      )}
+
+      <div class="mt-6 flex items-center gap-4 pt-6 border-t border-slate-800">
+        <!-- Author avatar placeholder -->
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-flare-500 to-amber-500 flex items-center justify-center text-sm font-bold text-slate-950">
+          {post.author ? post.author.split(' ').map((n: string) => n[0]).join('') : '?'}
+        </div>
+        <div>
+          {post.author && (
+            <div class="text-sm font-medium text-slate-200">{post.author}</div>
+          )}
+          <time datetime={post.date} class="text-xs text-slate-500">
+            {new Date(post.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+        </div>
+      </div>
+    </header>
+
+    <!-- Article content -->
+    <div
+      class:list={[
+        'prose prose-lg prose-invert max-w-none',
+        'prose-headings:font-heading prose-headings:tracking-tight prose-headings:text-slate-50',
+        'prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4',
+        'prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3',
+        'prose-p:text-slate-300 prose-p:leading-relaxed',
+        'prose-a:text-flare-400 prose-a:no-underline hover:prose-a:underline',
+        'prose-strong:text-slate-100',
+        'prose-ul:text-slate-300 prose-ol:text-slate-300',
+        'prose-li:marker:text-flare-500',
+        'prose-code:text-flare-300 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none',
+        'prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl',
+        'prose-pre:text-sm prose-pre:leading-7',
+        'prose-hr:border-slate-800',
+        'prose-blockquote:border-flare-500 prose-blockquote:text-slate-400',
+      ]}
+      set:html={post.content}
+    />
+  </article>
+
+  <!-- postMessage listener for future live update optimization -->
+  <script>
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'flare-preview-update') {
+        // Reload with new token
+        const url = new URL(window.location.href)
+        url.searchParams.set('token', event.data.token)
+        window.location.href = url.toString()
+      }
+    })
+  </script>
+</Layout>

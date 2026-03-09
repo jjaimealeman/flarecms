@@ -948,30 +948,72 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
 
       let fieldToDelete = null;
 
+      function escapeText(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.textContent;
+      }
+
       function deleteField(fieldId) {
         fieldToDelete = fieldId;
-        showConfirmDialog('delete-field-confirm');
+
+        // Fetch impact data before showing confirmation
+        fetch('/admin/collections/' + collectionId + '/fields/' + fieldId + '/impact')
+          .then(function(response) { return response.json(); })
+          .then(function(impact) {
+            var dialogMessage = document.querySelector('#delete-field-confirm .dialog-message');
+            if (dialogMessage) {
+              var label = escapeText(impact.fieldLabel || impact.fieldName || 'this');
+              // Clear existing content
+              while (dialogMessage.firstChild) dialogMessage.removeChild(dialogMessage.firstChild);
+
+              if (impact.contentCount > 0) {
+                var p1 = document.createElement('p');
+                p1.className = 'text-sm text-gray-300 mb-3';
+                p1.textContent = 'Are you sure you want to remove the "' + label + '" field?';
+                var p2 = document.createElement('p');
+                p2.className = 'text-sm text-amber-400 mb-3';
+                p2.textContent = 'This collection has ' + impact.contentCount + ' content item' + (impact.contentCount === 1 ? '' : 's') + '. Existing data for this field will be preserved in the JSON but no longer visible in the admin editor.';
+                var p3 = document.createElement('p');
+                p3.className = 'text-xs text-gray-500';
+                p3.textContent = 'This change can be rolled back from the Schema Migrations page.';
+                dialogMessage.appendChild(p1);
+                dialogMessage.appendChild(p2);
+                dialogMessage.appendChild(p3);
+              } else {
+                var p = document.createElement('p');
+                p.className = 'text-sm text-gray-300';
+                p.textContent = 'Remove the "' + label + '" field? No content items will be affected.';
+                dialogMessage.appendChild(p);
+              }
+            }
+            showConfirmDialog('delete-field-confirm');
+          })
+          .catch(function() {
+            // Fallback to simple confirmation if impact fetch fails
+            showConfirmDialog('delete-field-confirm');
+          });
       }
 
       function performDeleteField() {
         if (!fieldToDelete) return;
 
-        fetch(\`/admin/collections/\${collectionId}/fields/\${fieldToDelete}\`, {
+        fetch('/admin/collections/' + collectionId + '/fields/' + fieldToDelete, {
           method: 'DELETE'
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
           if (data.success) {
             location.reload();
           } else {
             alert('Error deleting field: ' + data.error);
           }
         })
-        .catch(error => {
+        .catch(function(error) {
           console.error('Error:', error);
           alert('Error deleting field');
         })
-        .finally(() => {
+        .finally(function() {
           fieldToDelete = null;
         });
       }
@@ -1103,9 +1145,9 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
     <!-- Confirmation Dialogs -->
     ${renderConfirmationDialog({
       id: 'delete-field-confirm',
-      title: 'Delete Field',
-      message: 'Are you sure you want to delete this field? This action cannot be undone.',
-      confirmText: 'Delete',
+      title: 'Remove Field',
+      message: '<span class="dialog-message"><p class="text-sm text-gray-400">Are you sure you want to delete this field? This action cannot be undone.</p></span>',
+      confirmText: 'Remove Field',
       cancelText: 'Cancel',
       iconColor: 'red',
       confirmClass: 'bg-red-500 hover:bg-red-400',

@@ -8,6 +8,22 @@ importers:
 
   .: {}
 
+  packages/astro:
+    dependencies:
+      '@flare-cms/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      astro:
+        specifier: ^5.18.0
+        version: 5.18.0(@types/node@24.11.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(tsx@4.21.0)(typescript@5.9.3)
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/cms:
     dependencies:
       '@flare-cms/core':
@@ -114,6 +130,9 @@ importers:
       '@astrojs/cloudflare':
         specifier: ^12.6.12
         version: 12.6.12(@types/node@24.11.0)(astro@5.18.0(@types/node@24.11.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(tsx@4.21.0)(typescript@5.9.3))(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)
+      '@flare-cms/astro':
+        specifier: workspace:*
+        version: link:../astro
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8

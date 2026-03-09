@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { html } from 'hono/html'
 import { requireAuth } from '../middleware'
 import { isPluginActive } from '../middleware/plugin-middleware'
+import { SchemaMigrationService } from '../services/schema-migration'
 import { renderCollectionsListPage } from '../templates/pages/admin-collections-list.template'
 import { renderCollectionFormPage } from '../templates/pages/admin-collections-form.template'
 
@@ -646,6 +647,18 @@ adminCollectionsRoutes.post('/:id/fields', async (c) => {
     // Check if field already exists in schema
     let schema = collection.schema ? (typeof collection.schema === 'string' ? JSON.parse(collection.schema) : collection.schema) : null
 
+    // Validate field change (managed guard + reserved names + duplicate check)
+    const existingFields = schema?.properties ? Object.keys(schema.properties) : []
+    const validation = SchemaMigrationService.validateFieldChange({
+      managed: collection.managed === 1,
+      fieldName,
+      existingFields,
+      changeType: 'add_field',
+    })
+    if (!validation.valid) {
+      return c.json({ success: false, error: validation.error })
+    }
+
     if (schema && schema.properties && schema.properties[fieldName]) {
       return c.json({ success: false, error: 'A field with this name already exists.' })
     }
@@ -668,6 +681,9 @@ adminCollectionsRoutes.post('/:id/fields', async (c) => {
 
     // Add field to schema (primary storage method)
     if (schema) {
+      // Capture previous schema for migration tracking
+      const previousSchema = JSON.parse(JSON.stringify(schema))
+
       if (!schema.properties) {
         schema.properties = {}
       }
@@ -720,6 +736,27 @@ adminCollectionsRoutes.post('/:id/fields', async (c) => {
       await updateSchemaStmt.bind(JSON.stringify(schema), Date.now(), collectionId).run()
 
       console.log('[Add Field] Added field to schema:', fieldName, fieldConfig)
+
+      // Record schema migration (best-effort -- do not fail the field operation)
+      try {
+        const user = c.get('user')
+        const migrationService = new SchemaMigrationService(db)
+        await migrationService.recordMigration({
+          collectionId,
+          collectionName: collection.display_name || collection.name,
+          changes: [{
+            type: 'add_field',
+            fieldName,
+            fieldLabel,
+            fieldType,
+            newConfig: fieldConfig,
+          }],
+          previousSchema,
+          userId: user?.userId || null,
+        })
+      } catch (migrationError) {
+        console.error('[Add Field] Failed to record migration:', migrationError)
+      }
 
       return c.json({ success: true, fieldId: `schema-${fieldName}` })
     }
@@ -804,14 +841,28 @@ adminCollectionsRoutes.put('/:collectionId/fields/:fieldId', async (c) => {
 
       // Get the current collection
       const getCollectionStmt = db.prepare('SELECT * FROM collections WHERE id = ?')
-      const collection = await getCollectionStmt.bind(collectionId).first()
+      const collection = await getCollectionStmt.bind(collectionId).first() as any
 
       if (!collection) {
         return c.json({ success: false, error: 'Collection not found.' })
       }
 
+      // Validate field change (managed guard + reserved names)
+      const editValidation = SchemaMigrationService.validateFieldChange({
+        managed: collection.managed === 1,
+        fieldName,
+        existingFields: [],
+        changeType: 'modify_field',
+      })
+      if (!editValidation.valid) {
+        return c.json({ success: false, error: editValidation.error })
+      }
+
       // Parse the current schema
       let schema = typeof collection.schema === 'string' ? JSON.parse(collection.schema) : collection.schema
+
+      // Capture previous schema for migration tracking
+      const previousSchema = JSON.parse(JSON.stringify(schema || {}))
       if (!schema) {
         schema = { type: 'object', properties: {}, required: [] }
       }
@@ -824,6 +875,9 @@ adminCollectionsRoutes.put('/:collectionId/fields/:fieldId', async (c) => {
 
       // Update the field in the schema
       if (schema.properties[fieldName]) {
+        // Capture previous field config for migration tracking
+        const previousConfig = { ...schema.properties[fieldName] }
+
         // Parse field options from form
         let parsedFieldOptions: Record<string, any> = {}
         try {
@@ -872,23 +926,47 @@ adminCollectionsRoutes.put('/:collectionId/fields/:fieldId', async (c) => {
 
         console.log('[Field Update] Final required array:', schema.required)
         console.log('[Field Update] Final field config:', schema.properties[fieldName])
+
+        // Update the collection in the database
+        const updateCollectionStmt = db.prepare(`
+          UPDATE collections
+          SET schema = ?, updated_at = ?
+          WHERE id = ?
+        `)
+
+        const result = await updateCollectionStmt.bind(JSON.stringify(schema), Date.now(), collectionId).run()
+
+        console.log('[Field Update] Schema update result:', {
+          success: result.success,
+          changes: result.meta?.changes
+        })
+
+        // Record schema migration (best-effort -- do not fail the field operation)
+        try {
+          const user = c.get('user')
+          const migrationService = new SchemaMigrationService(db)
+          await migrationService.recordMigration({
+            collectionId,
+            collectionName: collection.display_name || collection.name,
+            changes: [{
+              type: 'modify_field',
+              fieldName,
+              fieldLabel,
+              fieldType,
+              previousConfig,
+              newConfig: schema.properties[fieldName],
+            }],
+            previousSchema,
+            userId: user?.userId || null,
+          })
+        } catch (migrationError) {
+          console.error('[Field Update] Failed to record migration:', migrationError)
+        }
+
+        return c.json({ success: true })
       }
 
-      // Update the collection in the database
-      const updateCollectionStmt = db.prepare(`
-        UPDATE collections
-        SET schema = ?, updated_at = ?
-        WHERE id = ?
-      `)
-
-      const result = await updateCollectionStmt.bind(JSON.stringify(schema), Date.now(), collectionId).run()
-
-      console.log('[Field Update] Schema update result:', {
-        success: result.success,
-        changes: result.meta?.changes
-      })
-
-      return c.json({ success: true })
+      return c.json({ success: false, error: 'Field not found in schema.' })
     }
 
     // For regular database fields
@@ -940,14 +1018,31 @@ adminCollectionsRoutes.delete('/:collectionId/fields/:fieldId', async (c) => {
         return c.json({ success: false, error: 'Collection not found.' })
       }
 
+      // Validate field change (managed guard + reserved names)
+      const deleteValidation = SchemaMigrationService.validateFieldChange({
+        managed: collection.managed === 1,
+        fieldName,
+        existingFields: [],
+        changeType: 'remove_field',
+      })
+      if (!deleteValidation.valid) {
+        return c.json({ success: false, error: deleteValidation.error })
+      }
+
       // Parse the current schema
       let schema = typeof collection.schema === 'string' ? JSON.parse(collection.schema) : collection.schema
       if (!schema || !schema.properties) {
         return c.json({ success: false, error: 'Field not found in schema.' })
       }
 
+      // Capture previous schema for migration tracking
+      const previousSchema = JSON.parse(JSON.stringify(schema))
+
       // Remove field from schema
       if (schema.properties[fieldName]) {
+        // Capture removed config for migration tracking
+        const removedConfig = { ...schema.properties[fieldName] }
+
         delete schema.properties[fieldName]
 
         // Also remove from required array if present
@@ -969,6 +1064,27 @@ adminCollectionsRoutes.delete('/:collectionId/fields/:fieldId', async (c) => {
 
         console.log('[Delete Field] Removed field from schema:', fieldName)
 
+        // Record schema migration (best-effort -- do not fail the field operation)
+        try {
+          const user = c.get('user')
+          const migrationService = new SchemaMigrationService(db)
+          await migrationService.recordMigration({
+            collectionId,
+            collectionName: collection.display_name || collection.name,
+            changes: [{
+              type: 'remove_field',
+              fieldName,
+              fieldLabel: removedConfig.title || fieldName,
+              fieldType: removedConfig.type,
+              previousConfig: removedConfig,
+            }],
+            previousSchema,
+            userId: user?.userId || null,
+          })
+        } catch (migrationError) {
+          console.error('[Delete Field] Failed to record migration:', migrationError)
+        }
+
         return c.json({ success: true })
       } else {
         return c.json({ success: false, error: 'Field not found in schema.' })
@@ -983,6 +1099,48 @@ adminCollectionsRoutes.delete('/:collectionId/fields/:fieldId', async (c) => {
   } catch (error) {
     console.error('Error deleting field:', error)
     return c.json({ success: false, error: 'Failed to delete field.' })
+  }
+})
+
+// Get field deletion impact (content count for confirmation dialog)
+adminCollectionsRoutes.get('/:collectionId/fields/:fieldId/impact', async (c) => {
+  try {
+    const collectionId = c.req.param('collectionId')
+    const fieldId = c.req.param('fieldId')
+    const db = c.env.DB
+
+    // Get content count for this collection
+    const countResult = await db
+      .prepare('SELECT COUNT(*) as count FROM content WHERE collection_id = ?')
+      .bind(collectionId)
+      .first<{ count: number }>()
+    const contentCount = countResult?.count ?? 0
+
+    // Get field info from collection schema
+    let fieldName = fieldId
+    let fieldLabel = fieldId
+    if (fieldId.startsWith('schema-')) {
+      fieldName = fieldId.replace('schema-', '')
+      const collection = await db
+        .prepare('SELECT schema FROM collections WHERE id = ?')
+        .bind(collectionId)
+        .first<{ schema: string }>()
+      if (collection?.schema) {
+        try {
+          const schema = typeof collection.schema === 'string' ? JSON.parse(collection.schema) : collection.schema
+          if (schema?.properties?.[fieldName]) {
+            fieldLabel = schema.properties[fieldName].title || fieldName
+          }
+        } catch (_e) {
+          // fall through with fieldName as label
+        }
+      }
+    }
+
+    return c.json({ contentCount, fieldName, fieldLabel })
+  } catch (error) {
+    console.error('Error fetching field impact:', error)
+    return c.json({ contentCount: 0, fieldName: '', fieldLabel: '' })
   }
 })
 

@@ -61,7 +61,7 @@ export async function getBlogPostBySlug(
   // return result.data.find((post) => post.data.slug === slug) || null;
   return (
     result.data.find(
-      (post) => post.data.slug === slug && post.status === "published",
+      (post) => (post.data.slug || post.slug) === slug && post.status === "published",
     ) || null
   );
 }
@@ -236,6 +236,36 @@ export async function getDocsPages(): Promise<DocsPage[]> {
   return result.data
     .filter((page) => page.status === 'published')
     .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+}
+
+// --- Preview Drafts ---
+
+export interface DraftContent {
+  collectionId: string
+  contentId: string
+  title: string
+  slug: string
+  status: string
+  data: Record<string, any>
+  userId: string
+  createdAt: number
+}
+
+export async function getDraftContent(token: string): Promise<DraftContent | null> {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/preview/draft/${encodeURIComponent(token)}`,
+    )
+
+    if (!response.ok) {
+      return null
+    }
+
+    const result = await response.json()
+    return result.data as DraftContent
+  } catch {
+    return null
+  }
 }
 
 // Generic content fetcher
