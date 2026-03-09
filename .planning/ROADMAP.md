@@ -151,12 +151,13 @@ Future phases to close the remaining gaps and reach 5/5 across all dimensions.
 ### Phase 8: Live Preview API
 **Goal**: Content editors see real-time preview of draft changes rendered through the actual Astro frontend, leveraging same-edge-network latency (<50ms round-trip)
 **Impact**: Developer Experience 4→5, competitive moat (unique edge advantage)
-**Effort**: Medium (dedicated phase, 3-4 plans)
-**Key deliverables**:
-  - Draft content API endpoint on CMS Worker
-  - Preview client script for Astro frontend (listens for changes, re-renders)
-  - Admin UI "Preview" button that opens live preview panel
-  - Sub-50ms preview latency (both services on same Cloudflare edge)
+**Effort**: Medium (dedicated phase, 3 plans)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Draft content API endpoints (POST/GET) with KV storage and deterministic tokens
+- [ ] 08-02-PLAN.md — Split-screen preview page template, draggable divider, debounced updates, admin button wiring
+- [ ] 08-03-PLAN.md — Astro SSR preview route, getDraftContent helper, postMessage listener
 
 ### Phase 9: Schema Migrations UI
 **Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
