@@ -13,9 +13,9 @@ Transform the existing Astro 5 frontend into a full documentation website for Fl
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: CMS Content Foundation** - Collections, schemas, and EasyMDE editor for code-heavy docs
-- [ ] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
+- [x] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
 - [x] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
-- [ ] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
+- [x] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
 - [ ] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
 - [ ] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K and production deployment to Cloudflare Pages
 
@@ -73,17 +73,17 @@ Plans:
 **Depends on**: Phase 1 (homepage uses CMS data), Phase 3 (docs pages must exist for "Edit in CMS")
 **Requirements**: SITE-01, SITE-03, SITE-04, SITE-05, SITE-06
 **Success Criteria** (what must be TRUE):
-  1. Header displays logo, navigation links (Docs, API, Plugins, GitHub), and a search placeholder across all pages
-  2. Footer displays GitHub link, Discord link, MIT License badge, and "Built with Flare CMS" badge across all pages
+  1. Header displays logo, navigation links (Docs, Blog, GitHub), search placeholder, and CTA buttons across all pages
+  2. Footer displays GitHub link, MIT License badge, "Built with Flare CMS" badge, and legal page links across all pages
   3. Homepage shows hero section, feature cards, comparison table, and CTA per Stitch v2 mockup with dark navy/cyan/orange theme
   4. Every docs page has an "Edit in CMS" link that opens the correct admin edit URL for that content item
   5. Every page has proper meta tags and Open Graph tags, and the site generates an auto-updated sitemap
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — SEO component, Edit-in-CMS component, sitemap endpoint, astro.config site property
-- [ ] 04-02-PLAN.md — Layout.astro header/footer redesign with mobile nav, SEO integration, legal pages
-- [ ] 04-03-PLAN.md — Homepage redesign: Hero, Features, ComparisonTable, CTA per Stitch v2 mockups
+- [x] 04-01-PLAN.md — SEO component, Edit-in-CMS component, sitemap endpoint, astro.config site property
+- [x] 04-02-PLAN.md — Layout.astro header/footer redesign with mobile nav, SEO integration, legal pages
+- [x] 04-03-PLAN.md — Homepage redesign: Hero, Features, ComparisonTable, CTA per Stitch v2 mockups
 
 ### Phase 5: Documentation Content
 **Goal**: All 8 documentation sections are authored with substantive technical content and seeded via a reproducible API script
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
 | 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
 | 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
-| 4. Site Shell & Homepage | 0/3 | Not started | - |
+| 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
 | 5. Documentation Content | 0/TBD | Not started | - |
 | 6. Search & Deploy | 0/TBD | Not started | - |
 

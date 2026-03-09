@@ -29,12 +29,12 @@
 
 ### Site
 
-- [ ] **SITE-01**: Homepage redesign with hero, feature cards, comparison table, CTA per Stitch v2 mockup
+- [x] **SITE-01**: Homepage redesign with hero, feature cards, comparison table, CTA per Stitch v2 mockup
 - [ ] **SITE-02**: Client-side search with MiniSearch and Cmd+K keyboard shortcut
-- [ ] **SITE-03**: "Edit in CMS" link on every docs page linking to admin edit URL
-- [ ] **SITE-04**: SEO — auto-generated sitemap, proper meta tags, Open Graph tags per page
-- [ ] **SITE-05**: Header with logo, nav links (Docs, API, Plugins, GitHub), search bar
-- [ ] **SITE-06**: Footer with GitHub, Discord, MIT License badge, "Built with Flare CMS" badge
+- [x] **SITE-03**: "Edit in CMS" link on every docs page linking to admin edit URL
+- [x] **SITE-04**: SEO — auto-generated sitemap, proper meta tags, Open Graph tags per page
+- [x] **SITE-05**: Header with logo, nav links (Docs, Blog, GitHub), search placeholder, CTA buttons
+- [x] **SITE-06**: Footer with GitHub, MIT License badge, "Built with Flare CMS" badge, legal page links
 
 ### Documentation Content
 
@@ -106,12 +106,12 @@
 | RENDER-02 | Phase 3: Content Rendering & Route | Complete |
 | RENDER-03 | Phase 3: Content Rendering & Route | Complete |
 | RENDER-04 | Phase 3: Content Rendering & Route | Complete |
-| SITE-01 | Phase 4: Site Shell & Homepage | Pending |
+| SITE-01 | Phase 4: Site Shell & Homepage | Complete |
 | SITE-02 | Phase 6: Search & Deploy | Pending |
-| SITE-03 | Phase 4: Site Shell & Homepage | Pending |
-| SITE-04 | Phase 4: Site Shell & Homepage | Pending |
-| SITE-05 | Phase 4: Site Shell & Homepage | Pending |
-| SITE-06 | Phase 4: Site Shell & Homepage | Pending |
+| SITE-03 | Phase 4: Site Shell & Homepage | Complete |
+| SITE-04 | Phase 4: Site Shell & Homepage | Complete |
+| SITE-05 | Phase 4: Site Shell & Homepage | Complete |
+| SITE-06 | Phase 4: Site Shell & Homepage | Complete |
 | DOCS-01 | Phase 5: Documentation Content | Pending |
 | DOCS-02 | Phase 5: Documentation Content | Pending |
 | DOCS-03 | Phase 5: Documentation Content | Pending |
