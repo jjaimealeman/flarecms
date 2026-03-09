@@ -19,7 +19,7 @@ try {
   const cmsPost = await getBlogPostBySlug(slug!)
   if (cmsPost) {
     post = {
-      title: cmsPost.data.title,
+      title: cmsPost.data.title || cmsPost.title,
       excerpt: cmsPost.data.excerpt || '',
       content: cmsPost.data.content,
       author: cmsPost.data.author || '',

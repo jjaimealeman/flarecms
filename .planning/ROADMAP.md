@@ -131,6 +131,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
 | 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
 | 6. Search & Deploy | 3/3 | Complete | 2026-03-09 |
+| 7. Astro Content Layer Loader | 3/3 | Complete | 2026-03-09 |
+| 8. Live Preview API | 3/3 | Complete | 2026-03-09 |
+| 9. Schema Migrations UI | 4/4 | Complete | 2026-03-09 |
 
 ---
 
@@ -138,35 +141,38 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 Future phases to close the remaining gaps and reach 5/5 across all dimensions.
 
-### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`)
+### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`) ✓
 **Goal**: A dedicated Astro integration package that plugs into Astro's Content Layer API, enabling `getCollection('blog-posts')` with full type safety — no manual fetch calls
 **Impact**: Astro Integration 4→5, Developer Experience 4→5
 **Effort**: Low (200-400 lines)
-**Key deliverables**:
-  - `@flare-cms/astro` package with `loader()` function for `astro.config.mjs`
-  - Auto-generated TypeScript types from CMS collection schemas
-  - Build-time + SSR on-demand fetching with caching
-  - Developer docs: "Add one line to your config, query content like local files"
+**Status**: Complete (2026-03-09)
+**Plans**: 3 plans
+- [x] 07-01-PLAN.md — Package scaffold, types, schema converter, API client
+- [x] 07-02-PLAN.md — Build-time Content Layer loader (flareLoader)
+- [x] 07-03-PLAN.md — Experimental live loader + site dogfood integration
 
-### Phase 8: Live Preview API
+### Phase 8: Live Preview API ✓
 **Goal**: Content editors see real-time preview of draft changes rendered through the actual Astro frontend, leveraging same-edge-network latency (<50ms round-trip)
 **Impact**: Developer Experience 4→5, competitive moat (unique edge advantage)
-**Effort**: Medium (dedicated phase, 3-4 plans)
-**Key deliverables**:
-  - Draft content API endpoint on CMS Worker
-  - Preview client script for Astro frontend (listens for changes, re-renders)
-  - Admin UI "Preview" button that opens live preview panel
-  - Sub-50ms preview latency (both services on same Cloudflare edge)
+**Effort**: Medium (dedicated phase, 3 plans)
+**Status**: Complete (2026-03-09)
+**Plans**: 3 plans
+- [x] 08-01-PLAN.md — Draft content API endpoints (POST/GET) with KV storage and deterministic tokens
+- [x] 08-02-PLAN.md — Split-screen preview page template, draggable divider, debounced updates, admin button wiring
+- [x] 08-03-PLAN.md — Astro SSR preview route, getDraftContent helper, postMessage listener
 
 ### Phase 9: Schema Migrations UI
 **Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
 **Impact**: Content Modeling 4→5, broadens user base beyond developers
-**Effort**: High (dedicated phase, 4-5 plans)
-**Key deliverables**:
-  - Admin UI for adding/editing/removing collection fields
-  - Runtime D1 migration generation and application
-  - Migration history view in admin
-  - Rollback support for failed migrations
+**Effort**: High (dedicated phase, 4 plans)
+**Status**: Complete (2026-03-09)
+**Plans**: 4 plans
+
+Plans:
+- [x] 09-01-PLAN.md — Schema migrations table DDL + SchemaMigrationService (record, query, validate)
+- [x] 09-02-PLAN.md — Wire migration tracking into field add/edit/delete routes
+- [x] 09-03-PLAN.md — Migration history page with human-readable descriptions, filtering, pagination
+- [x] 09-04-PLAN.md — Rollback support + destructive change warnings with content impact counts
 
 ### DX Note: AI-Assisted Development
 This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.

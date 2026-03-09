@@ -97,6 +97,10 @@ export {
   logContentEdit,
 } from './audit-trail'
 
+// Schema Migration Service — Schema evolution tracking
+export { SchemaMigrationService } from './schema-migration'
+export type { SchemaChange, SchemaMigration } from './schema-migration'
+
 // Webhook Delivery Service — Outbound HTTP webhooks on publish/unpublish events
 export {
   deliverWebhooks,
