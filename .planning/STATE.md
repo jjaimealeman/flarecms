@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 4 of 6 (Site Shell & Homepage)
-Plan: 3 of 3 in current phase (wave 2)
-Status: In progress (04-02 may still be running in parallel)
-Last activity: 2026-03-08 — Completed 04-03-PLAN.md
+Plan: 3 of 3 in current phase (wave 2, 04-02 and 04-03 complete)
+Status: In progress
+Last activity: 2026-03-08 — Completed 04-02-PLAN.md
 
-Progress: [██████████████████████████████████████░░] 90%
+Progress: [██████████████████████████████████████░░] 95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: ~11 min
-- Total execution time: ~123 min
+- Total plans completed: 10
+- Average duration: ~13 min
+- Total execution time: ~128 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [███████████████████████
 | 1 | 2 | ~48min | ~24min |
 | 2 | 2 | ~11min | ~5.5min |
 | 3 | 3 | ~54min | ~18min |
-| 4 | 2 | ~5min | ~2.5min |
+| 4 | 3 | ~10min | ~3.3min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (5min), 03-02 (4min), 03-03 (45min), 04-01 (3min), 04-03 (2min)
+- Last 5 plans: 03-02 (4min), 03-03 (45min), 04-01 (3min), 04-02 (5min), 04-03 (2min)
 - Trend: Human verification plans take longest due to interactive bug fixing
 
 *Updated after each plan completion*
@@ -72,6 +72,9 @@ Recent decisions affecting current work:
 - [04-03]: Responsive comparison uses card layout on mobile instead of table
 - [04-03]: Features reduced from 6 to 4 cards to match Stitch v2 mockup
 - [04-03]: Stats and BlogPreview removed from homepage but files preserved
+- [04-02]: navLinks trimmed to Docs and Blog only (removed News, Changelog, About)
+- [04-02]: Search placeholder visual-only with Cmd+K badge (Phase 6 implements)
+- [04-02]: site-mobile-* IDs for Layout mobile menu (distinct from docs-mobile-* in DocsLayout)
 
 ### Pending Todos
 
@@ -82,7 +85,7 @@ None yet.
 - [Research]: Broken API filters force client-side filtering — follow existing pattern, mitigate with KV caching
 - [Phase 1]: Local wrangler dev uploads to local R2 — expected, works in production
 - [Phase 1]: "New Content" collection picker page UX is poor (inherited SonicJS) — not blocking
-- [Phase 2]: Header nav overflows at mobile widths — Phase 4 will add mobile hamburger
+- [Phase 2]: Header nav overflows at mobile widths — RESOLVED in 04-02 (mobile hamburger added)
 - [Phase 2]: Blog post link goes to /blog/undefined — pre-existing slug bug
 - [Phase 3]: Astro SSR dev server slow to reflect changes (~30s for Shiki singleton reinit) — dev experience only
 - [Phase 3]: D1 audit trail error (missing changed_fields column) — pre-existing migration issue
@@ -90,5 +93,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Completed 04-03-PLAN.md
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
