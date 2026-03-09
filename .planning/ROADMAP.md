@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
 - [x] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
 - [x] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
-- [ ] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K and production deployment to Cloudflare Pages
+- [x] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K, comparison pages, and Astro integration page
 
 ## Phase Details
 
@@ -114,9 +114,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Install MiniSearch, shared search config, server-side search index endpoint
-- [ ] 06-02-PLAN.md — Search modal UI with keyboard navigation, match highlighting, responsive design
-- [ ] 06-03-PLAN.md — Production seed safety flag and deployment verification
+- [x] 06-01-PLAN.md — Install MiniSearch, shared search config, server-side search index endpoint
+- [x] 06-02-PLAN.md — Search modal UI with keyboard navigation, match highlighting, Text Fragments API
+- [x] 06-03-PLAN.md — Production seed safety, homepage positioning, comparison pages, Astro integration page
 
 ## Progress
 
@@ -130,8 +130,48 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
 | 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
 | 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
-| 6. Search & Deploy | 0/3 | Not started | - |
+| 6. Search & Deploy | 3/3 | Complete | 2026-03-09 |
+
+---
+
+## v2 Roadmap: Platform Maturity
+
+Future phases to close the remaining gaps and reach 5/5 across all dimensions.
+
+### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`)
+**Goal**: A dedicated Astro integration package that plugs into Astro's Content Layer API, enabling `getCollection('blog-posts')` with full type safety — no manual fetch calls
+**Impact**: Astro Integration 4→5, Developer Experience 4→5
+**Effort**: Low (200-400 lines)
+**Key deliverables**:
+  - `@flare-cms/astro` package with `loader()` function for `astro.config.mjs`
+  - Auto-generated TypeScript types from CMS collection schemas
+  - Build-time + SSR on-demand fetching with caching
+  - Developer docs: "Add one line to your config, query content like local files"
+
+### Phase 8: Live Preview API
+**Goal**: Content editors see real-time preview of draft changes rendered through the actual Astro frontend, leveraging same-edge-network latency (<50ms round-trip)
+**Impact**: Developer Experience 4→5, competitive moat (unique edge advantage)
+**Effort**: Medium (dedicated phase, 3-4 plans)
+**Key deliverables**:
+  - Draft content API endpoint on CMS Worker
+  - Preview client script for Astro frontend (listens for changes, re-renders)
+  - Admin UI "Preview" button that opens live preview panel
+  - Sub-50ms preview latency (both services on same Cloudflare edge)
+
+### Phase 9: Schema Migrations UI
+**Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
+**Impact**: Content Modeling 4→5, broadens user base beyond developers
+**Effort**: High (dedicated phase, 4-5 plans)
+**Key deliverables**:
+  - Admin UI for adding/editing/removing collection fields
+  - Runtime D1 migration generation and application
+  - Migration history view in admin
+  - Rollback support for failed migrations
+
+### DX Note: AI-Assisted Development
+This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.
 
 ---
 *Roadmap created: 2026-03-08*
-*Coverage: 28/28 v1 requirements mapped*
+*v1 coverage: 28/28 requirements mapped*
+*v2 roadmap added: 2026-03-09*
