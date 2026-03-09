@@ -170,6 +170,74 @@ export async function getCollections() {
   return response.json();
 }
 
+// --- Docs ---
+
+export interface DocsSection {
+  id: string
+  title: string
+  slug: string
+  status: string
+  data: {
+    name: string
+    slug: string
+    description?: string
+    icon?: string
+    color?: string
+    order?: number
+  }
+  created_at: number
+  updated_at: number
+}
+
+export interface DocsPage {
+  id: string
+  title: string
+  slug: string
+  status: string
+  data: {
+    title: string
+    slug: string
+    excerpt?: string
+    content: string
+    section: string
+    order?: number
+    status?: string
+    lastUpdated?: string
+  }
+  created_at: number
+  updated_at: number
+}
+
+export async function getDocsSections(): Promise<DocsSection[]> {
+  const response = await fetch(
+    `${API_URL}/api/collections/docs-sections/content`,
+  )
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch docs sections: ${response.statusText}`)
+  }
+
+  const result: FlareResponse<DocsSection[]> = await response.json()
+  return result.data
+    .filter((section) => section.status === 'published')
+    .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+}
+
+export async function getDocsPages(): Promise<DocsPage[]> {
+  const response = await fetch(
+    `${API_URL}/api/collections/docs/content`,
+  )
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch docs pages: ${response.statusText}`)
+  }
+
+  const result: FlareResponse<DocsPage[]> = await response.json()
+  return result.data
+    .filter((page) => page.status === 'published')
+    .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+}
+
 // Generic content fetcher
 export async function getContent<T>(
   collection: string,

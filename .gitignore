@@ -55,3 +55,6 @@ yarn.lock
 
 # Release artifacts
 .release-content.json
+
+# Design mockups
+stitch-mockups-v2/

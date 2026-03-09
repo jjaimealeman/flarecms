@@ -13,6 +13,7 @@ const gitHash = execSync("git rev-parse --short HEAD").toString().trim()
 // https://astro.build/config
 export default defineConfig({
   output: "server",
+  site: 'https://flare-site.pages.dev',
   adapter: cloudflare(),
 
   vite: {

@@ -1,0 +1,51 @@
+---
+import IconArrowLeft from '~icons/lucide/arrow-left'
+import IconArrowRight from '~icons/lucide/arrow-right'
+
+interface Props {
+  prev?: { title: string; section: string; href: string }
+  next?: { title: string; section: string; href: string }
+}
+
+const { prev, next } = Astro.props
+---
+
+<nav class="border-t border-slate-800 mt-16 pt-8" aria-label="Pagination">
+  <div class="grid grid-cols-2 gap-4">
+    {prev ? (
+      <a
+        href={prev.href}
+        class="group flex flex-col gap-1 rounded-lg border border-slate-800 p-4 hover:border-slate-700 hover:bg-slate-800/30 transition-all"
+      >
+        <span class="flex items-center gap-1.5 text-xs text-slate-500">
+          <IconArrowLeft class="w-3.5 h-3.5" />
+          Previous
+        </span>
+        <span class="font-medium text-slate-300 group-hover:text-flare-400 transition-colors">
+          {prev.title}
+        </span>
+        <span class="text-xs text-slate-500">{prev.section}</span>
+      </a>
+    ) : (
+      <div />
+    )}
+
+    {next ? (
+      <a
+        href={next.href}
+        class="group flex flex-col items-end text-right gap-1 rounded-lg border border-slate-800 p-4 hover:border-slate-700 hover:bg-slate-800/30 transition-all"
+      >
+        <span class="flex items-center gap-1.5 text-xs text-slate-500">
+          Next
+          <IconArrowRight class="w-3.5 h-3.5" />
+        </span>
+        <span class="font-medium text-slate-300 group-hover:text-flare-400 transition-colors">
+          {next.title}
+        </span>
+        <span class="text-xs text-slate-500">{next.section}</span>
+      </a>
+    ) : (
+      <div />
+    )}
+  </div>
+</nav>

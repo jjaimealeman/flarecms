@@ -1,0 +1,90 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { getDocsSections, getDocsPages } from '../../lib/flare'
+import { buildNavTree } from '../../lib/docs-nav'
+import IconRocket from '~icons/lucide/rocket'
+import IconLayers from '~icons/lucide/layers'
+import IconCode from '~icons/lucide/code'
+import IconSettings from '~icons/lucide/settings'
+import IconShield from '~icons/lucide/shield'
+import IconPuzzle from '~icons/lucide/puzzle'
+import IconCloud from '~icons/lucide/cloud'
+import IconSliders from '~icons/lucide/sliders'
+import IconBookOpen from '~icons/lucide/book-open'
+
+const iconMap: Record<string, any> = {
+  'getting-started': IconRocket,
+  'core-concepts': IconLayers,
+  'api-reference': IconCode,
+  'admin': IconSettings,
+  'security': IconShield,
+  'plugins': IconPuzzle,
+  'deployment': IconCloud,
+  'configuration': IconSliders,
+}
+
+function getIcon(slug: string) {
+  return iconMap[slug] || IconBookOpen
+}
+
+const [sections, docs] = await Promise.all([
+  getDocsSections(),
+  getDocsPages(),
+])
+
+const navSections = buildNavTree(sections, docs)
+---
+
+<Layout title="Documentation">
+  <div class="max-w-4xl mx-auto px-6 pt-12 pb-20">
+    <header class="mb-12">
+      <h1 class="text-4xl font-heading font-bold tracking-tight">Documentation</h1>
+      <p class="mt-4 text-slate-400 text-lg leading-relaxed">
+        Everything you need to build, deploy, and manage content with Flare CMS.
+      </p>
+    </header>
+
+    {navSections.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {navSections.map((section) => {
+          const Icon = getIcon(section.slug)
+          const firstPageHref = section.pages[0]?.href || '#'
+          const pageCount = section.pages.length
+          const sectionData = sections.find((s) => (s.data.slug || s.slug) === section.slug)
+          const description = sectionData?.data.description || ''
+
+          return (
+            <a
+              href={firstPageHref}
+              class="group block p-6 rounded-xl border border-slate-800 bg-slate-800/30 hover:bg-slate-800/60 hover:border-slate-700 transition-all"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 text-flare-400 group-hover:bg-flare-500/10 transition-colors">
+                  <Icon class="w-4 h-4" />
+                </div>
+                <h3 class="font-heading font-semibold text-slate-50 group-hover:text-flare-400 transition-colors">
+                  {section.name}
+                </h3>
+              </div>
+              {description && (
+                <p class="text-sm text-slate-400 mb-3">{description}</p>
+              )}
+              <span class="text-xs text-slate-500">
+                {pageCount} {pageCount === 1 ? 'page' : 'pages'}
+              </span>
+            </a>
+          )
+        })}
+      </div>
+    ) : (
+      <div class="text-center py-16">
+        <p class="text-slate-400 text-lg">
+          No documentation sections have been published yet.
+        </p>
+        <p class="mt-2 text-slate-500 text-sm">
+          Create sections and pages in the <a href="http://localhost:8787/admin" class="text-flare-400 hover:text-flare-300 transition-colors">CMS admin</a>.
+        </p>
+      </div>
+    )}
+  </div>
+</Layout>

@@ -366,7 +366,8 @@ adminContentRoutes.get('/', async (c) => {
     
     // Get content items
     const contentStmt = db.prepare(`
-      SELECT c.id, c.title, c.slug, c.status, c.created_at, c.updated_at,
+      SELECT c.id, COALESCE(NULLIF(c.title, 'Untitled'), json_extract(c.data, '$.name'), c.title) as title,
+             c.slug, c.status, c.created_at, c.updated_at,
              col.name as collection_name, col.display_name as collection_display_name,
              u.first_name, u.last_name, u.email as author_email
       FROM content c
@@ -846,7 +847,7 @@ adminContentRoutes.post('/', async (c) => {
       contentId,
       collectionId,
       slug,
-      data.title || 'Untitled',
+      data.title || data.name || 'Untitled',
       JSON.stringify(data),
       status,
       user?.userId || 'unknown',
@@ -1081,7 +1082,7 @@ adminContentRoutes.put('/:id', async (c) => {
 
     await updateStmt.bind(
       slug,
-      data.title || 'Untitled',
+      data.title || data.name || 'Untitled',
       JSON.stringify(data),
       status,
       publishedAt,
@@ -1218,7 +1219,7 @@ adminContentRoutes.post('/preview', async (c) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Preview: ${data.title || 'Untitled'}</title>
+        <title>Preview: ${data.title || data.name || 'Untitled'}</title>
         <style>
           body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
           h1 { color: #333; }
@@ -1227,7 +1228,7 @@ adminContentRoutes.post('/preview', async (c) => {
         </style>
       </head>
       <body>
-        <h1>${data.title || 'Untitled'}</h1>
+        <h1>${data.title || data.name || 'Untitled'}</h1>
         <div class="meta">
           <strong>Collection:</strong> ${collection.display_name}<br>
           <strong>Status:</strong> ${formData.get('status') || 'draft'}<br>
@@ -1285,7 +1286,8 @@ adminContentRoutes.post('/duplicate', async (c) => {
     const originalData = JSON.parse(original.data || '{}')
     
     // Modify title to indicate it's a copy
-    originalData.title = `${originalData.title || 'Untitled'} (Copy)`
+    const displayTitle = originalData.title || originalData.name || 'Untitled'
+    originalData.title = `${displayTitle} (Copy)`
     
     const insertStmt = db.prepare(`
       INSERT INTO content (
@@ -1717,7 +1719,7 @@ adminContentRoutes.get('/:id/version/:version/preview', async (c) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Version ${version} Preview: ${data.title || 'Untitled'}</title>
+        <title>Version ${version} Preview: ${data.title || data.name || 'Untitled'}</title>
         <style>
           body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
           h1 { color: #333; }
@@ -1734,7 +1736,7 @@ adminContentRoutes.get('/:id/version/:version/preview', async (c) => {
           <em>This is a historical version preview</em>
         </div>
         
-        <h1>${data.title || 'Untitled'}</h1>
+        <h1>${data.title || data.name || 'Untitled'}</h1>
         
         <div class="content">
           ${data.content || '<p>No content provided.</p>'}
