@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 7 complete — Astro Content Layer Loader
+**Current focus:** Phase 8 in progress — Live Preview API
 
 ## Current Position
 
-Phase: 7 of 9 (Astro Content Layer Loader) — COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 7 complete, verified
-Last activity: 2026-03-09 — Phase 7 complete (loader, live loader, site integration)
+Phase: 8 of 9 (Live Preview API)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-09 — Completed 08-01-PLAN.md (Draft Content API)
 
-Progress: [█████████████████████████████████████████████] 100% (21/21 plans)
+Progress: [██████████████████████████████████████████████░░] 92% (22/24 plans)
 
 ## Performance Metrics
 
@@ -34,13 +34,14 @@ Progress: [███████████████████████
 | 5 | 5 | ~37min | ~7.4min |
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
+| 8 | 1/3 | ~2min | ~2min |
 
 ## v2 Roadmap
 
 | Phase | Feature | Impact | Status |
 |-------|---------|--------|--------|
 | 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
-| 8 | Live Preview API | Developer Experience 5/5 | Planned |
+| 8 | Live Preview API | Developer Experience 5/5 | In Progress (1/3) |
 | 9 | Schema Migrations UI | Content Modeling 5/5 | Planned |
 
 ## Accumulated Context
@@ -59,6 +60,8 @@ Recent decisions affecting current work:
 - [07-03]: 4 collections in content.config.ts: blogPosts, news, docs, docsSections
 - [07-03]: Additive integration — flare.ts manual fetch and Content Layer coexist
 - [07-03]: CMS API returns title/slug at root level, not inside item.data — loaders flatten both
+- [08-01]: GET /draft/:token unauthenticated -- token is the credential for cross-origin Astro iframe
+- [08-01]: Selective requireAuth per-route (not per-router) for mixed auth endpoints
 
 ### Pending Todos
 
@@ -74,5 +77,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Phase 7 complete
+Stopped at: Completed 08-01-PLAN.md (Draft Content API)
 Resume file: None
