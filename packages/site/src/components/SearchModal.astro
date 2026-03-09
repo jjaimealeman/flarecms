@@ -162,7 +162,7 @@
 
   // --- Match highlighting ---
   function escapeHtml(text: string): string {
-    return text
+    return (text || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -170,7 +170,7 @@
   }
 
   function highlightMatches(text: string, terms: string[]): string {
-    let html = escapeHtml(text)
+    let html = escapeHtml(text || '')
     for (const term of terms) {
       if (!term) continue
       const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -181,12 +181,19 @@
   }
 
   // --- Build result href ---
+  let currentQuery = ''
+
   function buildHref(result: SearchDocument): string {
     const { sectionSlug, slug, headingId } = result
-    if (sectionSlug === 'blog') return '/blog/' + slug
-    if (sectionSlug === 'news') return '/news/' + slug
+    let base = '/docs/' + sectionSlug + '/' + slug
+    if (sectionSlug === 'blog') base = '/blog/' + slug
+    if (sectionSlug === 'news') base = '/news/' + slug
+
     const anchor = headingId ? '#' + headingId : ''
-    return '/docs/' + sectionSlug + '/' + slug + anchor
+    const textFragment = currentQuery
+      ? ':~:text=' + encodeURIComponent(currentQuery)
+      : ''
+    return base + anchor + textFragment
   }
 
   // --- Section badge color ---
@@ -202,7 +209,15 @@
   // All dynamic text content is sanitized via escapeHtml() and highlightMatches().
   // The only HTML injected is from trusted static templates and escaped user data.
   function renderResults(query: string) {
-    if (!searchIndex) return
+    if (!searchIndex) {
+      console.warn('[search] Index not loaded yet, retrying...')
+      loadIndex().then(() => {
+        if (searchIndex && query.length >= 2) renderResults(query)
+      })
+      return
+    }
+
+    currentQuery = query
 
     if (query.length < 2) {
       resultsContainer.innerHTML = renderPopularLinks()
@@ -210,7 +225,14 @@
       return
     }
 
-    const results = searchIndex.search(query, { limit: 10 })
+    const results = searchIndex.search(query, {
+      boost: { title: 3, headingText: 2 },
+      fuzzy: 0.2,
+      prefix: true,
+      combineWith: 'OR',
+      limit: 10,
+    })
+    console.log('[search]', JSON.stringify({ query, results: results.length, indexDocs: searchIndex.documentCount }))
     selectedIndex = -1
 
     if (results.length === 0) {
@@ -223,25 +245,20 @@
       return
     }
 
-    // Collect matched terms from all results
-    const allTerms = new Set<string>()
-    for (const r of results) {
-      if (r.match) {
-        for (const [, terms] of Object.entries(r.match)) {
-          for (const t of terms as string[]) allTerms.add(t)
-        }
-      }
-    }
-    const terms = Array.from(allTerms)
+    // Use the user's query terms for highlighting (not document-side matched terms)
+    const terms = query.trim().split(/\s+/).filter(Boolean)
 
     const items = results.map((r, i) => {
       const doc = r as unknown as SearchDocument & { score: number; match: Record<string, string[]> }
       const href = buildHref(doc)
-      const titleHtml = highlightMatches(doc.title, terms)
       const hasHeading = doc.headingText && doc.headingId
 
-      const headingLine = hasHeading
-        ? '<p class="mt-0.5 text-xs text-slate-400 truncate"># ' + highlightMatches(doc.headingText, terms) + '</p>'
+      // Breadcrumb-style hierarchy: Section > Page > #Heading
+      const sep = '<span class="text-slate-600 mx-0.5">/</span>'
+      const sectionPart = '<span class="text-slate-500">' + escapeHtml(doc.section) + '</span>'
+      const pagePart = '<span class="text-slate-200 font-medium">' + highlightMatches(doc.title, terms) + '</span>'
+      const headingPart = hasHeading
+        ? sep + '<span class="text-slate-400">#' + highlightMatches(doc.headingText, terms) + '</span>'
         : ''
 
       const icon = hasHeading
@@ -249,15 +266,11 @@
         : '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />'
 
       return '<a href="' + href + '" class="search-result flex items-start gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-slate-700/50 border-l-2 border-transparent" data-index="' + i + '">' +
-        '<svg class="w-4 h-4 text-slate-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' + icon + '</svg>' +
-        '<div class="flex-1 min-w-0">' +
-          '<div class="flex items-center gap-2">' +
-            '<span class="text-slate-200 font-medium truncate">' + titleHtml + '</span>' +
-            '<span class="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ' + sectionColor(doc.section) + '">' + escapeHtml(doc.section) + '</span>' +
-          '</div>' +
-          headingLine +
+        '<svg class="w-4 h-4 text-slate-500 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' + icon + '</svg>' +
+        '<div class="flex-1 min-w-0 truncate">' +
+          sectionPart + sep + pagePart + headingPart +
         '</div>' +
-        '<svg class="w-4 h-4 text-slate-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' +
+        '<svg class="w-4 h-4 text-slate-600 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">' +
           '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />' +
         '</svg>' +
       '</a>'
