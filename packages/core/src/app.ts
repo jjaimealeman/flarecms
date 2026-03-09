@@ -26,7 +26,8 @@ import {
   publicFormsRoutes,
   adminApiReferenceRoutes,
   adminApiTokensRoutes,
-  adminPreviewRoutes
+  adminPreviewRoutes,
+  adminSchemaMigrationsRoutes
 } from './routes'
 import { getCoreVersion, getVersionDisplay } from './utils/version'
 import { bootstrapMiddleware } from './middleware/bootstrap'
@@ -275,6 +276,7 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/api-tokens', adminApiTokensRoutes)
   app.route('/api/preview', adminPreviewRoutes)
   app.route('/admin/preview', adminPreviewRoutes)
+  app.route('/admin/schema-migrations', adminSchemaMigrationsRoutes)
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())
   app.route('/admin/seed-data', createSeedDataAdminRoutes())
   app.route('/admin/content', adminContentRoutes)
