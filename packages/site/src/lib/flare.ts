@@ -61,7 +61,7 @@ export async function getBlogPostBySlug(
   // return result.data.find((post) => post.data.slug === slug) || null;
   return (
     result.data.find(
-      (post) => post.data.slug === slug && post.status === "published",
+      (post) => (post.data.slug || post.slug) === slug && post.status === "published",
     ) || null
   );
 }
