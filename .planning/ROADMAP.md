@@ -161,12 +161,15 @@ Future phases to close the remaining gaps and reach 5/5 across all dimensions.
 ### Phase 9: Schema Migrations UI
 **Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
 **Impact**: Content Modeling 4→5, broadens user base beyond developers
-**Effort**: High (dedicated phase, 4-5 plans)
-**Key deliverables**:
-  - Admin UI for adding/editing/removing collection fields
-  - Runtime D1 migration generation and application
-  - Migration history view in admin
-  - Rollback support for failed migrations
+**Effort**: High (dedicated phase, 4 plans)
+**Status**: Planned
+**Plans**: 4 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Schema migrations table DDL + SchemaMigrationService (record, query, validate)
+- [ ] 09-02-PLAN.md — Wire migration tracking into field add/edit/delete routes
+- [ ] 09-03-PLAN.md — Migration history page with human-readable descriptions, filtering, pagination
+- [ ] 09-04-PLAN.md — Rollback support + destructive change warnings with content impact counts
 
 ### DX Note: AI-Assisted Development
 This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.
