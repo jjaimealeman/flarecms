@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 3 complete — ready for Phase 4
+**Current focus:** Phase 4 in progress — Site Shell & Homepage
 
 ## Current Position
 
-Phase: 3 of 6 (Content Rendering & Route) — COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 3 verified, ready to plan Phase 4
-Last activity: 2026-03-08 — Phase 3 execution complete
+Phase: 4 of 6 (Site Shell & Homepage)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-08 — Completed 04-01-PLAN.md
 
-Progress: [████████████████░░░░░░░░░░░░░░░░░░░░░░░░] 50%
+Progress: [████████████████████████████████░░░░░░░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~13 min
-- Total execution time: ~118 min
+- Total plans completed: 8
+- Average duration: ~12 min
+- Total execution time: ~121 min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [████████████████░░░░░░░
 | 1 | 2 | ~48min | ~24min |
 | 2 | 2 | ~11min | ~5.5min |
 | 3 | 3 | ~54min | ~18min |
+| 4 | 1 | ~3min | ~3min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (3min), 02-02 (8min), 03-01 (5min), 03-02 (4min), 03-03 (45min)
+- Last 5 plans: 02-02 (8min), 03-01 (5min), 03-02 (4min), 03-03 (45min), 04-01 (3min)
 - Trend: Human verification plans take longest due to interactive bug fixing
 
 *Updated after each plan completion*
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 - [03-03]: Inline code excluded from rehype-pretty-code processing
 - [03-03]: CMS content \r\n normalized to \n before pipeline processing
 - [03-03]: TOC active state uses toc-active CSS class with orange border-left + indent
+- [04-01]: Custom SEO component (no astro-seo dependency)
+- [04-01]: Custom SSR sitemap endpoint (not @astrojs/sitemap — incompatible with server mode)
+- [04-01]: Default OG image is /logo.svg until custom OG image created
 
 ### Pending Todos
 
@@ -83,5 +87,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Phase 3 complete — ready to plan Phase 4
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
