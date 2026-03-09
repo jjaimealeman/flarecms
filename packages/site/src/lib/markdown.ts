@@ -1,5 +1,6 @@
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeCallouts from 'rehype-callouts'
@@ -173,6 +174,7 @@ function processChildren(node: Root | Element): void {
 
 const processor = unified()
   .use(remarkParse)
+  .use(remarkGfm)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeCallouts, { theme: 'github' })
   .use(rehypePrettyCode, {
