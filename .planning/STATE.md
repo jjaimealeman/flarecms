@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 9 of 9 (Schema Migrations UI)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-09 — Completed 09-02-PLAN.md (wire migration tracking into field CRUD)
+Last activity: 2026-03-09 — Completed 09-03-PLAN.md (migration history page)
 
-Progress: [██████████████████████████████████████████████████░░] 93% (26/28 plans)
+Progress: [███████████████████████████████████████████████████░] 96% (27/28 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
+- Total plans completed: 27
 - Average duration: ~8 min
-- Total execution time: ~206 min
+- Total execution time: ~210 min
 
 **By Phase:**
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
 | 8 | 3/3 | ~11min | ~3.7min |
-| 9 | 2/4 | ~7min | ~3.5min |
+| 9 | 3/4 | ~11min | ~3.7min |
 
 ## v2 Roadmap
 
@@ -43,7 +43,7 @@ Progress: [███████████████████████
 |-------|---------|--------|--------|
 | 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
 | 8 | Live Preview API | Developer Experience 5/5 | Complete |
-| 9 | Schema Migrations UI | Content Modeling 5/5 | In Progress (2/4) |
+| 9 | Schema Migrations UI | Content Modeling 5/5 | In Progress (3/4) |
 
 ## Accumulated Context
 
@@ -73,10 +73,13 @@ Recent decisions affecting current work:
 - [09-01]: validateFieldChange uses changeType param for selective duplicate checking
 - [09-02]: Best-effort migration recording (try/catch, non-blocking on failure)
 - [09-02]: Schema update moved inside field-exists check for correct variable scoping
+- [09-03]: Schema Migrations sidebar in main nav (not Settings sub-page)
+- [09-03]: HTML details/summary for expandable migration details (no-JS progressive enhancement)
+- [09-03]: User display shows email (JWT lacks display name)
 
 ### Pending Todos
 
-- v2 Phase 9: Plans 03-04 remaining (migration history UI, rollback/confirmation)
+- v2 Phase 9: Plan 04 remaining (rollback/confirmation UI)
 
 ### Blockers/Concerns
 
@@ -87,5 +90,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 09-02-PLAN.md
+Stopped at: Completed 09-03-PLAN.md
 Resume file: None
