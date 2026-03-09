@@ -138,15 +138,15 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 Future phases to close the remaining gaps and reach 5/5 across all dimensions.
 
-### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`)
+### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`) ✓
 **Goal**: A dedicated Astro integration package that plugs into Astro's Content Layer API, enabling `getCollection('blog-posts')` with full type safety — no manual fetch calls
 **Impact**: Astro Integration 4→5, Developer Experience 4→5
 **Effort**: Low (200-400 lines)
-**Key deliverables**:
-  - `@flare-cms/astro` package with `loader()` function for `astro.config.mjs`
-  - Auto-generated TypeScript types from CMS collection schemas
-  - Build-time + SSR on-demand fetching with caching
-  - Developer docs: "Add one line to your config, query content like local files"
+**Status**: Complete (2026-03-09)
+**Plans**: 3 plans
+- [x] 07-01-PLAN.md — Package scaffold, types, schema converter, API client
+- [x] 07-02-PLAN.md — Build-time Content Layer loader (flareLoader)
+- [x] 07-03-PLAN.md — Experimental live loader + site dogfood integration
 
 ### Phase 8: Live Preview API
 **Goal**: Content editors see real-time preview of draft changes rendered through the actual Astro frontend, leveraging same-edge-network latency (<50ms round-trip)
