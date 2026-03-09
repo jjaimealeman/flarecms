@@ -1,0 +1,67 @@
+---
+import { comparisonRows } from '../data/homepage'
+---
+
+<section class="py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
+        Why Flare CMS?
+      </h2>
+      <p class="mt-4 text-slate-400 max-w-2xl mx-auto">
+        Compared to traditional headless CMS solutions
+      </p>
+    </div>
+
+    <!-- Desktop table (hidden on mobile) -->
+    <div class="hidden md:block">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="border-b border-slate-800">
+            <th class="text-left py-4 px-6 text-sm font-medium text-slate-400">Feature</th>
+            <th class="text-left py-4 px-6 text-sm font-medium text-slate-400">Traditional CMS</th>
+            <th class="text-left py-4 px-6 text-sm font-medium text-cyan-400">Flare CMS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comparisonRows.map((row) => (
+            <tr class="border-b border-slate-800/50">
+              <td class="py-4 px-6 text-sm font-medium text-slate-200">{row.feature}</td>
+              <td class="py-4 px-6 text-sm text-slate-500">{row.traditional}</td>
+              <td class:list={[
+                'py-4 px-6 text-sm font-medium',
+                row.flareHighlight ? 'text-cyan-400' : 'text-slate-300'
+              ]}>
+                {row.flare}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile card layout (hidden on desktop) -->
+    <div class="md:hidden space-y-4">
+      {comparisonRows.map((row) => (
+        <div class="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
+          <div class="text-sm font-medium text-slate-200 mb-3">{row.feature}</div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Traditional</div>
+              <div class="text-sm text-slate-500">{row.traditional}</div>
+            </div>
+            <div>
+              <div class="text-xs text-cyan-400 uppercase tracking-wide mb-1">Flare CMS</div>
+              <div class:list={[
+                'text-sm font-medium',
+                row.flareHighlight ? 'text-cyan-400' : 'text-slate-300'
+              ]}>
+                {row.flare}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,34 +1,33 @@
 export const features = [
   {
     icon: 'globe',
-    title: 'Edge-Native',
-    description: "Runs entirely on Cloudflare Workers. D1 for database, R2 for media, KV for cache. No origin server needed.",
-  },
-  {
-    icon: 'layout-dashboard',
-    title: 'Admin Dashboard',
-    description: 'Built-in content management UI with Quill rich text editor, media uploads, collection management, and user authentication.',
-  },
-  {
-    icon: 'code',
-    title: 'API-First',
-    description: 'RESTful JSON API with sorting and pagination. Scalar API docs at /docs. JWT authentication for protected routes.',
+    title: 'Edge-native Performance',
+    description: 'Runs on Cloudflare Workers across 300+ locations. Sub-50ms latency globally with zero cold starts.',
   },
   {
     icon: 'database',
-    title: 'Schema Collections',
-    description: 'Define content types with typed schemas. String, textarea, Quill rich text, media, select, datetime, and slug fields.',
-  },
-  {
-    icon: 'git-branch',
-    title: 'Workflow & Versioning',
-    description: 'Draft, review, and publish workflow. Content versioning with history tracking. Scheduled publishing via cron triggers.',
+    title: 'D1 + R2 + KV',
+    description: "Cloudflare's native storage trifecta. D1 for database, R2 for media, KV for fast caching.",
   },
   {
     icon: 'puzzle',
-    title: 'Any Frontend',
-    description: 'Standard REST API works with any framework — Astro, React, Vue, Svelte, or vanilla JS. Fetch your content from anywhere.',
+    title: 'Plugin Architecture',
+    description: 'Extend functionality with a robust plugin system. Custom fields, hooks, and middleware integration.',
   },
+  {
+    icon: 'layout-dashboard',
+    title: 'Built-in Admin UI',
+    description: 'Manage content with an included admin dashboard. Rich text editing, media library, and user management out of the box.',
+  },
+]
+
+export const comparisonRows = [
+  { feature: 'Cold Starts', traditional: 'Common (500ms+)', flare: 'Zero', flareHighlight: true },
+  { feature: 'Pricing', traditional: 'Expensive Tiered', flare: 'Pay-as-you-go', flareHighlight: true },
+  { feature: 'Global Distribution', traditional: 'Region-based', flare: '275+ Locations', flareHighlight: true },
+  { feature: 'Infrastructure', traditional: 'External Servers', flare: 'Cloudflare Native', flareHighlight: true },
+  { feature: 'Database', traditional: 'External (Postgres/MySQL)', flare: 'D1 (Built-in)', flareHighlight: true },
+  { feature: 'Media Storage', traditional: 'S3 / External', flare: 'R2 (Built-in)', flareHighlight: true },
 ]
 
 export const stats = [
