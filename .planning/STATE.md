@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 5 complete, verified — ready for Phase 6
+**Current focus:** Phase 6 in progress — search index endpoint complete, modal UI next
 
 ## Current Position
 
-Phase: 5 of 6 (Documentation Content) — COMPLETE
-Plan: 5 of 5 in current phase
-Status: Phase 5 verified, ready to plan Phase 6
-Last activity: 2026-03-08 — Phase 5 execution complete
+Phase: 6 of 6 (Search & Deploy)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-08 — Completed 06-01-PLAN.md
 
-Progress: [████████████████████████████████████████░] 97%
+Progress: [█████████████████████████████████████████░] 98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: ~11 min
-- Total execution time: ~165 min
+- Total plans completed: 16
+- Average duration: ~10 min
+- Total execution time: ~167 min
 
 **By Phase:**
 
@@ -32,10 +32,11 @@ Progress: [███████████████████████
 | 3 | 3 | ~54min | ~18min |
 | 4 | 3 | ~10min | ~3.3min |
 | 5 | 5 | ~37min | ~7.4min |
+| 6 | 1 | ~2min | ~2min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (4min), 05-02 (9min), 05-03 (9min), 05-04 (10min), 05-05 (5min)
-- Trend: Content authoring plans ~9-10min; seed/verify plan faster at ~5min
+- Last 5 plans: 05-02 (9min), 05-03 (9min), 05-04 (10min), 05-05 (5min), 06-01 (2min)
+- Trend: Search infrastructure plan very fast at ~2min
 
 *Updated after each plan completion*
 
@@ -89,6 +90,8 @@ Recent decisions affecting current work:
 - [05-05]: Seed script auth uses URLSearchParams (form-encoded), JWT from Set-Cookie header
 - [05-05]: FK constraints require deleting pages before sections during seed cleanup
 - [05-05]: remark-gfm required for markdown table rendering in rehype pipeline
+- [06-01]: Shared search-config.ts for server + client MiniSearch option matching
+- [06-01]: All CMS content (docs, blog, news) indexed with heading-level sub-documents
 
 ### Pending Todos
 
@@ -107,5 +110,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Phase 5 complete — ready to plan Phase 6
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
