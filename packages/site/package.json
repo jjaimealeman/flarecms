@@ -19,6 +19,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
+    "minisearch": "^7.2.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-callouts": "^2.1.2",
     "rehype-external-links": "^3.0.0",
