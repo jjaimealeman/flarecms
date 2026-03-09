@@ -78,11 +78,12 @@ Plans:
   3. Homepage shows hero section, feature cards, comparison table, and CTA per Stitch v2 mockup with dark navy/cyan/orange theme
   4. Every docs page has an "Edit in CMS" link that opens the correct admin edit URL for that content item
   5. Every page has proper meta tags and Open Graph tags, and the site generates an auto-updated sitemap
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — SEO component, Edit-in-CMS component, sitemap endpoint, astro.config site property
+- [ ] 04-02-PLAN.md — Layout.astro header/footer redesign with mobile nav, SEO integration, legal pages
+- [ ] 04-03-PLAN.md — Homepage redesign: Hero, Features, ComparisonTable, CTA per Stitch v2 mockups
 
 ### Phase 5: Documentation Content
 **Goal**: All 8 documentation sections are authored with substantive technical content and seeded via a reproducible API script
@@ -124,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
 | 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
 | 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
-| 4. Site Shell & Homepage | 0/TBD | Not started | - |
+| 4. Site Shell & Homepage | 0/3 | Not started | - |
 | 5. Documentation Content | 0/TBD | Not started | - |
 | 6. Search & Deploy | 0/TBD | Not started | - |
 
