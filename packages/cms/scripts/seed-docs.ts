@@ -42,26 +42,31 @@ async function authenticate(baseUrl: string): Promise<string> {
 
   logStep(`Authenticating as ${email}...`)
 
-  const body = new URLSearchParams({ email, password })
-
   const res = await fetch(`${baseUrl}/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-    redirect: 'manual',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
   })
 
-  // Extract JWT from Set-Cookie header
-  const setCookie = res.headers.get('set-cookie') ?? ''
-  const tokenMatch = setCookie.match(/token=([^;]+)/)
-  if (!tokenMatch) {
+  if (!res.ok) {
+    const text = await res.text()
     throw new Error(
-      `Authentication failed (status ${res.status}). No token cookie returned.`
+      `Authentication failed (status ${res.status}): ${text}`
     )
   }
 
+  const json = (await res.json()) as any
+  const token = json.token
+  if (!token) {
+    throw new Error('Authentication succeeded but no token in response body.')
+  }
+
+  // Also check for auth_token cookie as fallback
+  const setCookieHeader = res.headers.get('set-cookie') ?? ''
+  const cookieMatch = setCookieHeader.match(/auth_token=([^;]+)/)
+
   log('Authenticated successfully')
-  return tokenMatch[1]
+  return token
 }
 
 async function getCollectionIds(
@@ -71,7 +76,7 @@ async function getCollectionIds(
   logStep('Fetching collection IDs...')
 
   const res = await fetch(`${baseUrl}/api/collections`, {
-    headers: { Cookie: `token=${jwt}` },
+    headers: { Authorization: `Bearer ${jwt}` },
   })
   if (!res.ok) throw new Error(`Failed to fetch collections: ${res.status}`)
 
@@ -98,7 +103,7 @@ async function wipeExisting(
 ) {
   logStep('Wiping existing docs content...')
 
-  const headers = { Cookie: `token=${jwt}` }
+  const headers = { Authorization: `Bearer ${jwt}` }
 
   // Delete pages first (FK references sections)
   const pagesRes = await fetch(
@@ -178,7 +183,7 @@ async function createSectionsApi(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `token=${jwt}`,
+        Authorization: `Bearer ${jwt}`,
       },
       body: JSON.stringify(payload),
     })
@@ -258,7 +263,7 @@ async function createPagesApi(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `token=${jwt}`,
+        Authorization: `Bearer ${jwt}`,
       },
       body: JSON.stringify(payload),
     })
@@ -347,22 +352,61 @@ async function runDirectMode() {
     // Wipe existing docs content
     logStep('Wiping existing docs content...')
 
-    // Pages first (FK to sections)
+    // Collect IDs of all docs-related content for FK cleanup
     const existingPages = await db
       .select()
       .from(content)
       .where(eq(content.collectionId, docsCollection.id))
       .all()
-    for (const page of existingPages) {
-      await db.delete(content).where(eq(content.id, page.id)).run()
-    }
-    log(`Deleted ${existingPages.length} existing pages`)
-
     const existingSections = await db
       .select()
       .from(content)
       .where(eq(content.collectionId, sectionsCollection.id))
       .all()
+
+    const allIds = [...existingPages, ...existingSections].map((c) => c.id)
+
+    // Delete FK-dependent records first (raw SQL for tables without Drizzle exports)
+    if (allIds.length > 0) {
+      const placeholders = allIds.map(() => '?').join(',')
+      const fkTables = [
+        'content_versions',
+        'workflow_history',
+        'content_relationships',
+        'content_workflow_status',
+        'scheduled_content',
+        'auto_save_drafts',
+      ]
+      for (const table of fkTables) {
+        try {
+          await (env as any).DB.prepare(
+            `DELETE FROM ${table} WHERE content_id IN (${placeholders})`
+          )
+            .bind(...allIds)
+            .run()
+        } catch {
+          // Table may not exist or have no matching rows — safe to ignore
+        }
+      }
+      // Also clean content_relationships source/target
+      try {
+        await (env as any).DB.prepare(
+          `DELETE FROM content_relationships WHERE source_content_id IN (${placeholders}) OR target_content_id IN (${placeholders})`
+        )
+          .bind(...allIds, ...allIds)
+          .run()
+      } catch {
+        // safe to ignore
+      }
+      log(`Cleaned FK-dependent records for ${allIds.length} content items`)
+    }
+
+    // Now delete pages first (FK to sections within content table)
+    for (const page of existingPages) {
+      await db.delete(content).where(eq(content.id, page.id)).run()
+    }
+    log(`Deleted ${existingPages.length} existing pages`)
+
     for (const section of existingSections) {
       await db.delete(content).where(eq(content.id, section.id)).run()
     }
