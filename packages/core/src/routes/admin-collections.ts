@@ -1102,6 +1102,48 @@ adminCollectionsRoutes.delete('/:collectionId/fields/:fieldId', async (c) => {
   }
 })
 
+// Get field deletion impact (content count for confirmation dialog)
+adminCollectionsRoutes.get('/:collectionId/fields/:fieldId/impact', async (c) => {
+  try {
+    const collectionId = c.req.param('collectionId')
+    const fieldId = c.req.param('fieldId')
+    const db = c.env.DB
+
+    // Get content count for this collection
+    const countResult = await db
+      .prepare('SELECT COUNT(*) as count FROM content WHERE collection_id = ?')
+      .bind(collectionId)
+      .first<{ count: number }>()
+    const contentCount = countResult?.count ?? 0
+
+    // Get field info from collection schema
+    let fieldName = fieldId
+    let fieldLabel = fieldId
+    if (fieldId.startsWith('schema-')) {
+      fieldName = fieldId.replace('schema-', '')
+      const collection = await db
+        .prepare('SELECT schema FROM collections WHERE id = ?')
+        .bind(collectionId)
+        .first<{ schema: string }>()
+      if (collection?.schema) {
+        try {
+          const schema = typeof collection.schema === 'string' ? JSON.parse(collection.schema) : collection.schema
+          if (schema?.properties?.[fieldName]) {
+            fieldLabel = schema.properties[fieldName].title || fieldName
+          }
+        } catch (_e) {
+          // fall through with fieldName as label
+        }
+      }
+    }
+
+    return c.json({ contentCount, fieldName, fieldLabel })
+  } catch (error) {
+    console.error('Error fetching field impact:', error)
+    return c.json({ contentCount: 0, fieldName: '', fieldLabel: '' })
+  }
+})
+
 // Update field order
 adminCollectionsRoutes.post('/:collectionId/fields/reorder', async (c) => {
   try {
