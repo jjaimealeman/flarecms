@@ -1,0 +1,373 @@
+---
+import Layout from '../../layouts/Layout.astro'
+
+const features = [
+  {
+    title: 'SSR on Cloudflare Pages',
+    description: 'Astro 5 running in SSR mode on Cloudflare Pages. Server-rendered pages at the edge with sub-50ms response times. No origin server, no cold starts.',
+    icon: 'globe',
+    color: 'flare',
+  },
+  {
+    title: 'Typed API Client',
+    description: 'A TypeScript API client (src/lib/flare.ts) that wraps every CMS endpoint. Type-safe content fetching with full IntelliSense support.',
+    icon: 'code',
+    color: 'cyan',
+  },
+  {
+    title: 'Content Collections',
+    description: 'Define collections in the CMS admin, fetch them in Astro pages. Blog posts, pages, products — any content shape you need.',
+    icon: 'layers',
+    color: 'purple',
+  },
+  {
+    title: 'Media Pipeline',
+    description: 'Images uploaded to R2, served through the CMS API with on-the-fly transformations. Just use standard <img> tags with CMS media URLs.',
+    icon: 'image',
+    color: 'amber',
+  },
+  {
+    title: 'File-based Routing',
+    description: 'Standard Astro [slug].astro routes fetch content from the CMS API. Dynamic routes, static paths, or hybrid — your choice.',
+    icon: 'route',
+    color: 'emerald',
+  },
+  {
+    title: 'Same-Network Edge',
+    description: 'CMS Worker and Astro Pages run on the same Cloudflare network. API calls between them never leave the edge — microsecond internal latency.',
+    icon: 'zap',
+    color: 'rose',
+  },
+]
+
+const codeExample = `---
+// src/pages/blog/[slug].astro
+import Layout from '../../layouts/Layout.astro'
+import { getContent, getContentBySlug } from '../../lib/flare'
+
+export async function getStaticPaths() {
+  const posts = await getContent('blog-posts')
+  return posts.map((post) => ({
+    params: { slug: post.data.slug },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props
+---
+
+<Layout title={post.data.title}>
+  <article class="prose prose-invert mx-auto">
+    <h1>{post.data.title}</h1>
+    <p class="text-slate-400">{post.data.excerpt}</p>
+    <div set:html={post.data.content} />
+  </article>
+</Layout>`
+
+const apiClientCode = `// src/lib/flare.ts
+const CMS_URL = import.meta.env.CMS_URL || 'https://flare-cms.example.workers.dev'
+
+export async function getContent(collection: string) {
+  const res = await fetch(\`\${CMS_URL}/api/collections/\${collection}/content\`)
+  const json = await res.json()
+  return json.data
+}
+
+export async function getContentBySlug(collection: string, slug: string) {
+  const all = await getContent(collection)
+  return all.find((item) => item.data.slug === slug)
+}`
+
+const steps = [
+  {
+    step: 1,
+    title: 'Deploy the CMS Worker',
+    description: 'The Flare CMS backend runs as a Cloudflare Worker with D1, R2, and KV bindings.',
+    code: `cd packages/cms
+wrangler deploy
+
+# ⚡ Published flare-cms
+# ⚡ https://flare-cms.your-account.workers.dev`,
+  },
+  {
+    step: 2,
+    title: 'Create your Astro frontend',
+    description: 'Standard Astro 5 project with the Cloudflare adapter for SSR at the edge.',
+    code: `cd packages/site
+pnpm add @astrojs/cloudflare
+
+# astro.config.mjs
+import cloudflare from '@astrojs/cloudflare'
+export default defineConfig({
+  output: 'server',
+  adapter: cloudflare(),
+})`,
+  },
+  {
+    step: 3,
+    title: 'Fetch content in your pages',
+    description: 'Use the API client to fetch CMS content in any Astro page or component.',
+    code: `---
+import { getContent } from '../lib/flare'
+const posts = await getContent('blog-posts')
+---
+
+{posts.map((post) => (
+  <a href={\`/blog/\${post.data.slug}\`}>
+    <h2>{post.data.title}</h2>
+    <p>{post.data.excerpt}</p>
+  </a>
+))}`,
+  },
+  {
+    step: 4,
+    title: 'Deploy to Cloudflare Pages',
+    description: 'One command deploys your Astro site to Cloudflare Pages with SSR at the edge.',
+    code: `pnpm build
+wrangler pages deploy dist/
+
+# ✨ Deployment complete!
+# ✨ https://your-site.pages.dev`,
+  },
+]
+---
+
+<Layout title="Astro Integration" description="How Flare CMS integrates with Astro 5 on Cloudflare Pages. SSR at the edge, typed API client, and same-network performance.">
+  <div class="max-w-5xl mx-auto px-6 pt-16 pb-24">
+
+    <!-- Hero -->
+    <header class="text-center mb-20">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-medium mb-6">
+        Integration
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-heading font-bold tracking-tight leading-tight">
+        Flare CMS +
+        <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Astro</span>
+      </h1>
+      <p class="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+        The only headless CMS purpose-built for Astro + Cloudflare Workers.
+        SSR at the edge, typed API client, same-network performance.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <a
+          href="/docs"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-flare-500 hover:bg-flare-400 text-slate-950 text-sm font-semibold rounded-lg transition-colors"
+        >
+          Get Started
+        </a>
+        <a
+          href="/docs/getting-started/installation"
+          class="inline-flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-slate-50 text-sm font-medium rounded-lg transition-all"
+        >
+          Installation Guide
+        </a>
+      </div>
+    </header>
+
+    <!-- Architecture Diagram (text-based) -->
+    <section class="mb-20">
+      <div class="rounded-2xl border border-slate-700/50 bg-slate-800/30 p-8 sm:p-10">
+        <h2 class="text-xl font-heading font-bold tracking-tight mb-6 text-center">How it works</h2>
+        <div class="grid sm:grid-cols-3 gap-6 text-center">
+          <div class="rounded-xl border border-slate-700 bg-slate-900/50 p-6">
+            <div class="text-3xl mb-3">🔥</div>
+            <div class="text-sm font-semibold text-flare-400 mb-1">Flare CMS Worker</div>
+            <div class="text-xs text-slate-500">
+              Cloudflare Workers<br />
+              D1 + R2 + KV<br />
+              REST API + Admin UI
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="hidden sm:block">
+              <div class="flex items-center gap-2 text-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <div class="text-[10px] text-slate-600 mt-1">Same edge network</div>
+            </div>
+            <div class="sm:hidden text-slate-600">
+              <svg class="w-5 h-5 rotate-90 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
+              <div class="text-[10px] mt-1">Same edge network</div>
+            </div>
+          </div>
+          <div class="rounded-xl border border-purple-500/30 bg-purple-500/5 p-6">
+            <div class="text-3xl mb-3">🚀</div>
+            <div class="text-sm font-semibold text-purple-400 mb-1">Astro Frontend</div>
+            <div class="text-xs text-slate-500">
+              Cloudflare Pages<br />
+              SSR at the edge<br />
+              Typed API client
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Both run on Cloudflare's global network — 330+ locations, zero cold starts
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-heading font-bold tracking-tight mb-8 text-center">Built for Astro developers</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {features.map((f) => (
+          <div class="rounded-xl border border-slate-800 bg-slate-800/30 p-6 hover:border-slate-700 transition-colors">
+            <div class:list={[
+              'w-10 h-10 rounded-lg flex items-center justify-center mb-4',
+              f.color === 'flare' ? 'bg-flare-500/20' : `bg-${f.color}-500/20`,
+            ]}>
+              {f.icon === 'globe' && (
+                <svg class:list={['w-5 h-5', f.color === 'flare' ? 'text-flare-400' : `text-${f.color}-400`]} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              )}
+              {f.icon === 'code' && (
+                <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+                </svg>
+              )}
+              {f.icon === 'layers' && (
+                <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+                </svg>
+              )}
+              {f.icon === 'image' && (
+                <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
+                </svg>
+              )}
+              {f.icon === 'route' && (
+                <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <circle cx="6" cy="19" r="3" /><circle cx="18" cy="5" r="3" /><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-8a3.5 3.5 0 0 1 0-7H12" />
+                </svg>
+              )}
+              {f.icon === 'zap' && (
+                <svg class="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path d="M13 2L3 14h9l-1 10 10-12h-9l1-10z" />
+                </svg>
+              )}
+            </div>
+            <h3 class="font-heading font-semibold text-slate-50 mb-2 text-sm">{f.title}</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">{f.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Step-by-Step -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-heading font-bold tracking-tight mb-8 text-center">Get started in 4 steps</h2>
+      <div class="space-y-8">
+        {steps.map((s) => (
+          <div class="rounded-xl border border-slate-800 bg-slate-800/30 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-800 flex items-center gap-3">
+              <span class="w-7 h-7 rounded-full bg-flare-500/20 text-flare-400 text-sm font-bold flex items-center justify-center shrink-0">
+                {s.step}
+              </span>
+              <div>
+                <h3 class="font-heading font-semibold text-slate-50 text-sm">{s.title}</h3>
+                <p class="text-xs text-slate-500 mt-0.5">{s.description}</p>
+              </div>
+            </div>
+            <div class="p-4 bg-slate-950/50">
+              <pre class="text-xs text-slate-300 font-mono leading-6 overflow-x-auto"><code>{s.code}</code></pre>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section class="mb-20">
+      <h2 class="text-2xl font-heading font-bold tracking-tight mb-8 text-center">Code examples</h2>
+
+      <div class="space-y-6">
+        <!-- API Client -->
+        <div class="rounded-xl border border-slate-800 bg-slate-800/30 overflow-hidden">
+          <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+            </div>
+            <span class="text-xs text-slate-500 font-mono ml-2">src/lib/flare.ts</span>
+          </div>
+          <div class="p-5 bg-slate-950/50">
+            <pre class="text-xs text-slate-300 font-mono leading-6 overflow-x-auto"><code>{apiClientCode}</code></pre>
+          </div>
+        </div>
+
+        <!-- Blog page -->
+        <div class="rounded-xl border border-slate-800 bg-slate-800/30 overflow-hidden">
+          <div class="px-5 py-3 border-b border-slate-800 flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+            </div>
+            <span class="text-xs text-slate-500 font-mono ml-2">src/pages/blog/[slug].astro</span>
+          </div>
+          <div class="p-5 bg-slate-950/50">
+            <pre class="text-xs text-slate-300 font-mono leading-6 overflow-x-auto"><code>{codeExample}</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison callout -->
+    <section class="mb-12">
+      <div class="rounded-xl border border-slate-700/50 bg-slate-800/30 p-6 sm:p-8 text-center">
+        <h2 class="text-xl font-heading font-bold tracking-tight mb-3">Not sure if Flare CMS is right for you?</h2>
+        <p class="text-sm text-slate-400 mb-6 max-w-lg mx-auto">
+          See how we compare to Payload, TinaCMS, Keystatic, StudioCMS, CloudCannon, Storyblok, and Sanity.
+        </p>
+        <a
+          href="/comparison"
+          class="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-slate-50 text-sm font-medium rounded-lg transition-all"
+        >
+          View full comparison
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section>
+      <div class="rounded-2xl border border-flare-500/20 bg-gradient-to-r from-flare-500/10 to-transparent p-8 text-center">
+        <h2 class="text-2xl font-heading font-bold tracking-tight mb-3">Start building with Astro + Flare CMS</h2>
+        <p class="text-slate-400 mb-6 max-w-md mx-auto text-sm">
+          Clone the monorepo, deploy the CMS Worker, and start building your Astro frontend.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/docs"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-flare-500 hover:bg-flare-400 text-slate-950 text-sm font-semibold rounded-lg transition-colors"
+          >
+            Get Started
+          </a>
+          <a
+            href="https://github.com/jjaimealeman/flarecms"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-slate-50 text-sm font-medium rounded-lg transition-all"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</Layout>
