@@ -1,0 +1,39 @@
+{
+  "name": "@flare-cms/astro",
+  "version": "1.0.0",
+  "description": "Astro Content Layer loader for Flare CMS",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "astro": ">=5.10.0"
+  },
+  "dependencies": {
+    "@flare-cms/core": "workspace:*"
+  },
+  "devDependencies": {
+    "astro": "^5.18.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "author": "Jaime Aleman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjaimealeman/flarecms.git",
+    "directory": "packages/astro"
+  }
+}
