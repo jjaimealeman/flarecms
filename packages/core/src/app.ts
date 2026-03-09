@@ -274,6 +274,7 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/api-reference', adminApiReferenceRoutes)
   app.route('/admin/api-tokens', adminApiTokensRoutes)
   app.route('/api/preview', adminPreviewRoutes)
+  app.route('/admin/preview', adminPreviewRoutes)
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())
   app.route('/admin/seed-data', createSeedDataAdminRoutes())
   app.route('/admin/content', adminContentRoutes)

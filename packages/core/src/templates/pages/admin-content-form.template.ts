@@ -323,7 +323,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                 </svg>
-                Preview Content
+                Open Live Preview
               </button>
 
               <button
@@ -914,25 +914,9 @@ export function renderContentFormPage(data: ContentFormData): string {
       // Quick actions
       function previewContent() {
         const form = document.getElementById('content-form');
-        const formData = new FormData(form);
-        
-        // Open preview in new window
-        const preview = window.open('', '_blank');
-        preview.document.write('<p>Loading preview...</p>');
-        
-        fetch('/admin/content/preview', {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.text())
-        .then(html => {
-          preview.document.open();
-          preview.document.write(html);
-          preview.document.close();
-        })
-        .catch(error => {
-          preview.document.write('<p>Error loading preview</p>');
-        });
+        const collectionId = form.querySelector('[name="collection_id"]').value;
+        const contentId = form.querySelector('[name="id"]').value || 'new';
+        window.location.href = '/admin/preview/' + collectionId + '/' + contentId;
       }
 
       function duplicateContent() {
