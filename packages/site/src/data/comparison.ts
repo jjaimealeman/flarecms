@@ -344,7 +344,7 @@ export const competitors: CMSComparison[] = [
       'No native Astro integration (REST/GROQ only)',
       'Studio requires React knowledge to customize',
     ],
-    pricing: 'Free (3 users, 500k API requests). Team from $15/user/mo.',
+    pricing: 'Free (20 users, 200k API requests). Growth from $15/user/mo.',
     scores: {
       edgePerformance: 3,
       astroIntegration: 3,
