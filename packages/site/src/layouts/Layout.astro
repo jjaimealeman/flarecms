@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 import SEO from '../components/SEO.astro'
+import SearchModal from '../components/SearchModal.astro'
 import { navLinks } from '../data/homepage'
 
 interface Props {
@@ -61,6 +62,7 @@ const currentPath = Astro.url.pathname
         <!-- Search placeholder + CTA (desktop) -->
         <div class="hidden md:flex items-center gap-3">
           <button
+            id="search-trigger"
             class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-500 hover:border-slate-600 transition-colors cursor-pointer"
             aria-label="Search docs"
           >
@@ -119,6 +121,19 @@ const currentPath = Astro.url.pathname
           </button>
         </div>
 
+        <!-- Search trigger (mobile) -->
+        <div class="px-4 pt-4 pb-2">
+          <button
+            class="search-trigger-mobile flex items-center gap-2 w-full px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-400 hover:border-slate-600 hover:text-slate-300 transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            Search docs...
+          </button>
+        </div>
+
         <!-- Nav links -->
         <div class="p-4 space-y-1">
           {navLinks.map((link) => (
@@ -165,7 +180,7 @@ const currentPath = Astro.url.pathname
       </div>
     </div>
 
-    <main>
+    <main id="site-main">
       <slot />
     </main>
 
@@ -277,5 +292,7 @@ const currentPath = Astro.url.pathname
         })
       })
     </script>
+
+    <SearchModal />
   </body>
 </html>
