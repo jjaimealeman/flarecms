@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 ## Current Position
 
 Phase: 8 of 9 (Live Preview API)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-09 — Completed 08-01-PLAN.md (Draft Content API)
+Last activity: 2026-03-09 — Completed 08-03-PLAN.md (Astro Preview Route)
 
-Progress: [██████████████████████████████████████████████░░] 92% (22/24 plans)
+Progress: [███████████████████████████████████████████████░] 96% (23/24 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: ~9 min
-- Total execution time: ~190 min
+- Total execution time: ~193 min
 
 **By Phase:**
 
@@ -34,14 +34,14 @@ Progress: [███████████████████████
 | 5 | 5 | ~37min | ~7.4min |
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
-| 8 | 1/3 | ~2min | ~2min |
+| 8 | 2/3 | ~5min | ~2.5min |
 
 ## v2 Roadmap
 
 | Phase | Feature | Impact | Status |
 |-------|---------|--------|--------|
 | 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
-| 8 | Live Preview API | Developer Experience 5/5 | In Progress (1/3) |
+| 8 | Live Preview API | Developer Experience 5/5 | In Progress (2/3) |
 | 9 | Schema Migrations UI | Content Modeling 5/5 | Planned |
 
 ## Accumulated Context
@@ -62,6 +62,8 @@ Recent decisions affecting current work:
 - [07-03]: CMS API returns title/slug at root level, not inside item.data — loaders flatten both
 - [08-01]: GET /draft/:token unauthenticated -- token is the credential for cross-origin Astro iframe
 - [08-01]: Selective requireAuth per-route (not per-router) for mixed auth endpoints
+- [08-03]: Generic preview template for all collections (not per-collection templates)
+- [08-03]: 401 for missing token, 410 for expired/not-found (clear HTTP semantics)
 
 ### Pending Todos
 
@@ -77,5 +79,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 08-01-PLAN.md (Draft Content API)
+Stopped at: Completed 08-03-PLAN.md (Astro Preview Route)
 Resume file: None
