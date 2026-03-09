@@ -239,6 +239,148 @@ export class SchemaMigrationService {
   }
 
   /**
+   * Rollback the most recent migration for a collection.
+   *
+   * Validates that the migration is the latest applied one, then atomically
+   * restores the previous schema and records a rollback audit entry.
+   */
+  async rollbackMigration(
+    migrationId: string,
+    userId: string | null,
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Fetch the migration by ID
+      const migration = await this.db
+        .prepare('SELECT * FROM schema_migrations WHERE id = ?')
+        .bind(migrationId)
+        .first()
+
+      if (!migration) {
+        return { success: false, error: 'Migration not found' }
+      }
+
+      const migrationData = this.rowToMigration(migration)
+
+      // Must be 'applied' status
+      if (migrationData.status !== 'applied') {
+        return {
+          success: false,
+          error: `Cannot rollback migration with status '${migrationData.status}'`,
+        }
+      }
+
+      // Must be the most recent applied migration for this collection
+      const latestApplied = await this.db
+        .prepare(
+          'SELECT id FROM schema_migrations WHERE collection_id = ? AND status = \'applied\' ORDER BY applied_at DESC LIMIT 1',
+        )
+        .bind(migrationData.collectionId)
+        .first<{ id: string }>()
+
+      if (!latestApplied || latestApplied.id !== migrationId) {
+        return {
+          success: false,
+          error: 'Can only rollback the most recent migration',
+        }
+      }
+
+      // Must have a previous schema to restore
+      if (!migrationData.previousSchema) {
+        return {
+          success: false,
+          error: 'No previous schema available for rollback',
+        }
+      }
+
+      // Fetch the current collection schema (to record in the rollback audit entry)
+      const collection = await this.db
+        .prepare('SELECT schema, display_name, name FROM collections WHERE id = ?')
+        .bind(migrationData.collectionId)
+        .first<{ schema: string; display_name: string; name: string }>()
+
+      if (!collection) {
+        return { success: false, error: 'Collection not found' }
+      }
+
+      const now = Date.now()
+      const rollbackAuditId = crypto.randomUUID()
+      const currentSchema = collection.schema || '{}'
+
+      // Atomically: restore schema, update migration status, record rollback audit
+      await this.db.batch([
+        // 1. Restore the collection's schema to the previous version
+        this.db
+          .prepare('UPDATE collections SET schema = ?, updated_at = ? WHERE id = ?')
+          .bind(migrationData.previousSchema, now, migrationData.collectionId),
+
+        // 2. Mark the migration as rolled back
+        this.db
+          .prepare(
+            'UPDATE schema_migrations SET status = ?, rolled_back_at = ?, rolled_back_by = ? WHERE id = ?',
+          )
+          .bind('rolled_back', now, userId, migrationId),
+
+        // 3. Record a rollback audit entry (so the rollback itself is traceable)
+        this.db
+          .prepare(
+            `INSERT INTO schema_migrations
+             (id, collection_id, collection_name, changes, description, sql_executed, status, previous_schema, applied_by, applied_at, rolled_back_at, rolled_back_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            rollbackAuditId,
+            migrationData.collectionId,
+            migrationData.collectionName,
+            JSON.stringify(migrationData.changes.map((c) => ({
+              ...c,
+              type: c.type === 'add_field'
+                ? 'remove_field'
+                : c.type === 'remove_field'
+                  ? 'add_field'
+                  : c.type,
+            }))),
+            `Rollback: ${migrationData.description}`,
+            null,
+            'applied',
+            currentSchema, // capture schema before rollback
+            userId,
+            now,
+            null,
+            null,
+          ),
+      ])
+
+      return { success: true }
+    } catch (error) {
+      console.error('[SchemaMigrationService] Rollback failed:', error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error during rollback',
+      }
+    }
+  }
+
+  /**
+   * Get the IDs of the most recent applied migration per collection.
+   * Used by the UI to determine which migrations can be rolled back.
+   */
+  async getLatestAppliedPerCollection(): Promise<Set<string>> {
+    const result = await this.db
+      .prepare(
+        `SELECT id FROM schema_migrations
+         WHERE status = 'applied'
+         AND applied_at = (
+           SELECT MAX(sm2.applied_at) FROM schema_migrations sm2
+           WHERE sm2.collection_id = schema_migrations.collection_id
+           AND sm2.status = 'applied'
+         )`,
+      )
+      .all()
+
+    return new Set((result.results || []).map((row: any) => String(row.id)))
+  }
+
+  /**
    * Validate a field change before applying it.
    */
   static validateFieldChange(params: {

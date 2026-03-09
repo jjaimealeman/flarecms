@@ -26,6 +26,7 @@ export interface SchemaMigrationsPageData {
   collectionFilter?: string
   collectionName?: string
   collections: Array<{ id: string, name: string, display_name: string }>
+  latestAppliedIds?: Set<string>
   user?: { name: string, email: string, role: string }
   version?: string
 }
@@ -98,7 +99,8 @@ function buildQueryString(params: Record<string, string | number | undefined>): 
 // ── Template ─────────────────────────────────────────────────────────
 
 export function renderSchemaMigrationsHistoryPage(data: SchemaMigrationsPageData): string {
-  const { migrations, total, page, pageSize, collectionFilter, collectionName, collections, user, version } = data
+  const { migrations, total, page, pageSize, collectionFilter, collectionName, collections, latestAppliedIds, user, version } = data
+  const rollbackableIds = latestAppliedIds || new Set<string>()
 
   const totalPages = Math.ceil(total / pageSize)
   const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1
@@ -219,10 +221,26 @@ export function renderSchemaMigrationsHistoryPage(data: SchemaMigrationsPageData
                     </div>
                   ` : ''}
 
-                  <!-- Migration ID -->
-                  <div class="mt-3 pt-3 border-t border-zinc-950/5 dark:border-white/5">
+                  <!-- Migration ID and Actions -->
+                  <div class="mt-3 pt-3 border-t border-zinc-950/5 dark:border-white/5 flex items-center justify-between">
                     <span class="text-xs text-zinc-400 dark:text-zinc-500 font-mono">${escapeHtml(migration.id)}</span>
-                  </div>
+                    ${migration.status === 'applied' && rollbackableIds.has(migration.id) ? `
+                      <button
+                        hx-post="/admin/schema-migrations/rollback/${escapeHtml(migration.id)}"
+                        hx-confirm="Are you sure you want to rollback this migration? This will restore the previous schema."
+                        hx-target="body"
+                        class="inline-flex items-center gap-x-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 ring-1 ring-inset ring-red-400/30 transition-colors"
+                      >
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/>
+                        </svg>
+                        Rollback
+                      </button>
+                    ` : migration.status === 'applied' ? `
+                      <span class="text-xs text-zinc-500 dark:text-zinc-500 italic" title="Only the most recent migration can be rolled back">
+                        Not rollbackable
+                      </span>
+                    ` : ''}
                 </div>
               </details>
             </div>
