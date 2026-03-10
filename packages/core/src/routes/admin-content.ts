@@ -640,9 +640,11 @@ adminContentRoutes.get('/:id/edit', async (c) => {
         const contentStmt = db.prepare(`
           SELECT c.*, col.id as collection_id, col.name as collection_name,
                  col.display_name as collection_display_name, col.description as collection_description,
-                 col.schema as collection_schema
+                 col.schema as collection_schema,
+                 u.email as author_email, u.first_name as author_first_name, u.last_name as author_last_name
           FROM content c
           JOIN collections col ON c.collection_id = col.id
+          LEFT JOIN users u ON c.author_id = u.id
           WHERE c.id = ?
         `)
         return await contentStmt.bind(id).first() as any
@@ -673,6 +675,16 @@ adminContentRoutes.get('/:id/edit', async (c) => {
     
     const fields = await getCollectionFields(db, content.collection_id)
     const contentData = content.data ? JSON.parse(content.data) : {}
+
+    // Enrich content data with metadata for the form template
+    contentData.created_at = content.created_at
+    contentData.updated_at = content.updated_at
+    contentData.published_at = content.published_at
+    const authorName = content.author_first_name && content.author_last_name
+      ? `${content.author_first_name} ${content.author_last_name}`
+      : null
+    contentData.author_name = authorName
+    contentData.author_email = content.author_email
 
     // Check if workflow plugin is active
     const workflowEnabled = await isPluginActive(db, 'workflow')

@@ -100,7 +100,7 @@ describe('renderDynamicField - Text Fields', () => {
 
     expect(html).toContain('required');
     expect(html).toContain('*</span>');
-    expect(html).toContain('text-pink-600');
+    expect(html).toContain('text-red-600');
   });
 
   it('should render disabled text field', () => {
@@ -116,8 +116,8 @@ describe('renderDynamicField - Text Fields', () => {
 
     expect(html).toContain('Field is invalid');
     expect(html).toContain('Too short');
-    expect(html).toContain('text-pink-600');
-    expect(html).toContain('ring-pink-600');
+    expect(html).toContain('text-red-600');
+    expect(html).toContain('ring-red-600');
   });
 
   it('should render text field with help text', () => {

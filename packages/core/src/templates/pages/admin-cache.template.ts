@@ -153,7 +153,7 @@ export function renderCacheDashboard(data: CacheDashboardData): string {
         <div class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             ${renderPerformanceMetric('Memory Cache', data.totals.hits, data.totals.misses)}
-            ${renderHealthStatus(parseFloat(data.totals.hitRate))}
+            ${renderHealthStatus(parseFloat(data.totals.hitRate), data.totals.requests)}
           </div>
         </div>
       </div>
@@ -359,7 +359,21 @@ function renderPerformanceMetric(label: string, hits: number, misses: number): s
   `
 }
 
-function renderHealthStatus(hitRate: number): string {
+function renderHealthStatus(hitRate: number, totalRequests?: number): string {
+  // Show "No data" when there are zero requests instead of "Critical"
+  if (totalRequests !== undefined && totalRequests === 0) {
+    return `
+      <div class="flex items-center gap-3 p-4 rounded-xl ring-1 ring-inset bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 ring-zinc-200 dark:ring-zinc-700">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <p class="font-semibold text-sm">No Data</p>
+          <p class="text-xs mt-0.5">No requests recorded yet</p>
+        </div>
+      </div>
+    `
+  }
   const status = hitRate > 70 ? 'healthy' : hitRate > 40 ? 'warning' : 'critical'
   const statusConfig = {
     healthy: {

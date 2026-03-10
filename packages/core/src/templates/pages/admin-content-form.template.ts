@@ -276,20 +276,20 @@ export function renderContentFormPage(data: ContentFormData): string {
               <dl class="space-y-3 text-sm">
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Created</dt>
-                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.created_at ? new Date(data.data.created_at).toLocaleDateString() : 'Unknown'}</dd>
+                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.created_at ? new Date(data.data.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
                 </div>
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Last Modified</dt>
-                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.updated_at ? new Date(data.data.updated_at).toLocaleDateString() : 'Unknown'}</dd>
+                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.updated_at ? new Date(data.data.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
                 </div>
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Author</dt>
-                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.author || 'Unknown'}</dd>
+                  <dd class="mt-1 text-zinc-950 dark:text-white">${(data.data as any)?.author_name || (data.data as any)?.author_email || data.data?.author || 'System'}</dd>
                 </div>
                 ${data.data?.published_at ? `
                   <div>
                     <dt class="text-zinc-500 dark:text-zinc-400">Published</dt>
-                    <dd class="mt-1 text-zinc-950 dark:text-white">${new Date(data.data.published_at).toLocaleDateString()}</dd>
+                    <dd class="mt-1 text-zinc-950 dark:text-white">${new Date(data.data.published_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</dd>
                   </div>
                 ` : ''}
               </dl>
@@ -353,43 +353,45 @@ export function renderContentFormPage(data: ContentFormData): string {
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="mt-6 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex items-center justify-between">
-          <a href="${backUrl}" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3.5 py-2.5 text-sm font-semibold text-zinc-950 dark:text-white ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-            Cancel
-          </a>
+        <!-- Sticky Save/Publish Bar -->
+        <div x-data="{ dirty: false }" x-init="
+          const form = document.getElementById('content-form');
+          if (form) {
+            form.addEventListener('input', () => { dirty = true });
+            form.addEventListener('change', () => { dirty = true });
+          }
+        " class="sticky bottom-0 z-40 -mx-6 lg:-mx-10 mt-6">
+          <div class="border-t border-zinc-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm px-6 py-3 lg:px-10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <a href="${backUrl}" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3.5 py-2.5 text-sm font-semibold text-zinc-950 dark:text-white ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
+                Cancel
+              </a>
+              <span x-show="dirty" x-cloak class="text-xs text-amber-600 dark:text-amber-400 font-medium">Unsaved changes</span>
+            </div>
 
-          <div class="flex items-center gap-x-3">
-            <button
-              type="submit"
-              form="content-form"
-              name="action"
-              value="save"
-              class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
-            >
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-              </svg>
-              ${isEdit ? 'Update' : 'Save'}
-            </button>
-
-            ${data.user?.role !== 'viewer' ? `
+            <div class="flex items-center gap-x-3">
               <button
                 type="submit"
                 form="content-form"
                 name="action"
-                value="save_and_publish"
-                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-emerald-600 dark:bg-emerald-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors shadow-sm"
+                value="save"
+                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
               >
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                ${isEdit ? 'Update' : 'Save'} & Publish
+                ${isEdit ? 'Update' : 'Save Draft'}
               </button>
-            ` : ''}
+
+              ${data.user?.role !== 'viewer' ? `
+                <button
+                  type="submit"
+                  form="content-form"
+                  name="action"
+                  value="save_and_publish"
+                  class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
+                >
+                  ${isEdit ? 'Update' : 'Save'} & Publish
+                </button>
+              ` : ''}
+            </div>
           </div>
         </div>
       </div>
