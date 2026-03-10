@@ -46,7 +46,7 @@ const docs = rawDocs
   }))
 
 // Build navigation tree
-const navSections = buildNavTree(sections as any, docs as any)
+const navSections = buildNavTree(sections, docs)
 
 // Find current section
 const currentSection = navSections.find((s) => s.slug === sectionSlug)

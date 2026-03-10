@@ -1,6 +1,33 @@
 // src/lib/docs-nav.ts
 
-import type { DocsSection, DocsPage } from './flare'
+/** Minimal shape expected by buildNavTree for section entries */
+export interface DocsSectionEntry {
+  id: string
+  title?: string
+  slug?: string
+  data: {
+    name?: string
+    slug?: string
+    icon?: string
+    order?: number
+    [key: string]: any
+  }
+}
+
+/** Minimal shape expected by buildNavTree for doc page entries */
+export interface DocsPageEntry {
+  id: string
+  title?: string
+  slug?: string
+  data: {
+    title?: string
+    slug?: string
+    section?: string
+    order?: number
+    content?: string
+    [key: string]: any
+  }
+}
 
 export interface NavPage {
   title: string
@@ -22,8 +49,8 @@ export interface NavSection {
  * Groups pages under their parent section using doc.data.section (content ID).
  */
 export function buildNavTree(
-  sections: DocsSection[],
-  docs: DocsPage[],
+  sections: DocsSectionEntry[],
+  docs: DocsPageEntry[],
 ): NavSection[] {
   return sections.map((section) => {
     const sectionSlug = section.data.slug || section.slug
