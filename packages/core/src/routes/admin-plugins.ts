@@ -762,11 +762,16 @@ function formatLastUpdated(timestamp: number): string {
   const diff = now - timestamp
 
   if (diff < 60) return 'just now'
-  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`
-  if (diff < 604800) return `${Math.floor(diff / 86400)} days ago`
-  if (diff < 2592000) return `${Math.floor(diff / 604800)} weeks ago`
-  return `${Math.floor(diff / 2592000)} months ago`
+  const minutes = Math.floor(diff / 60)
+  if (diff < 3600) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`
+  const hours = Math.floor(diff / 3600)
+  if (diff < 86400) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`
+  const days = Math.floor(diff / 86400)
+  if (diff < 604800) return `${days} ${days === 1 ? 'day' : 'days'} ago`
+  const weeks = Math.floor(diff / 604800)
+  if (diff < 2592000) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
+  const months = Math.floor(diff / 2592000)
+  return `${months} ${months === 1 ? 'month' : 'months'} ago`
 }
 
 export { adminPluginRoutes }
