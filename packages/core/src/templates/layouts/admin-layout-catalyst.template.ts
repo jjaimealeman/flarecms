@@ -1,6 +1,26 @@
 import { HtmlEscapedString } from "hono/utils/html";
 import { renderLogo } from "../components/logo.template";
 import { getVersionDisplay } from "../../utils/version";
+import {
+  icon,
+  LayoutDashboard,
+  Layers,
+  ClipboardList,
+  FileText,
+  Image,
+  Users,
+  Plug,
+  HardDrive,
+  Database,
+  Settings,
+  Menu,
+  X,
+  User,
+  LogOut,
+  ChevronDown,
+  ChevronRight,
+  AlertTriangle,
+} from "../icons";
 
 // Catalyst Checkbox Component (HTML implementation)
 export interface CatalystCheckboxProps {
@@ -159,7 +179,8 @@ export interface AdminLayoutCatalystData {
   content: string | HtmlEscapedString;
   dynamicMenuItems?: Array<{
     label: string;
-    path: string;
+    slug: string;
+    collectionId: string;
     icon: string;
   }>;
 }
@@ -169,7 +190,7 @@ export function renderAdminLayoutCatalyst(
 ): string {
   if (!data.version) data.version = getVersionDisplay();
   return `<!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -219,24 +240,40 @@ export function renderAdminLayoutCatalyst(
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Custom scrollbar */
+    /* Custom scrollbar - light mode */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
 
     ::-webkit-scrollbar-track {
-      background: #27272a;
+      background: #f4f4f5;
     }
 
     ::-webkit-scrollbar-thumb {
-      background: #52525b;
+      background: #d4d4d8;
       border-radius: 4px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
+      background: #a1a1aa;
+    }
+
+    /* Custom scrollbar - dark mode */
+    .dark ::-webkit-scrollbar-track {
+      background: #27272a;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #52525b;
+    }
+
+    .dark ::-webkit-scrollbar-thumb:hover {
       background: #71717a;
     }
+
+    /* Alpine.js cloak */
+    [x-cloak] { display: none !important; }
 
     /* Smooth transitions */
     * {
@@ -318,7 +355,7 @@ export function renderAdminLayoutCatalyst(
       : ""
   }
 </head>
-<body class="min-h-screen bg-white dark:bg-zinc-900">
+<body class="min-h-screen bg-slate-50 dark:bg-zinc-900">
   <div class="relative isolate flex min-h-svh w-full max-lg:flex-col lg:bg-zinc-100 dark:lg:bg-zinc-950">
     <!-- Sidebar on desktop -->
     <div class="fixed inset-y-0 left-0 w-64 max-lg:hidden">
@@ -350,9 +387,7 @@ export function renderAdminLayoutCatalyst(
       <!-- Mobile header with menu toggle -->
       <header class="flex items-center px-4 py-2.5 lg:hidden border-b border-zinc-950/5 dark:border-white/5">
         <button onclick="openMobileSidebar()" class="relative flex items-center justify-center rounded-lg p-2 text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5" aria-label="Open navigation">
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2 6.75C2 6.33579 2.33579 6 2.75 6H17.25C17.6642 6 18 6.33579 18 6.75C18 7.16421 17.6642 7.5 17.25 7.5H2.75C2.33579 7.5 2 7.16421 2 6.75ZM2 13.25C2 12.8358 2.33579 12.5 2.75 12.5H17.25C17.6642 12.5 18 12.8358 18 13.25C18 13.6642 17.6642 14 17.25 14H2.75C2.33579 14 2 13.6642 2 13.25Z" />
-          </svg>
+          ${icon(Menu, 'h-5 w-5')}
         </button>
         <div class="ml-4 flex-1">
           ${renderLogo({ size: "sm", showText: true, variant: "white", href: "/admin" })}
@@ -375,9 +410,7 @@ export function renderAdminLayoutCatalyst(
       <div class="flex items-center justify-between flex-wrap">
         <div class="flex items-center flex-1">
           <span class="flex p-2 rounded-lg bg-amber-600 dark:bg-amber-700">
-            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
+            ${icon(AlertTriangle, 'h-5 w-5 text-white')}
           </span>
           <div class="ml-3">
             <p class="text-sm font-medium text-white">
@@ -393,9 +426,7 @@ export function renderAdminLayoutCatalyst(
             View Details
           </a>
           <button onclick="closeMigrationBanner()" class="p-1 rounded-md text-white hover:bg-amber-600 dark:hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-white">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+            ${icon(X, 'h-5 w-5')}
           </button>
         </div>
       </div>
@@ -451,9 +482,7 @@ export function renderAdminLayoutCatalyst(
         <div class="flex items-center justify-between">
           <span class="text-sm">\${message}</span>
           <button onclick="this.parentElement.parentElement.remove()" class="ml-4 hover:opacity-70">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+            ${icon(X, 'w-4 h-4')}
           </button>
         </div>
       \`;
@@ -468,9 +497,9 @@ export function renderAdminLayoutCatalyst(
       }, 5000);
     }
 
-    // Initialize dark mode
-    if (localStorage.getItem('darkMode') === 'false') {
-      document.documentElement.classList.remove('dark');
+    // Initialize dark mode — default is light; add 'dark' class if stored
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
     }
 
     // Migration banner functions
@@ -518,202 +547,154 @@ export function renderAdminLayoutCatalyst(
 function renderCatalystSidebar(
   currentPath: string = "",
   user?: any,
-  dynamicMenuItems?: Array<{ label: string; path: string; icon: string }>,
+  dynamicMenuItems?: Array<{ label: string; slug: string; collectionId: string; icon: string }>,
   isMobile: boolean = false,
   version?: string,
-  enableExperimentalFeatures?: boolean
+  _enableExperimentalFeatures?: boolean
 ): string {
-  let baseMenuItems = [
-    {
-      label: "Dashboard",
-      path: "/admin",
-      icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-      </svg>`,
-    },
-    {
-      label: "Collections",
-      path: "/admin/collections",
-      icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
-      </svg>`,
-    },
-    {
-      label: "Forms",
-      path: "/admin/forms",
-      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>`,
-    },
-    {
-      label: "Content",
-      path: "/admin/content",
-      icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
-      </svg>`,
-    },
-    {
-      label: "Media",
-      path: "/admin/media",
-      icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-      </svg>`,
-    },
-    {
-      label: "Users",
-      path: "/admin/users",
-      icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-      </svg>`,
-    },
-    {
-      label: "Plugins",
-      path: "/admin/plugins",
-      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-      </svg>`,
-    },
-    {
-      label: "Cache",
-      path: "/admin/cache",
-      icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"/>
-      </svg>`,
-    },
-    {
-      label: "Schema Migrations",
-      path: "/admin/schema-migrations",
-      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
-      </svg>`,
-    },
-  ];
+  // --- Helper: render a single nav link ---
+  const navLink = (item: { label: string; path: string; iconHtml: string }, isActive: boolean) => `
+    <span class="relative">
+      ${isActive ? `<span class="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-blue-600 dark:bg-blue-500"></span>` : ''}
+      <a
+        href="${item.path}"
+        class="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm/5 font-medium ${
+          isActive
+            ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
+            : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5'
+        }"
+        ${isActive ? 'data-current="true"' : ''}
+      >
+        <span class="shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-400 dark:text-zinc-500'}">${item.iconHtml}</span>
+        <span class="truncate">${item.label}</span>
+      </a>
+    </span>
+  `
 
-  const settingsMenuItem = {
-    label: "Settings",
-    path: "/admin/settings",
-    icon: `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-    </svg>`,
-  };
-
-  // Combine base menu items with dynamic menu items
-  const allMenuItems = [...baseMenuItems];
-  if (dynamicMenuItems && dynamicMenuItems.length > 0) {
-    // Insert dynamic menu items after Users menu item
-    const usersIndex = allMenuItems.findIndex(
-      (item) => item.path === "/admin/users"
-    );
-    if (usersIndex !== -1) {
-      allMenuItems.splice(usersIndex + 1, 0, ...dynamicMenuItems);
-    } else {
-      // Fallback: add to end if Users not found
-      allMenuItems.push(...dynamicMenuItems);
-    }
+  // --- Helper: render a collection nav item with Alpine.js flyout ---
+  const collectionNavItem = (item: { label: string; slug: string; collectionId: string; icon: string }) => {
+    const contentPath = `/admin/content?collection=${item.collectionId}`
+    const isActive = currentPath === contentPath || currentPath?.includes(`collection=${item.collectionId}`)
+    return `
+    <div x-data="{ open: false }" class="relative">
+      <span class="relative">
+        ${isActive ? `<span class="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-blue-600 dark:bg-blue-500"></span>` : ''}
+        <button
+          @click="open = !open"
+          class="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm/5 font-medium ${
+            isActive
+              ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
+              : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5'
+          }"
+        >
+          <span class="shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-400 dark:text-zinc-500'}">${item.icon}</span>
+          <span class="flex-1 truncate">${item.label}</span>
+          <span class="shrink-0 text-zinc-400" :class="open ? 'rotate-90' : ''">${icon(ChevronRight, 'h-3.5 w-3.5 transition-transform')}</span>
+        </button>
+      </span>
+      <div x-show="open" x-cloak class="ml-8 mt-0.5 flex flex-col gap-0.5">
+        <a href="/admin/content?collection=${item.collectionId}" class="rounded-lg px-2 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200">All ${item.label}</a>
+        <a href="/admin/content/new?collection=${item.collectionId}" class="rounded-lg px-2 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200">Add New</a>
+      </div>
+    </div>
+    `
   }
 
-  const closeButton = isMobile
-    ? `
+  // --- Helper: section header ---
+  const sectionHeader = (label: string) => `
+    <div class="px-2 pt-4 pb-1">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">${label}</p>
+    </div>
+  `
+
+  // --- Check active states ---
+  const isActivePath = (path: string) =>
+    currentPath === path || (path !== '/admin' && currentPath?.startsWith(path))
+
+  // --- Build sidebar sections ---
+
+  // Dashboard (top, no section header)
+  const dashboardItem = navLink(
+    { label: 'Dashboard', path: '/admin', iconHtml: icon(LayoutDashboard, 'h-5 w-5') },
+    currentPath === '/admin' || currentPath === '/admin/dashboard'
+  )
+
+  // CONTENT section: dynamic collections + Content (all) + Media
+  const hasCollections = dynamicMenuItems && dynamicMenuItems.length > 0
+  const collectionItems = hasCollections
+    ? dynamicMenuItems!.map(item => collectionNavItem(item)).join('')
+    : ''
+  const contentAllItem = navLink(
+    { label: 'Content', path: '/admin/content', iconHtml: icon(FileText, 'h-5 w-5') },
+    isActivePath('/admin/content') && !currentPath?.includes('collection=')
+  )
+  const mediaItem = navLink(
+    { label: 'Media', path: '/admin/media', iconHtml: icon(Image, 'h-5 w-5') },
+    isActivePath('/admin/media')
+  )
+
+  // SYSTEM section
+  const systemItems = [
+    { label: 'Users', path: '/admin/users', iconHtml: icon(Users, 'h-5 w-5') },
+    { label: 'Schema', path: '/admin/collections', iconHtml: icon(Layers, 'h-5 w-5') },
+    { label: 'Forms', path: '/admin/forms', iconHtml: icon(ClipboardList, 'h-5 w-5') },
+    { label: 'Plugins', path: '/admin/plugins', iconHtml: icon(Plug, 'h-5 w-5') },
+    { label: 'Cache', path: '/admin/cache', iconHtml: icon(HardDrive, 'h-5 w-5') },
+    { label: 'Migrations', path: '/admin/schema-migrations', iconHtml: icon(Database, 'h-5 w-5') },
+  ].map(item => navLink(item, isActivePath(item.path))).join('')
+
+  // Settings (pinned bottom)
+  const settingsItem = navLink(
+    { label: 'Settings', path: '/admin/settings', iconHtml: icon(Settings, 'h-5 w-5') },
+    isActivePath('/admin/settings')
+  )
+
+  // Close button for mobile
+  const closeButton = isMobile ? `
     <div class="-mb-3 px-4 pt-3">
-      <button onclick="closeMobileSidebar()" class="relative flex w-full items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5 sm:text-sm/5" aria-label="Close navigation">
-        <svg class="h-5 w-5 shrink-0 fill-zinc-500 dark:fill-zinc-400" viewBox="0 0 20 20">
-          <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-        </svg>
+      <button onclick="closeMobileSidebar()" class="relative flex w-full items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-white dark:hover:bg-white/5 sm:text-sm/5" aria-label="Close navigation">
+        ${icon(X, 'h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500')}
         <span>Close menu</span>
       </button>
     </div>
-  `
-    : "";
+  ` : ''
 
   return `
     <nav class="flex h-full min-h-0 flex-col bg-white shadow-sm ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10 ${
-      isMobile ? "is-mobile rounded-lg p-2 m-2" : ""
+      isMobile ? 'is-mobile rounded-lg p-2 m-2' : ''
     }">
       ${closeButton}
 
       <!-- Sidebar Header -->
-      <div class="flex flex-col border-b border-zinc-950/5 p-4 dark:border-white/5">
-        ${renderLogo({ size: "md", showText: true, variant: "white", href: "/admin" })}
+      <div class="flex flex-col border-b border-zinc-200 p-4 dark:border-zinc-800">
+        ${renderLogo({ size: 'md', showText: true, variant: 'dark', href: '/admin' })}
       </div>
 
       <!-- Sidebar Body -->
-      <div class="flex flex-1 flex-col overflow-y-auto p-4">
+      <div class="flex flex-1 flex-col overflow-y-auto px-4 pb-4">
+        <!-- Dashboard -->
+        <div class="flex flex-col gap-0.5 pt-2">
+          ${dashboardItem}
+        </div>
+
+        <!-- CONTENT -->
+        ${sectionHeader('Content')}
         <div class="flex flex-col gap-0.5">
-          ${allMenuItems
-            .map((item) => {
-              const isActive =
-                currentPath === item.path ||
-                (item.path !== "/admin" && currentPath?.startsWith(item.path));
-              return `
-              <span class="relative">
-                ${
-                  isActive
-                    ? `
-                  <span class="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-cyan-500 dark:bg-cyan-400"></span>
-                `
-                    : ""
-                }
-                <a
-                  href="${item.path}"
-                  class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm/5 font-medium ${
-                    isActive
-                      ? "text-zinc-950 dark:text-white"
-                      : "text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5"
-                  }"
-                  ${isActive ? 'data-current="true"' : ""}
-                >
-                  <span class="shrink-0 ${
-                    isActive
-                      ? "fill-zinc-950 dark:fill-white"
-                      : "fill-zinc-500 dark:fill-zinc-400"
-                  }">
-                    ${item.icon}
-                  </span>
-                  <span class="truncate">${item.label}</span>
-                </a>
-              </span>
-            `;
-            })
-            .join("")}
+          ${collectionItems}
+          ${contentAllItem}
+          ${mediaItem}
+        </div>
+
+        <!-- SYSTEM -->
+        ${sectionHeader('System')}
+        <div class="flex flex-col gap-0.5">
+          ${systemItems}
         </div>
       </div>
 
-      <!-- Settings Menu Item (Bottom) -->
-      <div class="border-t border-zinc-950/5 p-4 dark:border-white/5">
-        ${(() => {
-          const isActive =
-            currentPath === settingsMenuItem.path ||
-            currentPath?.startsWith(settingsMenuItem.path);
-          return `
-            <span class="relative">
-              ${
-                isActive
-                  ? `
-                <span class="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-cyan-500 dark:bg-cyan-400"></span>
-              `
-                  : ""
-              }
-              <a
-                href="${settingsMenuItem.path}"
-                class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm/5 font-medium ${
-                  isActive
-                    ? "text-zinc-950 dark:text-white"
-                    : "text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5"
-                }"
-                ${isActive ? 'data-current="true"' : ""}
-              >
-                <span class="shrink-0 ${
-                  isActive
-                    ? "fill-zinc-950 dark:fill-white"
-                    : "fill-zinc-500 dark:fill-zinc-400"
-                }">
-                  ${settingsMenuItem.icon}
-                </span>
-                <span class="truncate">${settingsMenuItem.label}</span>
-              </a>
-            </span>
-          `;
-        })()}
+      <!-- Settings (Bottom) -->
+      <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800">
+        ${settingsItem}
       </div>
 
       <!-- Version Badge -->
@@ -728,63 +709,41 @@ function renderCatalystSidebar(
       ` : ''}
 
       <!-- Sidebar Footer (User) -->
-      ${
-        user
-          ? `
-        <div class="flex flex-col border-t border-zinc-950/5 p-4 dark:border-white/5">
+      ${user ? `
+        <div class="flex flex-col border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
           <div class="relative">
             <button
               data-user-menu
               onclick="toggleUserDropdown()"
-              class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-sm/5 font-medium text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5"
+              class="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm/5 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5"
             >
-              <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950">
-                <span class="text-xs font-semibold">${(
-                  user.name ||
-                  user.email ||
-                  "U"
-                )
-                  .charAt(0)
-                  .toUpperCase()}</span>
+              <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                <span class="text-xs font-semibold">${(user.name || user.email || 'U').charAt(0).toUpperCase()}</span>
               </div>
-              <span class="flex-1 truncate">${
-                user.name || user.email || "User"
-              }</span>
-              <svg class="h-4 w-4 shrink-0 fill-zinc-500 dark:fill-zinc-400" viewBox="0 0 20 20">
-                <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" />
-              </svg>
+              <span class="flex-1 truncate">${user.name || user.email || 'User'}</span>
+              ${icon(ChevronDown, 'h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500')}
             </button>
 
             <!-- User Dropdown -->
-            <div class="userDropdown hidden absolute bottom-full mb-2 left-0 right-0 mx-2 rounded-xl bg-white shadow-lg ring-1 ring-zinc-950/10 dark:bg-zinc-800 dark:ring-white/10 z-50">
+            <div class="userDropdown hidden absolute bottom-full mb-2 left-0 right-0 mx-2 rounded-xl bg-white shadow-lg ring-1 ring-zinc-200 dark:bg-zinc-800 dark:ring-zinc-700 z-50">
               <div class="p-2">
-                <div class="px-3 py-2 border-b border-zinc-950/5 dark:border-white/5">
-                  <p class="text-sm font-medium text-zinc-950 dark:text-white">${
-                    user.name || user.email || "User"
-                  }</p>
-                  <p class="text-xs text-zinc-500 dark:text-zinc-400">${
-                    user.email || ""
-                  }</p>
+                <div class="px-3 py-2 border-b border-zinc-100 dark:border-zinc-700">
+                  <p class="text-sm font-medium text-zinc-900 dark:text-white">${user.name || user.email || 'User'}</p>
+                  <p class="text-xs text-zinc-500 dark:text-zinc-400">${user.email || ''}</p>
                 </div>
-                <a href="/admin/profile" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5">
-                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
+                <a href="/admin/profile" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5">
+                  ${icon(User, 'h-4 w-4')}
                   My Profile
                 </a>
                 <a href="/auth/logout" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">
-                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                  </svg>
+                  ${icon(LogOut, 'h-4 w-4')}
                   Sign Out
                 </a>
               </div>
             </div>
           </div>
         </div>
-      `
-          : ""
-      }
+      ` : ''}
     </nav>
-  `;
+  `
 }

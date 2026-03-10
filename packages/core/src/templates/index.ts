@@ -37,6 +37,9 @@ export type { AdminLayoutCatalystData } from './layouts/admin-layout-catalyst.te
 // Component templates
 export { renderLogo } from './components/logo.template'
 
+// Icons module
+export { icon, collectionIcon } from './icons'
+
 // Page templates - Admin
 export { renderDesignPage } from './pages/admin-design.template'
 export type { DesignPageData } from './pages/admin-design.template'

@@ -22,6 +22,10 @@ export { rateLimit } from './rate-limit'
 // CSRF protection middleware
 export { csrfProtection, generateCsrfToken, validateCsrfToken } from './csrf'
 
+// Admin menu middleware
+export { adminMenuMiddleware } from './admin-menu'
+export type { AdminMenuItem } from './admin-menu'
+
 // Re-export types and functions that are referenced but implemented in monolith
 // These are placeholder exports to maintain API compatibility
 export type Permission = string
