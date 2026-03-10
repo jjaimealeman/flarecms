@@ -118,4 +118,5 @@ export const navLinks = [
   { label: 'Features', href: '/features' },
   { label: 'Comparison', href: '/comparison' },
   { label: 'Blog', href: '/blog' },
+  { label: 'FAQ', href: '/faq' },
 ]

@@ -15,12 +15,12 @@ adminPluginRoutes.use('*', requireAuth())
 // Available plugins registry - plugins that can be installed
 const AVAILABLE_PLUGINS = [
   {
-    id: 'third-party-faq',
+    id: 'faq-plugin',
     name: 'faq-plugin',
-    display_name: 'FAQ System',
-    description: 'Frequently Asked Questions management system with categories, search, and custom styling',
-    version: '2.0.0',
-    author: 'Community Developer',
+    display_name: 'FAQ Management',
+    description: 'Frequently Asked Questions management with categories, search, and custom styling. Admin UI at /admin/faq.',
+    version: '1.0.0',
+    author: 'Flare CMS Team',
     category: 'content',
     icon: '❓',
     permissions: ['manage:faqs'],
@@ -129,6 +129,19 @@ const AVAILABLE_PLUGINS = [
     icon: '🔍',
     permissions: [],
     dependencies: [],
+    is_core: true
+  },
+  {
+    id: 'otp-login',
+    name: 'otp-login',
+    display_name: 'OTP Login',
+    description: 'Passwordless authentication via email one-time codes. Requires email plugin to be configured first.',
+    version: '1.0.0-beta.1',
+    author: 'Flare CMS Team',
+    category: 'security',
+    icon: '🔑',
+    permissions: ['otp:manage', 'otp:request', 'otp:verify'],
+    dependencies: ['email'],
     is_core: true
   }
 ]
@@ -405,12 +418,12 @@ adminPluginRoutes.post('/install', async (c) => {
     // Handle FAQ plugin installation
     if (body.name === 'faq-plugin') {
       const faqPlugin = await pluginService.installPlugin({
-        id: 'third-party-faq',
+        id: 'faq-plugin',
         name: 'faq-plugin',
-        display_name: 'FAQ System',
-        description: 'Frequently Asked Questions management system with categories, search, and custom styling',
-        version: '2.0.0',
-        author: 'Community Developer',
+        display_name: 'FAQ Management',
+        description: 'Frequently Asked Questions management with categories, search, and custom styling. Admin UI at /admin/faq.',
+        version: '1.0.0',
+        author: 'Flare CMS Team',
         category: 'content',
         icon: '❓',
         permissions: ['manage:faqs'],
@@ -691,6 +704,32 @@ adminPluginRoutes.post('/install', async (c) => {
       })
 
       return c.json({ success: true, plugin: turnstilePlugin })
+    }
+
+    // Handle OTP Login plugin installation
+    if (body.name === 'otp-login') {
+      const otpPlugin = await pluginService.installPlugin({
+        id: 'otp-login',
+        name: 'otp-login',
+        display_name: 'OTP Login',
+        description: 'Passwordless authentication via email one-time codes',
+        version: '1.0.0-beta.1',
+        author: 'Flare CMS Team',
+        category: 'security',
+        icon: '🔑',
+        permissions: ['otp:manage', 'otp:request', 'otp:verify'],
+        dependencies: ['email'],
+        is_core: true,
+        settings: {
+          codeLength: 6,
+          codeExpiryMinutes: 10,
+          maxAttempts: 3,
+          rateLimitPerHour: 5,
+          allowNewUserRegistration: false
+        }
+      })
+
+      return c.json({ success: true, plugin: otpPlugin })
     }
 
     return c.json({ error: 'Plugin not found in registry' }, 404)

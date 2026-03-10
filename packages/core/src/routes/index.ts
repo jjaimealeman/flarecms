@@ -32,6 +32,8 @@ export { adminDashboardRoutes } from './admin-dashboard'
 export { adminCollectionsRoutes } from './admin-collections'
 export { adminSettingsRoutes } from './admin-settings'
 export { adminFormsRoutes } from './admin-forms'
+export { adminFaqRoutes } from './admin-faq'
+export { default as apiFaqRoutes } from './api-faq'
 export { default as publicFormsRoutes } from './public-forms'
 export { adminApiReferenceRoutes } from './admin-api-reference'
 export { adminApiTokensRoutes } from './admin-api-tokens'
@@ -61,6 +63,8 @@ export const ROUTES_INFO = {
     'adminCollectionsRoutes',
     'adminSettingsRoutes',
     'adminFormsRoutes',
+    'adminFaqRoutes',
+    'apiFaqRoutes',
     'publicFormsRoutes',
     'adminApiReferenceRoutes',
     'adminApiTokensRoutes',

@@ -23,6 +23,8 @@ import {
   adminCollectionsRoutes,
   adminSettingsRoutes,
   adminFormsRoutes,
+  adminFaqRoutes,
+  apiFaqRoutes,
   publicFormsRoutes,
   adminApiReferenceRoutes,
   adminApiTokensRoutes,
@@ -280,6 +282,8 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/collections', adminCollectionsRoutes)
   app.route('/admin/forms', adminFormsRoutes)
   app.route('/admin/settings', adminSettingsRoutes)
+  app.route('/admin/faq', adminFaqRoutes)
+  app.route('/api/faq', apiFaqRoutes)
   app.route('/forms', publicFormsRoutes)
   app.route('/api/forms', publicFormsRoutes) // API endpoint for form submissions
   app.route('/admin/api-reference', adminApiReferenceRoutes)

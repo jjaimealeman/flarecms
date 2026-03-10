@@ -1,0 +1,129 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const CMS_URL = import.meta.env.PUBLIC_FLARE_API_URL || 'http://localhost:8787'
+
+let faqs: any[] = []
+let categories: string[] = []
+let error: string | null = null
+
+try {
+  const [faqRes, catRes] = await Promise.all([
+    fetch(`${CMS_URL}/api/faq`),
+    fetch(`${CMS_URL}/api/faq/categories`),
+  ])
+
+  if (faqRes.ok) {
+    const data = await faqRes.json()
+    faqs = data.faqs || []
+  } else {
+    error = 'Unable to load FAQs'
+  }
+
+  if (catRes.ok) {
+    const data = await catRes.json()
+    categories = data.categories || []
+  }
+} catch (e) {
+  error = 'Unable to connect to CMS'
+}
+
+// Group FAQs by category
+const grouped: Record<string, any[]> = {}
+for (const faq of faqs) {
+  const cat = faq.category || 'general'
+  if (!grouped[cat]) grouped[cat] = []
+  grouped[cat].push(faq)
+}
+
+// Sort categories: general first, then alphabetical
+const sortedCategories = Object.keys(grouped).sort((a, b) => {
+  if (a === 'general') return -1
+  if (b === 'general') return 1
+  return a.localeCompare(b)
+})
+
+const categoryLabels: Record<string, string> = {
+  general: 'General',
+  technical: 'Technical',
+  billing: 'Billing & Pricing',
+}
+---
+
+<Layout title="FAQ" description="Frequently asked questions about Flare CMS.">
+  <div class="max-w-4xl mx-auto px-6 pt-16 pb-24">
+
+    <!-- Header -->
+    <header class="text-center mb-16">
+      <span class="text-xs text-flare-400 uppercase tracking-widest font-medium">Help Center</span>
+      <h1 class="mt-3 text-4xl sm:text-5xl font-heading font-bold tracking-tight">
+        Frequently Asked Questions
+      </h1>
+      <p class="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+        Everything you need to know about Flare CMS. Can't find what you're looking for? <a href="/contact" class="text-flare-400 hover:text-flare-300 underline underline-offset-2">Contact us</a>.
+      </p>
+    </header>
+
+    {error ? (
+      <div class="text-center">
+        <p class="text-slate-400">{error}</p>
+      </div>
+    ) : faqs.length === 0 ? (
+      <div class="text-center">
+        <p class="text-slate-400">No FAQs available yet.</p>
+      </div>
+    ) : (
+      <div class="space-y-12">
+        {sortedCategories.map((cat) => (
+          <section id={`faq-${cat}`}>
+            <h2 class="text-sm font-semibold uppercase tracking-widest text-flare-400 mb-6 flex items-center gap-3">
+              <span>{categoryLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+              <span class="flex-1 h-px bg-slate-700/50"></span>
+              <span class="text-xs font-normal text-slate-500">{grouped[cat].length}</span>
+            </h2>
+
+            <div class="space-y-3">
+              {grouped[cat].map((faq: any, i: number) => (
+                <details
+                  class="group rounded-xl border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm transition-colors hover:border-slate-600/50 open:border-flare-500/30 open:bg-slate-800/50"
+                  data-faq-id={faq.id}
+                >
+                  <summary class="flex items-center justify-between cursor-pointer px-6 py-4 text-left select-none">
+                    <span class="text-slate-100 font-medium pr-4">{faq.question}</span>
+                    <svg
+                      class="w-5 h-5 text-slate-500 shrink-0 transition-transform duration-200 group-open:rotate-45"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </summary>
+                  <div class="px-6 pb-5 text-slate-400 leading-relaxed border-t border-slate-700/30 pt-4">
+                    {faq.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    )}
+
+    <!-- Category quick links (only if multiple categories) -->
+    {sortedCategories.length > 1 && (
+      <nav class="mt-16 pt-8 border-t border-slate-700/50">
+        <p class="text-xs text-slate-500 uppercase tracking-widest mb-4 text-center">Jump to</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          {sortedCategories.map((cat) => (
+            <a
+              href={`#faq-${cat}`}
+              class="px-4 py-2 rounded-full text-sm font-medium text-slate-300 bg-slate-800/50 border border-slate-700/50 hover:border-flare-500/30 hover:text-flare-400 transition-colors"
+            >
+              {categoryLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </a>
+          ))}
+        </div>
+      </nav>
+    )}
+
+  </div>
+</Layout>

@@ -42,6 +42,7 @@ import {
   ArrowUpDown,
   Layers,
   ClipboardList,
+  CircleHelp,
 } from 'lucide-static'
 
 /**
@@ -121,4 +122,5 @@ export {
   ArrowUpDown,
   Layers,
   ClipboardList,
+  CircleHelp,
 }

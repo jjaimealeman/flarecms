@@ -79,11 +79,23 @@ export function renderFormsListPage(data: FormsListPageData): string {
         sortType: 'number',
         render: (_value: any, form: any) => {
           const count = form.submission_count || 0
+          if (count === 0) {
+            return `
+              <div class="flex items-center">
+                <span class="inline-flex items-center rounded-full bg-zinc-50 dark:bg-zinc-500/10 px-2.5 py-1 text-sm font-medium text-zinc-500 dark:text-zinc-500 ring-1 ring-inset ring-zinc-700/10 dark:ring-zinc-400/20">
+                  0
+                </span>
+              </div>
+            `
+          }
           return `
             <div class="flex items-center">
-              <span class="inline-flex items-center rounded-full bg-zinc-50 dark:bg-zinc-500/10 px-2.5 py-1 text-sm font-medium text-zinc-700 dark:text-zinc-300 ring-1 ring-inset ring-zinc-700/10 dark:ring-zinc-400/20">
+              <a href="/admin/forms/${form.id}/submissions" class="group/sub inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 hover:ring-blue-700/20 dark:hover:ring-blue-400/30 transition-colors" title="View ${count} submission${count !== 1 ? 's' : ''}" onclick="event.stopPropagation()">
+                <svg class="w-3.5 h-3.5 opacity-60 group-hover/sub:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
                 ${count}
-              </span>
+              </a>
             </div>
           `
         }
