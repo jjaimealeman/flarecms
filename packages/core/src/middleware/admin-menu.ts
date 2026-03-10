@@ -7,6 +7,7 @@
 
 import type { Context, Next } from 'hono'
 import { icon, collectionIcon } from '../templates/icons'
+import { setDynamicMenuItems } from '../templates/layouts/admin-layout-v2.template'
 
 export interface AdminMenuItem {
   label: string
@@ -52,7 +53,9 @@ export function adminMenuMiddleware() {
       }
     }
 
-    c.set('adminMenuItems', cachedItems || [])
+    const items = cachedItems || []
+    c.set('adminMenuItems', items)
+    setDynamicMenuItems(items)
     await next()
   }
 }

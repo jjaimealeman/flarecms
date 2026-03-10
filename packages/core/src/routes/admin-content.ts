@@ -1347,7 +1347,7 @@ adminContentRoutes.get('/bulk-actions', async (c) => {
         <div class="space-y-2">
           <button
             onclick="performBulkAction('publish')"
-            class="w-full inline-flex items-center justify-center gap-x-2 px-4 py-2.5 bg-lime-600 dark:bg-lime-500 text-white rounded-lg hover:bg-lime-700 dark:hover:bg-lime-600 transition-colors"
+            class="w-full inline-flex items-center justify-center gap-x-2 px-4 py-2.5 bg-emerald-600 dark:bg-emerald-500 text-white rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors"
           >
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1544,7 +1544,7 @@ adminContentRoutes.delete('/:id', async (c) => {
       <div id="content-list" hx-get="/admin/content?model=${c.req.query('model') || 'post'}" hx-trigger="load" hx-swap="outerHTML">
         <div class="flex items-center justify-center p-8">
           <div class="text-center">
-            <svg class="mx-auto h-12 w-12 text-lime-500 dark:text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="mx-auto h-12 w-12 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
             <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Content deleted successfully. Refreshing...</p>

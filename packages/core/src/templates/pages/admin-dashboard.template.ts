@@ -256,15 +256,15 @@ export function renderStatsCards(stats: DashboardStats): string {
     },
   ];
 
-  const cardColors = ['text-blue-400', 'text-emerald-400', 'text-red-400', 'text-slate-400'];
+  const cardColors = ['text-blue-600 dark:text-blue-400', 'text-emerald-600 dark:text-emerald-400', 'text-red-600 dark:text-red-400', 'text-slate-600 dark:text-slate-400'];
 
   return `
     <div>
       <h3 class="text-base font-semibold text-zinc-950 dark:text-white">Last 30 days</h3>
-      <dl class="mt-5 grid grid-cols-1 divide-zinc-950/5 dark:divide-white/10 overflow-hidden rounded-lg bg-zinc-800/75 dark:bg-zinc-800/75 ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 md:grid-cols-4 md:divide-x md:divide-y-0">
+      <dl class="mt-5 grid grid-cols-1 divide-zinc-950/5 dark:divide-white/10 overflow-hidden rounded-lg bg-white dark:bg-zinc-800/75 ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 md:grid-cols-4 md:divide-x md:divide-y-0">
         ${cards.map((card, index) => `
           <div class="px-4 py-5 sm:p-6">
-            <dt class="text-base font-normal text-zinc-700 dark:text-zinc-100">${card.title}</dt>
+            <dt class="text-base font-normal text-zinc-500 dark:text-zinc-100">${card.title}</dt>
             <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
               <div class="flex items-baseline text-2xl font-semibold ${cardColors[index]}">
                 ${card.value}
@@ -291,7 +291,7 @@ function renderStatsCardsSkeleton(): string {
   return `
     <div>
       <div class="h-6 w-32 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse mb-5"></div>
-      <div class="grid grid-cols-1 divide-zinc-950/5 dark:divide-white/10 overflow-hidden rounded-lg bg-zinc-800/75 dark:bg-zinc-800/75 ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 md:grid-cols-4 md:divide-x md:divide-y-0">
+      <div class="grid grid-cols-1 divide-zinc-950/5 dark:divide-white/10 overflow-hidden rounded-lg bg-white dark:bg-zinc-800/75 ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 md:grid-cols-4 md:divide-x md:divide-y-0">
         ${Array(4)
           .fill(0)
           .map(

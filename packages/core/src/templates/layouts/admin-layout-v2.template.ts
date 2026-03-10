@@ -17,12 +17,29 @@ export interface AdminLayoutData {
   content: string | HtmlEscapedString;
   dynamicMenuItems?: Array<{
     label: string;
-    path: string;
+    slug: string;
+    collectionId: string;
     icon: string;
   }>;
 }
 
+/**
+ * Module-level menu items set by adminMenuMiddleware.
+ * Safe for Workers: the set→render path is synchronous
+ * (no await between setDynamicMenuItems and renderAdminLayout),
+ * so concurrent requests cannot interleave during rendering.
+ */
+let _pendingMenuItems: AdminLayoutData['dynamicMenuItems'] | undefined
+
+export function setDynamicMenuItems(items: AdminLayoutData['dynamicMenuItems']) {
+  _pendingMenuItems = items
+}
+
 export function renderAdminLayout(data: AdminLayoutData): string {
+  // Auto-inject menu items from middleware if not explicitly provided
+  if (_pendingMenuItems && !data.dynamicMenuItems) {
+    data = { ...data, dynamicMenuItems: _pendingMenuItems }
+  }
   // Import and use the new Catalyst layout
   const {
     renderAdminLayoutCatalyst,
@@ -500,7 +517,8 @@ function renderSidebar(
   user?: any,
   dynamicMenuItems?: Array<{
     label: string;
-    path: string;
+    slug: string;
+    collectionId: string;
     icon: string;
   }>
 ): string {
@@ -604,14 +622,18 @@ function renderSidebar(
 
   // Insert dynamic menu items after "Users"
   if (dynamicMenuItems && dynamicMenuItems.length > 0) {
+    const mappedItems = dynamicMenuItems.map(item => ({
+      label: item.label,
+      path: `/admin/content?collection=${item.collectionId}`,
+      icon: item.icon,
+    }));
     const usersIndex = allMenuItems.findIndex(
       (item) => item.path === "/admin/users"
     );
     if (usersIndex !== -1) {
-      allMenuItems.splice(usersIndex + 1, 0, ...dynamicMenuItems);
+      allMenuItems.splice(usersIndex + 1, 0, ...mappedItems);
     } else {
-      // Fallback: add to end if Users not found
-      allMenuItems.push(...dynamicMenuItems);
+      allMenuItems.push(...mappedItems);
     }
   }
 

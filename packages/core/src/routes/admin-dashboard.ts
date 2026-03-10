@@ -251,11 +251,11 @@ router.get('/system-status', async (c) => {
     const html = `
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="relative group">
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-500/20 dark:from-blue-500/10 dark:to-blue-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 border border-zinc-200/50 dark:border-zinc-700/50">
             <div class="flex items-center justify-between mb-3">
               <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400">API Status</span>
-              <svg class="w-6 h-6 text-lime-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
             </div>
@@ -264,11 +264,11 @@ router.get('/system-status', async (c) => {
         </div>
 
         <div class="relative group">
-          <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-red-500/20 dark:from-purple-500/10 dark:to-red-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 border border-zinc-200/50 dark:border-zinc-700/50">
             <div class="flex items-center justify-between mb-3">
               <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Database</span>
-              <svg class="w-6 h-6 text-lime-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
             </div>
@@ -281,7 +281,7 @@ router.get('/system-status', async (c) => {
           <div class="relative bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 border border-zinc-200/50 dark:border-zinc-700/50">
             <div class="flex items-center justify-between mb-3">
               <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400">R2 Storage</span>
-              <svg class="w-6 h-6 text-lime-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
             </div>
@@ -290,11 +290,11 @@ router.get('/system-status', async (c) => {
         </div>
 
         <div class="relative group">
-          <div class="absolute inset-0 bg-gradient-to-br from-lime-500/20 to-emerald-500/20 dark:from-lime-500/10 dark:to-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-500/20 dark:from-emerald-500/10 dark:to-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div class="relative bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 border border-zinc-200/50 dark:border-zinc-700/50">
             <div class="flex items-center justify-between mb-3">
               <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400">KV Cache</span>
-              <svg class="w-6 h-6 text-lime-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
             </div>
