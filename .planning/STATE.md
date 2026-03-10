@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 9 complete -- Schema Migrations UI
+**Current focus:** Phase 9 complete -- Quick task 001 complete (Content Layer migration)
 
 ## Current Position
 
 Phase: 9 of 9 (Schema Migrations UI)
 Plan: 4 of 4 in current phase
 Status: Phase 9 complete, verified
-Last activity: 2026-03-09 — Phase 9 complete (migration table, tracking, history UI, rollback)
+Last activity: 2026-03-09 — Quick task 001 complete (migrate pages to Content Layer)
 
 Progress: [████████████████████████████████████████████████████] 100% (28/28 plans)
 
@@ -58,8 +58,8 @@ Recent decisions affecting current work:
 - [07-02]: Client-side status filtering in loader (API filters broken)
 - [07-02]: Permissive passthrough fallback schema when CMS unreachable
 - [07-02]: store.clear() before each build for clean state
-- [07-03]: 4 collections in content.config.ts: blogPosts, news, docs, docsSections
-- [07-03]: Additive integration — flare.ts manual fetch and Content Layer coexist
+- [07-03]: 5 collections in content.config.ts: blogPosts, news, docs, docsSections, pages
+- [quick-001]: All pages use Content Layer exclusively (flare.ts stripped to getDraftContent only)
 - [07-03]: CMS API returns title/slug at root level, not inside item.data — loaders flatten both
 - [08-01]: GET /draft/:token unauthenticated -- token is the credential for cross-origin Astro iframe
 - [08-01]: Selective requireAuth per-route (not per-router) for mixed auth endpoints
@@ -93,5 +93,5 @@ None -- all v2 phases complete.
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed 09-04-PLAN.md (all phases complete)
+Stopped at: Completed quick-001 (migrate pages to Content Layer)
 Resume file: None
