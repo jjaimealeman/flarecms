@@ -84,6 +84,12 @@ Recent decisions affecting current work:
 
 None -- all v2 phases complete.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 001 | Migrate pages from lib/flare.ts to Astro Content Layer | 2026-03-09 | ef3bdd3 | [001-migrate-pages-to-content-layer](./quick/001-migrate-pages-to-content-layer/) |
+
 ### Blockers/Concerns
 
 - [Research]: Broken API filters force client-side filtering -- follow existing pattern, mitigate with KV caching
