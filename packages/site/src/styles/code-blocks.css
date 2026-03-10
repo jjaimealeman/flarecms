@@ -11,7 +11,7 @@
   font-family: var(--font-mono);
   border: 1px solid rgb(51 65 85 / 0.5);
   border-bottom: none;
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0 !important;
   background: rgb(15 23 42 / 0.8);
   color: rgb(148 163 184);
 }
@@ -24,10 +24,10 @@
 /* Pre element -- !important to override Tailwind prose-invert pre bg */
 [data-rehype-pretty-code-figure] pre {
   overflow-x: auto;
-  padding: 1rem 0;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(71 85 105 / 0.7) !important;
-  background-color: rgb(30 41 59) !important;
+  padding: 1.25rem 0 !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid rgb(51 65 85 / 0.5) !important;
+  background-color: #0a0f1a !important;
 }
 
 /* Code inside pre -- ensure no extra background from prose */
@@ -41,7 +41,7 @@
 
 /* Line padding */
 [data-rehype-pretty-code-figure] [data-line] {
-  padding: 0 1rem;
+  padding: 0 1.25rem;
   display: inline-block;
   min-width: 100%;
 }
@@ -60,21 +60,8 @@
   padding: 0.125rem 0.25rem;
 }
 
-/* Language label */
+/* Language label — hidden, redundant with code titles */
 [data-rehype-pretty-code-figure] code[data-language]::before {
-  content: attr(data-language);
-  position: absolute;
-  top: 0.25rem;
-  right: 0.75rem;
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgb(148 163 184 / 0.5);
-  pointer-events: none;
-}
-
-/* Hide language label when title is present */
-[data-rehype-pretty-code-title] ~ pre code[data-language]::before {
   display: none;
 }
 

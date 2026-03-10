@@ -10,6 +10,7 @@ import rehypeExternalLinks from 'rehype-external-links'
 import rehypeRaw from 'rehype-raw'
 import rehypeStringify from 'rehype-stringify'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
+import { flareThemeDark, flareThemeLight } from './shiki-flare-theme'
 import type { Root, Element, ElementContent } from 'hast'
 import type { Plugin } from 'unified'
 
@@ -179,8 +180,8 @@ const processor = unified()
   .use(rehypeCallouts, { theme: 'github' })
   .use(rehypePrettyCode, {
     theme: {
-      dark: 'catppuccin-mocha',
-      light: 'catppuccin-latte',
+      dark: flareThemeDark,
+      light: flareThemeLight,
     },
     defaultLang: { block: 'plaintext' },
     keepBackground: false,
