@@ -2,16 +2,13 @@
 const terminalLines = [
   { prompt: true, text: 'git clone https://github.com/jjaimealeman/flarecms' },
   { prompt: true, text: 'cd flarecms && pnpm install' },
-  { prompt: false, text: '' },
-  { prompt: false, text: '✔ Packages installed (3 workspaces)' },
-  { prompt: false, text: '' },
   { prompt: true, text: 'pnpm build' },
-  { prompt: false, text: '✔ @flare-cms/core built (8 entry points)' },
   { prompt: false, text: '' },
-  { prompt: true, text: 'cd packages/cms && wrangler dev' },
-  { prompt: false, text: '⚡ Listening on http://localhost:8787' },
+  { prompt: true, text: 'cd packages/cms && pnpm dev' },
   { prompt: false, text: '⚡ Admin UI → http://localhost:8787/admin' },
-  { prompt: false, text: '⚡ API docs → http://localhost:8787/docs' },
+  { prompt: false, text: '' },
+  { prompt: true, text: 'cd packages/site && pnpm dev' },
+  { prompt: false, text: '⚡ Frontend → http://localhost:4321' },
 ]
 ---
 
@@ -20,24 +17,34 @@ const terminalLines = [
   <div class="absolute inset-0 bg-[linear-gradient(rgba(246,130,31,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(246,130,31,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
 
   <div class="relative max-w-7xl mx-auto px-6 pt-24 pb-20">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-      <!-- Left: Copy -->
-      <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-flare-500/10 border border-flare-500/20 text-flare-400 text-xs font-medium mb-8">
+    <!-- Logo + version badge — full width, centered above grid -->
+    <div class="flex justify-center mb-12">
+      <div class="relative">
+        <a href="/">
+          <img src="/logo.svg" alt="Flare CMS" class="h-24 sm:h-28 lg:h-32 w-auto" />
+        </a>
+        <!-- Version badge — baseline-aligned, right of logo -->
+        <div class="absolute bottom-0 -right-4 translate-x-full inline-flex items-center gap-2 px-3 py-1 rounded-full bg-flare-500/10 border border-flare-500/20 text-flare-400 text-xs font-medium">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          v1.0 is live
+          v{__APP_VERSION__} is live
         </div>
+      </div>
+    </div>
 
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold tracking-tight leading-[1.1]">
-          The only CMS built for
-          <span class="bg-gradient-to-r from-cyan-400 to-flare-500 bg-clip-text text-transparent">Astro + Cloudflare</span>
-        </h1>
+    <!-- Tagline — full width, centered -->
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold tracking-tight leading-[1.1] text-center mb-16">
+      The only CMS built for
+      <span class="bg-gradient-to-r from-cyan-400 to-flare-500 bg-clip-text text-transparent">Astro + Cloudflare</span>
+    </h1>
 
-        <p class="mt-6 text-lg text-slate-400 leading-relaxed max-w-lg">
-          Open-source, self-hosted headless CMS purpose-built for the Astro + Cloudflare Workers stack. Zero cold starts, D1 database, R2 media — all at the edge.
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-stretch">
+      <!-- Left: Copy — flex column stretches to match terminal height, content spaced evenly -->
+      <div class="flex flex-col items-center lg:items-start h-full justify-between">
+        <p class="text-xl text-slate-400 leading-relaxed">
+          Flare CMS is an open-source, self-hosted headless CMS purpose-built for the Astro + Cloudflare Workers stack. Zero cold starts, D1 database, R2 media — all at the edge.
         </p>
 
-        <div class="mt-8 flex flex-wrap items-center gap-4">
+        <div class="flex flex-wrap items-center justify-center gap-4 w-full">
           <a
             href="/docs"
             class="inline-flex items-center gap-2 px-6 py-3 bg-flare-500 hover:bg-flare-400 text-slate-950 text-sm font-semibold rounded-lg transition-colors"
@@ -53,7 +60,8 @@ const terminalLines = [
         </div>
 
         <!-- CLI one-liner -->
-        <div class="mt-6 inline-flex items-center gap-3 px-4 py-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50 font-mono text-sm text-slate-300 group cursor-pointer" id="cli-snippet" title="Click to copy">
+        <div class="flex justify-center w-full">
+        <div class="inline-flex items-center gap-3 px-4 py-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50 font-mono text-sm text-slate-300 group cursor-pointer" id="cli-snippet" title="Click to copy">
           <span class="text-slate-500">$</span>
           <span>npx create-flare-app my-site</span>
           <button class="text-slate-500 hover:text-slate-300 transition-colors ml-1" aria-label="Copy command">
@@ -65,25 +73,6 @@ const terminalLines = [
             </svg>
           </button>
         </div>
-
-        <!-- Trust badges -->
-        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500">
-          <span class="flex items-center gap-1.5">
-            <span class="w-1 h-1 rounded-full bg-flare-500"></span>
-            Cloudflare Workers
-          </span>
-          <span class="flex items-center gap-1.5">
-            <span class="w-1 h-1 rounded-full bg-cyan-500"></span>
-            Astro Frontend
-          </span>
-          <span class="flex items-center gap-1.5">
-            <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
-            MIT License
-          </span>
-          <span class="flex items-center gap-1.5">
-            <span class="w-1 h-1 rounded-full bg-amber-500"></span>
-            TypeScript
-          </span>
         </div>
       </div>
 
@@ -127,6 +116,26 @@ const terminalLines = [
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Trust badges — full-width strip below grid -->
+    <div class="mt-16 flex flex-wrap items-center justify-between gap-y-2 text-xs text-slate-500">
+      <span class="flex items-center gap-1.5">
+        <span class="w-1 h-1 rounded-full bg-flare-500"></span>
+        Cloudflare Workers
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-1 h-1 rounded-full bg-cyan-500"></span>
+        Astro Frontend
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
+        MIT License
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-1 h-1 rounded-full bg-amber-500"></span>
+        TypeScript
+      </span>
     </div>
   </div>
 </section>
