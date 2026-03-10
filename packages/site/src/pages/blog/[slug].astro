@@ -1,6 +1,5 @@
 ---
-import { getBlogPostBySlug } from '../../lib/flare'
-import { getStaticBlogPost } from '../../data/blog-posts'
+import { getCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
 const { slug } = Astro.params
@@ -11,39 +10,23 @@ const categoryStyles: Record<string, string> = {
   amber: 'bg-amber-500/10 text-amber-400',
 }
 
-// Try CMS first, fall back to static
-let post: any = null
-let isStatic = false
+const allPosts = await getCollection('blogPosts')
+const entry = allPosts.find(p => p.data.slug === slug)
 
-try {
-  const cmsPost = await getBlogPostBySlug(slug!)
-  if (cmsPost) {
-    post = {
-      title: cmsPost.data.title || cmsPost.title,
-      excerpt: cmsPost.data.excerpt || '',
-      content: cmsPost.data.content,
-      author: cmsPost.data.author || '',
-      date: cmsPost.data.publishedAt || new Date(cmsPost.created_at).toISOString(),
-      featuredImage: cmsPost.data.featuredImage,
-      category: '',
-      categoryColor: '',
-      readTime: '',
-    }
-  }
-} catch {
-  // CMS unavailable
-}
-
-if (!post) {
-  const staticPost = getStaticBlogPost(slug!)
-  if (staticPost) {
-    post = staticPost
-    isStatic = true
-  }
-}
-
-if (!post) {
+if (!entry) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const post = {
+  title: entry.data.title || '',
+  excerpt: entry.data.excerpt || '',
+  content: entry.data.content,
+  author: entry.data.author || '',
+  date: entry.data.publishedAt || (entry.data._createdAt ? entry.data._createdAt.toISOString() : ''),
+  featuredImage: entry.data.featuredImage as string | undefined,
+  category: '',
+  categoryColor: '',
+  readTime: '',
 }
 ---
 

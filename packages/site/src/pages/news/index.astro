@@ -1,6 +1,5 @@
 ---
-import { getNewsArticles } from '../../lib/flare'
-import { getAllStaticNewsArticles } from '../../data/news-articles'
+import { getCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
 const categoryStyles: Record<string, string> = {
@@ -9,32 +8,17 @@ const categoryStyles: Record<string, string> = {
   general: 'bg-slate-700/50 text-slate-300',
 }
 
-// Try CMS first, fall back to static
-let cmsArticles: any[] = []
-try {
-  cmsArticles = await getNewsArticles()
-} catch {
-  // CMS unavailable
-}
+const allArticles = await getCollection('news')
 
-const staticArticles = getAllStaticNewsArticles()
-const hasCmsData = cmsArticles.length > 0
-
-const articles = hasCmsData
-  ? cmsArticles.map(a => ({
-      slug: a.slug,
-      title: a.data.title,
-      category: a.data.category || 'general',
-      author: a.data.author || '',
-      date: a.data.publish_date || new Date(a.created_at).toISOString(),
-    }))
-  : staticArticles.map(a => ({
-      slug: a.slug,
-      title: a.title,
-      category: a.category,
-      author: a.author,
-      date: a.date,
-    }))
+const articles = allArticles
+  .map(a => ({
+    slug: a.data.slug || '',
+    title: a.data.title || '',
+    category: (a.data.category as string) || 'general',
+    author: (a.data.author as string) || '',
+    date: a.data.publish_date || (a.data._createdAt ? a.data._createdAt.toISOString() : ''),
+  }))
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 ---
 
 <Layout title="News">

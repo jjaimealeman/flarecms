@@ -1,6 +1,5 @@
 ---
-import { getNewsArticleBySlug } from '../../lib/flare'
-import { getStaticNewsArticle } from '../../data/news-articles'
+import { getCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
 const { slug } = Astro.params
@@ -11,33 +10,19 @@ const categoryStyles: Record<string, string> = {
   general: 'bg-slate-700/50 text-slate-300',
 }
 
-// Try CMS first, fall back to static
-let article: any = null
+const allArticles = await getCollection('news')
+const entry = allArticles.find(a => a.data.slug === slug)
 
-try {
-  const cmsArticle = await getNewsArticleBySlug(slug!)
-  if (cmsArticle) {
-    article = {
-      title: cmsArticle.data.title,
-      content: cmsArticle.data.content,
-      category: cmsArticle.data.category || 'general',
-      author: cmsArticle.data.author || '',
-      date: cmsArticle.data.publish_date || new Date(cmsArticle.created_at).toISOString(),
-    }
-  }
-} catch {
-  // CMS unavailable
-}
-
-if (!article) {
-  const staticArticle = getStaticNewsArticle(slug!)
-  if (staticArticle) {
-    article = staticArticle
-  }
-}
-
-if (!article) {
+if (!entry) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const article = {
+  title: entry.data.title || '',
+  content: entry.data.content,
+  category: (entry.data.category as string) || 'general',
+  author: (entry.data.author as string) || '',
+  date: entry.data.publish_date || (entry.data._createdAt ? entry.data._createdAt.toISOString() : ''),
 }
 ---
 
