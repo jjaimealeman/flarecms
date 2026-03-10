@@ -50,7 +50,7 @@ export function renderLogo(data: LogoData = {}): string {
     <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer select-none ${
       variant === 'white'
         ? 'bg-white/10 text-white/80 ring-white/20 hover:bg-white/20'
-        : 'bg-cyan-50 text-cyan-700 ring-cyan-700/10 dark:bg-cyan-500/10 dark:text-cyan-400 dark:ring-cyan-500/20'
+        : 'bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20'
     }" onclick="navigator.clipboard.writeText('${version}').then(()=>{this.dataset.orig=this.textContent;this.textContent='Copied!';setTimeout(()=>{this.textContent=this.dataset.orig},1500)})" title="Click to copy">
       ${version}
     </span>

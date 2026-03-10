@@ -29,13 +29,16 @@ export { renderFilterBar } from './filter-bar.template'
 export type { FilterBarData, Filter, FilterOption } from './filter-bar.template'
 
 // Layout templates
-export { renderAdminLayout } from './layouts/admin-layout-v2.template'
+export { renderAdminLayout, setDynamicMenuItems } from './layouts/admin-layout-v2.template'
 export { renderAdminLayoutCatalyst } from './layouts/admin-layout-catalyst.template'
 export type { AdminLayoutData } from './layouts/admin-layout-v2.template'
 export type { AdminLayoutCatalystData } from './layouts/admin-layout-catalyst.template'
 
 // Component templates
 export { renderLogo } from './components/logo.template'
+
+// Icons module
+export { icon, collectionIcon } from './icons'
 
 // Page templates - Admin
 export { renderDesignPage } from './pages/admin-design.template'

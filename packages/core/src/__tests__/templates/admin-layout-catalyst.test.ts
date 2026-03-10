@@ -157,7 +157,7 @@ describe('renderAdminLayoutCatalyst', () => {
     const html = renderAdminLayoutCatalyst(baseData);
 
     expect(html).toContain('<!DOCTYPE html>');
-    expect(html).toContain('<html lang="en" class="dark">');
+    expect(html).toContain('<html lang="en">');
     expect(html).toContain('<head>');
     expect(html).toContain('<body');
     expect(html).toContain('</html>');
@@ -295,8 +295,8 @@ describe('renderAdminLayoutCatalyst', () => {
       });
 
       expect(html).toContain('data-current="true"');
-      // Should have cyan indicator for active item
-      expect(html).toContain('bg-cyan-500');
+      // Should have blue indicator for active item
+      expect(html).toContain('bg-blue-600');
     });
 
     it('should highlight dashboard as active for /admin path', () => {
@@ -325,16 +325,18 @@ describe('renderAdminLayoutCatalyst', () => {
         ...baseData,
         dynamicMenuItems: [
           {
-            label: 'Custom Page',
-            path: '/admin/custom',
+            label: 'Blog Posts',
+            slug: 'blog-posts',
+            collectionId: 'col-blog-posts-123',
             icon: '<svg>custom</svg>',
           },
         ],
       });
 
-      expect(html).toContain('Custom Page');
-      expect(html).toContain('/admin/custom');
-      expect(html).toContain('<svg>custom</svg>');
+      expect(html).toContain('Blog Posts');
+      expect(html).toContain('col-blog-posts-123');
+      expect(html).toContain('All Blog Posts');
+      expect(html).toContain('Add New');
     });
 
     it('should handle empty dynamic menu items', () => {
@@ -478,10 +480,11 @@ describe('renderAdminLayoutCatalyst', () => {
   });
 
   describe('Dark Mode', () => {
-    it('should include dark mode class by default', () => {
+    it('should default to light mode (no dark class)', () => {
       const html = renderAdminLayoutCatalyst(baseData);
 
-      expect(html).toContain('class="dark"');
+      expect(html).toContain('<html lang="en">');
+      expect(html).not.toContain('<html lang="en" class="dark">');
     });
 
     it('should include dark mode initialization', () => {

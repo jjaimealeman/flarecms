@@ -186,7 +186,7 @@ export function renderPluginsListPage(data: PluginsListPageData): string {
                     ${isDisabled ? 'disabled' : ''}
                   >
                   <label for="status-${status.value}" class="ml-3 cursor-pointer select-none flex items-center ${isDisabled ? 'cursor-not-allowed' : ''}">
-                    <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${colorClass} ${ringClass}">
+                    <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${colorClass} ${ringClass}">
                       <span class="mr-1.5 h-1.5 w-1.5 rounded-full ${dotClass}"></span>
                       ${status.label}
                     </span>
@@ -233,12 +233,12 @@ export function renderPluginsListPage(data: PluginsListPageData): string {
                 type="text"
                 placeholder="Search plugins..."
                 oninput="filterAndSortPlugins()"
-                class="block w-full h-9 rounded-md border-0 py-1.5 pl-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-600 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:focus:ring-zinc-500 sm:text-sm sm:leading-6"
+                class="block w-full h-9 rounded-lg border-0 py-1.5 pl-10 text-zinc-900 ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-600 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:focus:ring-zinc-500 sm:text-sm sm:leading-6"
               >
             </div>
 
             <div class="flex items-center gap-3 w-full sm:w-auto">
-              <select id="sort-filter" onchange="filterAndSortPlugins()" class="block w-full sm:w-auto h-9 rounded-md border-0 py-1.5 pl-3 pr-8 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-inset focus:ring-zinc-600 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:focus:ring-zinc-500 sm:text-sm sm:leading-6">
+              <select id="sort-filter" onchange="filterAndSortPlugins()" class="block w-full sm:w-auto h-9 rounded-lg border-0 py-1.5 pl-3 pr-8 text-zinc-900 ring-1 ring-inset ring-zinc-300 focus:ring-2 focus:ring-inset focus:ring-zinc-600 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:focus:ring-zinc-500 sm:text-sm sm:leading-6">
                 <option value="name-asc">Name (A-Z)</option>
                 <option value="name-desc">Name (Z-A)</option>
                 <option value="newest">Newest Installed</option>
@@ -249,7 +249,7 @@ export function renderPluginsListPage(data: PluginsListPageData): string {
 
               <button
                 onclick="location.reload()"
-                class="inline-flex items-center gap-x-1.5 rounded-md bg-white dark:bg-zinc-900 px-3 py-1.5 h-9 text-sm font-semibold text-zinc-900 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                class="inline-flex items-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-900 px-3 py-1.5 h-9 text-sm font-semibold text-zinc-900 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
               >
                 <svg class="h-4 w-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -540,7 +540,7 @@ function renderPluginCard(plugin: Plugin): string {
 
   let actionButton = ''
   if (plugin.status === 'uninstalled') {
-    actionButton = `<button onclick="event.stopPropagation(); installPlugin('${plugin.name}')" class="w-full sm:w-auto bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 px-3 py-1.5 rounded-md text-xs font-medium transition-colors shadow-sm">Install</button>`
+    actionButton = `<button onclick="event.stopPropagation(); installPlugin('${plugin.name}')" class="w-full sm:w-auto bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm">Install</button>`
   } else {
     const isActive = plugin.status === 'active';
     const action = isActive ? 'deactivate' : 'activate';
@@ -604,13 +604,13 @@ function renderPluginCard(plugin: Plugin): string {
       <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4 line-clamp-2 flex-grow">${plugin.description}</p>
 
       <div class="flex flex-wrap items-center gap-2 mb-5">
-        <span class="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <span class="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">
           ${plugin.category}
         </span>
-        ${plugin.isCore ? '<span class="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">Core</span>' : ''}
-        
+        ${plugin.isCore ? '<span class="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">Core</span>' : ''}
+
         ${plugin.dependencies && plugin.dependencies.map(dep => `
-          <span class="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <span class="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">
             ${dep}
           </span>
         `).join('') || ''}

@@ -84,7 +84,7 @@ export function renderLogsListPage(data: LogsListPageData) {
       <!-- Filters -->
       <div class="relative rounded-xl overflow-hidden mb-6">
         <!-- Gradient Background -->
-        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 dark:from-cyan-400/20 dark:via-blue-400/20 dark:to-purple-400/20"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-blue-500/10 to-slate-500/10 dark:from-blue-400/20 dark:via-blue-400/20 dark:to-slate-400/20"></div>
 
         <div class="relative bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
           <div class="px-6 py-5">
@@ -93,7 +93,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                 <div class="relative group">
                   <label for="search" class="block text-sm font-medium text-zinc-950 dark:text-white mb-2">Search</label>
                   <div class="relative">
-                    <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 dark:from-cyan-300 dark:to-blue-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
+                    <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-300 dark:to-blue-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
                       <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                       </svg>
@@ -104,7 +104,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                       id="search"
                       value="${filters.search}"
                       placeholder="Search messages..."
-                      class="w-full rounded-full bg-transparent pl-11 pr-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                      class="w-full rounded-lg bg-transparent pl-11 pr-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                   <select
                     name="level"
                     id="level"
-                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                   >
                     <option value="">All Levels</option>
                     <option value="debug" ${filters.level === 'debug' ? 'selected' : ''}>Debug</option>
@@ -130,7 +130,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                   <select
                     name="category"
                     id="category"
-                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                   >
                     <option value="">All Categories</option>
                     <option value="auth" ${filters.category === 'auth' ? 'selected' : ''}>Authentication</option>
@@ -152,7 +152,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                     id="source"
                     value="${filters.source}"
                     placeholder="e.g., http-middleware"
-                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                   />
                 </div>
 
@@ -163,7 +163,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                     name="start_date"
                     id="start_date"
                     value="${filters.startDate}"
-                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                   />
                 </div>
 
@@ -174,7 +174,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                     name="end_date"
                     id="end_date"
                     value="${filters.endDate}"
-                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                    class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                   />
                 </div>
 
@@ -230,14 +230,14 @@ export function renderLogsListPage(data: LogsListPageData) {
             </thead>
             <tbody>
               ${logs.map(log => `
-                <tr class="border-t border-zinc-950/5 dark:border-white/5 hover:bg-gradient-to-r hover:from-cyan-50/50 hover:via-blue-50/30 hover:to-purple-50/50 dark:hover:from-cyan-900/20 dark:hover:via-blue-900/10 dark:hover:to-purple-900/20 hover:shadow-sm hover:shadow-cyan-500/5 dark:hover:shadow-cyan-400/5 transition-all duration-300">
+                <tr class="border-t border-zinc-950/5 dark:border-white/5 hover:bg-gradient-to-r hover:from-blue-50/50 hover:via-blue-50/30 hover:to-slate-50/50 dark:hover:from-blue-900/20 dark:hover:via-blue-900/10 dark:hover:to-slate-900/20 hover:shadow-sm hover:shadow-blue-500/5 dark:hover:shadow-blue-400/5 transition-all duration-300">
                   <td class="px-4 py-4 whitespace-nowrap sm:pl-6">
-                    <span class="inline-flex items-center rounded-md px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.levelClass}">
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.levelClass}">
                       ${log.level}
                     </span>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center rounded-md px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.categoryClass}">
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.categoryClass}">
                       ${log.category}
                     </span>
                   </td>
@@ -255,7 +255,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                     ${log.formattedDate}
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium sm:pr-6">
-                    <a href="/admin/logs/${log.id}" class="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors">
+                    <a href="/admin/logs/${log.id}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
                       View Details
                     </a>
                   </td>
@@ -335,7 +335,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                       href="${pagination.baseUrl}?${new URLSearchParams({...filters, page: page.toString()}).toString()}"
                       class="relative inline-flex items-center px-4 py-2 text-sm font-medium ring-1 ring-inset transition-colors ${
                         page === pagination.currentPage
-                          ? 'z-10 bg-cyan-50 dark:bg-cyan-900/20 ring-cyan-600 dark:ring-cyan-400 text-cyan-600 dark:text-cyan-400'
+                          ? 'z-10 bg-blue-50 dark:bg-blue-900/20 ring-blue-600 dark:ring-blue-400 text-blue-600 dark:text-blue-400'
                           : 'bg-white dark:bg-zinc-800 ring-zinc-950/10 dark:ring-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700'
                       }"
                     >

@@ -35,7 +35,7 @@ export interface ProfilePageData {
 }
 
 export function renderAvatarImage(avatarUrl: string | undefined, firstName: string, lastName: string): string {
-  return `<div id="avatar-image-container" class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-br from-cyan-400 to-purple-400 flex items-center justify-center ring-4 ring-zinc-950/5 dark:ring-white/10">
+  return `<div id="avatar-image-container" class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-br from-blue-400 to-slate-400 flex items-center justify-center ring-4 ring-zinc-950/5 dark:ring-white/10">
     ${avatarUrl
       ? `<img src="${avatarUrl}" alt="Profile picture" class="w-full h-full object-cover">`
       : `<span class="text-2xl font-bold text-white">${firstName.charAt(0)}${lastName.charAt(0)}</span>`
@@ -163,7 +163,7 @@ export function renderProfilePage(data: ProfilePageData): string {
                   <div>
                     <label for="timezone" class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Timezone</label>
                     <div class="grid grid-cols-1">
-                      <select id="timezone" name="timezone" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6">
+                      <select id="timezone" name="timezone" class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6">
                         ${data.timezones.map(tz => `
                           <option value="${tz.value}" ${tz.value === data.profile.timezone ? 'selected' : ''}>${tz.label}</option>
                         `).join('')}
@@ -176,7 +176,7 @@ export function renderProfilePage(data: ProfilePageData): string {
                   <div>
                     <label for="language" class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Language</label>
                     <div class="grid grid-cols-1">
-                      <select id="language" name="language" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6">
+                      <select id="language" name="language" class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6">
                         ${data.languages.map(lang => `
                           <option value="${lang.value}" ${lang.value === data.profile.language ? 'selected' : ''}>${lang.label}</option>
                         `).join('')}
@@ -276,7 +276,7 @@ export function renderProfilePage(data: ProfilePageData): string {
               <div>
                 <dt class="text-zinc-500 dark:text-zinc-400">Role</dt>
                 <dd class="mt-1">
-                  <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20 capitalize">
+                  <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20 capitalize">
                     ${data.profile.role}
                   </span>
                 </dd>
@@ -295,8 +295,8 @@ export function renderProfilePage(data: ProfilePageData): string {
                 <dt class="text-zinc-500 dark:text-zinc-400">Two-Factor Auth</dt>
                 <dd class="mt-1">
                   ${data.profile.two_factor_enabled
-                    ? '<span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">Enabled</span>'
-                    : '<span class="inline-flex items-center rounded-md bg-zinc-50 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 ring-1 ring-inset ring-zinc-500/10 dark:ring-zinc-400/20">Disabled</span>'
+                    ? '<span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">Enabled</span>'
+                    : '<span class="inline-flex items-center rounded-full bg-zinc-50 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 ring-1 ring-inset ring-zinc-500/10 dark:ring-zinc-400/20">Disabled</span>'
                   }
                 </dd>
               </div>
