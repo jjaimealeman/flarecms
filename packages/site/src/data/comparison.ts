@@ -368,7 +368,7 @@ export const competitors: CMSComparison[] = [
 
 export const flareScores = {
   edgePerformance: 5,
-  astroIntegration: 4,
+  astroIntegration: 5,
   selfHosting: 5,
   developerExperience: 4,
   contentModeling: 4,
