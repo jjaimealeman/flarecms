@@ -278,7 +278,7 @@ describe('renderAdminLayoutCatalyst', () => {
       const html = renderAdminLayoutCatalyst(baseData);
 
       expect(html).toContain('Dashboard');
-      expect(html).toContain('Schema');
+      expect(html).toContain('Collections');
       expect(html).toContain('Forms');
       expect(html).toContain('Content');
       expect(html).toContain('Media');

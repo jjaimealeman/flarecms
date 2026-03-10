@@ -636,7 +636,7 @@ function renderCatalystSidebar(
   // SYSTEM section
   const systemItems = [
     { label: 'Users', path: '/admin/users', iconHtml: icon(Users, 'h-5 w-5') },
-    { label: 'Schema', path: '/admin/collections', iconHtml: icon(Layers, 'h-5 w-5') },
+    { label: 'Collections', path: '/admin/collections', iconHtml: icon(Layers, 'h-5 w-5') },
     { label: 'Forms', path: '/admin/forms', iconHtml: icon(ClipboardList, 'h-5 w-5') },
     { label: 'Plugins', path: '/admin/plugins', iconHtml: icon(Plug, 'h-5 w-5') },
     { label: 'Cache', path: '/admin/cache', iconHtml: icon(HardDrive, 'h-5 w-5') },

@@ -857,10 +857,16 @@ adminContentRoutes.post('/', async (c) => {
     const scheduledPublishAt = formData.get('scheduled_publish_at') as string
     const scheduledUnpublishAt = formData.get('scheduled_unpublish_at') as string
     
+    // Store author display name in content data
+    const authorDisplay = formData.get('author_display') as string
+    if (authorDisplay) {
+      data.author_display = authorDisplay
+    }
+
     // Create content
     const contentId = crypto.randomUUID()
     const now = Date.now()
-    
+
     const insertStmt = db.prepare(`
       INSERT INTO content (
         id, collection_id, slug, title, data, status,
@@ -1092,6 +1098,12 @@ adminContentRoutes.put('/:id', async (c) => {
       publishedAt = Date.now()
     } else if (isUnpublishing) {
       publishedAt = null
+    }
+
+    // Store author display name in content data
+    const authorDisplay = formData.get('author_display') as string
+    if (authorDisplay) {
+      data.author_display = authorDisplay
     }
 
     // Update content

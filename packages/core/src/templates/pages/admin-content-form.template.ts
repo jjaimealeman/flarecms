@@ -73,7 +73,7 @@ export function renderContentFormPage(data: ContentFormData): string {
 
   // Group fields by category
   const coreFields = data.fields.filter(f => ['title', 'slug', 'content'].includes(f.field_name))
-  const contentFields = data.fields.filter(f => !['title', 'slug', 'content'].includes(f.field_name) && !f.field_name.startsWith('meta_'))
+  const contentFields = data.fields.filter(f => !['title', 'slug', 'content', 'status'].includes(f.field_name) && !f.field_name.startsWith('meta_'))
   const metaFields = data.fields.filter(f => f.field_name.startsWith('meta_'))
   
   // Helper function to get field value - title and slug are stored as columns, others in data JSON
@@ -269,10 +269,23 @@ export function renderContentFormPage(data: ContentFormData): string {
           </div>
 
           <!-- Content Info -->
-          ${isEdit ? `
-            <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800/50 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
-              <h3 class="text-base/7 font-semibold text-zinc-950 dark:text-white mb-4">Content Info</h3>
+          <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800/50 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+            <h3 class="text-base/7 font-semibold text-zinc-950 dark:text-white mb-4">Content Info</h3>
 
+            <!-- Author (editable) -->
+            <div class="mb-3">
+              <label for="author_display" class="block text-sm text-zinc-500 dark:text-zinc-400">Author</label>
+              <input
+                type="text"
+                id="author_display"
+                name="author_display"
+                form="content-form"
+                value="${isEdit ? (data.data?.author_display || (data.data as any)?.author_name || (data.data as any)?.author_email || data.data?.author || data.user?.email || '') : (data.user?.email || '')}"
+                class="mt-1 w-full rounded-md bg-white dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
+              >
+            </div>
+
+            ${isEdit ? `
               <dl class="space-y-3 text-sm">
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Created</dt>
@@ -281,10 +294,6 @@ export function renderContentFormPage(data: ContentFormData): string {
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Last Modified</dt>
                   <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.updated_at ? new Date(data.data.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
-                </div>
-                <div>
-                  <dt class="text-zinc-500 dark:text-zinc-400">Author</dt>
-                  <dd class="mt-1 text-zinc-950 dark:text-white">${(data.data as any)?.author_name || (data.data as any)?.author_email || data.data?.author || 'System'}</dd>
                 </div>
                 ${data.data?.published_at ? `
                   <div>
@@ -306,8 +315,8 @@ export function renderContentFormPage(data: ContentFormData): string {
                   View Version History
                 </button>
               </div>
-            </div>
-          ` : ''}
+            ` : ''}
+          </div>
 
           <!-- Quick Actions -->
           <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800/50 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
