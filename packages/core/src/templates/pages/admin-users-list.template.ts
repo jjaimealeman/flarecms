@@ -203,7 +203,7 @@ export function renderUsersListPage(data: UsersListPageData): string {
       <!-- Stats -->
       <div class="mb-6">
         <h3 class="text-base font-semibold text-zinc-950 dark:text-white">User Statistics</h3>
-        <dl class="mt-5 grid grid-cols-1 divide-zinc-950/5 dark:divide-white/10 overflow-hidden rounded-lg bg-zinc-800/75 dark:bg-zinc-800/75 ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 md:grid-cols-4 md:divide-x md:divide-y-0">
+        <dl class="mt-5 grid grid-cols-1 divide-zinc-950/5 dark:divide-white/10 overflow-hidden rounded-lg bg-white dark:bg-zinc-800/75 ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 md:grid-cols-4 md:divide-x md:divide-y-0">
           <div class="px-4 py-5 sm:p-6">
             <dt class="text-base font-normal text-zinc-700 dark:text-zinc-100">Total Users</dt>
             <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">

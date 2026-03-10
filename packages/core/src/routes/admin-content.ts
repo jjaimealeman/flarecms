@@ -281,7 +281,8 @@ adminContentRoutes.get('/', async (c) => {
     // Get query parameters
     const page = parseInt(url.searchParams.get('page') || '1')
     const limit = parseInt(url.searchParams.get('limit') || '20')
-    const modelName = url.searchParams.get('model') || 'all'
+    let modelName = url.searchParams.get('model') || 'all'
+    const collectionParam = url.searchParams.get('collection') || ''
     const status = url.searchParams.get('status') || 'all'
     const search = url.searchParams.get('search') || ''
     const offset = (page - 1) * limit
@@ -311,7 +312,13 @@ adminContentRoutes.get('/', async (c) => {
         name: row.name,
         displayName: row.display_name
       }))
-    
+
+    // Resolve ?collection=<id> to model name if ?model= wasn't provided
+    if (modelName === 'all' && collectionParam) {
+      const match = allCollections.find(c => c.id === collectionParam)
+      if (match) modelName = match.name
+    }
+
     // Build where conditions
     const conditions: string[] = []
     const params: any[] = []
@@ -427,7 +434,8 @@ adminContentRoutes.get('/', async (c) => {
         ? `${row.first_name} ${row.last_name}`
         : row.author_email || 'Unknown'
       
-      const formattedDate = new Date(row.updated_at).toLocaleDateString()
+      const updatedDate = new Date(row.updated_at)
+      const formattedDate = updatedDate.getFullYear() >= 2000 ? updatedDate.toLocaleDateString() : '—'
       
       // Determine available workflow actions based on status
       const availableActions: string[] = []

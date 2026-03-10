@@ -574,7 +574,7 @@ function renderCatalystSidebar(
   // --- Helper: render a collection nav item with Alpine.js flyout ---
   const collectionNavItem = (item: { label: string; slug: string; collectionId: string; icon: string }) => {
     const contentPath = `/admin/content?collection=${item.collectionId}`
-    const isActive = currentPath === contentPath || currentPath?.includes(`collection=${item.collectionId}`)
+    const isActive = currentPath === contentPath || currentPath?.includes(`collection=${item.collectionId}`) || currentPath?.includes(`model=${item.slug}`)
     return `
     <div x-data="{ open: false }" class="relative">
       <span class="relative">
@@ -666,8 +666,9 @@ function renderCatalystSidebar(
       ${closeButton}
 
       <!-- Sidebar Header -->
-      <div class="flex flex-col border-b border-zinc-200 p-4 dark:border-zinc-800">
-        ${renderLogo({ size: 'md', showText: true, variant: 'dark', href: '/admin' })}
+      <div class="relative flex flex-col items-center justify-center border-b border-zinc-200 px-4 py-6 dark:border-zinc-800">
+        ${renderLogo({ size: 'lg', showText: true, showVersion: false, variant: 'dark', href: '/admin' })}
+        ${version ? `<span class="absolute bottom-2 right-4 text-[10px] text-zinc-400 dark:text-zinc-500">${version}</span>` : ''}
       </div>
 
       <!-- Sidebar Body -->
@@ -697,16 +698,6 @@ function renderCatalystSidebar(
         ${settingsItem}
       </div>
 
-      <!-- Version Badge -->
-      ${version ? `
-      <div class="px-4 pb-2">
-        <button
-          onclick="navigator.clipboard.writeText('${version}').then(()=>{const b=this;b.textContent='Copied!';setTimeout(()=>b.textContent='${version}',1500)})"
-          class="w-full text-center text-[11px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 cursor-pointer transition-colors"
-          title="Click to copy version"
-        >${version}</button>
-      </div>
-      ` : ''}
 
       <!-- Sidebar Footer (User) -->
       ${user ? `

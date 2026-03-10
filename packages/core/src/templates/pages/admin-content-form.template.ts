@@ -142,7 +142,7 @@ export function renderContentFormPage(data: ContentFormData): string {
       </div>
 
       <!-- Form Container -->
-      <div class="rounded-lg bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 overflow-hidden">
+      <div class="rounded-lg bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
         <!-- Form Header -->
         <div class="border-b border-zinc-950/5 dark:border-white/10 px-6 py-6">
           <div class="flex items-center gap-x-3">
@@ -289,16 +289,16 @@ export function renderContentFormPage(data: ContentFormData): string {
               <dl class="space-y-3 text-sm">
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Created</dt>
-                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.created_at ? new Date(data.data.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
+                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.created_at && new Date(data.data.created_at).getFullYear() >= 2000 ? new Date(data.data.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
                 </div>
                 <div>
                   <dt class="text-zinc-500 dark:text-zinc-400">Last Modified</dt>
-                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.updated_at ? new Date(data.data.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
+                  <dd class="mt-1 text-zinc-950 dark:text-white">${data.data?.updated_at && new Date(data.data.updated_at).getFullYear() >= 2000 ? new Date(data.data.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
                 </div>
                 ${data.data?.published_at ? `
                   <div>
                     <dt class="text-zinc-500 dark:text-zinc-400">Published</dt>
-                    <dd class="mt-1 text-zinc-950 dark:text-white">${new Date(data.data.published_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</dd>
+                    <dd class="mt-1 text-zinc-950 dark:text-white">${new Date(data.data.published_at).getFullYear() >= 2000 ? new Date(data.data.published_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Not set'}</dd>
                   </div>
                 ` : ''}
               </dl>
@@ -362,48 +362,49 @@ export function renderContentFormPage(data: ContentFormData): string {
           </div>
         </div>
 
-        <!-- Sticky Save/Publish Bar -->
-        <div x-data="{ dirty: false }" x-init="
-          const form = document.getElementById('content-form');
-          if (form) {
-            form.addEventListener('input', () => { dirty = true });
-            form.addEventListener('change', () => { dirty = true });
-          }
-        " class="sticky bottom-0 z-40 -mx-6 lg:-mx-10 mt-6">
-          <div class="border-t border-zinc-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm px-6 py-3 lg:px-10 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <a href="${backUrl}" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3.5 py-2.5 text-sm font-semibold text-zinc-950 dark:text-white ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
-                Cancel
-              </a>
-              <span x-show="dirty" x-cloak class="text-xs text-amber-600 dark:text-amber-400 font-medium">Unsaved changes</span>
-            </div>
-
-            <div class="flex items-center gap-x-3">
-              <button
-                type="submit"
-                form="content-form"
-                name="action"
-                value="save"
-                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
-              >
-                ${isEdit ? 'Update' : 'Save Draft'}
-              </button>
-
-              ${data.user?.role !== 'viewer' ? `
-                <button
-                  type="submit"
-                  form="content-form"
-                  name="action"
-                  value="save_and_publish"
-                  class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
-                >
-                  ${isEdit ? 'Update' : 'Save'} & Publish
-                </button>
-              ` : ''}
-            </div>
-          </div>
-        </div>
       </div>
+      </div>
+    </div>
+
+    <!-- Sticky Save/Publish Bar -->
+    <div x-data="{ dirty: false }" x-init="
+      const form = document.getElementById('content-form');
+      if (form) {
+        form.addEventListener('input', () => { dirty = true });
+        form.addEventListener('change', () => { dirty = true });
+      }
+    " class="sticky bottom-0 z-40">
+      <div class="border-t border-zinc-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm px-6 py-3 lg:px-10 flex items-center justify-between rounded-b-lg">
+        <div class="flex items-center gap-3">
+          <a href="${backUrl}" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3.5 py-2.5 text-sm font-semibold text-zinc-950 dark:text-white ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
+            Cancel
+          </a>
+          <span x-show="dirty" x-cloak class="text-xs text-amber-600 dark:text-amber-400 font-medium">Unsaved changes</span>
+        </div>
+
+        <div class="flex items-center gap-x-3">
+          <button
+            type="submit"
+            form="content-form"
+            name="action"
+            value="save"
+            class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+          >
+            ${isEdit ? 'Update' : 'Save Draft'}
+          </button>
+
+          ${data.user?.role !== 'viewer' ? `
+            <button
+              type="submit"
+              form="content-form"
+              name="action"
+              value="save_and_publish"
+              class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
+            >
+              ${isEdit ? 'Update' : 'Save'} & Publish
+            </button>
+          ` : ''}
+        </div>
       </div>
     </div>
 

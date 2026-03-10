@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [e3287ed - Fix Sticky Bar, Collection Filter, Epoch Dates, Branding](e3287ed_fix-sticky-bar-collection-filter-epoch-dates-branding.md) [UI] [BUG_FIX] [ROUTING]
 - [ccf9068 - Fix 4 UX Quick Wins](ccf9068_fix-ux-quick-wins-status-author-schema-branding.md) [UI] [BUG_FIX] [ENHANCEMENT]
 - [04c43ac - Dedup Collections in Picker](04c43ac_dedup-collections-in-picker-use-admin-layout-for.md) [BUG_FIX] [UI]
 - [7bbbbd4 - Wire Dynamic Sidebar, Fix Stat Cards](7bbbbd4_wire-dynamic-sidebar-fix-stat-cards-kill-neon-str.md) [UI] [FRONTEND]
