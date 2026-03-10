@@ -299,10 +299,18 @@ adminContentRoutes.get('/', async (c) => {
     const filteredCollections = allowedCollectionIds !== null
       ? allCollections.filter(c => allowedCollectionIds!.includes(c.id))
       : allCollections
-    const models = filteredCollections.map((row) => ({
-      name: row.name,
-      displayName: row.display_name
-    }))
+    // Deduplicate by collection name (guards against duplicate DB entries)
+    const seen = new Set<string>()
+    const models = filteredCollections
+      .filter((row) => {
+        if (seen.has(row.name)) return false
+        seen.add(row.name)
+        return true
+      })
+      .map((row) => ({
+        name: row.name,
+        displayName: row.display_name
+      }))
     
     // Build where conditions
     const conditions: string[] = []
@@ -494,40 +502,46 @@ adminContentRoutes.get('/new', async (c) => {
         description: row.description
       }))
       
-      // Render collection selection page
-      const selectionHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Select Collection - Flare CMS Admin</title>
-          <script src="https://cdn.tailwindcss.com"></script>
-        </head>
-        <body class="bg-gray-900 text-white">
-          <div class="min-h-screen flex items-center justify-center">
-            <div class="max-w-2xl w-full mx-auto p-8">
-              <h1 class="text-3xl font-bold mb-8 text-center">Create New Content</h1>
-              <p class="text-gray-300 text-center mb-8">Select a collection to create content in:</p>
-              
-              <div class="grid gap-4">
-                ${collections.map(collection => `
-                  <a href="/admin/content/new?collection=${collection.id}" 
-                     class="block p-6 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                    <h3 class="text-xl font-semibold mb-2">${collection.display_name}</h3>
-                    <p class="text-gray-400">${collection.description || 'No description'}</p>
-                  </a>
-                `).join('')}
-              </div>
-              
-              <div class="mt-8 text-center">
-                <a href="/admin/content" class="text-blue-400 hover:text-blue-300">← Back to Content List</a>
-              </div>
-            </div>
+      // Deduplicate collections by name
+      const seenNames = new Set<string>()
+      const uniqueCollections = collections.filter(c => {
+        if (seenNames.has(c.name)) return false
+        seenNames.add(c.name)
+        return true
+      })
+
+      // Render collection selection using admin layout
+      const pageContent = `
+        <div class="max-w-2xl mx-auto">
+          <div class="mb-8">
+            <h1 class="text-2xl/8 font-semibold text-zinc-950 dark:text-white">Create New Content</h1>
+            <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Select a collection to create content in:</p>
           </div>
-        </body>
-        </html>
+
+          <div class="grid gap-4">
+            ${uniqueCollections.map(collection => `
+              <a href="/admin/content/new?collection=${collection.id}"
+                 class="block p-6 bg-white dark:bg-zinc-900 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ring-1 ring-zinc-950/5 dark:ring-white/10 shadow-sm">
+                <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-1">${collection.display_name}</h3>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">${collection.description || 'No description'}</p>
+              </a>
+            `).join('')}
+          </div>
+
+          <div class="mt-8 text-center">
+            <a href="/admin/content" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500">← Back to Content List</a>
+          </div>
+        </div>
       `
-      
-      return c.html(selectionHTML)
+
+      const { renderAdminLayout } = await import('../templates/layouts/admin-layout-v2.template')
+      return c.html(renderAdminLayout({
+        title: 'Select Collection',
+        pageTitle: 'Select Collection',
+        currentPath: '/admin/content',
+        user: user ? { name: user.email, email: user.email, role: user.role } : undefined,
+        content: pageContent,
+      }))
     }
     
     const db = c.env.DB
