@@ -24,16 +24,20 @@ const currentPath = Astro.url.pathname
   <body class="min-h-screen bg-slate-900 text-slate-50 font-sans antialiased">
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800">
-      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <!-- Desktop nav -->
+    <nav id="site-nav" class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between transition-all duration-300" id="site-nav-inner">
+        <!-- Logo + Desktop nav -->
         <div class="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
+          <a href="/" class="flex items-center gap-2 shrink-0 transition-all duration-300" id="site-logo-link">
+            <img src="/logo.svg" alt="Flare CMS" class="h-7 w-auto transition-all duration-300" id="site-logo" />
+          </a>
+          <div class="w-px h-5 bg-slate-700"></div>
+          {navLinks.filter(link => link.href !== '/').map((link) => (
             <a
               href={link.href}
               class:list={[
                 'text-sm font-medium transition-colors',
-                currentPath.startsWith(link.href)
+                (link.href === '/' ? currentPath === '/' : currentPath.startsWith(link.href))
                   ? 'text-flare-500'
                   : 'text-slate-400 hover:text-slate-50'
               ]}
@@ -74,15 +78,12 @@ const currentPath = Astro.url.pathname
           >
             Admin Demo
           </a>
-          <a
-            href="/docs"
-            class="text-sm font-medium text-slate-950 bg-flare-500 hover:bg-flare-400 px-4 py-2 rounded-lg transition-colors"
-          >
-            Get Started
-          </a>
         </div>
 
-        <!-- Mobile hamburger button -->
+        <!-- Mobile logo + hamburger -->
+        <a href="/" class="md:hidden flex items-center">
+          <img src="/logo.svg" alt="Flare CMS" class="h-6 w-auto" />
+        </a>
         <button
           id="site-mobile-menu-btn"
           class="md:hidden text-slate-400 hover:text-slate-50 transition-colors"
@@ -136,7 +137,7 @@ const currentPath = Astro.url.pathname
               href={link.href}
               class:list={[
                 'block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                currentPath.startsWith(link.href)
+                (link.href === '/' ? currentPath === '/' : currentPath.startsWith(link.href))
                   ? 'text-flare-500 bg-flare-500/10'
                   : 'text-slate-300 hover:text-slate-50 hover:bg-slate-800'
               ]}
@@ -164,12 +165,6 @@ const currentPath = Astro.url.pathname
             class="block text-center text-sm font-medium text-slate-300 border border-slate-700 hover:border-slate-500 px-4 py-2.5 rounded-lg transition-all"
           >
             Admin Demo
-          </a>
-          <a
-            href="/docs"
-            class="block text-center text-sm font-medium text-slate-950 bg-flare-500 hover:bg-flare-400 px-4 py-2.5 rounded-lg transition-colors"
-          >
-            Get Started
           </a>
         </div>
       </div>
@@ -245,6 +240,30 @@ const currentPath = Astro.url.pathname
         </div>
       </div>
     </footer>
+
+    <!-- Scroll-shrink header -->
+    <script is:inline>
+      (function () {
+        var inner = document.getElementById('site-nav-inner')
+        var logo = document.getElementById('site-logo')
+        var scrolled = false
+
+        function onScroll() {
+          var isScrolled = window.scrollY > 20
+          if (isScrolled === scrolled) return
+          scrolled = isScrolled
+          if (inner) {
+            inner.style.paddingTop = isScrolled ? '0.5rem' : ''
+            inner.style.paddingBottom = isScrolled ? '0.5rem' : ''
+          }
+          if (logo) {
+            logo.style.height = isScrolled ? '1.25rem' : ''
+          }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true })
+      })()
+    </script>
 
     <!-- Mobile menu script -->
     <script is:inline>
