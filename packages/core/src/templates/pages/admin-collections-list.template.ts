@@ -36,11 +36,11 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
         sortType: 'string',
         render: (_value: any, collection: any) => `
             <div class="flex items-center gap-2 ml-2">
-                <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
+                <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                   ${collection.name}
                 </span>
                 ${collection.managed ? `
-                  <span class="inline-flex items-center rounded-md bg-slate-50 dark:bg-slate-500/10 px-2 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300 ring-1 ring-inset ring-slate-700/10 dark:ring-slate-400/20" title="Config-managed collection (read-only in UI)">
+                  <span class="inline-flex items-center rounded-full bg-slate-50 dark:bg-slate-500/10 px-2 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300 ring-1 ring-inset ring-slate-700/10 dark:ring-slate-400/20" title="Config-managed collection (read-only in UI)">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                     </svg>
@@ -72,7 +72,7 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
           const count = collection.field_count || 0
           return `
             <div class="flex items-center">
-              <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
+              <span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
                 ${count} ${count === 1 ? 'field' : 'fields'}
               </span>
             </div>
@@ -171,7 +171,7 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
                       placeholder="Search collections..."
                       value="${data.search || ''}"
                       oninput="toggleClearButton()"
-                      class="rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm w-72 text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
+                      class="rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm w-72 text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                     >
                     <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-300 dark:to-blue-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
                       <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -191,7 +191,7 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
                   </div>
                   <button
                     type="submit"
-                    class="inline-flex items-center gap-x-1.5 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-500 dark:from-blue-400 dark:to-blue-400 text-white text-sm font-medium rounded-full hover:from-blue-600 hover:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-500 shadow-md hover:shadow-lg transition-all duration-200"
+                    class="inline-flex items-center gap-x-1.5 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-500 dark:from-blue-400 dark:to-blue-400 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-500 shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -233,7 +233,7 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
               <div class="flex items-center gap-x-3">
                 <span class="text-sm/6 font-medium text-zinc-700 dark:text-zinc-300 px-3 py-1.5 rounded-full bg-white/60 dark:bg-zinc-800/60 backdrop-blur-sm">${data.collections.length} ${data.collections.length === 1 ? 'collection' : 'collections'}</span>
                 <button
-                  class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
+                  class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
                   onclick="location.reload()"
                 >
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

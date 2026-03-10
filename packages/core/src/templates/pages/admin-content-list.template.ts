@@ -299,7 +299,7 @@ export function renderContentListPage(data: ContentListPageData): string {
                         value="${data.search || ''}"
                         oninput="toggleContentClearButton()"
                         placeholder="Search content..."
-                        class="w-full rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
+                        class="w-full rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                       >
                       <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-300 dark:to-blue-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
                         <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -319,7 +319,7 @@ export function renderContentListPage(data: ContentListPageData): string {
                     </div>
                     <button
                       type="submit"
-                      class="inline-flex items-center gap-x-1.5 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-500 dark:from-blue-400 dark:to-blue-400 text-white text-sm font-medium rounded-full hover:from-blue-600 hover:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-500 shadow-md hover:shadow-lg transition-all duration-200"
+                      class="inline-flex items-center gap-x-1.5 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-500 dark:from-blue-400 dark:to-blue-400 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-500 shadow-md hover:shadow-lg transition-all duration-200"
                     >
                       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -379,7 +379,7 @@ export function renderContentListPage(data: ContentListPageData): string {
                     ${action.onclick ? `onclick="${action.onclick}"` : ''}
                     ${action.hxGet ? `hx-get="${action.hxGet}"` : ''}
                     ${action.hxTarget ? `hx-target="${action.hxTarget}"` : ''}
-                    class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
+                    class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
                   >
                     ${action.label === 'Refresh' ? `
                       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,7 +394,7 @@ export function renderContentListPage(data: ContentListPageData): string {
                     <button
                       id="bulk-actions-btn"
                       onclick="toggleBulkActionsDropdown()"
-                      class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-full ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed"
+                      class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-lg ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed"
                       disabled
                     >
                       Bulk Actions
@@ -473,10 +473,10 @@ export function renderContentListPage(data: ContentListPageData): string {
 
         if (checkedCount > 0) {
           btn.disabled = false;
-          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200';
+          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200';
         } else {
           btn.disabled = true;
-          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-full ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed';
+          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-lg ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed';
           // Hide menu when no items selected
           if (menu) {
             menu.classList.remove('scale-100', 'opacity-100');

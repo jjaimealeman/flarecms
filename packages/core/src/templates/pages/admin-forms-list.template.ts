@@ -39,7 +39,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         sortType: 'string',
         render: (_value: any, form: any) => `
             <div class="flex items-center gap-2 ml-2">
-                <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
+                <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                   ${form.name}
                 </span>
             </div>
@@ -66,7 +66,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
           }
           const colorClass = categoryColors[form.category] || categoryColors['general']
           return `
-            <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${colorClass}">
+            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${colorClass}">
               ${form.category || 'general'}
             </span>
           `
@@ -81,7 +81,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
           const count = form.submission_count || 0
           return `
             <div class="flex items-center">
-              <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
+              <span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
                 ${count}
               </span>
             </div>
@@ -96,13 +96,13 @@ export function renderFormsListPage(data: FormsListPageData): string {
         render: (_value: any, form: any) => {
           if (form.is_active) {
             return `
-              <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-700/10 dark:ring-green-400/20">
+              <span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-700/10 dark:ring-green-400/20">
                 Active
               </span>
             `
           } else {
             return `
-              <span class="inline-flex items-center rounded-md bg-gray-50 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-700/10 dark:ring-gray-400/20">
+              <span class="inline-flex items-center rounded-full bg-gray-50 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-700/10 dark:ring-gray-400/20">
                 Inactive
               </span>
             `
@@ -240,7 +240,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
               name="search"
               placeholder="Search forms..."
               value="${data.search || ''}"
-              class="block w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="block w-full rounded-lg border-2 border-blue-200/50 dark:border-blue-700/50 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
             />
           </div>
           <div class="w-full sm:w-48">

@@ -83,10 +83,10 @@ export function renderDesignPage(data: DesignPageData): string {
                       <input
                         type="text"
                         placeholder="Search with gradient icon..."
-                        class="w-full rounded-full bg-transparent pl-11 pr-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
+                        class="w-full rounded-lg bg-transparent pl-11 pr-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                       />
                     </div>
-                    <button class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200">
+                    <button class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200">
                       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                       </svg>
@@ -103,16 +103,16 @@ export function renderDesignPage(data: DesignPageData): string {
             <h3 class="text-base font-semibold text-zinc-950 dark:text-white mb-4">Colored Category Badges</h3>
             <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
               <div class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
+                <span class="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
                   Collection Name
                 </span>
-                <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
+                <span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
                   5 fields
                 </span>
-                <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
+                <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                   Interactive
                 </span>
-                <span class="inline-flex items-center rounded-md bg-slate-50 dark:bg-slate-500/10 px-2.5 py-1 text-sm font-medium text-slate-700 dark:text-slate-300 ring-1 ring-inset ring-slate-700/10 dark:ring-slate-400/20">
+                <span class="inline-flex items-center rounded-full bg-slate-50 dark:bg-slate-500/10 px-2.5 py-1 text-sm font-medium text-slate-700 dark:text-slate-300 ring-1 ring-inset ring-slate-700/10 dark:ring-slate-400/20">
                   Category
                 </span>
               </div>
@@ -135,12 +135,12 @@ export function renderDesignPage(data: DesignPageData): string {
                   <tr class="group border-t border-zinc-950/5 dark:border-white/5 hover:bg-gradient-to-r hover:from-blue-50/50 hover:via-blue-50/30 hover:to-slate-50/50 dark:hover:from-blue-900/20 dark:hover:via-blue-900/10 dark:hover:to-slate-900/20 hover:shadow-sm hover:shadow-blue-500/5 dark:hover:shadow-blue-400/5 hover:border-l-2 hover:border-l-blue-500 dark:hover:border-l-blue-400 transition-all duration-300">
                     <td class="px-6 py-4 text-sm font-medium text-zinc-950 dark:text-white">Example Item</td>
                     <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                      <span class="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
+                      <span class="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
                         Collection
                       </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                      <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
+                      <span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
                         Active
                       </span>
                     </td>
@@ -148,12 +148,12 @@ export function renderDesignPage(data: DesignPageData): string {
                   <tr class="group border-t border-zinc-950/5 dark:border-white/5 hover:bg-gradient-to-r hover:from-blue-50/50 hover:via-blue-50/30 hover:to-slate-50/50 dark:hover:from-blue-900/20 dark:hover:via-blue-900/10 dark:hover:to-slate-900/20 hover:shadow-sm hover:shadow-blue-500/5 dark:hover:shadow-blue-400/5 hover:border-l-2 hover:border-l-blue-500 dark:hover:border-l-blue-400 transition-all duration-300">
                     <td class="px-6 py-4 text-sm font-medium text-zinc-950 dark:text-white">Another Item</td>
                     <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                      <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
+                      <span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
                         Content
                       </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                      <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/20">
+                      <span class="inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/20">
                         Draft
                       </span>
                     </td>
@@ -461,7 +461,7 @@ export function renderDesignPage(data: DesignPageData): string {
                 Select Dropdown
               </label>
               <div class="mt-2 grid grid-cols-1">
-                <select id="select-demo" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6">
+                <select id="select-demo" class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6">
                   <option value="">Choose an option</option>
                   <option value="1">Option 1</option>
                   <option value="2" selected>Option 2</option>
@@ -662,7 +662,7 @@ export function renderDesignPage(data: DesignPageData): string {
                   Sample Item 1
                 </td>
                 <td class="whitespace-nowrap px-6 py-4">
-                  <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
+                  <span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
                     Published
                   </span>
                 </td>
@@ -685,7 +685,7 @@ export function renderDesignPage(data: DesignPageData): string {
                   Sample Item 2
                 </td>
                 <td class="whitespace-nowrap px-6 py-4">
-                  <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/20">
+                  <span class="inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/20">
                     Draft
                   </span>
                 </td>
@@ -773,19 +773,19 @@ export function renderDesignPage(data: DesignPageData): string {
 
         <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-8">
           <div class="flex flex-wrap gap-2">
-            <span class="inline-flex items-center rounded-md bg-zinc-50 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 ring-1 ring-inset ring-zinc-500/10 dark:ring-zinc-400/20">
+            <span class="inline-flex items-center rounded-full bg-zinc-50 dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 ring-1 ring-inset ring-zinc-500/10 dark:ring-zinc-400/20">
               Default
             </span>
-            <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
+            <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
               Info
             </span>
-            <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
+            <span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 dark:ring-green-500/20">
               Success
             </span>
-            <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/20">
+            <span class="inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/20">
               Warning
             </span>
-            <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/20 dark:ring-red-500/20">
+            <span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-500/10 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/20 dark:ring-red-500/20">
               Error
             </span>
           </div>

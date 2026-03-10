@@ -293,7 +293,7 @@ function renderNamespaceRow(namespace: string, stat: CacheStats): string {
   return `
     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
       <td class="px-6 py-4 whitespace-nowrap">
-        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ring-1 ring-inset ring-zinc-200 dark:ring-zinc-700">
+        <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ring-1 ring-inset ring-zinc-200 dark:ring-zinc-700">
           ${namespace}
         </span>
       </td>

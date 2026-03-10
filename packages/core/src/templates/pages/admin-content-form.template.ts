@@ -207,7 +207,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                     id="status"
                     name="status"
                     form="content-form"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6"
+                    class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6"
                   >
                     <option value="draft" ${data.status === 'draft' ? 'selected' : ''}>Draft</option>
                     <option value="review" ${data.status === 'review' ? 'selected' : ''}>Under Review</option>
@@ -254,7 +254,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                     id="status"
                     name="status"
                     form="content-form"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6"
+                    class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-zinc-500/30 dark:outline-zinc-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-zinc-500 dark:focus-visible:outline-zinc-400 sm:text-sm/6"
                   >
                     <option value="draft" ${data.status === 'draft' ? 'selected' : ''}>Draft</option>
                     <option value="published" ${data.status === 'published' ? 'selected' : ''}>Published</option>
@@ -281,7 +281,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                 name="author_display"
                 form="content-form"
                 value="${isEdit ? (data.data?.author_display || (data.data as any)?.author_name || (data.data as any)?.author_email || data.data?.author || data.user?.email || '') : (data.user?.email || '')}"
-                class="mt-1 w-full rounded-md bg-white dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
+                class="mt-1 w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-1.5 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               >
             </div>
 
@@ -591,7 +591,7 @@ export function renderContentFormPage(data: ContentFormData): string {
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
             removeBtn.onclick = () => clearMediaField(fieldId);
-            removeBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all';
+            removeBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all';
             removeBtn.textContent = 'Remove';
             actionsDiv.appendChild(removeBtn);
           }

@@ -78,8 +78,8 @@ export function renderUsersListPage(data: UsersListPageData): string {
         const truncatedUsername = row.username.length > 100 ? row.username.substring(0, 100) + '...' : row.username
         const username = escapeHtml(truncatedUsername)
         const statusBadge = row.isActive ?
-          '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20 ml-2">Active</span>' :
-          '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-700/10 dark:ring-red-500/20 ml-2">Inactive</span>'
+          '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20 ml-2">Active</span>' :
+          '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-700/10 dark:ring-red-500/20 ml-2">Inactive</span>'
         return `
           <div>
             <div class="text-sm font-medium text-zinc-950 dark:text-white">${fullName}${statusBadge}</div>
@@ -118,7 +118,7 @@ export function renderUsersListPage(data: UsersListPageData): string {
           viewer: 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 ring-1 ring-inset ring-zinc-500/10 dark:ring-zinc-400/20'
         }
         const colorClass = roleColors[value as keyof typeof roleColors] || 'bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 ring-1 ring-inset ring-zinc-500/10 dark:ring-zinc-400/20'
-        return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${colorClass}">${value.charAt(0).toUpperCase() + value.slice(1)}</span>`
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colorClass}">${value.charAt(0).toUpperCase() + value.slice(1)}</span>`
       }
     },
     {
@@ -286,7 +286,7 @@ export function renderUsersListPage(data: UsersListPageData): string {
                     id="user-search-input"
                     value="${data.searchFilter || ''}"
                     placeholder="Search users..."
-                    class="rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 text-sm w-full text-zinc-950 dark:text-white border-2 border-slate-200/50 dark:border-slate-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-slate-500 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-slate-500/20 dark:focus:shadow-slate-400/20 transition-all duration-300"
+                    class="rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 text-sm w-full text-zinc-950 dark:text-white border-2 border-slate-200/50 dark:border-slate-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-slate-500 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-slate-500/20 dark:focus:shadow-slate-400/20 transition-all duration-300"
                     hx-get="/admin/users"
                     hx-trigger="keyup changed delay:300ms"
                     hx-target="body"
@@ -320,7 +320,7 @@ export function renderUsersListPage(data: UsersListPageData): string {
                     hx-trigger="change"
                     hx-target="body"
                     hx-include="[name='search'], [name='status']"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-slate-500/30 dark:outline-slate-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-slate-500 dark:focus-visible:outline-slate-400 sm:text-sm/6"
+                    class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-slate-500/30 dark:outline-slate-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-slate-500 dark:focus-visible:outline-slate-400 sm:text-sm/6"
                   >
                     <option value="" ${!data.roleFilter ? 'selected' : ''}>All Roles</option>
                     <option value="admin" ${data.roleFilter === 'admin' ? 'selected' : ''}>Admin</option>
@@ -343,7 +343,7 @@ export function renderUsersListPage(data: UsersListPageData): string {
                     hx-trigger="change"
                     hx-target="body"
                     hx-include="[name='search'], [name='role']"
-                    class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-slate-500/30 dark:outline-slate-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-slate-500 dark:focus-visible:outline-slate-400 sm:text-sm/6"
+                    class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-slate-500/30 dark:outline-slate-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-slate-500 dark:focus-visible:outline-slate-400 sm:text-sm/6"
                   >
                     <option value="active" ${!data.statusFilter || data.statusFilter === 'active' ? 'selected' : ''}>Active</option>
                     <option value="inactive" ${data.statusFilter === 'inactive' ? 'selected' : ''}>Inactive</option>
@@ -359,7 +359,7 @@ export function renderUsersListPage(data: UsersListPageData): string {
                 <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white">&nbsp;</label>
                 <div class="mt-2">
                   <button
-                    class="inline-flex items-center gap-x-1.5 justify-center px-4 py-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-slate-200/50 dark:ring-slate-700/50 hover:bg-gradient-to-r hover:from-slate-50 hover:to-red-50 dark:hover:from-slate-900/30 dark:hover:to-red-900/30 hover:ring-slate-300 dark:hover:ring-slate-600 transition-all duration-200 w-full"
+                    class="inline-flex items-center gap-x-1.5 justify-center px-4 py-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-slate-200/50 dark:ring-slate-700/50 hover:bg-gradient-to-r hover:from-slate-50 hover:to-red-50 dark:hover:from-slate-900/30 dark:hover:to-red-900/30 hover:ring-slate-300 dark:hover:ring-slate-600 transition-all duration-200 w-full"
                     onclick="clearFilters()"
                   >
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

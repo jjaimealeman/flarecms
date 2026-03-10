@@ -104,7 +104,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                       id="search"
                       value="${filters.search}"
                       placeholder="Search messages..."
-                      class="w-full rounded-full bg-transparent pl-11 pr-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
+                      class="w-full rounded-lg bg-transparent pl-11 pr-4 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -232,12 +232,12 @@ export function renderLogsListPage(data: LogsListPageData) {
               ${logs.map(log => `
                 <tr class="border-t border-zinc-950/5 dark:border-white/5 hover:bg-gradient-to-r hover:from-blue-50/50 hover:via-blue-50/30 hover:to-slate-50/50 dark:hover:from-blue-900/20 dark:hover:via-blue-900/10 dark:hover:to-slate-900/20 hover:shadow-sm hover:shadow-blue-500/5 dark:hover:shadow-blue-400/5 transition-all duration-300">
                   <td class="px-4 py-4 whitespace-nowrap sm:pl-6">
-                    <span class="inline-flex items-center rounded-md px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.levelClass}">
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.levelClass}">
                       ${log.level}
                     </span>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center rounded-md px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.categoryClass}">
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset ${log.categoryClass}">
                       ${log.category}
                     </span>
                   </td>

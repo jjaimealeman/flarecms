@@ -67,7 +67,7 @@ function getFieldTypeBadge(fieldType: string): string {
   }
   const label = typeLabels[fieldType] || fieldType
   const color = typeColors[fieldType] || 'bg-zinc-500/10 dark:bg-zinc-400/10 text-zinc-700 dark:text-zinc-300 ring-zinc-500/20 dark:ring-zinc-400/20'
-  return `<span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${color} ring-1 ring-inset">${label}</span>`
+  return `<span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${color} ring-1 ring-inset">${label}</span>`
 }
 
 export function renderCollectionFormPage(data: CollectionFormData): string {
@@ -336,12 +336,12 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                             <span class="text-sm/6 font-medium text-zinc-950 dark:text-white">${field.field_label}</span>
                             ${getFieldTypeBadge(field.field_type)}
                             ${field.is_required ? `
-                              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-rose-500/10 dark:bg-rose-400/10 text-rose-700 dark:text-rose-300 ring-1 ring-inset ring-rose-500/20 dark:ring-rose-400/20">
+                              <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-rose-500/10 dark:bg-rose-400/10 text-rose-700 dark:text-rose-300 ring-1 ring-inset ring-rose-500/20 dark:ring-rose-400/20">
                                 Required
                               </span>
                             ` : ''}
                             ${field.is_searchable ? `
-                              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-emerald-500/10 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-500/20 dark:ring-emerald-400/20">
+                              <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-emerald-500/10 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-500/20 dark:ring-emerald-400/20">
                                 Searchable
                               </span>
                             ` : ''}
@@ -406,12 +406,12 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                             <span class="text-sm/6 font-medium text-zinc-950 dark:text-white">${field.field_label}</span>
                             ${getFieldTypeBadge(field.field_type)}
                             ${field.is_required ? `
-                              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-red-500/10 dark:bg-red-400/10 text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-500/20 dark:ring-red-400/20">
+                              <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-red-500/10 dark:bg-red-400/10 text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-500/20 dark:ring-red-400/20">
                                 Required
                               </span>
                             ` : ''}
                             ${field.is_searchable ? `
-                              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-emerald-500/10 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-500/20 dark:ring-emerald-400/20">
+                              <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-emerald-500/10 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-500/20 dark:ring-emerald-400/20">
                                 Searchable
                               </span>
                             ` : ''}
@@ -544,7 +544,7 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                 id="field-type"
                 name="field_type"
                 required
-                class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-blue-500/30 dark:outline-blue-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500 dark:focus-visible:outline-blue-400 sm:text-sm/6"
+                class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-blue-500/30 dark:outline-blue-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500 dark:focus-visible:outline-blue-400 sm:text-sm/6"
               >
                 <option value="">Select field type...</option>
                 <option value="text">Text</option>

@@ -179,7 +179,7 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
                       <p class="text-sm text-zinc-500 dark:text-zinc-400">${info.description}</p>
                     </div>
                     <div class="ml-auto">
-                      <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
+                      <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                         ${endpoints.length} endpoint${endpoints.length !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -194,21 +194,21 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
                          data-path="${endpoint.path}"
                          data-description="${endpoint.description}">
                       <div class="flex items-start gap-x-4">
-                        <span class="method-badge method-${endpoint.method.toLowerCase()} shrink-0 px-3 py-1 rounded-md text-xs font-mono font-bold uppercase">
+                        <span class="method-badge method-${endpoint.method.toLowerCase()} shrink-0 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase">
                           ${endpoint.method}
                         </span>
                         <div class="flex-1 min-w-0">
                           <div class="flex items-center gap-x-2 mb-2">
                             <code class="text-zinc-950 dark:text-white text-sm font-mono font-medium break-all">${endpoint.path}</code>
                             ${endpoint.authentication ? `
-                              <span class="shrink-0 inline-flex items-center gap-x-1 rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 ring-1 ring-inset ring-amber-700/10 dark:ring-amber-400/20">
+                              <span class="shrink-0 inline-flex items-center gap-x-1 rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 ring-1 ring-inset ring-amber-700/10 dark:ring-amber-400/20">
                                 <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
                                 Auth
                               </span>
                             ` : `
-                              <span class="shrink-0 inline-flex items-center gap-x-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
+                              <span class="shrink-0 inline-flex items-center gap-x-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
                                 <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>

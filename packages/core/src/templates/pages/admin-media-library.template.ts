@@ -179,7 +179,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                       <label class="text-sm/6 font-medium text-zinc-950 dark:text-white">View:</label>
                       <div class="grid grid-cols-1">
                         <select
-                          class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-blue-500/30 dark:outline-blue-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500 dark:focus-visible:outline-blue-400 sm:text-sm/6 min-w-32"
+                          class="col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-blue-500/30 dark:outline-blue-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500 dark:focus-visible:outline-blue-400 sm:text-sm/6 min-w-32"
                           onchange="window.location.href = updateUrlParam('view', this.value)"
                         >
                           <option value="grid" ${
@@ -202,7 +202,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                         name="search"
                         placeholder="Search files..."
                         oninput="toggleMediaClearButton()"
-                        class="rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm w-72 text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
+                        class="rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm w-72 text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                         hx-get="/admin/media/search"
                         hx-trigger="keyup changed delay:300ms"
                         hx-target="#media-grid"
@@ -239,7 +239,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                     } files</span>
                     <button
                       id="select-all-btn"
-                      class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-red-50 dark:hover:from-blue-900/30 dark:hover:to-red-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
+                      class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-red-50 dark:hover:from-blue-900/30 dark:hover:to-red-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
                       onclick="toggleSelectAll()"
                     >
                       Select All
@@ -248,7 +248,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                       <button
                         id="bulk-actions-btn"
                         onclick="toggleBulkActionsDropdown()"
-                        class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-full ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed"
+                        class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-lg ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed"
                         disabled
                       >
                         Bulk Actions
@@ -588,13 +588,13 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
 
         if (selectedFiles.size > 0) {
           btn.disabled = false;
-          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200';
+          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-lg ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200';
           btn.innerHTML = \`Actions (\${selectedFiles.size}) <svg viewBox="0 0 20 20" fill="currentColor" class="size-4"><path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" /></svg>\`;
           // Re-attach onclick handler after innerHTML update
           btn.onclick = toggleBulkActionsDropdown;
         } else {
           btn.disabled = true;
-          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-full ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed';
+          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-100/60 dark:bg-zinc-800/60 backdrop-blur-sm text-zinc-400 dark:text-zinc-600 text-sm font-medium rounded-lg ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50 cursor-not-allowed';
           btn.innerHTML = \`Bulk Actions <svg viewBox="0 0 20 20" fill="currentColor" class="size-4"><path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" /></svg>\`;
           btn.onclick = null; // Remove handler when disabled
           // Hide menu when no files selected

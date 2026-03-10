@@ -54,26 +54,26 @@ function relativeTime(timestamp: number): string {
 function statusBadge(status: string): string {
   switch (status) {
     case 'applied':
-      return `<span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-emerald-400/10 text-emerald-400 ring-emerald-400/30">Applied</span>`
+      return `<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-emerald-400/10 text-emerald-400 ring-emerald-400/30">Applied</span>`
     case 'rolled_back':
-      return `<span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-amber-400/10 text-amber-400 ring-amber-400/30">Rolled Back</span>`
+      return `<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-amber-400/10 text-amber-400 ring-amber-400/30">Rolled Back</span>`
     case 'failed':
-      return `<span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-red-400/10 text-red-400 ring-red-400/30">Failed</span>`
+      return `<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-red-400/10 text-red-400 ring-red-400/30">Failed</span>`
     default:
-      return `<span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-zinc-400/10 text-zinc-400 ring-zinc-400/30">${escapeHtml(status)}</span>`
+      return `<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset bg-zinc-400/10 text-zinc-400 ring-zinc-400/30">${escapeHtml(status)}</span>`
   }
 }
 
 function changeTypeBadge(type: string): string {
   switch (type) {
     case 'add_field':
-      return `<span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-emerald-400/10 text-emerald-400 ring-1 ring-inset ring-emerald-400/30">Added</span>`
+      return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-400/10 text-emerald-400 ring-1 ring-inset ring-emerald-400/30">Added</span>`
     case 'modify_field':
-      return `<span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-blue-400/10 text-blue-400 ring-1 ring-inset ring-blue-400/30">Modified</span>`
+      return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-400/10 text-blue-400 ring-1 ring-inset ring-blue-400/30">Modified</span>`
     case 'remove_field':
-      return `<span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-red-400/10 text-red-400 ring-1 ring-inset ring-red-400/30">Removed</span>`
+      return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-red-400/10 text-red-400 ring-1 ring-inset ring-red-400/30">Removed</span>`
     default:
-      return `<span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-zinc-400/10 text-zinc-400 ring-1 ring-inset ring-zinc-400/30">${escapeHtml(type)}</span>`
+      return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-400/10 text-zinc-400 ring-1 ring-inset ring-zinc-400/30">${escapeHtml(type)}</span>`
   }
 }
 
@@ -229,7 +229,7 @@ export function renderSchemaMigrationsHistoryPage(data: SchemaMigrationsPageData
                         hx-post="/admin/schema-migrations/rollback/${escapeHtml(migration.id)}"
                         hx-confirm="Are you sure you want to rollback this migration? This will restore the previous schema."
                         hx-target="body"
-                        class="inline-flex items-center gap-x-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 ring-1 ring-inset ring-red-400/30 transition-colors"
+                        class="inline-flex items-center gap-x-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-400/10 hover:bg-red-400/20 ring-1 ring-inset ring-red-400/30 transition-colors"
                       >
                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/>

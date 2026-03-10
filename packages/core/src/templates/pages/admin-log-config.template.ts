@@ -36,7 +36,7 @@ export function renderLogConfigPage(data: LogConfigPageData) {
             hx-post="/admin/logs/cleanup"
             hx-confirm="Are you sure you want to run log cleanup? This will permanently delete old logs based on retention policies."
             hx-target="#cleanup-result"
-            class="inline-flex items-center justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            class="inline-flex items-center justify-center rounded-lg border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             Run Cleanup
           </button>
@@ -187,7 +187,7 @@ export function renderLogConfigPage(data: LogConfigPageData) {
                 <div id="config-result-${config.category}" class="mb-4"></div>
                 <button
                   type="submit"
-                  class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Update Configuration
                 </button>
