@@ -55,12 +55,12 @@ function getFieldTypeBadge(fieldType: string): string {
   const typeColors: Record<string, string> = {
     'text': 'bg-blue-500/10 dark:bg-blue-400/10 text-blue-700 dark:text-blue-300 ring-blue-500/20 dark:ring-blue-400/20',
     'slug': 'bg-sky-500/10 dark:bg-sky-400/10 text-sky-700 dark:text-sky-300 ring-sky-500/20 dark:ring-sky-400/20',
-    'richtext': 'bg-purple-500/10 dark:bg-purple-400/10 text-purple-700 dark:text-purple-300 ring-purple-500/20 dark:ring-purple-400/20',
-    'quill': 'bg-purple-500/10 dark:bg-purple-400/10 text-purple-700 dark:text-purple-300 ring-purple-500/20 dark:ring-purple-400/20',
-    'mdxeditor': 'bg-purple-500/10 dark:bg-purple-400/10 text-purple-700 dark:text-purple-300 ring-purple-500/20 dark:ring-purple-400/20',
+    'richtext': 'bg-slate-500/10 dark:bg-slate-400/10 text-slate-700 dark:text-slate-300 ring-slate-500/20 dark:ring-slate-400/20',
+    'quill': 'bg-slate-500/10 dark:bg-slate-400/10 text-slate-700 dark:text-slate-300 ring-slate-500/20 dark:ring-slate-400/20',
+    'mdxeditor': 'bg-slate-500/10 dark:bg-slate-400/10 text-slate-700 dark:text-slate-300 ring-slate-500/20 dark:ring-slate-400/20',
     'number': 'bg-green-500/10 dark:bg-green-400/10 text-green-700 dark:text-green-300 ring-green-500/20 dark:ring-green-400/20',
     'boolean': 'bg-amber-500/10 dark:bg-amber-400/10 text-amber-700 dark:text-amber-300 ring-amber-500/20 dark:ring-amber-400/20',
-    'date': 'bg-cyan-500/10 dark:bg-cyan-400/10 text-cyan-700 dark:text-cyan-300 ring-cyan-500/20 dark:ring-cyan-400/20',
+    'date': 'bg-blue-500/10 dark:bg-blue-400/10 text-blue-700 dark:text-blue-300 ring-blue-500/20 dark:ring-blue-400/20',
     'select': 'bg-indigo-500/10 dark:bg-indigo-400/10 text-indigo-700 dark:text-indigo-300 ring-indigo-500/20 dark:ring-indigo-400/20',
     'media': 'bg-rose-500/10 dark:bg-rose-400/10 text-rose-700 dark:text-rose-300 ring-rose-500/20 dark:ring-rose-400/20',
     'reference': 'bg-teal-500/10 dark:bg-teal-400/10 text-teal-700 dark:text-teal-300 ring-teal-500/20 dark:ring-teal-400/20'
@@ -406,7 +406,7 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                             <span class="text-sm/6 font-medium text-zinc-950 dark:text-white">${field.field_label}</span>
                             ${getFieldTypeBadge(field.field_type)}
                             ${field.is_required ? `
-                              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-pink-500/10 dark:bg-pink-400/10 text-pink-700 dark:text-pink-300 ring-1 ring-inset ring-pink-500/20 dark:ring-pink-400/20">
+                              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-red-500/10 dark:bg-red-400/10 text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-500/20 dark:ring-red-400/20">
                                 Required
                               </span>
                             ` : ''}
@@ -435,7 +435,7 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                         <button
                           type="button"
                           onclick="deleteField('${field.id}')"
-                          class="inline-flex items-center gap-x-1 px-2.5 py-1.5 text-sm font-medium text-pink-700 dark:text-pink-300 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors"
+                          class="inline-flex items-center gap-x-1 px-2.5 py-1.5 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
@@ -461,16 +461,16 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
           ` : ''}
 
           ${!isEdit ? `
-            <div class="mt-6 rounded-lg bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-100 dark:border-cyan-900/30 p-4">
+            <div class="mt-6 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 p-4">
               <div class="flex items-start gap-x-3">
-                <svg class="h-5 w-5 text-cyan-600 dark:text-cyan-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                 </svg>
                 <div>
-                  <h3 class="text-sm/6 font-medium text-cyan-900 dark:text-cyan-300">
+                  <h3 class="text-sm/6 font-medium text-blue-900 dark:text-blue-300">
                     Create Collection First
                   </h3>
-                  <p class="text-sm/6 text-cyan-800 dark:text-cyan-400 mt-1">
+                  <p class="text-sm/6 text-blue-800 dark:text-blue-400 mt-1">
                     After creating the collection, you'll be able to add and configure custom fields.
                   </p>
                 </div>
@@ -493,7 +493,7 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                 hx-delete="/admin/collections/${data.id}"
                 hx-confirm="Are you sure you want to delete this collection? This action cannot be undone."
                 hx-target="body"
-                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-pink-600 dark:bg-pink-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-pink-700 dark:hover:bg-pink-600 transition-colors shadow-sm"
+                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-red-600 dark:bg-red-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 dark:hover:bg-red-600 transition-colors shadow-sm"
               >
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>

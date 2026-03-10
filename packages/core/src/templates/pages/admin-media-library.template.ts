@@ -169,7 +169,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
           <!-- Toolbar -->
           <div class="relative rounded-xl mb-6 z-10">
             <!-- Gradient Background -->
-            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-pink-500/10 to-purple-500/10 dark:from-cyan-400/20 dark:via-pink-400/20 dark:to-purple-400/20"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-red-500/10 to-slate-500/10 dark:from-blue-400/20 dark:via-red-400/20 dark:to-slate-400/20"></div>
 
             <div class="relative bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
               <div class="px-6 py-5">
@@ -179,7 +179,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                       <label class="text-sm/6 font-medium text-zinc-950 dark:text-white">View:</label>
                       <div class="grid grid-cols-1">
                         <select
-                          class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-cyan-500/30 dark:outline-cyan-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-500 dark:focus-visible:outline-cyan-400 sm:text-sm/6 min-w-32"
+                          class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-blue-500/30 dark:outline-blue-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-500 dark:focus-visible:outline-blue-400 sm:text-sm/6 min-w-32"
                           onchange="window.location.href = updateUrlParam('view', this.value)"
                         >
                           <option value="grid" ${
@@ -202,13 +202,13 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                         name="search"
                         placeholder="Search files..."
                         oninput="toggleMediaClearButton()"
-                        class="rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm w-72 text-zinc-950 dark:text-white border-2 border-cyan-200/50 dark:border-cyan-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-cyan-500/20 dark:focus:shadow-cyan-400/20 transition-all duration-300"
+                        class="rounded-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2.5 pl-11 pr-10 text-sm w-72 text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/20 dark:focus:shadow-blue-400/20 transition-all duration-300"
                         hx-get="/admin/media/search"
                         hx-trigger="keyup changed delay:300ms"
                         hx-target="#media-grid"
                         hx-include="[name='folder'], [name='type']"
                       >
-                      <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 dark:from-cyan-300 dark:to-blue-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
+                      <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 dark:from-blue-300 dark:to-blue-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
                         <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
@@ -239,7 +239,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                     } files</span>
                     <button
                       id="select-all-btn"
-                      class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-cyan-200/50 dark:ring-cyan-700/50 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-pink-50 dark:hover:from-cyan-900/30 dark:hover:to-pink-900/30 hover:ring-cyan-300 dark:hover:ring-cyan-600 transition-all duration-200"
+                      class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-red-50 dark:hover:from-blue-900/30 dark:hover:to-red-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200"
                       onclick="toggleSelectAll()"
                     >
                       Select All
@@ -511,7 +511,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
               required
               pattern="[a-z0-9-_]+"
               title="Only lowercase letters, numbers, hyphens, and underscores allowed"
-              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 transition-shadow"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-shadow"
             >
             <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               Use lowercase letters, numbers, hyphens, and underscores only
@@ -588,7 +588,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
 
         if (selectedFiles.size > 0) {
           btn.disabled = false;
-          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-cyan-200/50 dark:ring-cyan-700/50 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 dark:hover:from-cyan-900/30 dark:hover:to-blue-900/30 hover:ring-cyan-300 dark:hover:ring-cyan-600 transition-all duration-200';
+          btn.className = 'inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-blue-200/50 dark:ring-blue-700/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-50 dark:hover:from-blue-900/30 dark:hover:to-blue-900/30 hover:ring-blue-300 dark:hover:ring-blue-600 transition-all duration-200';
           btn.innerHTML = \`Actions (\${selectedFiles.size}) <svg viewBox="0 0 20 20" fill="currentColor" class="size-4"><path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" /></svg>\`;
           // Re-attach onclick handler after innerHTML update
           btn.onclick = toggleBulkActionsDropdown;

@@ -134,7 +134,7 @@ export function renderSchemaMigrationsHistoryPage(data: SchemaMigrationsPageData
             <select
               id="collection-filter"
               onchange="window.location.href = this.value ? '/admin/schema-migrations?collection=' + encodeURIComponent(this.value) : '/admin/schema-migrations'"
-              class="w-full max-w-xs rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-cyan-200/50 dark:border-cyan-700/50 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 transition-all duration-300"
+              class="w-full max-w-xs rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm px-4 py-2 text-sm text-zinc-950 dark:text-white border-2 border-blue-200/50 dark:border-blue-700/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
             >
               <option value="">All Collections</option>
               ${collections.map(col => `
@@ -305,7 +305,7 @@ export function renderSchemaMigrationsHistoryPage(data: SchemaMigrationsPageData
                       href="/admin/schema-migrations${buildQueryString({ ...filterParams, page: p })}"
                       class="relative inline-flex items-center px-4 py-2 text-sm font-medium ring-1 ring-inset transition-colors ${
                         p === page
-                          ? 'z-10 bg-cyan-50 dark:bg-cyan-900/20 ring-cyan-600 dark:ring-cyan-400 text-cyan-600 dark:text-cyan-400'
+                          ? 'z-10 bg-blue-50 dark:bg-blue-900/20 ring-blue-600 dark:ring-blue-400 text-blue-600 dark:text-blue-400'
                           : 'bg-white dark:bg-zinc-800 ring-zinc-950/10 dark:ring-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700'
                       }"
                     >

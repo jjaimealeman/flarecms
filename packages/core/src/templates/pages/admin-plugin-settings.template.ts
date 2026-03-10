@@ -80,7 +80,7 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
       <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6 mb-6">
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-slate-600 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
               ${plugin.icon || plugin.displayName.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -760,7 +760,7 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
           <button
             type="submit"
             id="sendTestBtn"
-            class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
+            class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-slate-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-slate-700 transition-all flex items-center justify-center gap-2"
           >
             <span id="sendBtnText">Send Test Code</span>
             <span id="sendBtnSpinner" class="hidden">

@@ -39,7 +39,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         sortType: 'string',
         render: (_value: any, form: any) => `
             <div class="flex items-center gap-2 ml-2">
-                <span class="inline-flex items-center rounded-md bg-cyan-50 dark:bg-cyan-500/10 px-2.5 py-1 text-sm font-medium text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 dark:ring-cyan-400/20">
+                <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                   ${form.name}
                 </span>
             </div>
@@ -59,7 +59,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         render: (_value: any, form: any) => {
           const categoryColors: Record<string, string> = {
             'contact': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 ring-blue-700/10 dark:ring-blue-400/20',
-            'survey': 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 ring-purple-700/10 dark:ring-purple-400/20',
+            'survey': 'bg-slate-50 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300 ring-slate-700/10 dark:ring-slate-400/20',
             'registration': 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 ring-green-700/10 dark:ring-green-400/20',
             'feedback': 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300 ring-orange-700/10 dark:ring-orange-400/20',
             'general': 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-300 ring-gray-700/10 dark:ring-gray-400/20'
@@ -81,7 +81,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
           const count = form.submission_count || 0
           return `
             <div class="flex items-center">
-              <span class="inline-flex items-center rounded-md bg-pink-50 dark:bg-pink-500/10 px-2.5 py-1 text-sm font-medium text-pink-700 dark:text-pink-300 ring-1 ring-inset ring-pink-700/10 dark:ring-pink-400/20">
+              <span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-500/10 px-2.5 py-1 text-sm font-medium text-red-700 dark:text-red-300 ring-1 ring-inset ring-red-700/10 dark:ring-red-400/20">
                 ${count}
               </span>
             </div>
@@ -165,7 +165,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
             </svg>
             Examples
           </a>
-          <a href="/admin/forms/docs" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors" title="Quick reference guide">
+          <a href="/admin/forms/docs" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-slate-600 text-white hover:bg-slate-700 transition-colors" title="Quick reference guide">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
@@ -217,7 +217,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-950/5 dark:border-white/10 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <svg class="h-8 w-8 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
             </div>

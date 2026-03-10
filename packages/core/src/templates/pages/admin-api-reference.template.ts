@@ -86,7 +86,7 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
         <div class="rounded-lg bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 px-6 py-5">
           <dt class="text-sm/6 font-medium text-zinc-500 dark:text-zinc-400">Public Endpoints</dt>
           <dd class="mt-2 flex items-baseline gap-x-2">
-            <span class="text-4xl font-semibold tracking-tight text-lime-600 dark:text-lime-400">${data.endpoints.filter(e => !e.authentication).length}</span>
+            <span class="text-4xl font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">${data.endpoints.filter(e => !e.authentication).length}</span>
           </dd>
         </div>
         <div class="rounded-lg bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 px-6 py-5">
@@ -98,7 +98,7 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
         <div class="rounded-lg bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 px-6 py-5">
           <dt class="text-sm/6 font-medium text-zinc-500 dark:text-zinc-400">Categories</dt>
           <dd class="mt-2 flex items-baseline gap-x-2">
-            <span class="text-4xl font-semibold tracking-tight text-cyan-600 dark:text-cyan-400">${Object.keys(endpointsByCategory).length}</span>
+            <span class="text-4xl font-semibold tracking-tight text-blue-600 dark:text-blue-400">${Object.keys(endpointsByCategory).length}</span>
           </dd>
         </div>
       </dl>
@@ -179,7 +179,7 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
                       <p class="text-sm text-zinc-500 dark:text-zinc-400">${info.description}</p>
                     </div>
                     <div class="ml-auto">
-                      <span class="inline-flex items-center rounded-md bg-cyan-50 dark:bg-cyan-500/10 px-2.5 py-1 text-sm font-medium text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 dark:ring-cyan-400/20">
+                      <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                         ${endpoints.length} endpoint${endpoints.length !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -208,7 +208,7 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
                                 Auth
                               </span>
                             ` : `
-                              <span class="shrink-0 inline-flex items-center gap-x-1 rounded-md bg-lime-50 dark:bg-lime-500/10 px-2 py-1 text-xs font-medium text-lime-700 dark:text-lime-300 ring-1 ring-inset ring-lime-700/10 dark:ring-lime-400/20">
+                              <span class="shrink-0 inline-flex items-center gap-x-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-700/10 dark:ring-emerald-400/20">
                                 <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
@@ -331,7 +331,7 @@ export function renderAPIReferencePage(data: APIReferencePageData): string {
           navigator.clipboard.writeText(path).then(() => {
             // Show temporary notification
             const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 rounded-lg bg-lime-500 px-4 py-3 shadow-lg ring-1 ring-lime-600/20 z-50';
+            notification.className = 'fixed top-4 right-4 rounded-lg bg-emerald-500 px-4 py-3 shadow-lg ring-1 ring-emerald-600/20 z-50';
             notification.innerHTML = '<div class="flex items-center gap-x-2"><svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-sm font-medium text-white">Path copied to clipboard!</p></div>';
             document.body.appendChild(notification);
             setTimeout(() => document.body.removeChild(notification), 2000);

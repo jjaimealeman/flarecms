@@ -376,9 +376,9 @@ export function adminLayoutV2(data: AdminLayoutData): string {
       'default': 'bg-gradient-to-br from-slate-900 via-gray-900 to-black',
       'cosmic-blue': 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900',
       'matrix-green': 'bg-gradient-to-br from-gray-900 via-emerald-900 to-green-900',
-      'cyber-pink': 'bg-gradient-to-br from-gray-900 via-pink-900 to-rose-900',
+      'cyber-pink': 'bg-gradient-to-br from-gray-900 via-red-900 to-rose-900',
       'neon-orange': 'bg-gradient-to-br from-gray-900 via-orange-900 to-amber-900',
-      'purple-space': 'bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800',
+      'purple-space': 'bg-gradient-to-br from-gray-900 via-slate-900 to-violet-800',
       'blue-waves': 'svg-pattern-blue-waves',
       'blue-crescent': 'svg-pattern-blue-crescent',
       'blue-stars': 'svg-pattern-blue-stars',
@@ -699,7 +699,7 @@ function renderTopBar(pageTitle: string, user?: any): string {
                       </button>
                       
                       <!-- Cyber Pink -->
-                      <button onclick="setBackground('cyber-pink')" class="bg-preview bg-gradient-to-br from-gray-900 via-pink-900 to-rose-900 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
+                      <button onclick="setBackground('cyber-pink')" class="bg-preview bg-gradient-to-br from-gray-900 via-red-900 to-rose-900 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
                         <div class="absolute inset-0 bg-black/20 rounded-lg"></div>
                         <div class="absolute bottom-1 left-2 text-xs text-white font-medium">Cyber</div>
                       </button>
@@ -711,7 +711,7 @@ function renderTopBar(pageTitle: string, user?: any): string {
                       </button>
                       
                       <!-- Purple Space -->
-                      <button onclick="setBackground('purple-space')" class="bg-preview bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
+                      <button onclick="setBackground('purple-space')" class="bg-preview bg-gradient-to-br from-gray-900 via-slate-900 to-violet-800 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
                         <div class="absolute inset-0 bg-black/20 rounded-lg"></div>
                         <div class="absolute bottom-1 left-2 text-xs text-white font-medium">Purple</div>
                       </button>

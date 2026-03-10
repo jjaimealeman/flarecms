@@ -257,9 +257,9 @@ export function renderCacheDashboard(data: CacheDashboardData): string {
 function renderStatCard(label: string, value: string, color: string, icon: string, colorOverride?: string): string {
   const finalColor = colorOverride || color
   const colorClasses = {
-    lime: 'bg-lime-50 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400 ring-lime-600/20 dark:ring-lime-500/20',
+    lime: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-emerald-600/20 dark:ring-emerald-500/20',
     blue: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-blue-600/20 dark:ring-blue-500/20',
-    purple: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 ring-purple-600/20 dark:ring-purple-500/20',
+    purple: 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 ring-slate-600/20 dark:ring-slate-500/20',
     sky: 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 ring-sky-600/20 dark:ring-sky-500/20',
     amber: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-amber-600/20 dark:ring-amber-500/20',
     red: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 ring-red-600/20 dark:ring-red-500/20'
@@ -286,7 +286,7 @@ function renderStatCard(label: string, value: string, color: string, icon: strin
 
 function renderNamespaceRow(namespace: string, stat: CacheStats): string {
   const hitRate = stat.hitRate.toFixed(1)
-  const hitRateColor = stat.hitRate > 70 ? 'text-lime-600 dark:text-lime-400' :
+  const hitRateColor = stat.hitRate > 70 ? 'text-emerald-600 dark:text-emerald-400' :
                        stat.hitRate > 40 ? 'text-amber-600 dark:text-amber-400' :
                        'text-red-600 dark:text-red-400'
 
@@ -351,7 +351,7 @@ function renderPerformanceMetric(label: string, hits: number, misses: number): s
             <span class="font-medium text-zinc-900 dark:text-zinc-100">${hitPercentage.toFixed(1)}%</span>
           </div>
           <div class="h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-            <div class="h-full bg-lime-500 dark:bg-lime-400" style="width: ${hitPercentage}%"></div>
+            <div class="h-full bg-emerald-500 dark:bg-emerald-400" style="width: ${hitPercentage}%"></div>
           </div>
         </div>
       </div>
@@ -387,7 +387,7 @@ function renderHealthStatus(hitRate: number): string {
 
   const config = statusConfig[status]
   const colorClasses = {
-    lime: 'bg-lime-50 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400 ring-lime-600/20 dark:ring-lime-500/20',
+    lime: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-emerald-600/20 dark:ring-emerald-500/20',
     amber: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-amber-600/20 dark:ring-amber-500/20',
     red: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 ring-red-600/20 dark:ring-red-500/20'
   }

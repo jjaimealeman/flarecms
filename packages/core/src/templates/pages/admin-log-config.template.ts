@@ -77,7 +77,7 @@ export function renderLogConfigPage(data: LogConfigPageData) {
               <p class="mt-2 text-xs text-gray-500">Error conditions</p>
             </div>
             <div class="text-center">
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-800">
                 fatal
               </span>
               <p class="mt-2 text-xs text-gray-500">Critical system errors</p>

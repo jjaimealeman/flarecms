@@ -54,7 +54,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
       <!-- Filters -->
       <div class="relative rounded-xl overflow-hidden mb-6">
         <!-- Gradient Background -->
-        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 dark:from-purple-400/20 dark:via-pink-400/20 dark:to-orange-400/20"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-500/10 via-red-500/10 to-orange-500/10 dark:from-slate-400/20 dark:via-red-400/20 dark:to-orange-400/20"></div>
 
         <div class="relative bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10">
           <div class="px-6 py-5">
@@ -70,13 +70,13 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
                       hx-trigger="change"
                       hx-target="#code-examples-list"
                       hx-include="[name='language'], [name='search']"
-                      class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-purple-500/30 dark:outline-purple-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-purple-500 dark:focus-visible:outline-purple-400 sm:text-sm/6 min-w-48"
+                      class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-slate-500/30 dark:outline-slate-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-slate-500 dark:focus-visible:outline-slate-400 sm:text-sm/6 min-w-48"
                     >
                       <option value="">All</option>
                       <option value="true">Published</option>
                       <option value="false">Draft</option>
                     </select>
-                    <svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-purple-600 dark:text-purple-400 sm:size-4">
+                    <svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-slate-600 dark:text-slate-400 sm:size-4">
                       <path d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
                     </svg>
                   </div>
@@ -91,7 +91,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
                       hx-trigger="change"
                       hx-target="#code-examples-list"
                       hx-include="[name='published'], [name='search']"
-                      class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-purple-500/30 dark:outline-purple-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-purple-500 dark:focus-visible:outline-purple-400 sm:text-sm/6 min-w-48"
+                      class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white/5 dark:bg-white/5 py-1.5 pl-3 pr-8 text-base text-zinc-950 dark:text-white outline outline-1 -outline-offset-1 outline-slate-500/30 dark:outline-slate-400/30 *:bg-white dark:*:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-slate-500 dark:focus-visible:outline-slate-400 sm:text-sm/6 min-w-48"
                     >
                       <option value="">All Languages</option>
                       <option value="javascript">JavaScript</option>
@@ -104,7 +104,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
                       <option value="ruby">Ruby</option>
                       <option value="sql">SQL</option>
                     </select>
-                    <svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-purple-600 dark:text-purple-400 sm:size-4">
+                    <svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-slate-600 dark:text-slate-400 sm:size-4">
                       <path d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
                     </svg>
                   </div>
@@ -112,7 +112,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
                 <div class="flex-1 max-w-md">
                   <label for="search" class="block text-sm font-medium text-zinc-950 dark:text-white mb-2">Search</label>
                   <div class="relative group">
-                    <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 dark:from-purple-300 dark:to-pink-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
+                    <div class="absolute left-3.5 top-2.5 flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-slate-400 to-red-500 dark:from-slate-300 dark:to-red-400 opacity-90 group-focus-within:opacity-100 transition-opacity">
                       <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                       </svg>
@@ -126,7 +126,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
                       hx-trigger="keyup changed delay:300ms"
                       hx-target="#code-examples-list"
                       hx-include="[name='published'], [name='language']"
-                      class="w-full rounded-full bg-transparent px-11 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-purple-200/50 dark:border-purple-700/50 focus:outline-none focus:border-purple-500 dark:focus:border-purple-400 focus:shadow-lg focus:shadow-purple-500/20 dark:focus:shadow-purple-400/20 transition-all duration-300"
+                      class="w-full rounded-full bg-transparent px-11 py-2 text-sm text-zinc-950 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 border-2 border-slate-200/50 dark:border-slate-700/50 focus:outline-none focus:border-slate-500 dark:focus:border-slate-400 focus:shadow-lg focus:shadow-slate-500/20 dark:focus:shadow-slate-400/20 transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -135,7 +135,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
                 <span class="text-sm/6 font-medium text-zinc-700 dark:text-zinc-300 px-3 py-1.5 rounded-full bg-white/60 dark:bg-zinc-800/60 backdrop-blur-sm">${totalCount} ${totalCount === 1 ? 'item' : 'items'}</span>
                 <button
                   onclick="location.reload()"
-                  class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-purple-200/50 dark:ring-purple-700/50 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/30 dark:hover:to-pink-900/30 hover:ring-purple-300 dark:hover:ring-purple-600 transition-all duration-200"
+                  class="inline-flex items-center gap-x-1.5 px-3 py-1.5 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm text-zinc-950 dark:text-white text-sm font-medium rounded-full ring-1 ring-inset ring-slate-200/50 dark:ring-slate-700/50 hover:bg-gradient-to-r hover:from-slate-50 hover:to-red-50 dark:hover:from-slate-900/30 dark:hover:to-red-900/30 hover:ring-slate-300 dark:hover:ring-slate-600 transition-all duration-200"
                 >
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -173,12 +173,12 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
               javascript: 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 ring-yellow-600/20 dark:ring-yellow-500/20',
               typescript: 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 ring-blue-600/20 dark:ring-blue-500/20',
               python: 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 ring-green-600/20 dark:ring-green-500/20',
-              go: 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 ring-cyan-600/20 dark:ring-cyan-500/20',
+              go: 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 ring-blue-600/20 dark:ring-blue-500/20',
               rust: 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 ring-orange-600/20 dark:ring-orange-500/20',
               java: 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 ring-red-600/20 dark:ring-red-500/20',
               php: 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 ring-indigo-600/20 dark:ring-indigo-500/20',
-              ruby: 'bg-pink-100 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 ring-pink-600/20 dark:ring-pink-500/20',
-              sql: 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 ring-purple-600/20 dark:ring-purple-500/20'
+              ruby: 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 ring-red-600/20 dark:ring-red-500/20',
+              sql: 'bg-slate-100 dark:bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-600/20 dark:ring-slate-500/20'
             }
             const langColor = languageColors[example.language.toLowerCase()] || 'bg-zinc-100 dark:bg-zinc-500/10 text-zinc-700 dark:text-zinc-400 ring-zinc-600/20 dark:ring-zinc-500/20'
 

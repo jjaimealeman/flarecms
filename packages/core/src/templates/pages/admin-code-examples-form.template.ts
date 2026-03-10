@@ -72,7 +72,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                        value="${codeExample?.title || ''}"
                        required
                        maxlength="200"
-                       class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
+                       class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm sm:leading-6"
                        placeholder="e.g., React useState Hook Example">
               </div>
               ${errors?.title ? `
@@ -92,7 +92,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                           id="description"
                           rows="3"
                           maxlength="500"
-                          class="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-gray-300 focus:border-purple-400 focus:outline-none transition-colors w-full"
+                          class="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-gray-300 focus:border-slate-400 focus:outline-none transition-colors w-full"
                           placeholder="Briefly describe what this code example demonstrates...">${codeExample?.description || ''}</textarea>
                 <p class="mt-1 text-sm text-gray-300">
                   <span id="description-count">0</span>/500 characters
@@ -117,7 +117,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                   <select name="language"
                           id="language"
                           required
-                          class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6">
+                          class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm sm:leading-6">
                     <option value="">Select language...</option>
                     <option value="javascript" ${codeExample?.language === 'javascript' ? 'selected' : ''}>JavaScript</option>
                     <option value="typescript" ${codeExample?.language === 'typescript' ? 'selected' : ''}>TypeScript</option>
@@ -148,7 +148,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                          id="category"
                          value="${codeExample?.category || ''}"
                          maxlength="50"
-                         class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
+                         class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm sm:leading-6"
                          placeholder="e.g., frontend, backend">
                 </div>
                 ${errors?.category ? `
@@ -169,7 +169,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                          id="tags"
                          value="${codeExample?.tags || ''}"
                          maxlength="200"
-                         class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
+                         class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm sm:leading-6"
                          placeholder="e.g., react, hooks, state">
                   <p class="mt-1 text-sm text-gray-300">Comma-separated tags</p>
                 </div>
@@ -198,7 +198,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                           id="code"
                           rows="20"
                           required
-                          class="backdrop-blur-sm bg-gray-800/90 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-gray-300 focus:border-purple-400 focus:outline-none transition-colors w-full font-mono text-sm"
+                          class="backdrop-blur-sm bg-gray-800/90 border border-white/20 rounded-xl px-3 py-2 text-white placeholder-gray-300 focus:border-slate-400 focus:outline-none transition-colors w-full font-mono text-sm"
                           placeholder="Paste your code here...">${codeExample?.code || ''}</textarea>
                 <p class="mt-1 text-sm text-gray-300">
                   <span id="code-count">0</span> characters
@@ -226,7 +226,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                          type="radio"
                          value="true"
                          ${!codeExample || codeExample.isPublished ? 'checked' : ''}
-                         class="h-4 w-4 text-purple-600 focus:ring-purple-600 border-gray-600 bg-gray-700">
+                         class="h-4 w-4 text-slate-600 focus:ring-slate-600 border-gray-600 bg-gray-700">
                   <label for="published" class="ml-2 block text-sm text-white">
                     Published <span class="text-gray-300">(visible to users)</span>
                   </label>
@@ -237,7 +237,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                          type="radio"
                          value="false"
                          ${codeExample && !codeExample.isPublished ? 'checked' : ''}
-                         class="h-4 w-4 text-purple-600 focus:ring-purple-600 border-gray-600 bg-gray-700">
+                         class="h-4 w-4 text-slate-600 focus:ring-slate-600 border-gray-600 bg-gray-700">
                   <label for="draft" class="ml-2 block text-sm text-white">
                     Draft <span class="text-gray-300">(not visible to users)</span>
                   </label>
@@ -255,7 +255,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
                        value="${codeExample?.sortOrder || 0}"
                        min="0"
                        step="1"
-                       class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6">
+                       class="block w-full rounded-md border-0 bg-gray-700 py-1.5 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm sm:leading-6">
                 <p class="mt-1 text-sm text-gray-300">Lower numbers appear first (0 = highest priority)</p>
               </div>
               ${errors?.sortOrder ? `
@@ -275,7 +275,7 @@ export function renderCodeExamplesForm(data: CodeExamplesFormData): string {
               Cancel
             </a>
             <button type="submit"
-                    class="inline-flex items-center justify-center rounded-xl backdrop-blur-sm bg-purple-500/80 px-4 py-2 text-sm font-semibold text-white border border-white/20 hover:bg-purple-500 transition-all">
+                    class="inline-flex items-center justify-center rounded-xl backdrop-blur-sm bg-slate-500/80 px-4 py-2 text-sm font-semibold text-white border border-white/20 hover:bg-slate-500 transition-all">
               <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>

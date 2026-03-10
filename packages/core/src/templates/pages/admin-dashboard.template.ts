@@ -55,7 +55,7 @@ export function renderDashboardPage(data: DashboardPageData): string {
         <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Welcome to your Flare CMS admin dashboard</p>
       </div>
       <div class="mt-4 sm:mt-0 flex items-center gap-x-3">
-        <a href="https://flarecms.dev" target="_blank" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-lime-600 dark:bg-lime-700 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-lime-700 dark:hover:bg-lime-600 transition-colors shadow-sm">
+        <a href="https://flarecms.dev" target="_blank" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-emerald-600 dark:bg-emerald-700 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors shadow-sm">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
           </svg>
@@ -256,7 +256,7 @@ export function renderStatsCards(stats: DashboardStats): string {
     },
   ];
 
-  const cardColors = ['text-cyan-400', 'text-lime-400', 'text-pink-400', 'text-purple-400'];
+  const cardColors = ['text-blue-400', 'text-emerald-400', 'text-red-400', 'text-slate-400'];
 
   return `
     <div>
@@ -269,7 +269,7 @@ export function renderStatsCards(stats: DashboardStats): string {
               <div class="flex items-baseline text-2xl font-semibold ${cardColors[index]}">
                 ${card.value}
               </div>
-              <div class="inline-flex items-baseline rounded-full ${card.isPositive ? 'bg-lime-400/10 text-lime-600 dark:text-lime-400' : 'bg-pink-400/10 text-pink-600 dark:text-pink-400'} px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0">
+              <div class="inline-flex items-baseline rounded-full ${card.isPositive ? 'bg-emerald-400/10 text-emerald-600 dark:text-emerald-400' : 'bg-red-400/10 text-red-600 dark:text-red-400'} px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0">
                 <svg viewBox="0 0 20 20" fill="currentColor" class="-ml-1 mr-0.5 size-5 shrink-0 self-center">
                   ${card.isPositive
                     ? '<path d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd" fill-rule="evenodd" />'
@@ -318,12 +318,12 @@ function renderAnalyticsChart(): string {
             <p class="mt-1 text-sm/6 text-zinc-500 dark:text-zinc-400">Requests per second (live)</p>
           </div>
           <div class="flex items-center gap-2">
-            <div class="h-2 w-2 rounded-full bg-lime-500 animate-pulse"></div>
+            <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <span class="text-xs text-zinc-500 dark:text-zinc-400">Live</span>
           </div>
         </div>
         <div class="mt-4 flex items-baseline gap-2">
-          <span id="current-rps" class="text-4xl font-bold text-cyan-500 dark:text-cyan-400">0</span>
+          <span id="current-rps" class="text-4xl font-bold text-blue-500 dark:text-blue-400">0</span>
           <span class="text-sm text-zinc-500 dark:text-zinc-400">req/s</span>
         </div>
       </div>
@@ -366,14 +366,14 @@ function renderAnalyticsChart(): string {
             datasets: [{
               label: 'Requests/sec',
               data: data,
-              borderColor: isDark ? 'rgb(34, 211, 238)' : 'rgb(6, 182, 212)',
-              backgroundColor: isDark ? 'rgba(34, 211, 238, 0.1)' : 'rgba(6, 182, 212, 0.1)',
+              borderColor: isDark ? 'rgb(37, 99, 235)' : 'rgb(37, 99, 235)',
+              backgroundColor: isDark ? 'rgba(37, 99, 235, 0.1)' : 'rgba(37, 99, 235, 0.1)',
               borderWidth: 2,
               fill: true,
               tension: 0.4,
               pointRadius: 0,
               pointHoverRadius: 4,
-              pointBackgroundColor: isDark ? 'rgb(34, 211, 238)' : 'rgb(6, 182, 212)',
+              pointBackgroundColor: isDark ? 'rgb(37, 99, 235)' : 'rgb(37, 99, 235)',
               pointBorderColor: isDark ? 'rgb(17, 24, 39)' : 'rgb(255, 255, 255)',
               pointBorderWidth: 2
             }]
@@ -529,23 +529,23 @@ export function renderRecentActivity(activities?: ActivityItem[]): string {
     switch (type) {
       case 'content':
         return {
-          bgColor: 'bg-lime-500/10 dark:bg-lime-400/10',
-          textColor: 'text-lime-700 dark:text-lime-300'
+          bgColor: 'bg-emerald-500/10 dark:bg-emerald-400/10',
+          textColor: 'text-emerald-700 dark:text-emerald-300'
         }
       case 'media':
         return {
-          bgColor: 'bg-cyan-500/10 dark:bg-cyan-400/10',
-          textColor: 'text-cyan-700 dark:text-cyan-300'
+          bgColor: 'bg-blue-500/10 dark:bg-blue-400/10',
+          textColor: 'text-blue-700 dark:text-blue-300'
         }
       case 'user':
         return {
-          bgColor: 'bg-pink-500/10 dark:bg-pink-400/10',
-          textColor: 'text-pink-700 dark:text-pink-300'
+          bgColor: 'bg-red-500/10 dark:bg-red-400/10',
+          textColor: 'text-red-700 dark:text-red-300'
         }
       case 'collection':
         return {
-          bgColor: 'bg-purple-500/10 dark:bg-purple-400/10',
-          textColor: 'text-purple-700 dark:text-purple-300'
+          bgColor: 'bg-slate-500/10 dark:bg-slate-400/10',
+          textColor: 'text-slate-700 dark:text-slate-300'
         }
       default:
         return {
@@ -687,7 +687,7 @@ function renderSystemStatus(): string {
         <div class="flex items-center justify-between">
           <h3 class="text-base/7 font-semibold text-zinc-950 dark:text-white">System Status</h3>
           <div class="flex items-center gap-2">
-            <div class="h-2 w-2 rounded-full bg-lime-500 animate-pulse"></div>
+            <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <span class="text-xs text-zinc-500 dark:text-zinc-400">Live</span>
           </div>
         </div>
@@ -703,10 +703,10 @@ function renderSystemStatus(): string {
         <!-- Loading skeleton with gradient -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           ${[
-            { color: 'from-blue-500/20 to-cyan-500/20', darkColor: 'dark:from-blue-500/10 dark:to-cyan-500/10' },
-            { color: 'from-purple-500/20 to-pink-500/20', darkColor: 'dark:from-purple-500/10 dark:to-pink-500/10' },
+            { color: 'from-blue-500/20 to-blue-500/20', darkColor: 'dark:from-blue-500/10 dark:to-blue-500/10' },
+            { color: 'from-slate-500/20 to-red-500/20', darkColor: 'dark:from-slate-500/10 dark:to-red-500/10' },
             { color: 'from-amber-500/20 to-orange-500/20', darkColor: 'dark:from-amber-500/10 dark:to-orange-500/10' },
-            { color: 'from-lime-500/20 to-emerald-500/20', darkColor: 'dark:from-lime-500/10 dark:to-emerald-500/10' }
+            { color: 'from-emerald-500/20 to-emerald-500/20', darkColor: 'dark:from-emerald-500/10 dark:to-emerald-500/10' }
           ].map((gradient, i) => `
             <div class="relative group">
               <div class="absolute inset-0 bg-gradient-to-br ${gradient.color} ${gradient.darkColor} rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -760,14 +760,14 @@ export function renderStorageUsage(databaseSizeBytes?: number, mediaSizeBytes?: 
       used: dbUsedFormatted,
       total: "10 GB",
       percentage: dbPercentage,
-      color: dbPercentage > 80 ? "bg-red-500 dark:bg-red-400" : dbPercentage > 60 ? "bg-amber-500 dark:bg-amber-400" : "bg-cyan-500 dark:bg-cyan-400",
+      color: dbPercentage > 80 ? "bg-red-500 dark:bg-red-400" : dbPercentage > 60 ? "bg-amber-500 dark:bg-amber-400" : "bg-blue-500 dark:bg-blue-400",
     },
     {
       label: "Media Files",
       used: mediaUsedFormatted,
       total: "∞",
       percentage: 0,
-      color: "bg-lime-500 dark:bg-lime-400",
+      color: "bg-emerald-500 dark:bg-emerald-400",
       note: "Stored in R2"
     },
     {
@@ -775,7 +775,7 @@ export function renderStorageUsage(databaseSizeBytes?: number, mediaSizeBytes?: 
       used: "N/A",
       total: "∞",
       percentage: 0,
-      color: "bg-purple-500 dark:bg-purple-400",
+      color: "bg-slate-500 dark:bg-slate-400",
       note: "Unlimited"
     },
   ];

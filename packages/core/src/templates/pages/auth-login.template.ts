@@ -126,7 +126,7 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
 
           <!-- Version -->
           <div class="mt-6 text-center">
-            <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-cyan-500/10 text-cyan-400 ring-1 ring-inset ring-cyan-500/20">
+            <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-blue-500/10 text-blue-400 ring-1 ring-inset ring-blue-500/20">
               v${data.version || '0.1.0'}
             </span>
           </div>

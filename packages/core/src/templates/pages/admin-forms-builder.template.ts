@@ -656,7 +656,7 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
                 Form Builder: ${data.display_name}
               </h1>
               <p class="mt-1 text-sm/6 text-zinc-500 dark:text-zinc-400">
-                <span class="inline-flex items-center rounded-md bg-cyan-50 dark:bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 dark:ring-cyan-400/20">
+                <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                   ${data.name}
                 </span>
               </p>
@@ -691,7 +691,7 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
             <a
               href="/forms/${data.name}"
               target="_blank"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+              class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-slate-600 text-white hover:bg-slate-700 transition-colors"
               title="Open public form in new tab"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

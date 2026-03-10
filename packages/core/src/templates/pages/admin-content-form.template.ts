@@ -341,7 +341,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                 <button
                   type="button"
                   onclick="deleteContent('${data.id}')"
-                  class="w-full inline-flex items-center gap-x-2 px-3 py-2 text-sm font-medium text-pink-700 dark:text-pink-300 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors"
+                  class="w-full inline-flex items-center gap-x-2 px-3 py-2 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
@@ -382,7 +382,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                 form="content-form"
                 name="action"
                 value="save_and_publish"
-                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-lime-600 dark:bg-lime-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-lime-700 dark:hover:bg-lime-600 transition-colors shadow-sm"
+                class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-emerald-600 dark:bg-emerald-500 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors shadow-sm"
               >
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -588,11 +588,11 @@ export function renderContentFormPage(data: ContentFormData): string {
         // DON'T close the modal - let user click OK button
         // Visual feedback: highlight the selected item
         document.querySelectorAll('#media-selector-grid [data-media-id]').forEach(el => {
-          el.classList.remove('ring-2', 'ring-lime-500', 'dark:ring-lime-400');
+          el.classList.remove('ring-2', 'ring-emerald-500', 'dark:ring-emerald-400');
         });
         const selectedItem = document.querySelector(\`#media-selector-grid [data-media-id="\${mediaId}"]\`);
         if (selectedItem) {
-          selectedItem.classList.add('ring-2', 'ring-lime-500', 'dark:ring-lime-400');
+          selectedItem.classList.add('ring-2', 'ring-emerald-500', 'dark:ring-emerald-400');
         }
       };
 
@@ -760,7 +760,7 @@ export function renderContentFormPage(data: ContentFormData): string {
                 type="search"
                 id="reference-search-input"
                 placeholder="Search by title or slug..."
-                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-white/10 dark:bg-zinc-900 dark:text-white"
+                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-white/10 dark:bg-zinc-900 dark:text-white"
               >
             </div>
             <div id="reference-results" class="mt-4 space-y-2"></div>
@@ -795,7 +795,7 @@ export function renderContentFormPage(data: ContentFormData): string {
             button.type = 'button';
             button.className = 'w-full text-left rounded-lg border border-zinc-200 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/5';
             if (item.id === selectedId) {
-              button.classList.add('ring-2', 'ring-cyan-500', 'dark:ring-cyan-400');
+              button.classList.add('ring-2', 'ring-blue-500', 'dark:ring-blue-400');
             }
 
             const title = item.title || item.slug || item.id || 'Untitled';

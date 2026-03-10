@@ -20,7 +20,7 @@ export function renderVersionHistory(data: VersionHistoryData): string {
       <div class="backdrop-blur-xl bg-white/10 rounded-xl border border-white/20 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         <!-- Header -->
         <div class="relative px-6 py-4 border-b border-white/10">
-          <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-blue-500/10 to-blue-400/10"></div>
           <div class="relative flex items-center justify-between">
             <h3 class="text-lg font-semibold text-white">Version History</h3>
             <button onclick="closeVersionHistory()" class="text-gray-300 hover:text-white">
