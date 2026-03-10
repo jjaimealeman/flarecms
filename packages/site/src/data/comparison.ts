@@ -60,7 +60,7 @@ export const competitors: CMSComparison[] = [
       'Heavy admin UI (Next.js bundle)',
       'Complex setup for simple use cases',
       'No native Cloudflare Workers deployment',
-      'MongoDB or Postgres required — no embedded database',
+      'MongoDB, Postgres, or SQLite required — no embedded database',
     ],
     pricing: 'Free (MIT). Cloud hosting plans from $25/mo.',
     scores: {
@@ -73,8 +73,8 @@ export const competitors: CMSComparison[] = [
     },
     details: {
       hosting: 'Node.js server (Express/Next.js). Self-hosted or Payload Cloud.',
-      database: 'MongoDB or PostgreSQL. No embedded option.',
-      media: 'Local disk, S3, or Payload Cloud storage.',
+      database: 'MongoDB, PostgreSQL, or SQLite. No embedded option.',
+      media: 'Local disk + cloud adapters (S3, R2, GCS, Azure, Vercel Blob).',
       api: 'REST + GraphQL. Auto-generated from schema.',
       adminUI: 'Built-in React/Next.js admin. Highly customizable.',
       auth: 'Built-in with JWT. Email/password, API keys.',
@@ -179,7 +179,7 @@ export const competitors: CMSComparison[] = [
   {
     slug: 'studiocms',
     name: 'StudioCMS',
-    tagline: 'CMS built on Astro DB',
+    tagline: 'CMS built for Astro',
     website: 'https://studiocms.dev',
     logo: '🎬',
     color: 'indigo',
@@ -191,13 +191,13 @@ export const competitors: CMSComparison[] = [
     summary: 'StudioCMS is the closest competitor — a CMS built specifically for Astro using Astro DB (libSQL). It has native Astro integration but relies on Astro DB (Turso) for hosting, not Cloudflare. It is Astro-first but not edge-native.',
     strengths: [
       'Built natively for Astro — deepest integration',
-      'Uses Astro DB (libSQL/Turso) for storage',
+      'Supports libSQL (Turso), MySQL, and PostgreSQL',
       'Astro integration package for zero-config setup',
       'Active development and community',
       'Dashboard built as Astro pages',
     ],
     weaknesses: [
-      'Tied to Astro DB / Turso — not Cloudflare native',
+      'Not Cloudflare native — no D1/R2 support',
       'No R2 for media — relies on external storage',
       'Younger project with fewer battle-tested deployments',
       'No Cloudflare Workers deployment option',
@@ -214,7 +214,7 @@ export const competitors: CMSComparison[] = [
     },
     details: {
       hosting: 'Astro SSR on any host. Database via Astro DB (Turso).',
-      database: 'Astro DB (libSQL/Turso). Not Cloudflare D1.',
+      database: 'libSQL (Turso), MySQL, or PostgreSQL. Not Cloudflare D1.',
       media: 'External providers. No built-in storage.',
       api: 'Astro content loader. Internal API only.',
       adminUI: 'Built-in Astro dashboard pages.',
@@ -246,11 +246,11 @@ export const competitors: CMSComparison[] = [
     weaknesses: [
       'Proprietary — not open source',
       'Cannot be self-hosted — cloud only',
-      'Expensive for teams ($45/user/mo)',
+      'No free tier — starts at $55/mo',
       'Optimized for SSG, limited SSR support',
       'No API for headless use cases',
     ],
-    pricing: 'Free (1 user). Team plans from $45/user/mo.',
+    pricing: 'Paid only (from $55/mo). 21-day free trial.',
     scores: {
       edgePerformance: 2,
       astroIntegration: 4,
@@ -344,7 +344,7 @@ export const competitors: CMSComparison[] = [
       'No native Astro integration (REST/GROQ only)',
       'Studio requires React knowledge to customize',
     ],
-    pricing: 'Free (20 users, 200k API requests). Growth from $15/user/mo.',
+    pricing: 'Free (20 users, 250k API req/mo). Growth from $15/user/mo.',
     scores: {
       edgePerformance: 3,
       astroIntegration: 3,
