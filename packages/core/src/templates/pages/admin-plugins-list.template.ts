@@ -534,9 +534,7 @@ function renderPluginCard(plugin: Plugin): string {
     uninstalled: '<div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-600 rounded-full mr-1.5"></div>'
   }
 
-  // Core system plugins that cannot be deactivated
-  const criticalCorePlugins = ['core-auth', 'core-media']
-  const canToggle = !criticalCorePlugins.includes(plugin.id)
+  const canToggle = true
 
   let actionButton = ''
   if (plugin.status === 'uninstalled') {

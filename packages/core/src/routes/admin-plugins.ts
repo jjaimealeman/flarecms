@@ -461,66 +461,6 @@ adminPluginRoutes.post('/install', async (c) => {
       return c.json({ success: true, plugin: demoPlugin })
     }
 
-    // Handle core Authentication System plugin installation
-    if (body.name === 'core-auth') {
-      const authPlugin = await pluginService.installPlugin({
-        id: 'core-auth',
-        name: 'core-auth',
-        display_name: 'Authentication System',
-        description: 'Core authentication and user management system',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'security',
-        icon: '🔐',
-        permissions: ['manage:users', 'manage:roles', 'manage:permissions'],
-        dependencies: [],
-        is_core: true,
-        settings: {}
-      })
-
-      return c.json({ success: true, plugin: authPlugin })
-    }
-
-    // Handle core Media Manager plugin installation
-    if (body.name === 'core-media') {
-      const mediaPlugin = await pluginService.installPlugin({
-        id: 'core-media',
-        name: 'core-media',
-        display_name: 'Media Manager',
-        description: 'Core media upload and management system',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'media',
-        icon: '📸',
-        permissions: ['manage:media', 'upload:files'],
-        dependencies: [],
-        is_core: true,
-        settings: {}
-      })
-
-      return c.json({ success: true, plugin: mediaPlugin })
-    }
-
-    // Handle core Workflow Engine plugin installation
-    if (body.name === 'core-workflow') {
-      const workflowPlugin = await pluginService.installPlugin({
-        id: 'core-workflow',
-        name: 'core-workflow',
-        display_name: 'Workflow Engine',
-        description: 'Content workflow and approval system',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'content',
-        icon: '🔄',
-        permissions: ['manage:workflows', 'approve:content'],
-        dependencies: [],
-        is_core: true,
-        settings: {}
-      })
-
-      return c.json({ success: true, plugin: workflowPlugin })
-    }
-
     // Handle Database Tools plugin installation
     if (body.name === 'database-tools') {
       const databaseToolsPlugin = await pluginService.installPlugin({
@@ -779,13 +719,6 @@ adminPluginRoutes.post('/:id/settings', async (c) => {
 
     const pluginService = new PluginService(db)
     await pluginService.updatePluginSettings(pluginId, settings)
-
-    // TODO: Clear auth validation cache if updating core-auth plugin
-    // Commented out until authValidationService is migrated
-    // if (pluginId === 'core-auth') {
-    //   authValidationService.clearCache()
-    //   console.log('[AuthSettings] Cache cleared after updating authentication settings')
-    // }
 
     return c.json({ success: true })
   } catch (error) {

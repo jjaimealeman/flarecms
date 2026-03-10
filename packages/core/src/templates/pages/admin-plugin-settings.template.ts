@@ -1,6 +1,4 @@
 import { renderAdminLayout, AdminLayoutData } from '../layouts/admin-layout-v2.template'
-import { renderAuthSettingsForm } from '../components/auth-settings-form.template'
-import type { AuthSettings } from '../../services/auth-validation'
 
 /**
  * Escape HTML attribute values to prevent XSS
@@ -190,64 +188,19 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
       async function saveSettings() {
         const form = document.getElementById('settings-form');
         const formData = new FormData(form);
-        const isAuthPlugin = '${plugin.id}' === 'core-auth';
         let settings = {};
 
-        if (isAuthPlugin) {
-          // Handle nested auth settings structure
-          settings = {
-            requiredFields: {},
-            validation: {
-              passwordRequirements: {}
-            },
-            registration: {}
-          };
+        for (let [key, value] of formData.entries()) {
+          if (key.startsWith('setting_')) {
+            const settingKey = key.replace('setting_', '');
 
-          for (let [key, value] of formData.entries()) {
             const input = form.querySelector(\`[name="\${key}"]\`);
-            const fieldValue = input.type === 'checkbox' ? input.checked :
-                             input.type === 'number' ? parseInt(value) || 0 : value;
-
-            // Parse nested field names like "requiredFields_email_required"
-            if (key.startsWith('requiredFields_')) {
-              const parts = key.replace('requiredFields_', '').split('_');
-              const fieldName = parts[0];
-              const propName = parts[1];
-
-              if (!settings.requiredFields[fieldName]) {
-                settings.requiredFields[fieldName] = { type: 'text', label: '' };
-              }
-              settings.requiredFields[fieldName][propName] = fieldValue;
-            } else if (key.startsWith('validation_passwordRequirements_')) {
-              const propName = key.replace('validation_passwordRequirements_', '');
-              settings.validation.passwordRequirements[propName] = fieldValue;
-            } else if (key.startsWith('validation_')) {
-              const propName = key.replace('validation_', '');
-              // Invert the allowDuplicateUsernames logic
-              if (propName === 'allowDuplicateUsernames') {
-                settings.validation[propName] = !fieldValue;
-              } else {
-                settings.validation[propName] = fieldValue;
-              }
-            } else if (key.startsWith('registration_')) {
-              const propName = key.replace('registration_', '');
-              settings.registration[propName] = fieldValue;
-            }
-          }
-        } else {
-          // Handle regular plugin settings
-          for (let [key, value] of formData.entries()) {
-            if (key.startsWith('setting_')) {
-              const settingKey = key.replace('setting_', '');
-
-              const input = form.querySelector(\`[name="\${key}"]\`);
-              if (input.type === 'checkbox') {
-                settings[settingKey] = input.checked;
-              } else if (input.type === 'number') {
-                settings[settingKey] = parseInt(value) || 0;
-              } else {
-                settings[settingKey] = value;
-              }
+            if (input.type === 'checkbox') {
+              settings[settingKey] = input.checked;
+            } else if (input.type === 'number') {
+              settings[settingKey] = parseInt(value) || 0;
+            } else {
+              settings[settingKey] = value;
             }
           }
         }
@@ -363,7 +316,6 @@ function renderSettingsTab(plugin: any): string {
   }
 
   const isSeedDataPlugin = plugin.id === 'seed-data' || plugin.name === 'seed-data'
-  const isAuthPlugin = plugin.id === 'core-auth' || plugin.name === 'core-auth'
   const isTurnstilePlugin = plugin.id === 'turnstile' || plugin.name === 'turnstile'
 
   return `
@@ -389,10 +341,7 @@ function renderSettingsTab(plugin: any): string {
     ` : ''}
 
     <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
-      ${isAuthPlugin ? `
-        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Authentication Settings</h2>
-        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Configure user registration fields and validation rules.</p>
-      ` : isTurnstilePlugin ? `
+      ${isTurnstilePlugin ? `
         <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Cloudflare Turnstile Settings</h2>
         <p class="text-zinc-500 dark:text-zinc-400 mb-6">Configure CAPTCHA-free bot protection for your forms.</p>
       ` : `
@@ -400,9 +349,7 @@ function renderSettingsTab(plugin: any): string {
       `}
 
       <form id="settings-form" class="space-y-6">
-        ${isAuthPlugin && Object.keys(settings).length > 0
-          ? renderAuthSettingsForm(settings as AuthSettings)
-          : isTurnstilePlugin && Object.keys(settings).length > 0
+        ${isTurnstilePlugin && Object.keys(settings).length > 0
             ? renderTurnstileSettingsForm(settings)
             : Object.keys(settings).length > 0
               ? renderSettingsFields(settings)
