@@ -209,8 +209,65 @@ export function getQuillCDN(version: string = '2.0.2'): string {
     <!-- Quill Editor JS -->
     <script src="https://cdn.jsdelivr.net/npm/quill@${version}/dist/quill.js"></script>
 
-    <!-- Quill Dark Mode Styles -->
+    <!-- Quill Theme Styles -->
     <style>
+      /* Light mode — ensure Quill matches the admin theme */
+      .ql-toolbar {
+        background-color: #ffffff !important;
+        border-color: #e4e4e7 !important;
+      }
+
+      .ql-container {
+        background-color: #ffffff !important;
+        border-color: #e4e4e7 !important;
+        color: #18181b !important;
+      }
+
+      .ql-editor {
+        color: #18181b !important;
+      }
+
+      .ql-editor.ql-blank::before {
+        color: #a1a1aa !important;
+      }
+
+      .ql-snow .ql-stroke {
+        stroke: #3f3f46 !important;
+      }
+
+      .ql-snow .ql-fill {
+        fill: #3f3f46 !important;
+      }
+
+      .ql-snow .ql-picker-label {
+        color: #3f3f46 !important;
+      }
+
+      .ql-snow .ql-picker-options {
+        background-color: #ffffff !important;
+        border-color: #e4e4e7 !important;
+      }
+
+      .ql-toolbar button:hover,
+      .ql-toolbar .ql-picker-label:hover {
+        color: #18181b !important;
+      }
+
+      .ql-toolbar button:hover .ql-stroke,
+      .ql-toolbar .ql-picker-label:hover .ql-stroke {
+        stroke: #18181b !important;
+      }
+
+      .ql-toolbar button.ql-active,
+      .ql-toolbar .ql-picker-label.ql-active {
+        color: #2563eb !important;
+      }
+
+      .ql-toolbar button.ql-active .ql-stroke,
+      .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+        stroke: #2563eb !important;
+      }
+
       /* Dark mode styles for Quill editor */
       .dark .ql-toolbar {
         background-color: #18181b !important;
