@@ -66,7 +66,7 @@ adminDeployRoutes.get('/api/pending-count', async (c) => {
 })
 
 /**
- * Trigger a deploy
+ * Trigger a deploy via GitHub Actions workflow_dispatch
  */
 adminDeployRoutes.post('/api/trigger', async (c) => {
   const user = c.get('user')
@@ -76,29 +76,42 @@ adminDeployRoutes.post('/api/trigger', async (c) => {
 
   const db = c.env.DB
   const settings = new SettingsService(db)
-  const hookUrl = await settings.getSetting('deploy', 'hook_url')
+  const ghToken = await settings.getSetting('deploy', 'github_token')
+  const ghRepo = await settings.getSetting('deploy', 'github_repo')
 
-  if (!hookUrl) {
-    return c.json({ error: 'Deploy hook URL not configured. Go to Settings to add it.' }, 400)
+  if (!ghToken || !ghRepo) {
+    return c.json({ error: 'GitHub deploy not configured. Click the gear icon to set it up.' }, 400)
   }
 
   try {
-    // POST to Cloudflare Pages deploy hook
-    const response = await fetch(hookUrl, { method: 'POST' })
+    // Trigger GitHub Actions workflow_dispatch
+    const response = await fetch(
+      `https://api.github.com/repos/${ghRepo}/actions/workflows/deploy.yml/dispatches`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${ghToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'FlareCMS-Admin',
+        },
+        body: JSON.stringify({ ref: 'main' }),
+      }
+    )
 
-    if (!response.ok) {
-      return c.json({ error: `Deploy hook returned ${response.status}` }, 502)
+    if (response.status === 204) {
+      // 204 No Content = success for workflow_dispatch
+      const now = Date.now()
+      await settings.setSetting('deploy', 'last_deployed_at', now)
+
+      return c.json({
+        success: true,
+        deployedAt: now,
+        message: 'Deploy triggered via GitHub Actions. Build takes ~60 seconds.'
+      })
     }
 
-    // Update last_deployed_at
-    const now = Date.now()
-    await settings.setSetting('deploy', 'last_deployed_at', now)
-
-    return c.json({
-      success: true,
-      deployedAt: now,
-      message: 'Deploy triggered. Site will rebuild in ~30 seconds.'
-    })
+    const errorBody = await response.text()
+    return c.json({ error: `GitHub API returned ${response.status}: ${errorBody}` }, 502)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to trigger deploy'
     return c.json({ error: message }, 500)
@@ -116,11 +129,13 @@ adminDeployRoutes.get('/api/settings', async (c) => {
 
   const db = c.env.DB
   const settings = new SettingsService(db)
-  const hookUrl = await settings.getSetting('deploy', 'hook_url')
+  const ghRepo = await settings.getSetting('deploy', 'github_repo')
+  const ghToken = await settings.getSetting('deploy', 'github_token')
   const lastDeployedAt = await settings.getSetting('deploy', 'last_deployed_at')
 
   return c.json({
-    hookUrl: hookUrl || '',
+    githubRepo: ghRepo || '',
+    hasToken: !!ghToken,
     lastDeployedAt: lastDeployedAt || null
   })
 })
@@ -138,8 +153,11 @@ adminDeployRoutes.post('/api/settings', async (c) => {
   const db = c.env.DB
   const settings = new SettingsService(db)
 
-  if (body.hookUrl !== undefined) {
-    await settings.setSetting('deploy', 'hook_url', body.hookUrl)
+  if (body.githubRepo !== undefined) {
+    await settings.setSetting('deploy', 'github_repo', body.githubRepo)
+  }
+  if (body.githubToken !== undefined) {
+    await settings.setSetting('deploy', 'github_token', body.githubToken)
   }
 
   return c.json({ success: true })
