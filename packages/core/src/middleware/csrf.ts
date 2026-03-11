@@ -142,6 +142,11 @@ function isExemptPath(path: string, extraExemptPaths: string[] = []): boolean {
     return true
   }
 
+  // Analytics tracking beacon — public POST from external sites
+  if (path === '/api/track') {
+    return true
+  }
+
   const allExempt = [...DEFAULT_EXEMPT_PATHS, ...extraExemptPaths]
   for (const exempt of allExempt) {
     if (path === exempt || path.startsWith(exempt + '/')) {

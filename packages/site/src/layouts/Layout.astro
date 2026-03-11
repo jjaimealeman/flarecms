@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import SEO from "../components/SEO.astro";
 import SearchModal from "../components/SearchModal.astro";
+import FlareAnalytics from "../components/FlareAnalytics.astro";
 import { navLinks } from "../data/homepage";
 
 interface Props {
@@ -484,5 +485,6 @@ const currentPath = Astro.url.pathname;
     </script>
 
     <SearchModal />
+    <FlareAnalytics />
   </body>
 </html>

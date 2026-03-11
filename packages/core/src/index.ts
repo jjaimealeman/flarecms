@@ -142,6 +142,8 @@ export {
   adminCollectionsRoutes,
   adminSettingsRoutes,
   adminApiTokensRoutes,
+  adminAnalyticsRoutes,
+  apiAnalyticsRoutes,
 } from './routes'
 
 // Templates - Week 3 (COMPLETED)
