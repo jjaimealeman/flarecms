@@ -54,8 +54,13 @@ const currentPath = Astro.url.pathname;
             <img
               src="/logo.svg"
               alt="Flare CMS"
-              class="h-7 w-auto transition-all duration-300"
+              class="h-7 w-auto transition-all duration-300 logo-dark"
               id="site-logo"
+            />
+            <img
+              src="/logo-light.svg"
+              alt="Flare CMS"
+              class="h-7 w-auto transition-all duration-300 logo-light hidden"
             />
           </a>
           <div class="w-px h-5 bg-border"></div>
@@ -144,7 +149,8 @@ const currentPath = Astro.url.pathname;
 
         <!-- Mobile logo + hamburger -->
         <a href="/" class="md:hidden flex items-center">
-          <img src="/logo.svg" alt="Flare CMS" class="h-6 w-auto" />
+          <img src="/logo.svg" alt="Flare CMS" class="h-6 w-auto logo-dark" />
+          <img src="/logo-light.svg" alt="Flare CMS" class="h-6 w-auto logo-light hidden" />
         </a>
         <div class="md:hidden flex items-center gap-2">
           <!-- Mobile theme toggle -->

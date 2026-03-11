@@ -7,9 +7,14 @@
 
 /* === Flare CMS Design Tokens === */
 
-/* Semantic color tokens — runtime toggleable via .light class */
+/*
+ * All color tokens defined as CSS custom properties for runtime toggle.
+ * Dark (Supernova) is default. `.light` class on <html> flips to Edge Light.
+ * The slate scale is mapped so every existing `slate-*` class toggles automatically.
+ */
 @layer base {
   :root {
+    /* Semantic tokens */
     --surface-primary: #0a0a0a;
     --surface-secondary: #141414;
     --surface-tertiary: #1c1c1c;
@@ -17,9 +22,23 @@
     --text-primary: #fafafa;
     --text-secondary: #a1a1a1;
     --text-tertiary: #6b6b6b;
+
+    /* Slate scale (dark mode — true black neutrals) */
+    --slate-950: #0a0a0a;
+    --slate-900: #141414;
+    --slate-800: #1c1c1c;
+    --slate-700: #262626;
+    --slate-600: #404040;
+    --slate-500: #6b6b6b;
+    --slate-400: #a1a1a1;
+    --slate-300: #d4d4d4;
+    --slate-200: #e5e5e5;
+    --slate-100: #f5f5f5;
+    --slate-50: #fafafa;
   }
 
   .light {
+    /* Semantic tokens */
     --surface-primary: #FAFAF8;
     --surface-secondary: #F5F5F3;
     --surface-tertiary: #EFEFED;
@@ -27,7 +46,24 @@
     --text-primary: #1a1a1a;
     --text-secondary: #525252;
     --text-tertiary: #8a8a8a;
+
+    /* Slate scale inverted (light mode) */
+    --slate-950: #FAFAF8;
+    --slate-900: #F5F5F3;
+    --slate-800: #EFEFED;
+    --slate-700: #E5E5E3;
+    --slate-600: #8a8a8a;
+    --slate-500: #8a8a8a;
+    --slate-400: #525252;
+    --slate-300: #404040;
+    --slate-200: #262626;
+    --slate-100: #1c1c1c;
+    --slate-50: #1a1a1a;
   }
+
+  /* Logo/mark swap for light mode */
+  .light .logo-dark { display: none !important; }
+  .light .logo-light { display: block !important; }
 }
 
 @theme {
@@ -53,18 +89,18 @@
   --color-emerald-400: #34d399;
   --color-emerald-500: #10b981;
 
-  /* Backwards-compat slate aliases → new neutral values */
-  --color-slate-950: #0a0a0a;
-  --color-slate-900: #141414;
-  --color-slate-800: #1c1c1c;
-  --color-slate-700: #262626;
-  --color-slate-600: #404040;
-  --color-slate-500: #6b6b6b;
-  --color-slate-400: #a1a1a1;
-  --color-slate-300: #d4d4d4;
-  --color-slate-200: #e5e5e5;
-  --color-slate-100: #f5f5f5;
-  --color-slate-50: #fafafa;
+  /* Slate aliases — reference CSS custom properties so they toggle at runtime */
+  --color-slate-950: var(--slate-950);
+  --color-slate-900: var(--slate-900);
+  --color-slate-800: var(--slate-800);
+  --color-slate-700: var(--slate-700);
+  --color-slate-600: var(--slate-600);
+  --color-slate-500: var(--slate-500);
+  --color-slate-400: var(--slate-400);
+  --color-slate-300: var(--slate-300);
+  --color-slate-200: var(--slate-200);
+  --color-slate-100: var(--slate-100);
+  --color-slate-50: var(--slate-50);
 
   /* Semantic surface/text colors */
   --color-surface-primary: var(--surface-primary);
