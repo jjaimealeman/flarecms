@@ -37,6 +37,7 @@ export { adminApiReferenceRoutes } from './admin-api-reference'
 export { adminApiTokensRoutes } from './admin-api-tokens'
 export { adminPreviewRoutes } from './admin-preview'
 export { adminSchemaMigrationsRoutes } from './admin-schema-migrations'
+export { adminDeployRoutes } from './admin-deploy'
 
 export const ROUTES_INFO = {
   message: 'Core routes available',
@@ -65,7 +66,8 @@ export const ROUTES_INFO = {
     'adminApiReferenceRoutes',
     'adminApiTokensRoutes',
     'adminPreviewRoutes',
-    'adminSchemaMigrationsRoutes'
+    'adminSchemaMigrationsRoutes',
+    'adminDeployRoutes'
   ],
   status: 'Core package routes ready',
   reference: 'https://github.com/jjaimealeman/flarecms'

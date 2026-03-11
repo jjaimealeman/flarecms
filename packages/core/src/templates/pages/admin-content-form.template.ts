@@ -393,17 +393,6 @@ export function renderContentFormPage(data: ContentFormData): string {
             ${isEdit ? 'Update' : 'Save Draft'}
           </button>
 
-          ${data.user?.role !== 'viewer' ? `
-            <button
-              type="submit"
-              form="content-form"
-              name="action"
-              value="save_and_publish"
-              class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              ${isEdit ? 'Update' : 'Save'} & Publish
-            </button>
-          ` : ''}
         </div>
       </div>
     </div>

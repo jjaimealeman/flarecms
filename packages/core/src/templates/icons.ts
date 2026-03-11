@@ -43,6 +43,7 @@ import {
   Layers,
   ClipboardList,
   CircleHelp,
+  Rocket,
 } from 'lucide-static'
 
 /**
@@ -123,4 +124,5 @@ export {
   Layers,
   ClipboardList,
   CircleHelp,
+  Rocket,
 }

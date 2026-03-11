@@ -21,6 +21,7 @@ import {
   ChevronDown,
   ChevronRight,
   AlertTriangle,
+  Rocket,
 } from "../icons";
 
 // Catalyst Checkbox Component (HTML implementation)
@@ -541,6 +542,233 @@ export function renderAdminLayoutCatalyst(
     // Check for pending migrations when the page loads
     document.addEventListener('DOMContentLoaded', checkPendingMigrations);
   </script>
+
+  <!-- Deploy Modal -->
+  <div id="deploy-modal" class="hidden fixed inset-0 z-50">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeployModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="relative w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-950/5 dark:ring-white/10 max-h-[80vh] flex flex-col">
+        <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
+          <div>
+            <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Deploy Site</h2>
+            <p id="deploy-subtitle" class="text-sm text-zinc-500 dark:text-zinc-400">Review changes before deploying</p>
+          </div>
+          <button onclick="closeDeployModal()" class="rounded-lg p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div id="deploy-body" class="flex-1 overflow-y-auto px-6 py-4">
+          <div class="flex items-center justify-center py-8">
+            <div class="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600"></div>
+            <span class="ml-3 text-sm text-zinc-500">Loading changes...</span>
+          </div>
+        </div>
+        <div id="deploy-footer" class="border-t border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <div id="deploy-status" class="text-sm text-zinc-500 dark:text-zinc-400"></div>
+          <div class="flex gap-3">
+            <button onclick="closeDeployModal()" class="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
+            <button id="deploy-confirm-btn" onclick="triggerDeploy()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Deploy Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deploy Hook Setup Modal -->
+  <div id="deploy-setup-modal" class="hidden fixed inset-0 z-50">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeploySetup()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-950/5 dark:ring-white/10">
+        <div class="px-6 py-5">
+          <h2 class="text-lg font-semibold text-zinc-950 dark:text-white mb-2">Configure Deploy Hook</h2>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+            Paste your Cloudflare Pages deploy hook URL. Create one in the Cloudflare dashboard under your Pages project &rarr; Settings &rarr; Builds &amp; deployments &rarr; Deploy hooks.
+          </p>
+          <input id="deploy-hook-input" type="url" placeholder="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..." class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400" />
+          <div class="flex justify-end gap-3 mt-4">
+            <button onclick="closeDeploySetup()" class="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
+            <button onclick="saveDeployHook()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Deploy feature
+    async function checkPendingDeploy() {
+      try {
+        const res = await fetch('/admin/deploy/api/pending-count');
+        const data = await res.json();
+        const badge = document.getElementById('deploy-badge');
+        if (badge && data.count > 0) {
+          badge.textContent = data.count;
+          badge.classList.remove('hidden');
+        } else if (badge) {
+          badge.classList.add('hidden');
+        }
+      } catch (e) { /* silent */ }
+    }
+
+    async function openDeployModal() {
+      try {
+        const settingsRes = await fetch('/admin/deploy/api/settings');
+        const settings = await settingsRes.json();
+        if (!settings.hookUrl) {
+          document.getElementById('deploy-setup-modal').classList.remove('hidden');
+          document.getElementById('deploy-hook-input').focus();
+          return;
+        }
+      } catch (e) { return; }
+
+      document.getElementById('deploy-modal').classList.remove('hidden');
+      const body = document.getElementById('deploy-body');
+      const subtitle = document.getElementById('deploy-subtitle');
+      const confirmBtn = document.getElementById('deploy-confirm-btn');
+      const status = document.getElementById('deploy-status');
+
+      // Reset state
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Deploy Now';
+      confirmBtn.className = 'rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+
+      try {
+        const res = await fetch('/admin/deploy/api/pending');
+        const data = await res.json();
+
+        if (data.count === 0) {
+          subtitle.textContent = 'No pending changes';
+          body.textContent = '';
+          const msg = document.createElement('div');
+          msg.className = 'py-8 text-center';
+          const p = document.createElement('p');
+          p.className = 'text-zinc-500 dark:text-zinc-400';
+          p.textContent = 'All content is up to date. Nothing to deploy.';
+          msg.appendChild(p);
+          body.appendChild(msg);
+          confirmBtn.disabled = true;
+          status.textContent = data.lastDeployedAt ? 'Last deployed: ' + new Date(data.lastDeployedAt).toLocaleString() : '';
+        } else {
+          subtitle.textContent = data.count + ' change' + (data.count === 1 ? '' : 's') + ' pending';
+          confirmBtn.disabled = false;
+          status.textContent = data.lastDeployedAt ? 'Last deployed: ' + new Date(data.lastDeployedAt).toLocaleString() : 'Never deployed';
+
+          const groups = {};
+          for (const item of data.pending) {
+            const col = item.collection_name || 'Unknown';
+            if (!groups[col]) groups[col] = [];
+            groups[col].push(item);
+          }
+
+          body.textContent = '';
+          for (const [collection, items] of Object.entries(groups)) {
+            const section = document.createElement('div');
+            section.className = 'mb-4';
+
+            const heading = document.createElement('h3');
+            heading.className = 'text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-2';
+            heading.textContent = collection + ' (' + items.length + ')';
+            section.appendChild(heading);
+
+            const list = document.createElement('div');
+            list.className = 'space-y-1';
+
+            for (const item of items) {
+              const link = document.createElement('a');
+              link.href = '/admin/content/' + item.id + '/edit';
+              link.className = 'flex items-center justify-between rounded-lg px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group';
+
+              const info = document.createElement('div');
+              info.className = 'min-w-0';
+
+              const title = document.createElement('p');
+              title.className = 'text-sm font-medium text-zinc-950 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400';
+              title.textContent = item.title;
+
+              const time = document.createElement('p');
+              time.className = 'text-xs text-zinc-500 dark:text-zinc-400';
+              time.textContent = new Date(item.updated_at).toLocaleString();
+
+              info.appendChild(title);
+              info.appendChild(time);
+
+              const badge = document.createElement('span');
+              badge.className = 'text-xs font-medium ml-3 shrink-0 ' + (item.status === 'published' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400');
+              badge.textContent = item.status;
+
+              link.appendChild(info);
+              link.appendChild(badge);
+              list.appendChild(link);
+            }
+
+            section.appendChild(list);
+            body.appendChild(section);
+          }
+        }
+      } catch (e) {
+        body.textContent = '';
+        const err = document.createElement('div');
+        err.className = 'py-8 text-center text-red-500';
+        err.textContent = 'Failed to load changes';
+        body.appendChild(err);
+      }
+    }
+
+    function closeDeployModal() {
+      document.getElementById('deploy-modal').classList.add('hidden');
+    }
+
+    function closeDeploySetup() {
+      document.getElementById('deploy-setup-modal').classList.add('hidden');
+    }
+
+    async function saveDeployHook() {
+      const input = document.getElementById('deploy-hook-input');
+      const url = input.value.trim();
+      if (!url) return;
+      try {
+        await fetch('/admin/deploy/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hookUrl: url })
+        });
+        closeDeploySetup();
+        openDeployModal();
+      } catch (e) {
+        alert('Failed to save deploy hook URL');
+      }
+    }
+
+    async function triggerDeploy() {
+      const btn = document.getElementById('deploy-confirm-btn');
+      const status = document.getElementById('deploy-status');
+      btn.disabled = true;
+      btn.textContent = 'Deploying...';
+      status.textContent = 'Triggering build...';
+      try {
+        const res = await fetch('/admin/deploy/api/trigger', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          status.textContent = 'Build triggered! Site will be live in ~30 seconds.';
+          btn.textContent = 'Deployed';
+          btn.className = 'rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+          const badge = document.getElementById('deploy-badge');
+          if (badge) badge.classList.add('hidden');
+          setTimeout(closeDeployModal, 3000);
+        } else {
+          status.textContent = data.error || 'Deploy failed';
+          btn.textContent = 'Deploy Now';
+          btn.disabled = false;
+        }
+      } catch (e) {
+        status.textContent = 'Network error';
+        btn.textContent = 'Deploy Now';
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkPendingDeploy);
+  </script>
 </body>
 </html>`;
 }
@@ -645,6 +873,18 @@ function renderCatalystSidebar(
     { label: 'Migrations', path: '/admin/schema-migrations', iconHtml: icon(Database, 'h-5 w-5') },
   ].map(item => navLink(item, isActivePath(item.path))).join('')
 
+  // Deploy button (pinned bottom, above settings)
+  const deployItem = `
+    <button
+      onclick="openDeployModal()"
+      class="relative flex w-full items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-white/5 sm:text-sm/5 transition-colors"
+    >
+      ${icon(Rocket, 'h-5 w-5 shrink-0')}
+      <span>Deploy</span>
+      <span id="deploy-badge" class="ml-auto hidden min-w-[20px] rounded-full bg-blue-600 px-1.5 py-0.5 text-center text-[10px] font-bold text-white"></span>
+    </button>
+  `
+
   // Settings (pinned bottom)
   const settingsItem = navLink(
     { label: 'Settings', path: '/admin/settings', iconHtml: icon(Settings, 'h-5 w-5') },
@@ -695,8 +935,9 @@ function renderCatalystSidebar(
         </div>
       </div>
 
-      <!-- Settings (Bottom) -->
-      <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800">
+      <!-- Deploy + Settings (Bottom) -->
+      <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800 flex flex-col gap-0.5">
+        ${deployItem}
         ${settingsItem}
       </div>
 

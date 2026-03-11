@@ -72,13 +72,25 @@ export function flareLoader(options: FlareLoaderOptions): Loader {
       for (const item of filtered) {
         // Flatten item.data to top level, merge top-level fields and system fields
         // The CMS API returns title/slug at root level AND user fields inside item.data
-        const flatData = {
+        const flatData: Record<string, any> = {
           title: item.title,
           slug: item.slug,
           ...item.data,
           _status: item.status,
           _createdAt: new Date(item.created_at),
           _updatedAt: new Date(item.updated_at),
+        }
+
+        // Sanitize invalid dates — CMS may store empty strings for date fields
+        // which produce Invalid Date and crash Astro's Zod validation
+        for (const [key, val] of Object.entries(flatData)) {
+          if (val instanceof Date && isNaN(val.getTime())) {
+            flatData[key] = undefined
+          } else if (typeof val === 'string' && val === '') {
+            // Empty strings on date/datetime schema fields also crash z.coerce.date()
+            // Safe to convert to undefined — Zod .optional() handles it
+            flatData[key] = undefined
+          }
         }
 
         const data = await parseData({
@@ -120,10 +132,14 @@ export function flareLoader(options: FlareLoaderOptions): Loader {
 
       // Fallback: permissive schema that accepts any data
       const { z } = await import('astro/zod')
+      const safeDate = z.preprocess(
+        (val) => (val === '' || val === null || val === undefined ? undefined : val),
+        z.coerce.date(),
+      )
       return z.object({
         _status: z.string().optional(),
-        _createdAt: z.coerce.date().optional(),
-        _updatedAt: z.coerce.date().optional(),
+        _createdAt: safeDate.optional(),
+        _updatedAt: safeDate.optional(),
       }).passthrough()
     },
   }

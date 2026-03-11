@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [259c287 - Deploy Button + Astro Date Fix](259c287_deploy-button-and-astro-date-fix.md) [FEAT] [UI] [BACKEND] [ASTRO] [BUG_FIX]
 - [e3287ed - Fix Sticky Bar, Collection Filter, Epoch Dates, Branding](e3287ed_fix-sticky-bar-collection-filter-epoch-dates-branding.md) [UI] [BUG_FIX] [ROUTING]
 - [ccf9068 - Fix 4 UX Quick Wins](ccf9068_fix-ux-quick-wins-status-author-schema-branding.md) [UI] [BUG_FIX] [ENHANCEMENT]
 - [04c43ac - Dedup Collections in Picker](04c43ac_dedup-collections-in-picker-use-admin-layout-for.md) [BUG_FIX] [UI]
