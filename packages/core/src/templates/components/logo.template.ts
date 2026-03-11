@@ -65,7 +65,7 @@ export function renderLogo(data: LogoData = {}): string {
 
   // Wrap in link if href is provided
   if (href) {
-    return `<a href="${href}" class="inline-block hover:opacity-80 transition-opacity">${logoContent}</a>`
+    return `<a href="${href}" class="inline-block hover:opacity-80 transition-opacity" style="color: inherit">${logoContent}</a>`
   }
 
   return logoContent

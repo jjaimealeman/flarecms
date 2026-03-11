@@ -17,13 +17,19 @@ import { codeSchema } from '../data/homepage'
       <div class="md:col-span-2 md:row-span-2 rounded-2xl border border-border bg-surface-secondary overflow-hidden group">
         <div class="p-6 pb-0">
           <h3 class="font-semibold text-text-primary mb-1">Built-in Admin UI</h3>
-          <p class="text-sm text-text-secondary">Rich text editing, media library, and user management out of the box.</p>
+          <p class="text-sm text-text-secondary">Content management, media library, and user management out of the box.</p>
         </div>
         <div class="mt-4 mx-6 rounded-t-xl border border-b-0 border-border overflow-hidden bg-surface-tertiary">
           <img
-            src="/images/admin-dashboard.webp"
-            alt="Flare CMS Admin Dashboard"
-            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity"
+            src="/images/admin-content-dark.webp"
+            alt="Flare CMS Content Management — Dark Mode"
+            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity dark-only"
+            loading="lazy"
+          />
+          <img
+            src="/images/admin-content-light.webp"
+            alt="Flare CMS Content Management — Light Mode"
+            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity light-only hidden"
             loading="lazy"
           />
         </div>

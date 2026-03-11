@@ -61,9 +61,11 @@
     --slate-50: #1a1a1a;
   }
 
-  /* Logo/mark swap for light mode */
+  /* Theme-aware visibility swap */
   .light .logo-dark { display: none !important; }
   .light .logo-light { display: block !important; }
+  .light .dark-only { display: none !important; }
+  .light .light-only { display: block !important; }
 }
 
 @theme {

@@ -8,7 +8,7 @@
   <div class="relative max-w-5xl mx-auto px-6 pt-28 pb-20">
     <!-- Version badge pill -->
     <div class="flex justify-center mb-8">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-flare-500/10 border border-flare-500/20 text-flare-400 text-xs font-medium">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-flare-500/15 border border-flare-500/30 text-flare-500 text-xs font-medium">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
         v{__APP_VERSION__} is live
       </div>
@@ -17,7 +17,7 @@
     <!-- Massive headline -->
     <h1 class="text-5xl sm:text-7xl lg:text-[96px] font-bold tracking-tight leading-[1.05] text-center mb-6">
       The CMS built for<br />
-      <span class="bg-gradient-to-r from-flare-400 via-flare-500 to-cyan-400 bg-clip-text text-transparent">the edge</span>
+      <span class="bg-[linear-gradient(to_right,var(--color-flare-400)_0%,var(--color-flare-500)_38%,var(--color-cyan-400)_72%)] bg-clip-text text-transparent">the edge</span>
     </h1>
 
     <!-- Subhead -->
@@ -77,17 +77,19 @@
             </div>
           </div>
         </div>
-        <!-- Video or poster placeholder -->
-        <video
-          autoplay
-          loop
-          muted
-          playsinline
-          poster="/images/admin-dashboard.webp"
-          class="w-full aspect-video bg-surface-tertiary"
-        >
-          <source src="/videos/admin-demo.webm" type="video/webm" />
-        </video>
+        <!-- Admin dashboard screenshot (swaps with theme) -->
+        <img
+          src="/images/admin-dashboard.webp"
+          alt="Flare CMS Admin Dashboard — Dark Mode"
+          class="w-full aspect-video object-cover object-top bg-surface-tertiary dark-only"
+          loading="eager"
+        />
+        <img
+          src="/images/admin-dashboard-light.webp"
+          alt="Flare CMS Admin Dashboard — Light Mode"
+          class="w-full aspect-video object-cover object-top bg-surface-tertiary light-only hidden"
+          loading="eager"
+        />
       </div>
       <!-- Glow effect behind -->
       <div class="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-b from-flare-500/5 to-transparent blur-2xl"></div>
