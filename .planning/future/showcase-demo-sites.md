@@ -41,6 +41,39 @@ Hosted on subdomains (e.g., restaurant.flarecms.dev, tattoo.flarecms.dev).
 - **Booking/scheduling** — for service businesses
 - **Menu builder** — structured menu with categories, dietary tags, prices
 
+## Dual Purpose: Showcases + CLI Templates
+
+Each demo site doubles as a `create-flare-app` starter template. Build once, use twice:
+- **Live showcase** at `restaurant.flarecms.dev` (sales/demo)
+- **CLI template** via `npx create-flare-app --template restaurant` (developer onboarding)
+
+### Monorepo Structure
+
+```
+packages/
+  create-app/        ← CLI scaffolder (Clack prompts)
+  templates/
+    blank/           ← Empty collections, minimal Astro pages
+    restaurant/      ← Menu, hours, gallery, food photos
+    portfolio/       ← Projects, about, contact
+    blog/            ← Posts, categories, authors
+    services/        ← HVAC/landscaping/grooming type businesses
+```
+
+### Per-Template Contents
+
+- `collections/` — collection config files
+- `seed.ts` — mock data + AI-generated images for DB seeding
+- `astro/` — frontend pages (Lexington themes as base)
+- `wrangler.toml` — pre-configured Cloudflare bindings
+
+### CLI Package: Clack (NOT React Ink)
+
+- **Package:** `@clack/prompts` — lightweight, beautiful CLI prompts
+- **Repo:** github.com/bombshell-dev/clack
+- **Why not React Ink:** Don't need React runtime for a scaffolder
+- **Used by:** create-svelte, create-astro, and other modern CLI tools
+
 ## Prerequisites
 
 - CMS feature-complete and deployed
