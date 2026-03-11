@@ -306,177 +306,849 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
 
   const pageContent = `
     <style>
-      /* Form.io Builder Styling to match Flare CMS theme */
-      .formio-builder {
-        background: transparent !important;
-        border: none !important;
-      }
-
-      .formio-builder .formio-component {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 0.5rem !important;
-      }
-
-      .formio-builder-sidebar {
-        background: rgba(255, 255, 255, 0.02) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
-      }
+      /* ========================================
+       * Form.io Builder — Catalyst Design System
+       * Uses .dark class (not prefers-color-scheme)
+       * to match admin layout's darkMode: 'class'
+       * ======================================== */
 
       /* Hide loading spinner after Form.io loads */
-      #builder-loading.hidden {
-        display: none;
-      }
+      #builder-loading.hidden { display: none; }
 
-      /* Builder container - Darker gray for better contrast */
+      /* Builder container — Catalyst card (matches content table card) */
       #builder-container {
         min-height: 600px;
         width: 100%;
-        background: #e8e8e8;
+        background: white;
         border-radius: 0.75rem;
-        border: 2px solid #d0d0d0;
-        padding: 20px;
+        border: 1px solid rgb(9 9 11 / 0.05);
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+        padding: 0;
+        overflow: hidden;
       }
 
-      @media (prefers-color-scheme: dark) {
-        #builder-container {
-          background: #1f2937;
-          border-color: rgba(255, 255, 255, 0.2);
-        }
+      .dark #builder-container {
+        background: rgb(24 24 27);
+        border-color: rgb(255 255 255 / 0.1);
       }
 
       /* Display type toggle buttons */
       .display-type-btn {
-        background: #f3f4f6;
-        color: #4b5563;
-        border: 2px solid transparent;
-      }
-      
-      .display-type-btn:hover {
-        background: #e5e7eb;
-      }
-      
-      .display-type-btn.active {
-        background: #3b82f6;
-        color: white;
-        border-color: #2563eb;
-      }
-      
-      @media (prefers-color-scheme: dark) {
-        .display-type-btn {
-          background: #374151;
-          color: #d1d5db;
-        }
-        
-        .display-type-btn:hover {
-          background: #4b5563;
-        }
-        
-        .display-type-btn.active {
-          background: #3b82f6;
-          color: white;
-        }
+        background: white;
+        color: #3f3f46;
+        border: 1px solid rgb(9 9 11 / 0.1);
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       }
 
-      /* Force Bootstrap grid to work - restore Bootstrap's grid system */
+      .display-type-btn:hover {
+        background: #f4f4f5;
+      }
+
+      .display-type-btn.active {
+        background: #18181b;
+        color: white;
+        border-color: #18181b;
+      }
+
+      .dark .display-type-btn {
+        background: rgb(39 39 42);
+        color: #d4d4d8;
+        border-color: rgb(255 255 255 / 0.1);
+      }
+
+      .dark .display-type-btn:hover {
+        background: rgb(63 63 70);
+      }
+
+      .dark .display-type-btn.active {
+        background: white;
+        color: #18181b;
+        border-color: white;
+      }
+
+      /* Force Bootstrap grid — sidebar + canvas layout */
       .formio.builder.row {
         display: flex !important;
         flex-wrap: wrap !important;
-        margin-right: -15px !important;
-        margin-left: -15px !important;
+        margin: 0 !important;
         min-height: 600px;
       }
-      
-      /* Sidebar column - Bootstrap grid */
+
+      /* Sidebar column */
       .formio.builder.row > .formcomponents {
         position: relative !important;
         width: 100% !important;
-        padding-right: 15px !important;
-        padding-left: 15px !important;
-        flex: 0 0 16.666667% !important; /* col-md-2 */
-        max-width: 16.666667% !important;
-        background: white;
-        border-right: 2px solid #e5e7eb;
-        max-height: 600px;
+        padding: 16px !important;
+        flex: 0 0 220px !important;
+        max-width: 220px !important;
+        background: #f8fafc;
+        border-right: 1px solid rgb(9 9 11 / 0.05);
+        max-height: 700px;
         overflow-y: auto;
+        overflow-x: hidden;
       }
-      
-      /* Canvas column - Bootstrap grid */
+
+      /* Canvas column */
       .formio.builder.row > .formarea {
         position: relative !important;
         width: 100% !important;
-        padding-right: 15px !important;
-        padding-left: 15px !important;
-        flex: 0 0 83.333333% !important; /* col-md-10 */
-        max-width: 83.333333% !important;
+        padding: 24px !important;
+        flex: 1 1 0% !important;
+        max-width: none !important;
         background: white !important;
-        border: 3px dashed #94a3b8 !important;
-        border-radius: 8px !important;
+        border: none !important;
+        border-radius: 0 !important;
         min-height: 600px !important;
       }
-      
-      /* Responsive: tablet */
-      @media (max-width: 992px) {
-        .formio.builder.row > .formcomponents {
-          flex: 0 0 25% !important; /* col-sm-3 */
-          max-width: 25% !important;
-        }
-        .formio.builder.row > .formarea {
-          flex: 0 0 75% !important; /* col-sm-9 */
-          max-width: 75% !important;
-        }
+
+      .dark .formio.builder.row > .formcomponents {
+        background: rgb(24 24 27);
+        border-right-color: rgb(255 255 255 / 0.07);
       }
-      
-      /* Responsive: mobile */
+
+      .dark .formio.builder.row > .formarea {
+        background: rgb(39 39 42) !important;
+      }
+
+      /* Drop zone hint text */
+      .formio.builder.row > .formarea .drag-container:empty::before {
+        content: 'Drag and drop components here';
+        display: block;
+        padding: 80px 40px;
+        text-align: center;
+        color: #a1a1aa;
+        font-size: 0.875rem;
+        border: 2px dashed #e4e4e7;
+        border-radius: 0.75rem;
+        background: #f8fafc;
+      }
+
+      .dark .formio.builder.row > .formarea .drag-container:empty::before {
+        color: #52525b;
+        border-color: rgb(255 255 255 / 0.07);
+        background: rgb(24 24 27);
+      }
+
       @media (max-width: 768px) {
         .formio.builder.row > .formcomponents {
-          flex: 0 0 33.333333% !important; /* col-xs-4 */
-          max-width: 33.333333% !important;
-        }
-        .formio.builder.row > .formarea {
-          flex: 0 0 66.666667% !important; /* col-xs-8 */
-          max-width: 66.666667% !important;
+          flex: 0 0 160px !important;
+          max-width: 160px !important;
         }
       }
-      
-      @media (prefers-color-scheme: dark) {
-        .formcomponents {
-          background: #374151 !important;
-          border-right-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .formarea {
-          background: #0f172a !important;
-          border-color: rgba(255, 255, 255, 0.3) !important;
-        }
+
+      /* Sidebar search input */
+      .formcomponents .builder-sidebar_search input {
+        width: 100% !important;
+        padding: 6px 10px !important;
+        font-size: 0.8125rem !important;
+        border-radius: 0.5rem !important;
+        border: 1px solid rgb(9 9 11 / 0.1) !important;
+        background: white !important;
+        color: #18181b !important;
+        outline: none !important;
+        margin-bottom: 8px !important;
       }
-      
+
+      .formcomponents .builder-sidebar_search input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgb(59 130 246 / 0.15) !important;
+      }
+
+      .dark .formcomponents .builder-sidebar_search input {
+        background: rgb(39 39 42) !important;
+        border-color: rgb(255 255 255 / 0.1) !important;
+        color: white !important;
+      }
+
+      /* Sidebar group titles (Layout, Basic, Advanced, etc.) */
+      .formcomponents .card {
+        background: transparent !important;
+        border: none !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .formcomponents .card-header {
+        background: transparent !important;
+        border: none !important;
+        padding: 10px 0 4px !important;
+      }
+
+      .formcomponents .card-header .card-title,
+      .formcomponents .card-header button,
+      .formcomponents .card-header a {
+        font-size: 0.6875rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #a1a1aa !important;
+        text-decoration: none !important;
+        padding: 0 !important;
+        background: none !important;
+        border: none !important;
+      }
+
+      .formcomponents .card-body {
+        padding: 0 !important;
+      }
+
+      /* Sidebar draggable component items */
+      .formcomponent {
+        background: white !important;
+        border: 1px solid rgb(9 9 11 / 0.07) !important;
+        border-radius: 0.5rem !important;
+        padding: 7px 10px !important;
+        margin: 3px 0 !important;
+        font-weight: 500 !important;
+        font-size: 0.8125rem !important;
+        color: #3f3f46 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        visibility: visible !important;
+        cursor: grab !important;
+        transition: all 0.15s ease !important;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03) !important;
+        line-height: 1.4 !important;
+      }
+
+      .formcomponent i,
+      .formcomponent .fa {
+        font-size: 0.75rem !important;
+        color: #a1a1aa !important;
+        width: 16px !important;
+        text-align: center !important;
+      }
+
+      .formcomponent span {
+        font-size: 0.8125rem !important;
+      }
+
+      .formcomponent:hover {
+        background: #f4f4f5 !important;
+        border-color: rgb(9 9 11 / 0.12) !important;
+        box-shadow: 0 2px 4px rgb(0 0 0 / 0.06) !important;
+      }
+
+      .formcomponent:active {
+        cursor: grabbing !important;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.1) !important;
+      }
+
+      .dark .formcomponent {
+        background: rgb(39 39 42) !important;
+        border-color: rgb(255 255 255 / 0.08) !important;
+        color: #d4d4d8 !important;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2) !important;
+      }
+
+      .dark .formcomponent i,
+      .dark .formcomponent .fa {
+        color: #71717a !important;
+      }
+
+      .dark .formcomponent:hover {
+        background: rgb(63 63 70) !important;
+        border-color: rgb(255 255 255 / 0.15) !important;
+      }
+
+      /* Dropped components in canvas */
+      .builder-component {
+        background: white !important;
+        padding: 16px !important;
+        margin: 8px 0 !important;
+        border: 1px solid rgb(9 9 11 / 0.07) !important;
+        border-radius: 0.75rem !important;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.04) !important;
+        transition: all 0.15s ease !important;
+      }
+
+      .builder-component:hover {
+        border-color: rgb(9 9 11 / 0.12) !important;
+        box-shadow: 0 2px 6px rgb(0 0 0 / 0.06) !important;
+      }
+
+      .dark .builder-component {
+        background: rgb(24 24 27) !important;
+        border-color: rgb(255 255 255 / 0.08) !important;
+      }
+
+      .dark .builder-component:hover {
+        border-color: rgb(255 255 255 / 0.15) !important;
+      }
+
+      /* Component labels in canvas */
+      .builder-component label,
+      .formio-component label {
+        color: #18181b !important;
+        font-weight: 500 !important;
+        font-size: 0.875rem !important;
+      }
+
+      .dark .builder-component label,
+      .dark .formio-component label {
+        color: #fafafa !important;
+      }
+
+      /* Form control inputs in canvas */
+      .builder-component input.form-control,
+      .builder-component select.form-control,
+      .builder-component textarea.form-control {
+        border-radius: 0.5rem !important;
+        border: 1px solid rgb(9 9 11 / 0.1) !important;
+        padding: 6px 10px !important;
+        font-size: 0.875rem !important;
+        background: #fafafa !important;
+        color: #71717a !important;
+      }
+
+      .dark .builder-component input.form-control,
+      .dark .builder-component select.form-control,
+      .dark .builder-component textarea.form-control {
+        background: rgb(39 39 42) !important;
+        border-color: rgb(255 255 255 / 0.1) !important;
+        color: #a1a1aa !important;
+      }
+
+      /* Component action toolbar — hidden until hover */
+      .component-btn-group {
+        background: white !important;
+        padding: 3px !important;
+        border-radius: 0.5rem !important;
+        border: 1px solid rgb(9 9 11 / 0.08) !important;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 0.08) !important;
+        gap: 2px !important;
+        display: flex !important;
+        opacity: 0 !important;
+        transition: opacity 0.15s ease !important;
+        pointer-events: none !important;
+      }
+
+      .builder-component:hover .component-btn-group,
+      .formio-component:hover > .component-btn-group {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+
+      .component-btn-group .btn {
+        width: 28px !important;
+        height: 28px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #71717a !important;
+        font-size: 0.75rem !important;
+        padding: 0 !important;
+        border-radius: 0.375rem !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        transition: all 0.15s ease !important;
+      }
+
+      .component-btn-group .btn:hover {
+        background: #f4f4f5 !important;
+        color: #18181b !important;
+        border-color: rgb(9 9 11 / 0.08) !important;
+      }
+
+      /* Delete button gets red on hover */
+      .component-btn-group .btn-danger,
+      .component-btn-group .btn:last-child {
+        color: #a1a1aa !important;
+      }
+
+      .component-btn-group .btn-danger:hover,
+      .component-btn-group .btn:last-child:hover {
+        background: #fef2f2 !important;
+        color: #dc2626 !important;
+        border-color: rgb(220 38 38 / 0.15) !important;
+      }
+
+      /* Hide the tooltip "Edit" label */
+      .component-btn-group .btn[title] {
+        font-size: 0 !important;
+      }
+
+      .component-btn-group .btn[title] i,
+      .component-btn-group .btn[title] .fa {
+        font-size: 0.75rem !important;
+      }
+
+      .dark .component-btn-group {
+        background: rgb(39 39 42) !important;
+        border-color: rgb(255 255 255 / 0.1) !important;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 0.25) !important;
+      }
+
+      .dark .component-btn-group .btn {
+        color: #a1a1aa !important;
+      }
+
+      .dark .component-btn-group .btn:hover {
+        background: rgb(63 63 70) !important;
+        color: white !important;
+        border-color: rgb(255 255 255 / 0.1) !important;
+      }
+
+      .dark .component-btn-group .btn-danger:hover,
+      .dark .component-btn-group .btn:last-child:hover {
+        background: rgb(127 29 29 / 0.3) !important;
+        color: #fca5a5 !important;
+        border-color: rgb(220 38 38 / 0.3) !important;
+      }
+
+      /* Bootstrap collapse — sidebar accordions */
+      #builder-container .collapse {
+        display: none !important;
+      }
+
+      #builder-container .collapse.show {
+        display: block !important;
+      }
+
+      #builder-container .collapsing {
+        display: block !important;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.2s ease;
+      }
+
+      /* Submit / button components in canvas */
+      .builder-component .btn-primary,
+      .formarea .btn-primary {
+        background: #18181b !important;
+        border-color: #18181b !important;
+        color: white !important;
+        border-radius: 0.5rem !important;
+        padding: 8px 20px !important;
+        font-weight: 500 !important;
+        font-size: 0.875rem !important;
+      }
+
+      .dark .builder-component .btn-primary,
+      .dark .formarea .btn-primary {
+        background: white !important;
+        border-color: white !important;
+        color: #18181b !important;
+      }
+
       /* ===================================
-       * Preview Modal Styling - Light Theme
+       * Form.io Component Edit Dialog
        * =================================== */
-      
-      /* Force light theme in preview */
+
+      /* Overlay backdrop */
+      .formio-dialog {
+        z-index: 10000 !important;
+        background: rgb(0 0 0 / 0.4) !important;
+        backdrop-filter: blur(2px);
+      }
+
+      /* Lock body scroll when dialog is open */
+      body:has(.formio-dialog) {
+        overflow: hidden !important;
+      }
+
+      /* Dialog container — wider to fit tabs + preview panel */
+      .formio-dialog .formio-dialog-content {
+        background: white !important;
+        border-radius: 0.75rem !important;
+        max-width: 860px !important;
+        width: 90vw !important;
+        box-shadow: 0 20px 60px -12px rgb(0 0 0 / 0.25) !important;
+        border: 1px solid rgb(9 9 11 / 0.05) !important;
+        padding: 0 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        font-family: ui-sans-serif, system-ui, sans-serif !important;
+        max-height: 85vh !important;
+      }
+
+      /* Component title header area */
+      .formio-dialog .formio-dialog-content > .row:first-child,
+      .formio-dialog .formio-dialog-content > div:first-child {
+        padding: 20px 24px 0 !important;
+      }
+
+      /* Component type heading */
+      .formio-dialog .component-edit-header,
+      .formio-dialog .formio-dialog-content > .row:first-child h4,
+      .formio-dialog .formio-dialog-content h4 {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #18181b !important;
+        margin: 0 0 12px !important;
+        padding: 0 !important;
+      }
+
+      /* Hide the broken Help button */
+      .formio-dialog .formio-dialog-content .help-button,
+      .formio-dialog .formio-dialog-content a[href*="help"],
+      .formio-dialog .formio-dialog-content .pull-right:has(i.fa-question-circle),
+      .formio-dialog .formio-dialog-content > .row:first-child .pull-right {
+        display: none !important;
+      }
+
+      /* Close X button */
+      .formio-dialog-close {
+        top: 16px !important;
+        right: 16px !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 0.375rem !important;
+        background: transparent !important;
+        color: #71717a !important;
+        font-size: 1.25rem !important;
+        transition: all 0.15s ease !important;
+      }
+
+      .formio-dialog-close:hover {
+        background: #f4f4f5 !important;
+        color: #18181b !important;
+      }
+
+      /* Tab navigation (Display, Data, Validation, API, etc.) */
+      .formio-dialog .nav-tabs,
+      .formio-dialog .formio-component-tabs > .card > .card-header > .nav-tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 0 !important;
+        border-bottom: 1px solid rgb(9 9 11 / 0.07) !important;
+        padding: 0 24px !important;
+        margin: 0 !important;
+        background: #fafafa !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+      }
+
+      .formio-dialog .nav-tabs::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      .formio-dialog .nav-tabs .nav-item,
+      .formio-dialog .nav-tabs li {
+        list-style: none !important;
+        margin: 0 !important;
+      }
+
+      .formio-dialog .nav-tabs .nav-link,
+      .formio-dialog .nav-tabs li a {
+        display: block !important;
+        padding: 10px 14px !important;
+        font-size: 0.8125rem !important;
+        font-weight: 500 !important;
+        color: #71717a !important;
+        text-decoration: none !important;
+        border: none !important;
+        border-bottom: 2px solid transparent !important;
+        background: transparent !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        white-space: nowrap !important;
+      }
+
+      .formio-dialog .nav-tabs .nav-link:hover,
+      .formio-dialog .nav-tabs li a:hover {
+        color: #18181b !important;
+        background: transparent !important;
+      }
+
+      .formio-dialog .nav-tabs .nav-link.active,
+      .formio-dialog .nav-tabs li.active a,
+      .formio-dialog .nav-tabs li a.active {
+        color: #18181b !important;
+        border-bottom-color: #18181b !important;
+        background: transparent !important;
+      }
+
+      /* Tab content area */
+      .formio-dialog .tab-content,
+      .formio-dialog .card-body {
+        padding: 20px 24px !important;
+        background: white !important;
+      }
+
+      /* Preview panel styling */
+      .formio-dialog .component-preview {
+        border-left: 1px solid rgb(9 9 11 / 0.07) !important;
+        background: #fafafa !important;
+        padding: 16px !important;
+      }
+
+      /* Labels in dialog */
+      .formio-dialog label,
+      .formio-dialog .control-label,
+      .formio-dialog .col-form-label {
+        font-size: 0.8125rem !important;
+        font-weight: 600 !important;
+        color: #18181b !important;
+        margin-bottom: 4px !important;
+        display: block !important;
+      }
+
+      /* Help icons (tooltip triggers) */
+      .formio-dialog .fa-question-sign,
+      .formio-dialog .fa-question-circle {
+        color: #a1a1aa !important;
+        font-size: 0.75rem !important;
+        margin-left: 4px !important;
+        cursor: help !important;
+      }
+
+      /* Text inputs, textareas, selects in dialog */
+      .formio-dialog input[type="text"],
+      .formio-dialog input[type="number"],
+      .formio-dialog input[type="email"],
+      .formio-dialog input[type="url"],
+      .formio-dialog input[type="password"],
+      .formio-dialog textarea,
+      .formio-dialog select,
+      .formio-dialog .form-control {
+        width: 100% !important;
+        padding: 7px 11px !important;
+        font-size: 0.875rem !important;
+        line-height: 1.5 !important;
+        color: #18181b !important;
+        background: white !important;
+        border: 1px solid rgb(9 9 11 / 0.1) !important;
+        border-radius: 0.5rem !important;
+        outline: none !important;
+        transition: border-color 0.15s ease !important;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.04) !important;
+      }
+
+      .formio-dialog input:focus,
+      .formio-dialog textarea:focus,
+      .formio-dialog select:focus,
+      .formio-dialog .form-control:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgb(59 130 246 / 0.12) !important;
+      }
+
+      .formio-dialog textarea {
+        min-height: 60px !important;
+        resize: vertical !important;
+      }
+
+      /* Select dropdowns */
+      .formio-dialog .choices__inner,
+      .formio-dialog .formio-choices .form-control {
+        border: 1px solid rgb(9 9 11 / 0.1) !important;
+        border-radius: 0.5rem !important;
+        background: white !important;
+        min-height: 36px !important;
+        padding: 4px 8px !important;
+      }
+
+      /* Checkboxes in dialog */
+      .formio-dialog input[type="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+        border-radius: 0.25rem !important;
+        accent-color: #18181b !important;
+        margin-right: 6px !important;
+        vertical-align: middle !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .formio-dialog .checkbox label,
+      .formio-dialog .form-check-label {
+        font-weight: 500 !important;
+        font-size: 0.8125rem !important;
+        color: #3f3f46 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        cursor: pointer !important;
+      }
+
+      /* Form groups spacing */
+      .formio-dialog .form-group {
+        margin-bottom: 16px !important;
+      }
+
+      /* Required asterisk */
+      .formio-dialog .field-required::after {
+        color: #ef4444 !important;
+      }
+
+      /* ACE editor / code editor areas */
+      .formio-dialog .ace_editor {
+        border-radius: 0.5rem !important;
+        border: 1px solid rgb(9 9 11 / 0.1) !important;
+      }
+
+      /* Dialog footer / action buttons area */
+      .formio-dialog .formio-dialog-content > .row:last-child,
+      .formio-dialog .component-edit-container > .row:last-child {
+        padding: 16px 24px !important;
+        border-top: 1px solid rgb(9 9 11 / 0.07) !important;
+        background: #fafafa !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+      }
+
+      /* Save / Cancel / Remove buttons in dialog */
+      .formio-dialog .btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 7px 16px !important;
+        font-size: 0.8125rem !important;
+        font-weight: 500 !important;
+        border-radius: 0.5rem !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+        border: 1px solid transparent !important;
+        line-height: 1.4 !important;
+      }
+
+      .formio-dialog .btn-primary,
+      .formio-dialog .btn-success {
+        background: #18181b !important;
+        color: white !important;
+        border-color: #18181b !important;
+      }
+
+      .formio-dialog .btn-primary:hover,
+      .formio-dialog .btn-success:hover {
+        background: #27272a !important;
+      }
+
+      .formio-dialog .btn-default,
+      .formio-dialog .btn-secondary {
+        background: white !important;
+        color: #3f3f46 !important;
+        border-color: rgb(9 9 11 / 0.1) !important;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.04) !important;
+      }
+
+      .formio-dialog .btn-default:hover,
+      .formio-dialog .btn-secondary:hover {
+        background: #f4f4f5 !important;
+      }
+
+      .formio-dialog .btn-danger {
+        background: white !important;
+        color: #dc2626 !important;
+        border-color: rgb(220 38 38 / 0.2) !important;
+      }
+
+      .formio-dialog .btn-danger:hover {
+        background: #fef2f2 !important;
+        border-color: rgb(220 38 38 / 0.3) !important;
+      }
+
+      /* Panels inside dialog (e.g. well, fieldset previews) */
+      .formio-dialog .card,
+      .formio-dialog .panel {
+        border: 1px solid rgb(9 9 11 / 0.07) !important;
+        border-radius: 0.5rem !important;
+        box-shadow: none !important;
+        background: white !important;
+      }
+
+      .formio-dialog .card-header,
+      .formio-dialog .panel-heading {
+        background: #fafafa !important;
+        border-bottom: 1px solid rgb(9 9 11 / 0.05) !important;
+        padding: 10px 16px !important;
+        font-weight: 600 !important;
+        font-size: 0.8125rem !important;
+        color: #18181b !important;
+      }
+
+      /* Well sections */
+      .formio-dialog .well {
+        background: #f8fafc !important;
+        border: 1px solid rgb(9 9 11 / 0.05) !important;
+        border-radius: 0.5rem !important;
+        padding: 12px 16px !important;
+        box-shadow: none !important;
+      }
+
+      /* Help text / descriptions */
+      .formio-dialog .help-block,
+      .formio-dialog .form-text {
+        font-size: 0.75rem !important;
+        color: #a1a1aa !important;
+        margin-top: 4px !important;
+      }
+
+      /* Table in dialog (e.g. data tab value lists) */
+      .formio-dialog table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+
+      .formio-dialog table th {
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        color: #71717a !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.03em !important;
+        padding: 8px 12px !important;
+        border-bottom: 1px solid rgb(9 9 11 / 0.07) !important;
+        text-align: left !important;
+      }
+
+      .formio-dialog table td {
+        padding: 8px 12px !important;
+        border-bottom: 1px solid rgb(9 9 11 / 0.04) !important;
+        font-size: 0.8125rem !important;
+        color: #3f3f46 !important;
+      }
+
+      /* Alert/info boxes in dialog */
+      .formio-dialog .alert-info {
+        background: #f0f9ff !important;
+        border: 1px solid #bae6fd !important;
+        border-radius: 0.5rem !important;
+        color: #0c4a6e !important;
+        padding: 10px 14px !important;
+        font-size: 0.8125rem !important;
+      }
+
+      .formio-dialog .alert-warning {
+        background: #fffbeb !important;
+        border: 1px solid #fde68a !important;
+        border-radius: 0.5rem !important;
+        color: #92400e !important;
+        padding: 10px 14px !important;
+        font-size: 0.8125rem !important;
+      }
+
+      /* ===================================
+       * Preview Modal Styling
+       * =================================== */
+
       #preview-container {
         background: #ffffff !important;
-        color: #1f2937 !important;
+        color: #18181b !important;
       }
-      
+
       #preview-container .formio-form {
         background: #ffffff !important;
       }
-      
+
       #preview-container .form-group {
         margin-bottom: 1.5rem;
       }
-      
+
       #preview-container label {
         display: block !important;
         margin-bottom: 0.5rem !important;
         font-weight: 500 !important;
-        color: #374151 !important;
+        color: #3f3f46 !important;
         font-size: 0.875rem !important;
       }
-      
+
       #preview-container input[type="text"],
       #preview-container input[type="number"],
       #preview-container input[type="email"],
@@ -486,55 +1158,53 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
         display: block !important;
         width: 100% !important;
         padding: 0.5rem 0.75rem !important;
-        font-size: 1rem !important;
+        font-size: 0.875rem !important;
         line-height: 1.5 !important;
-        color: #1f2937 !important;
+        color: #18181b !important;
         background-color: #ffffff !important;
-        background-clip: padding-box !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 0.375rem !important;
-        transition: border-color 0.15s ease-in-out !important;
+        border: 1px solid rgb(9 9 11 / 0.1) !important;
+        border-radius: 0.5rem !important;
+        transition: border-color 0.15s ease !important;
       }
-      
+
       #preview-container input:focus,
       #preview-container select:focus,
       #preview-container textarea:focus {
         outline: none !important;
         border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        box-shadow: 0 0 0 2px rgb(59 130 246 / 0.15) !important;
       }
-      
+
       #preview-container .btn {
         display: inline-block !important;
-        padding: 0.5rem 1rem !important;
-        font-size: 1rem !important;
+        padding: 0.5rem 1.25rem !important;
+        font-size: 0.875rem !important;
         font-weight: 500 !important;
         line-height: 1.5 !important;
         text-align: center !important;
-        border-radius: 0.375rem !important;
+        border-radius: 0.5rem !important;
         border: 1px solid transparent !important;
         cursor: pointer !important;
-        transition: all 0.15s ease-in-out !important;
+        transition: all 0.15s ease !important;
       }
-      
+
       #preview-container .btn-primary {
         color: #ffffff !important;
-        background-color: #3b82f6 !important;
-        border-color: #3b82f6 !important;
+        background-color: #18181b !important;
+        border-color: #18181b !important;
       }
-      
+
       #preview-container .btn-primary:hover {
-        background-color: #2563eb !important;
-        border-color: #2563eb !important;
+        background-color: #27272a !important;
       }
-      
+
       #preview-container .row {
         display: flex !important;
         flex-wrap: wrap !important;
         margin-right: -0.75rem !important;
         margin-left: -0.75rem !important;
       }
-      
+
       #preview-container .col,
       #preview-container [class*="col-"] {
         position: relative !important;
@@ -542,102 +1212,34 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
         padding-right: 0.75rem !important;
         padding-left: 0.75rem !important;
       }
-      
+
       #preview-container .col-xs-3 { flex: 0 0 25% !important; max-width: 25% !important; }
       #preview-container .col-xs-4 { flex: 0 0 33.333333% !important; max-width: 33.333333% !important; }
       #preview-container .col-xs-5 { flex: 0 0 41.666667% !important; max-width: 41.666667% !important; }
-      
-      /* Bootstrap collapse - force override inline styles */
-      #builder-container .collapse {
-        display: none !important;
+
+      /* Required asterisk */
+      .field-required::after {
+        color: #ef4444 !important;
       }
-      
-      #builder-container .collapse.show {
-        display: block !important;
+
+      /* Drag placeholder */
+      .formio-builder .ui-sortable-placeholder {
+        background: rgb(59 130 246 / 0.05) !important;
+        border: 2px dashed rgb(59 130 246 / 0.25) !important;
+        border-radius: 0.75rem !important;
+        min-height: 48px !important;
       }
-      
-      #builder-container .collapsing {
-        display: block !important;
-        height: 0;
-        overflow: hidden;
-        transition: height 0.35s ease;
+
+      /* Form.io default "Drag and Drop" text in formarea */
+      .formarea > .formio-drop-zone,
+      .formarea > div > .formio-drop-zone {
+        color: #a1a1aa !important;
+        font-size: 0.875rem !important;
       }
-      
-      /* Sidebar component items - Darker for better contrast */
-      .formcomponent {
-        background: #e9ecef !important;
-        border: 2px solid #ced4da !important;
-        border-radius: 6px !important;
-        padding: 10px !important;
-        margin: 8px 0 !important;
-        font-weight: 500 !important;
-        color: #212529 !important;
-        display: block !important;
-        visibility: visible !important;
-      }
-      
-      .formcomponent:hover {
-        background: #dee2e6 !important;
-        border-color: #adb5bd !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
-      }
-      
-      @media (prefers-color-scheme: dark) {
-        .formcomponent {
-          background: #1e3a8a !important;
-          border-color: #3b82f6 !important;
-          color: #dbeafe !important;
-        }
-        
-        .formcomponent:hover {
-          background: #1e40af !important;
-          border-color: #60a5fa !important;
-        }
-      }
-      
-      /* Dropped components in canvas - White with darker borders */
-      .builder-component {
-        background: #ffffff !important;
-        padding: 15px !important;
-        margin: 15px 0 !important;
-        border: 2px solid #c0c0c0 !important;
-        border-radius: 8px !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
-      }
-      
-      .builder-component:hover {
-        border-color: #9e9e9e !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
-      }
-      
-      /* Component labels */
-      .builder-component label,
-      .formio-component label {
-        color: #0f172a !important;
-        font-weight: 600 !important;
-      }
-      
-      /* Edit buttons */
-      .component-btn-group {
-        background: #64748b !important;
-        padding: 4px !important;
-        border-radius: 4px !important;
-      }
-      
-      .component-btn-group .btn {
-        color: white !important;
-      }
-      
-      @media (prefers-color-scheme: dark) {
-        .builder-component {
-          background: #1e40af !important;
-          border-color: #3b82f6 !important;
-        }
-        
-        .builder-component label,
-        .formio-component label {
-          color: #f1f5f9 !important;
-        }
+
+      .dark .formarea > .formio-drop-zone,
+      .dark .formarea > div > .formio-drop-zone {
+        color: #52525b !important;
       }
     </style>
 
@@ -664,13 +1266,13 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
           </div>
 
           <!-- Actions -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <button
               id="preview-btn"
               type="button"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
             >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
               </svg>
@@ -680,9 +1282,9 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
             <button
               id="save-btn"
               type="button"
-              class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+              class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3 py-1.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
             >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
               </svg>
               Save Form
@@ -691,55 +1293,49 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
             <a
               href="/forms/${data.name}"
               target="_blank"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-slate-600 text-white hover:bg-slate-700 transition-colors"
+              class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
               title="Open public form in new tab"
             >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
               </svg>
-              View Public Form
+              Public Form
             </a>
 
             <a
               href="/admin/forms/${data.id}/submissions"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+              class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
             >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
-              View Submissions
+              Submissions
             </a>
           </div>
         </div>
       </div>
 
       <!-- Display Type Toggle -->
-      <div class="mb-6 flex items-center gap-4">
-        <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Display Type:</label>
-        <div class="flex gap-2">
+      <div class="mb-6 flex items-center gap-3">
+        <span class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Display:</span>
+        <div class="flex gap-1">
           <button
             id="display-form-btn"
-            class="display-type-btn active inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+            class="display-type-btn active inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             data-display="form"
           >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
             Single Page
           </button>
           <button
             id="display-wizard-btn"
-            class="display-type-btn inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+            class="display-type-btn inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             data-display="wizard"
           >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
             Multi-Page Wizard
           </button>
         </div>
-        <span class="text-xs text-zinc-500 dark:text-zinc-400 italic" id="wizard-hint" style="display: none;">
-          💡 Use <strong>Panel</strong> components (Layout tab) for each page
+        <span class="text-xs text-zinc-500 dark:text-zinc-400" id="wizard-hint" style="display: none;">
+          Use <strong>Panel</strong> components (Layout tab) for each page
         </span>
       </div>
 
@@ -835,6 +1431,79 @@ ${getTurnstileComponentScript()}
           }, 5000);
         }
 
+        // Confirmation dialog helper (Catalyst-styled)
+        function showConfirmDialog(title, message, onConfirm) {
+          // Create backdrop
+          var backdrop = document.createElement('div');
+          backdrop.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:50000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
+
+          // Create dialog card
+          var dialog = document.createElement('div');
+          dialog.style.cssText = 'background:white;border-radius:0.75rem;max-width:400px;width:90%;box-shadow:0 20px 60px -12px rgba(0,0,0,0.25);border:1px solid rgba(9,9,11,0.05);overflow:hidden;font-family:ui-sans-serif,system-ui,sans-serif';
+
+          // Header
+          var header = document.createElement('div');
+          header.style.cssText = 'padding:20px 24px 0';
+          var h3 = document.createElement('h3');
+          h3.style.cssText = 'font-size:1rem;font-weight:600;color:#18181b;margin:0';
+          h3.textContent = title;
+          header.appendChild(h3);
+          dialog.appendChild(header);
+
+          // Body
+          var body = document.createElement('div');
+          body.style.cssText = 'padding:12px 24px 20px';
+          var p = document.createElement('p');
+          p.style.cssText = 'font-size:0.875rem;color:#71717a;margin:0;line-height:1.5';
+          p.textContent = message;
+          body.appendChild(p);
+          dialog.appendChild(body);
+
+          // Footer with buttons
+          var footer = document.createElement('div');
+          footer.style.cssText = 'padding:16px 24px;border-top:1px solid rgba(9,9,11,0.07);background:#fafafa;display:flex;justify-content:flex-end;gap:8px';
+
+          var cancelBtn = document.createElement('button');
+          cancelBtn.style.cssText = 'padding:7px 16px;font-size:0.8125rem;font-weight:500;border-radius:0.5rem;border:1px solid rgba(9,9,11,0.1);background:white;color:#3f3f46;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.04)';
+          cancelBtn.textContent = 'Cancel';
+
+          var confirmBtn = document.createElement('button');
+          confirmBtn.style.cssText = 'padding:7px 16px;font-size:0.8125rem;font-weight:500;border-radius:0.5rem;border:1px solid transparent;background:#dc2626;color:white;cursor:pointer';
+          confirmBtn.textContent = 'Remove';
+
+          cancelBtn.addEventListener('click', function() {
+            backdrop.remove();
+          });
+
+          confirmBtn.addEventListener('click', function() {
+            backdrop.remove();
+            onConfirm();
+          });
+
+          // Close on backdrop click
+          backdrop.addEventListener('click', function(e) {
+            if (e.target === backdrop) backdrop.remove();
+          });
+
+          // Close on Escape
+          var escHandler = function(e) {
+            if (e.key === 'Escape') {
+              backdrop.remove();
+              document.removeEventListener('keydown', escHandler);
+            }
+          };
+          document.addEventListener('keydown', escHandler);
+
+          footer.appendChild(cancelBtn);
+          footer.appendChild(confirmBtn);
+          dialog.appendChild(footer);
+          backdrop.appendChild(dialog);
+          document.body.appendChild(backdrop);
+
+          // Focus the cancel button by default (safer)
+          cancelBtn.focus();
+        }
+
         // Initialize Form.io Builder
         async function initBuilder() {
           try {
@@ -924,15 +1593,40 @@ ${getTurnstileComponentScript()}
               builder = form;
               console.log('Form.io Builder initialized successfully');
 
+              // Intercept component removal with confirmation dialog
+              var originalRemoveComponent = builder.removeComponent.bind(builder);
+              builder.removeComponent = function(component, parent, original) {
+                var label = (component.component && component.component.label) || component.key || 'this component';
+                showConfirmDialog(
+                  'Remove Component',
+                  'Are you sure you want to remove "' + label + '"? This cannot be undone.',
+                  function() {
+                    originalRemoveComponent(component, parent, original);
+                  }
+                );
+              };
+
               // Listen for changes
               builder.on('change', function(schema) {
                 hasUnsavedChanges = true;
-                console.log('Form schema changed');
-                
+
                 // Update save button text
-                const saveBtn = document.getElementById('save-btn');
+                var saveBtn = document.getElementById('save-btn');
                 if (saveBtn && !saveBtn.textContent.includes('*')) {
-                  saveBtn.innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Save Form *';
+                  var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                  icon.setAttribute('class', 'w-4 h-4 mr-2');
+                  icon.setAttribute('fill', 'none');
+                  icon.setAttribute('stroke', 'currentColor');
+                  icon.setAttribute('viewBox', '0 0 24 24');
+                  var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                  path.setAttribute('stroke-linecap', 'round');
+                  path.setAttribute('stroke-linejoin', 'round');
+                  path.setAttribute('stroke-width', '2');
+                  path.setAttribute('d', 'M5 13l4 4L19 7');
+                  icon.appendChild(path);
+                  saveBtn.textContent = '';
+                  saveBtn.appendChild(icon);
+                  saveBtn.appendChild(document.createTextNode('Save Form *'));
                 }
               });
 
@@ -1199,12 +1893,25 @@ ${getTurnstileComponentScript()}
               turnstileSiteKey: '${turnstileSiteKey}'
             }
           );
-          
+
+          // Re-apply delete confirmation hook
+          var originalRemove = builder.removeComponent.bind(builder);
+          builder.removeComponent = function(component, parent, original) {
+            var label = (component.component && component.component.label) || component.key || 'this component';
+            showConfirmDialog(
+              'Remove Component',
+              'Are you sure you want to remove "' + label + '"? This cannot be undone.',
+              function() {
+                originalRemove(component, parent, original);
+              }
+            );
+          };
+
           builder.on('change', function(updatedSchema) {
             hasUnsavedChanges = true;
-            const saveBtn = document.getElementById('save-btn');
+            var saveBtn = document.getElementById('save-btn');
             if (saveBtn && !saveBtn.textContent.includes('*')) {
-              saveBtn.innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Save Form *';
+              saveBtn.textContent = 'Save Form *';
             }
           });
         }

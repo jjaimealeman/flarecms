@@ -27,55 +27,6 @@ export class PluginBootstrapService {
    */
   private readonly CORE_PLUGINS: CorePlugin[] = [
     {
-      id: "core-auth",
-      name: "core-auth",
-      display_name: "Authentication System",
-      description: "Core authentication and user management system",
-      version: "1.0.0",
-      author: "Flare CMS Team",
-      category: "security",
-      icon: "🔐",
-      permissions: ["manage:users", "manage:roles", "manage:permissions"],
-      dependencies: [],
-      settings: {
-        requiredFields: {
-          email: { required: true, minLength: 5, label: "Email", type: "email" },
-          password: { required: true, minLength: 8, label: "Password", type: "password" },
-          username: { required: true, minLength: 3, label: "Username", type: "text" },
-          firstName: { required: true, minLength: 1, label: "First Name", type: "text" },
-          lastName: { required: true, minLength: 1, label: "Last Name", type: "text" },
-        },
-        validation: {
-          emailFormat: true,
-          allowDuplicateUsernames: false,
-          passwordRequirements: {
-            requireUppercase: false,
-            requireLowercase: false,
-            requireNumbers: false,
-            requireSpecialChars: false,
-          },
-        },
-        registration: {
-          enabled: true,
-          requireEmailVerification: false,
-          defaultRole: "viewer",
-        },
-      },
-    },
-    {
-      id: "core-media",
-      name: "core-media",
-      display_name: "Media Manager",
-      description: "Core media upload and management system",
-      version: "1.0.0",
-      author: "Flare CMS Team",
-      category: "media",
-      icon: "📸",
-      permissions: ["manage:media", "upload:files"],
-      dependencies: [],
-      settings: {},
-    },
-    {
       id: "database-tools",
       name: "database-tools",
       display_name: "Database Tools",
@@ -129,25 +80,6 @@ export class PluginBootstrapService {
         enableKVCache: true,
         enableDatabaseCache: true,
         defaultTTL: 3600,
-      },
-    },
-    {
-      id: "workflow-plugin",
-      name: "workflow-plugin",
-      display_name: "Workflow Management",
-      description:
-        "Content workflow management with approval chains, scheduling, and automation",
-      version: "1.0.0-beta.1",
-      author: "Flare CMS Team",
-      category: "content",
-      icon: "🔄",
-      permissions: ["manage:workflows", "view:workflows", "transition:content"],
-      dependencies: ["content-plugin"],
-      settings: {
-        enableApprovalChains: true,
-        enableScheduling: true,
-        enableAutomation: true,
-        enableNotifications: true,
       },
     },
     {
@@ -232,18 +164,6 @@ export class PluginBootstrapService {
           );
           await this.updatePlugin(plugin);
         }
-
-        // ALWAYS ensure core-auth is active (critical for system functionality)
-        if (plugin.id === 'core-auth' && existingPlugin.status !== 'active') {
-          console.log(
-            `[PluginBootstrap] Core-auth plugin is inactive, activating it now...`
-          );
-          await this.pluginService.activatePlugin(plugin.id);
-        }
-
-        // Only auto-activate on first install, respect user's activation state on subsequent boots
-        // This preserves the activation state across server restarts
-        // Core plugins (with core- prefix) are activated on first install in the else block below
       } else {
         // Install the plugin
         console.log(

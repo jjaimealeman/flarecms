@@ -60,40 +60,7 @@ export class PluginConfigManager {
     try {
       // In a real implementation, this would read from a config file
       const defaultConfig = {
-        plugins: [
-          {
-            name: 'core-auth',
-            enabled: true,
-            priority: 1,
-            config: {
-              sessionTimeout: 3600,
-              maxLoginAttempts: 5,
-              requireMFA: false
-            }
-          },
-          {
-            name: 'core-media',
-            enabled: true,
-            priority: 2,
-            config: {
-              maxFileSize: 10485760, // 10MB
-              allowedTypes: ['image/*', 'video/*', 'application/pdf'],
-              thumbnailSizes: [150, 300, 600],
-              compressionQuality: 0.8
-            }
-          },
-          {
-            name: 'core-analytics',
-            enabled: true,
-            priority: 3,
-            config: {
-              trackAnonymousUsers: true,
-              sessionTimeout: 1800,
-              excludePaths: ['/admin/*', '/api/health'],
-              retentionPeriod: 90 // days
-            }
-          }
-        ]
+        plugins: [] as Array<{ name: string; enabled: boolean; priority: number; config: Record<string, any> }>
       }
 
       for (const pluginConfig of defaultConfig.plugins) {
@@ -132,45 +99,6 @@ export class PluginConfigManager {
 
     // Parse environment variables for plugin configuration
     const pluginConfigs: Array<{ name: string } & PluginConfig> = []
-
-    // Auth plugin config
-    if (env.PLUGIN_AUTH_ENABLED !== undefined) {
-      pluginConfigs.push({
-        name: 'core-auth',
-        enabled: env.PLUGIN_AUTH_ENABLED === 'true',
-        config: {
-          sessionTimeout: parseInt(env.AUTH_SESSION_TIMEOUT || '3600'),
-          maxLoginAttempts: parseInt(env.AUTH_MAX_LOGIN_ATTEMPTS || '5'),
-          requireMFA: env.AUTH_REQUIRE_MFA === 'true'
-        }
-      })
-    }
-
-    // Media plugin config
-    if (env.PLUGIN_MEDIA_ENABLED !== undefined) {
-      pluginConfigs.push({
-        name: 'core-media',
-        enabled: env.PLUGIN_MEDIA_ENABLED === 'true',
-        config: {
-          maxFileSize: parseInt(env.MEDIA_MAX_FILE_SIZE || '10485760'),
-          allowedTypes: env.MEDIA_ALLOWED_TYPES?.split(',') || ['image/*'],
-          compressionQuality: parseFloat(env.MEDIA_COMPRESSION_QUALITY || '0.8')
-        }
-      })
-    }
-
-    // Analytics plugin config
-    if (env.PLUGIN_ANALYTICS_ENABLED !== undefined) {
-      pluginConfigs.push({
-        name: 'core-analytics',
-        enabled: env.PLUGIN_ANALYTICS_ENABLED === 'true',
-        config: {
-          trackAnonymousUsers: env.ANALYTICS_TRACK_ANONYMOUS !== 'false',
-          sessionTimeout: parseInt(env.ANALYTICS_SESSION_TIMEOUT || '1800'),
-          retentionPeriod: parseInt(env.ANALYTICS_RETENTION_PERIOD || '90')
-        }
-      })
-    }
 
     for (const pluginConfig of pluginConfigs) {
       const { name, ...config } = pluginConfig

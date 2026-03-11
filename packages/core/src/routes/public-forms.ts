@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { TurnstileService } from '../plugins/core-plugins/turnstile-plugin/services/turnstile'
 import { sanitizeInput } from '../utils/sanitize'
 
@@ -50,6 +51,14 @@ type Variables = {
 }
 
 export const publicFormsRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+// CORS for headless frontends (schema fetch + form submissions from browser)
+publicFormsRoutes.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'OPTIONS'],
+  allowHeaders: ['Content-Type'],
+  maxAge: 86400,
+}))
 
 // Get Turnstile configuration for a form (for headless frontends)
 publicFormsRoutes.get('/:identifier/turnstile-config', async (c) => {
@@ -521,43 +530,41 @@ publicFormsRoutes.post('/:identifier/submit', async (c) => {
 
     // Check if Turnstile is enabled for this form
     const turnstileEnabled = form.turnstile_enabled === 1
-    const turnstileSettings = form.turnstile_settings 
-      ? JSON.parse(form.turnstile_settings as string) 
+    const turnstileSettings = form.turnstile_settings
+      ? JSON.parse(form.turnstile_settings as string)
       : { inherit: true }
 
-    // Validate Turnstile if enabled (or inheriting global settings)
-    if (turnstileEnabled || turnstileSettings.inherit) {
-      const turnstileService = new TurnstileService(db)
-      
-      // Check if Turnstile is globally enabled
-      const globalEnabled = await turnstileService.isEnabled()
-      
-      if (globalEnabled || turnstileEnabled) {
-        // Extract Turnstile token from submission data
-        const turnstileToken = body.data?.turnstile || body.turnstile
-        
-        if (!turnstileToken) {
-          return c.json({ 
-            error: 'Turnstile verification required. Please complete the security check.',
-            code: 'TURNSTILE_MISSING'
-          }, 400)
-        }
+    // Validate Turnstile only when explicitly enabled on the form,
+    // or when inheriting AND the global Turnstile plugin is active
+    const turnstileService = new TurnstileService(db)
+    const globalEnabled = await turnstileService.isEnabled()
+    const shouldVerifyTurnstile = turnstileEnabled || (turnstileSettings.inherit && globalEnabled)
 
-        // Verify the token
-        const clientIp = c.req.header('cf-connecting-ip')
-        const verification = await turnstileService.verifyToken(turnstileToken, clientIp)
-        
-        if (!verification.success) {
-          return c.json({ 
-            error: verification.error || 'Security verification failed. Please try again.',
-            code: 'TURNSTILE_INVALID'
-          }, 403)
-        }
+    if (shouldVerifyTurnstile) {
+      // Extract Turnstile token from submission data
+      const turnstileToken = body.data?.turnstile || body.turnstile
 
-        // Remove Turnstile token from submission data before storing
-        if (body.data?.turnstile) {
-          delete body.data.turnstile
-        }
+      if (!turnstileToken) {
+        return c.json({
+          error: 'Turnstile verification required. Please complete the security check.',
+          code: 'TURNSTILE_MISSING'
+        }, 400)
+      }
+
+      // Verify the token
+      const clientIp = c.req.header('cf-connecting-ip')
+      const verification = await turnstileService.verifyToken(turnstileToken, clientIp)
+
+      if (!verification.success) {
+        return c.json({
+          error: verification.error || 'Security verification failed. Please try again.',
+          code: 'TURNSTILE_INVALID'
+        }, 403)
+      }
+
+      // Remove Turnstile token from submission data before storing
+      if (body.data?.turnstile) {
+        delete body.data.turnstile
       }
     }
 

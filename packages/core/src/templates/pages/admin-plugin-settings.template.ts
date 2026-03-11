@@ -1,6 +1,4 @@
 import { renderAdminLayout, AdminLayoutData } from '../layouts/admin-layout-v2.template'
-import { renderAuthSettingsForm } from '../components/auth-settings-form.template'
-import type { AuthSettings } from '../../services/auth-validation'
 
 /**
  * Escape HTML attribute values to prevent XSS
@@ -77,15 +75,15 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
       </div>
 
       <!-- Plugin Header -->
-      <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6 mb-6">
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6 mb-6">
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-4">
             <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-slate-600 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
               ${plugin.icon || plugin.displayName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 class="text-2xl font-semibold text-white mb-1">${plugin.displayName}</h2>
-              <div class="flex items-center gap-4 text-sm text-gray-400 mt-2">
+              <h2 class="text-2xl font-semibold text-zinc-950 dark:text-white mb-1">${plugin.displayName}</h2>
+              <div class="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400 mt-2">
                 <span>v${plugin.version}</span>
                 <span>by ${plugin.author}</span>
                 <span>${plugin.category}</span>
@@ -108,10 +106,10 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
           <button onclick="showTab('settings')" id="settings-tab" class="tab-button active border-b-2 border-blue-400 py-2 px-1 text-sm font-medium text-blue-400">
             Settings
           </button>
-          <button onclick="showTab('activity')" id="activity-tab" class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-400 hover:text-gray-300">
+          <button onclick="showTab('activity')" id="activity-tab" class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300">
             Activity Log
           </button>
-          <button onclick="showTab('info')" id="info-tab" class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-400 hover:text-gray-300">
+          <button onclick="showTab('info')" id="info-tab" class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300">
             Information
           </button>
         </nav>
@@ -142,20 +140,20 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
         document.querySelectorAll('.tab-content').forEach(content => {
           content.classList.add('hidden');
         });
-        
+
         // Remove active class from all tabs
         document.querySelectorAll('.tab-button').forEach(tab => {
           tab.classList.remove('active', 'border-blue-400', 'text-blue-400');
-          tab.classList.add('border-transparent', 'text-gray-400');
+          tab.classList.add('border-transparent', 'text-zinc-500');
         });
-        
+
         // Show selected tab content
         document.getElementById(tabName + '-content').classList.remove('hidden');
-        
+
         // Add active class to selected tab
         const activeTab = document.getElementById(tabName + '-tab');
         activeTab.classList.add('active', 'border-blue-400', 'text-blue-400');
-        activeTab.classList.remove('border-transparent', 'text-gray-400');
+        activeTab.classList.remove('border-transparent', 'text-zinc-500');
       }
 
       async function togglePlugin(pluginId, action) {
@@ -190,64 +188,19 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
       async function saveSettings() {
         const form = document.getElementById('settings-form');
         const formData = new FormData(form);
-        const isAuthPlugin = '${plugin.id}' === 'core-auth';
         let settings = {};
 
-        if (isAuthPlugin) {
-          // Handle nested auth settings structure
-          settings = {
-            requiredFields: {},
-            validation: {
-              passwordRequirements: {}
-            },
-            registration: {}
-          };
+        for (let [key, value] of formData.entries()) {
+          if (key.startsWith('setting_')) {
+            const settingKey = key.replace('setting_', '');
 
-          for (let [key, value] of formData.entries()) {
             const input = form.querySelector(\`[name="\${key}"]\`);
-            const fieldValue = input.type === 'checkbox' ? input.checked :
-                             input.type === 'number' ? parseInt(value) || 0 : value;
-
-            // Parse nested field names like "requiredFields_email_required"
-            if (key.startsWith('requiredFields_')) {
-              const parts = key.replace('requiredFields_', '').split('_');
-              const fieldName = parts[0];
-              const propName = parts[1];
-
-              if (!settings.requiredFields[fieldName]) {
-                settings.requiredFields[fieldName] = { type: 'text', label: '' };
-              }
-              settings.requiredFields[fieldName][propName] = fieldValue;
-            } else if (key.startsWith('validation_passwordRequirements_')) {
-              const propName = key.replace('validation_passwordRequirements_', '');
-              settings.validation.passwordRequirements[propName] = fieldValue;
-            } else if (key.startsWith('validation_')) {
-              const propName = key.replace('validation_', '');
-              // Invert the allowDuplicateUsernames logic
-              if (propName === 'allowDuplicateUsernames') {
-                settings.validation[propName] = !fieldValue;
-              } else {
-                settings.validation[propName] = fieldValue;
-              }
-            } else if (key.startsWith('registration_')) {
-              const propName = key.replace('registration_', '');
-              settings.registration[propName] = fieldValue;
-            }
-          }
-        } else {
-          // Handle regular plugin settings
-          for (let [key, value] of formData.entries()) {
-            if (key.startsWith('setting_')) {
-              const settingKey = key.replace('setting_', '');
-
-              const input = form.querySelector(\`[name="\${key}"]\`);
-              if (input.type === 'checkbox') {
-                settings[settingKey] = input.checked;
-              } else if (input.type === 'number') {
-                settings[settingKey] = parseInt(value) || 0;
-              } else {
-                settings[settingKey] = value;
-              }
+            if (input.type === 'checkbox') {
+              settings[settingKey] = input.checked;
+            } else if (input.type === 'number') {
+              settings[settingKey] = parseInt(value) || 0;
+            } else {
+              settings[settingKey] = value;
             }
           }
         }
@@ -310,7 +263,7 @@ export function renderPluginSettingsPage(data: PluginSettingsPageData): string {
 function renderStatusBadge(status: string): string {
   const statusColors: Record<string, string> = {
     active: 'bg-green-900/50 text-green-300 border-green-600/30',
-    inactive: 'bg-gray-800/50 text-gray-400 border-gray-600/30',
+    inactive: 'bg-gray-800/50 text-zinc-500 dark:text-zinc-400 border-gray-600/30',
     error: 'bg-red-900/50 text-red-300 border-red-600/30'
   }
 
@@ -329,7 +282,7 @@ function renderStatusBadge(status: string): string {
 
 function renderToggleButton(plugin: any): string {
   if (plugin.isCore) {
-    return '<span class="text-sm text-gray-400">Core Plugin</span>'
+    return '<span class="text-sm text-zinc-500 dark:text-zinc-400">Core Plugin</span>'
   }
 
   return plugin.status === 'active' 
@@ -345,7 +298,7 @@ function renderSettingsTab(plugin: any): string {
   const customRenderer = pluginSettingsComponents[pluginId]
   if (customRenderer) {
     return `
-      <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6">
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
         ${customRenderer(plugin, settings)}
 
         <div class="flex items-center justify-end pt-6 border-t border-white/10 mt-6">
@@ -363,16 +316,15 @@ function renderSettingsTab(plugin: any): string {
   }
 
   const isSeedDataPlugin = plugin.id === 'seed-data' || plugin.name === 'seed-data'
-  const isAuthPlugin = plugin.id === 'core-auth' || plugin.name === 'core-auth'
   const isTurnstilePlugin = plugin.id === 'turnstile' || plugin.name === 'turnstile'
 
   return `
     ${isSeedDataPlugin ? `
-      <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6 mb-6">
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6 mb-6">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-semibold text-white mb-2">Seed Data Generator</h2>
-            <p class="text-gray-400">Generate realistic example data for testing and development.</p>
+            <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-2">Seed Data Generator</h2>
+            <p class="text-zinc-500 dark:text-zinc-400">Generate realistic example data for testing and development.</p>
           </div>
           <a
             href="/admin/seed-data"
@@ -388,21 +340,16 @@ function renderSettingsTab(plugin: any): string {
       </div>
     ` : ''}
 
-    <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6">
-      ${isAuthPlugin ? `
-        <h2 class="text-xl font-semibold text-white mb-4">Authentication Settings</h2>
-        <p class="text-gray-400 mb-6">Configure user registration fields and validation rules.</p>
-      ` : isTurnstilePlugin ? `
-        <h2 class="text-xl font-semibold text-white mb-4">Cloudflare Turnstile Settings</h2>
-        <p class="text-gray-400 mb-6">Configure CAPTCHA-free bot protection for your forms.</p>
+    <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+      ${isTurnstilePlugin ? `
+        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Cloudflare Turnstile Settings</h2>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Configure CAPTCHA-free bot protection for your forms.</p>
       ` : `
-        <h2 class="text-xl font-semibold text-white mb-4">Plugin Settings</h2>
+        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Plugin Settings</h2>
       `}
 
       <form id="settings-form" class="space-y-6">
-        ${isAuthPlugin && Object.keys(settings).length > 0
-          ? renderAuthSettingsForm(settings as AuthSettings)
-          : isTurnstilePlugin && Object.keys(settings).length > 0
+        ${isTurnstilePlugin && Object.keys(settings).length > 0
             ? renderTurnstileSettingsForm(settings)
             : Object.keys(settings).length > 0
               ? renderSettingsFields(settings)
@@ -435,8 +382,8 @@ function renderSettingsFields(settings: PluginSettings): string {
       return `
         <div class="flex items-center justify-between">
           <div>
-            <label for="${fieldId}" class="text-sm font-medium text-gray-300">${displayName}</label>
-            <p class="text-xs text-gray-400">Enable or disable this feature</p>
+            <label for="${fieldId}" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">${displayName}</label>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Enable or disable this feature</p>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" name="${fieldId}" id="${fieldId}" ${value ? 'checked' : ''} class="sr-only peer">
@@ -447,26 +394,26 @@ function renderSettingsFields(settings: PluginSettings): string {
     } else if (typeof value === 'number') {
       return `
         <div>
-          <label for="${fieldId}" class="block text-sm font-medium text-gray-300 mb-2">${displayName}</label>
+          <label for="${fieldId}" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">${displayName}</label>
           <input 
             type="number" 
             name="${fieldId}" 
             id="${fieldId}" 
             value="${value}"
-            class="backdrop-blur-sm bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-300 focus:border-blue-400 focus:outline-none transition-colors w-full"
+            class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
           >
         </div>
       `
     } else {
       return `
         <div>
-          <label for="${fieldId}" class="block text-sm font-medium text-gray-300 mb-2">${displayName}</label>
+          <label for="${fieldId}" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">${displayName}</label>
           <input 
             type="text" 
             name="${fieldId}" 
             id="${fieldId}" 
             value="${value}"
-            class="backdrop-blur-sm bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-300 focus:border-blue-400 focus:outline-none transition-colors w-full"
+            class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
           >
         </div>
       `
@@ -475,15 +422,15 @@ function renderSettingsFields(settings: PluginSettings): string {
 }
 
 function renderTurnstileSettingsForm(settings: any): string {
-  const inputClass = "backdrop-blur-sm bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-gray-300 focus:border-blue-400 focus:outline-none transition-colors w-full"
-  const selectClass = "backdrop-blur-sm bg-zinc-800 border border-white/20 rounded-lg px-3 py-2 text-white focus:border-blue-400 focus:outline-none transition-colors w-full [&>option]:bg-zinc-800 [&>option]:text-white"
+  const inputClass = "w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
+  const selectClass = "w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow [&>option]:bg-white dark:[&>option]:bg-zinc-800"
   
   return `
     <!-- Enable Toggle -->
     <div class="flex items-center justify-between">
       <div>
-        <label for="setting_enabled" class="text-sm font-medium text-gray-300">Enable Turnstile</label>
-        <p class="text-xs text-gray-400">Enable or disable Turnstile verification globally</p>
+        <label for="setting_enabled" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Enable Turnstile</label>
+        <p class="text-xs text-zinc-500 dark:text-zinc-400">Enable or disable Turnstile verification globally</p>
       </div>
       <label class="relative inline-flex items-center cursor-pointer">
         <input type="checkbox" name="setting_enabled" id="setting_enabled" ${settings.enabled ? 'checked' : ''} class="sr-only peer">
@@ -493,59 +440,59 @@ function renderTurnstileSettingsForm(settings: any): string {
 
     <!-- Site Key -->
     <div>
-      <label for="setting_siteKey" class="block text-sm font-medium text-gray-300 mb-2">Site Key</label>
+      <label for="setting_siteKey" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Site Key</label>
       <input type="text" name="setting_siteKey" id="setting_siteKey" value="${escapeHtmlAttr(settings.siteKey || '')}" placeholder="0x4AAAAAAAA..." class="${inputClass}">
-      <p class="text-xs text-gray-400 mt-1">Your Cloudflare Turnstile site key (public)</p>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Your Cloudflare Turnstile site key (public)</p>
     </div>
 
     <!-- Secret Key -->
     <div>
-      <label for="setting_secretKey" class="block text-sm font-medium text-gray-300 mb-2">Secret Key</label>
+      <label for="setting_secretKey" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Secret Key</label>
       <input type="password" name="setting_secretKey" id="setting_secretKey" value="${escapeHtmlAttr(settings.secretKey || '')}" placeholder="0x4AAAAAAAA..." class="${inputClass}">
-      <p class="text-xs text-gray-400 mt-1">Your Cloudflare Turnstile secret key (private)</p>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Your Cloudflare Turnstile secret key (private)</p>
     </div>
 
     <!-- Theme -->
     <div>
-      <label for="setting_theme" class="block text-sm font-medium text-gray-300 mb-2">Widget Theme</label>
-      <select name="setting_theme" id="setting_theme" class="${selectClass}" style="color: white; background-color: rgb(39, 39, 42);">
+      <label for="setting_theme" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Widget Theme</label>
+      <select name="setting_theme" id="setting_theme" class="${selectClass}">
         <option value="auto" ${settings.theme === 'auto' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Auto (matches page theme)</option>
         <option value="light" ${settings.theme === 'light' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Light</option>
         <option value="dark" ${settings.theme === 'dark' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Dark</option>
       </select>
-      <p class="text-xs text-gray-400 mt-1">Visual appearance of the Turnstile widget</p>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Visual appearance of the Turnstile widget</p>
     </div>
 
     <!-- Size -->
     <div>
-      <label for="setting_size" class="block text-sm font-medium text-gray-300 mb-2">Widget Size</label>
-      <select name="setting_size" id="setting_size" class="${selectClass}" style="color: white; background-color: rgb(39, 39, 42);">
+      <label for="setting_size" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Widget Size</label>
+      <select name="setting_size" id="setting_size" class="${selectClass}">
         <option value="normal" ${settings.size === 'normal' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Normal (300x65px)</option>
         <option value="compact" ${settings.size === 'compact' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Compact (130x120px)</option>
       </select>
-      <p class="text-xs text-gray-400 mt-1">Size of the Turnstile challenge widget</p>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Size of the Turnstile challenge widget</p>
     </div>
 
     <!-- Widget Mode -->
     <div>
-      <label for="setting_mode" class="block text-sm font-medium text-gray-300 mb-2">Widget Mode</label>
-      <select name="setting_mode" id="setting_mode" class="${selectClass}" style="color: white; background-color: rgb(39, 39, 42);">
+      <label for="setting_mode" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Widget Mode</label>
+      <select name="setting_mode" id="setting_mode" class="${selectClass}">
         <option value="managed" ${(!settings.mode || settings.mode === 'managed') ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Managed (Recommended) - Adaptive challenge</option>
         <option value="non-interactive" ${settings.mode === 'non-interactive' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Non-Interactive - Always visible, minimal friction</option>
         <option value="invisible" ${settings.mode === 'invisible' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Invisible - No visible widget</option>
       </select>
-      <p class="text-xs text-gray-400 mt-1"><strong>Managed:</strong> Shows challenge only when needed. <strong>Non-Interactive:</strong> Always shows but doesn't require interaction. <strong>Invisible:</strong> Runs in background without UI.</p>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1"><strong>Managed:</strong> Shows challenge only when needed. <strong>Non-Interactive:</strong> Always shows but doesn't require interaction. <strong>Invisible:</strong> Runs in background without UI.</p>
     </div>
 
     <!-- Appearance (Pre-clearance) -->
     <div>
-      <label for="setting_appearance" class="block text-sm font-medium text-gray-300 mb-2">Pre-clearance / Appearance</label>
-      <select name="setting_appearance" id="setting_appearance" class="${selectClass}" style="color: white; background-color: rgb(39, 39, 42);">
+      <label for="setting_appearance" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Pre-clearance / Appearance</label>
+      <select name="setting_appearance" id="setting_appearance" class="${selectClass}">
         <option value="always" ${(!settings.appearance || settings.appearance === 'always') ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Always - Pre-clearance enabled (verifies immediately)</option>
         <option value="execute" ${settings.appearance === 'execute' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Execute - Challenge on form submit</option>
         <option value="interaction-only" ${settings.appearance === 'interaction-only' ? 'selected' : ''} style="background-color: rgb(39, 39, 42); color: white;">Interaction Only - Only after user interaction</option>
       </select>
-      <p class="text-xs text-gray-400 mt-1">Controls when Turnstile verification occurs. <strong>Always:</strong> Verifies immediately (pre-clearance). <strong>Execute:</strong> Verifies on form submit. <strong>Interaction Only:</strong> Only after user interaction.</p>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Controls when Turnstile verification occurs. <strong>Always:</strong> Verifies immediately (pre-clearance). <strong>Execute:</strong> Verifies on form submit. <strong>Interaction Only:</strong> Only after user interaction.</p>
     </div>
   `
 }
@@ -558,8 +505,8 @@ function renderNoSettings(plugin: any): string {
         <svg class="w-16 h-16 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
         </svg>
-        <h3 class="text-lg font-medium text-gray-300 mb-2">Seed Data Generator</h3>
-        <p class="text-gray-400 mb-6">Generate realistic example data for testing and development.</p>
+        <h3 class="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">Seed Data Generator</h3>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-6">Generate realistic example data for testing and development.</p>
         <a
           href="/admin/seed-data"
           class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
@@ -575,44 +522,44 @@ function renderNoSettings(plugin: any): string {
 
   return `
     <div class="text-center py-8">
-      <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-12 h-12 text-zinc-500 dark:text-zinc-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>
-      <h3 class="text-lg font-medium text-gray-300 mb-2">No Settings Available</h3>
-      <p class="text-gray-400">This plugin doesn't have any configurable settings.</p>
+      <h3 class="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">No Settings Available</h3>
+      <p class="text-zinc-500 dark:text-zinc-400">This plugin doesn't have any configurable settings.</p>
     </div>
   `
 }
 
 function renderActivityTab(activity: PluginActivity[]): string {
   return `
-    <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6">
-      <h2 class="text-xl font-semibold text-white mb-4">Activity Log</h2>
+    <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+      <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Activity Log</h2>
       
       ${activity.length > 0 ? `
         <div class="space-y-4">
           ${activity.map(item => `
-            <div class="flex items-start gap-3 p-3 rounded-lg bg-white/5">
+            <div class="flex items-start gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50">
               <div class="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
               <div class="flex-1">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-white">${item.action}</span>
-                  <span class="text-xs text-gray-400">${formatTimestamp(item.timestamp)}</span>
+                  <span class="text-sm font-medium text-zinc-950 dark:text-white">${item.action}</span>
+                  <span class="text-xs text-zinc-500 dark:text-zinc-400">${formatTimestamp(item.timestamp)}</span>
                 </div>
-                <p class="text-sm text-gray-300 mt-1">${item.message}</p>
-                ${item.user ? `<p class="text-xs text-gray-400 mt-1">by ${item.user}</p>` : ''}
+                <p class="text-sm text-zinc-700 dark:text-zinc-300 mt-1">${item.message}</p>
+                ${item.user ? `<p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">by ${item.user}</p>` : ''}
               </div>
             </div>
           `).join('')}
         </div>
       ` : `
         <div class="text-center py-8">
-          <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-12 h-12 text-zinc-500 dark:text-zinc-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
-          <h3 class="text-lg font-medium text-gray-300 mb-2">No Activity</h3>
-          <p class="text-gray-400">No recent activity for this plugin.</p>
+          <h3 class="text-lg font-medium text-zinc-700 dark:text-zinc-300 mb-2">No Activity</h3>
+          <p class="text-zinc-500 dark:text-zinc-400">No recent activity for this plugin.</p>
         </div>
       `}
     </div>
@@ -623,46 +570,46 @@ function renderInformationTab(plugin: any): string {
   return `
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Plugin Details -->
-      <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6">
-        <h2 class="text-xl font-semibold text-white mb-4">Plugin Details</h2>
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Plugin Details</h2>
         <div class="space-y-3">
           <div class="flex justify-between">
-            <span class="text-gray-400">Name:</span>
-            <span class="text-white">${plugin.displayName}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">Name:</span>
+            <span class="text-zinc-950 dark:text-white">${plugin.displayName}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-400">Version:</span>
-            <span class="text-white">${plugin.version}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">Version:</span>
+            <span class="text-zinc-950 dark:text-white">${plugin.version}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-400">Author:</span>
-            <span class="text-white">${plugin.author}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">Author:</span>
+            <span class="text-zinc-950 dark:text-white">${plugin.author}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-400">Category:</span>
-            <span class="text-white">${plugin.category}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">Category:</span>
+            <span class="text-zinc-950 dark:text-white">${plugin.category}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-400">Status:</span>
-            <span class="text-white">${plugin.status}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">Status:</span>
+            <span class="text-zinc-950 dark:text-white">${plugin.status}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-400">Last Updated:</span>
-            <span class="text-white">${plugin.lastUpdated}</span>
+            <span class="text-zinc-500 dark:text-zinc-400">Last Updated:</span>
+            <span class="text-zinc-950 dark:text-white">${plugin.lastUpdated}</span>
           </div>
         </div>
       </div>
 
       <!-- Dependencies & Permissions -->
-      <div class="backdrop-blur-md bg-black/20 rounded-xl border border-white/10 shadow-xl p-6">
-        <h2 class="text-xl font-semibold text-white mb-4">Dependencies & Permissions</h2>
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h2 class="text-xl font-semibold text-zinc-950 dark:text-white mb-4">Dependencies & Permissions</h2>
         
         ${plugin.dependencies && plugin.dependencies.length > 0 ? `
           <div class="mb-6">
-            <h3 class="text-sm font-medium text-gray-300 mb-2">Dependencies:</h3>
+            <h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Dependencies:</h3>
             <div class="space-y-1">
               ${plugin.dependencies.map((dep: string) => `
-                <div class="inline-block bg-white/10 text-gray-300 text-sm px-2 py-1 rounded mr-2">${dep}</div>
+                <div class="inline-block bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-sm px-2 py-1 rounded mr-2">${dep}</div>
               `).join('')}
             </div>
           </div>
@@ -670,17 +617,17 @@ function renderInformationTab(plugin: any): string {
 
         ${plugin.permissions && plugin.permissions.length > 0 ? `
           <div>
-            <h3 class="text-sm font-medium text-gray-300 mb-2">Permissions:</h3>
+            <h3 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Permissions:</h3>
             <div class="space-y-1">
               ${plugin.permissions.map((perm: string) => `
-                <div class="inline-block bg-white/10 text-gray-300 text-sm px-2 py-1 rounded mr-2">${perm}</div>
+                <div class="inline-block bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-sm px-2 py-1 rounded mr-2">${perm}</div>
               `).join('')}
             </div>
           </div>
         ` : ''}
 
         ${(!plugin.dependencies || plugin.dependencies.length === 0) && (!plugin.permissions || plugin.permissions.length === 0) ? `
-          <p class="text-gray-400">No dependencies or special permissions required.</p>
+          <p class="text-zinc-500 dark:text-zinc-400">No dependencies or special permissions required.</p>
         ` : ''}
       </div>
     </div>
@@ -721,8 +668,8 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
   return `
     <div class="space-y-6">
       <!-- Test OTP Section -->
-      <div class="backdrop-blur-md bg-white/5 rounded-xl border border-white/10 p-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-4 flex items-center gap-2">
           <span>📧</span> Test OTP Email
         </h3>
 
@@ -744,7 +691,7 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
 
         <form id="testOtpForm" class="space-y-4">
           <div>
-            <label for="testEmail" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="testEmail" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               Email Address
             </label>
             <input
@@ -752,7 +699,7 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
               id="testEmail"
               name="email"
               placeholder="Enter your email to receive a test code"
-              class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white placeholder-zinc-500"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-4 py-3 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               required
             />
           </div>
@@ -776,10 +723,10 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
 
         <!-- Verify Code Section -->
         <div id="verifySection" class="hidden mt-6 pt-6 border-t border-white/10">
-          <h4 class="text-md font-semibold text-white mb-3">Verify Code</h4>
+          <h4 class="text-md font-semibold text-zinc-950 dark:text-white mb-3">Verify Code</h4>
           <form id="verifyForm" class="space-y-4">
             <div>
-              <label for="otpCode" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="otpCode" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Enter the code you received
               </label>
               <input
@@ -788,7 +735,7 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
                 name="code"
                 placeholder="000000"
                 maxlength="8"
-                class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white text-center text-2xl tracking-widest font-mono"
+                class="w-full rounded-lg bg-white dark:bg-zinc-800 px-4 py-3 text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow text-center text-2xl tracking-widest font-mono"
                 required
               />
             </div>
@@ -804,13 +751,13 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
       </div>
 
       <!-- Configuration Section -->
-      <div class="backdrop-blur-md bg-white/5 rounded-xl border border-white/10 p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Code Settings</h3>
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-4">Code Settings</h3>
 
         <form id="settings-form" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="setting_codeLength" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="setting_codeLength" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Code Length
               </label>
               <input
@@ -820,13 +767,13 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
                 min="4"
                 max="8"
                 value="${codeLength}"
-                class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+                class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               />
-              <p class="text-xs text-gray-500 mt-1">Number of digits (4-8)</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">Number of digits (4-8)</p>
             </div>
 
             <div>
-              <label for="setting_codeExpiryMinutes" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="setting_codeExpiryMinutes" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Code Expiry (minutes)
               </label>
               <input
@@ -836,13 +783,13 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
                 min="5"
                 max="60"
                 value="${codeExpiryMinutes}"
-                class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+                class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               />
-              <p class="text-xs text-gray-500 mt-1">How long codes remain valid</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">How long codes remain valid</p>
             </div>
 
             <div>
-              <label for="setting_maxAttempts" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="setting_maxAttempts" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Maximum Attempts
               </label>
               <input
@@ -852,13 +799,13 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
                 min="3"
                 max="10"
                 value="${maxAttempts}"
-                class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+                class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               />
-              <p class="text-xs text-gray-500 mt-1">Max verification attempts</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">Max verification attempts</p>
             </div>
 
             <div>
-              <label for="setting_rateLimitPerHour" class="block text-sm font-medium text-gray-300 mb-2">
+              <label for="setting_rateLimitPerHour" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Rate Limit (per hour)
               </label>
               <input
@@ -868,9 +815,9 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
                 min="3"
                 max="20"
                 value="${rateLimitPerHour}"
-                class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+                class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               />
-              <p class="text-xs text-gray-500 mt-1">Max requests per email per hour</p>
+              <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">Max requests per email per hour</p>
             </div>
           </div>
 
@@ -882,7 +829,7 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
               ${allowNewUserRegistration ? 'checked' : ''}
               class="w-4 h-4 rounded border-white/10"
             />
-            <label for="setting_allowNewUserRegistration" class="ml-2 text-sm text-gray-300">
+            <label for="setting_allowNewUserRegistration" class="ml-2 text-sm text-zinc-700 dark:text-zinc-300">
               Allow new user registration via OTP
             </label>
           </div>
@@ -890,11 +837,11 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
       </div>
 
       <!-- Email Preview Section -->
-      <div class="backdrop-blur-md bg-white/5 rounded-xl border border-white/10 p-6">
-        <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-4 flex items-center gap-2">
           <span>👁️</span> Email Preview
         </h3>
-        <p class="text-gray-400 text-sm mb-4">
+        <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-4">
           This is how the OTP email will appear to users. The site name "<strong class="text-white">${siteName}</strong>" is configured in
           <a href="/admin/settings/general" class="text-blue-400 hover:text-blue-300 underline">General Settings</a>.
         </p>
@@ -931,7 +878,7 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
       </div>
 
       <!-- Features -->
-      <div class="backdrop-blur-md bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
+      <div class="rounded-xl bg-blue-50 dark:bg-blue-950/30 shadow-sm ring-1 ring-blue-200 dark:ring-blue-500/20 p-6">
         <h3 class="font-semibold text-blue-400 mb-3">🔢 Features</h3>
         <ul class="text-sm text-blue-200 space-y-2">
           <li>✓ Passwordless authentication</li>
@@ -944,17 +891,17 @@ function renderOTPLoginSettingsContent(plugin: any, settings: PluginSettings): s
 
       <!-- Quick Links -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="/admin/plugins/email" class="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all flex items-center gap-3">
+        <a href="/admin/plugins/email" class="rounded-xl bg-white dark:bg-zinc-900 p-4 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex items-center gap-3">
           <span class="text-2xl">📬</span>
           <div>
-            <div class="font-medium text-white">Email Settings</div>
+            <div class="font-medium text-zinc-950 dark:text-white">Email Settings</div>
             <div class="text-sm text-zinc-400">Configure Resend API</div>
           </div>
         </a>
-        <a href="/admin/settings/general" class="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all flex items-center gap-3">
+        <a href="/admin/settings/general" class="rounded-xl bg-white dark:bg-zinc-900 p-4 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex items-center gap-3">
           <span class="text-2xl">🏷️</span>
           <div>
-            <div class="font-medium text-white">Site Name</div>
+            <div class="font-medium text-zinc-950 dark:text-white">Site Name</div>
             <div class="text-sm text-zinc-400">Change "${siteName}"</div>
           </div>
         </a>
@@ -1054,13 +1001,13 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
   return `
     <div class="space-y-6">
       <!-- Resend Configuration -->
-      <div class="backdrop-blur-md bg-white/5 rounded-xl border border-white/10 p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Resend Configuration</h3>
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-4">Resend Configuration</h3>
 
         <form id="settings-form" class="space-y-4">
           <!-- API Key -->
           <div>
-            <label for="setting_apiKey" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="setting_apiKey" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               Resend API Key <span class="text-red-500">*</span>
             </label>
             <input
@@ -1068,18 +1015,18 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
               id="setting_apiKey"
               name="setting_apiKey"
               value="${escapeHtmlAttr(apiKey)}"
-              class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               placeholder="re_..."
               required
             />
-            <p class="text-xs text-gray-500 mt-1">
+            <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">
               Get your API key from <a href="https://resend.com/api-keys" target="_blank" class="text-blue-400 hover:underline">resend.com/api-keys</a>
             </p>
           </div>
 
           <!-- From Email -->
           <div>
-            <label for="setting_fromEmail" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="setting_fromEmail" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               From Email <span class="text-red-500">*</span>
             </label>
             <input
@@ -1087,16 +1034,16 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
               id="setting_fromEmail"
               name="setting_fromEmail"
               value="${escapeHtmlAttr(fromEmail)}"
-              class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               placeholder="noreply@yourdomain.com"
               required
             />
-            <p class="text-xs text-gray-500 mt-1">Must be a verified domain in Resend</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">Must be a verified domain in Resend</p>
           </div>
 
           <!-- From Name -->
           <div>
-            <label for="setting_fromName" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="setting_fromName" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               From Name <span class="text-red-500">*</span>
             </label>
             <input
@@ -1104,7 +1051,7 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
               id="setting_fromName"
               name="setting_fromName"
               value="${escapeHtmlAttr(fromName)}"
-              class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               placeholder="Your App Name"
               required
             />
@@ -1112,7 +1059,7 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
 
           <!-- Reply To -->
           <div>
-            <label for="setting_replyTo" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="setting_replyTo" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               Reply-To Email
             </label>
             <input
@@ -1120,14 +1067,14 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
               id="setting_replyTo"
               name="setting_replyTo"
               value="${escapeHtmlAttr(replyTo)}"
-              class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               placeholder="support@yourdomain.com"
             />
           </div>
 
           <!-- Logo URL -->
           <div>
-            <label for="setting_logoUrl" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="setting_logoUrl" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               Logo URL
             </label>
             <input
@@ -1135,23 +1082,23 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
               id="setting_logoUrl"
               name="setting_logoUrl"
               value="${escapeHtmlAttr(logoUrl)}"
-              class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+              class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
               placeholder="https://yourdomain.com/logo.png"
             />
-            <p class="text-xs text-gray-500 mt-1">Logo to display in email templates</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-1">Logo to display in email templates</p>
           </div>
         </form>
       </div>
 
       <!-- Test Email Section -->
-      <div class="backdrop-blur-md bg-white/5 rounded-xl border border-white/10 p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Send Test Email</h3>
+      <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-4">Send Test Email</h3>
         <div class="flex gap-3">
           <input
             type="email"
             id="testEmailAddress"
             placeholder="Enter email address"
-            class="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white"
+            class="flex-1 rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow"
           />
           <button
             type="button"
@@ -1165,7 +1112,7 @@ function renderEmailSettingsContent(plugin: any, settings: PluginSettings): stri
       </div>
 
       <!-- Info Card -->
-      <div class="backdrop-blur-md bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
+      <div class="rounded-xl bg-blue-50 dark:bg-blue-950/30 shadow-sm ring-1 ring-blue-200 dark:ring-blue-500/20 p-6">
         <h3 class="font-semibold text-blue-400 mb-3">📧 Email Templates Included</h3>
         <ul class="text-sm text-blue-200 space-y-2">
           <li>✓ Registration confirmation</li>

@@ -1,0 +1,424 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const CMS_URL = import.meta.env.PUBLIC_FLARE_API_URL || 'http://localhost:8787'
+
+// Fetch form schema + Turnstile config in parallel
+let form: any = null
+let turnstile: any = null
+let error: string | null = null
+
+try {
+  const [formRes, turnstileRes] = await Promise.all([
+    fetch(`${CMS_URL}/api/forms/contact/schema`),
+    fetch(`${CMS_URL}/api/forms/contact/turnstile-config`),
+  ])
+
+  if (formRes.ok) {
+    form = await formRes.json()
+  } else {
+    error = 'Form not found'
+  }
+
+  if (turnstileRes.ok) {
+    turnstile = await turnstileRes.json()
+  }
+} catch (e) {
+  error = 'Unable to connect to CMS'
+}
+
+const turnstileEnabled = turnstile?.enabled === true && !!turnstile?.siteKey
+---
+
+<Layout title="Contact" description="Get in touch with us. We'd love to hear from you.">
+  <div class="max-w-7xl mx-auto px-6 pt-16 pb-24">
+
+    <!-- Header -->
+    <header class="text-center mb-16">
+      <span class="text-xs text-flare-400 uppercase tracking-widest font-medium">Get in Touch</span>
+      <h1 class="mt-3 text-4xl sm:text-5xl font-heading font-bold tracking-tight">
+        Contact Us
+      </h1>
+      <p class="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+        Have a question, idea, or just want to say hello? Drop us a message and we'll get back to you.
+      </p>
+    </header>
+
+    {error ? (
+      <div class="max-w-xl mx-auto text-center">
+        <p class="text-slate-400">{error}</p>
+      </div>
+    ) : form ? (
+      <div class="max-w-xl mx-auto">
+        <div class="rounded-2xl border border-slate-700/50 bg-slate-800/50 backdrop-blur-sm p-8 sm:p-10">
+
+          <!-- Form rendered via JS -->
+          <div
+            id="flare-form"
+            data-form-id={form.id}
+            data-submit-url={`${CMS_URL}${form.submitUrl}`}
+            data-turnstile-enabled={turnstileEnabled ? 'true' : 'false'}
+            data-turnstile-site-key={turnstile?.siteKey || ''}
+            data-turnstile-theme={turnstile?.theme || 'dark'}
+          >
+            <div class="flex items-center justify-center py-12">
+              <svg class="animate-spin h-8 w-8 text-flare-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Success state (hidden by default) -->
+          <div id="form-success" class="hidden text-center py-12">
+            <div class="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-50 mb-2">Message Sent!</h3>
+            <p class="text-slate-400">Thanks for reaching out. We'll get back to you soon.</p>
+            <button id="send-another" class="mt-6 text-sm text-flare-400 hover:text-flare-300 transition-colors">
+              Send another message
+            </button>
+          </div>
+
+        </div>
+      </div>
+    ) : null}
+
+  </div>
+
+  <!-- Turnstile script (only if enabled) -->
+  {turnstileEnabled && (
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+  )}
+
+  <!-- Form schema passed as JSON for client-side rendering -->
+  {form && (
+    <script is:inline define:vars={{ formSchema: form.schema }}>
+      window.__FLARE_FORM_SCHEMA__ = formSchema
+    </script>
+  )}
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      var container = document.getElementById('flare-form')
+      if (!container || !window.__FLARE_FORM_SCHEMA__) return
+
+      var submitUrl = container.dataset.submitUrl
+      var schema = window.__FLARE_FORM_SCHEMA__
+      var turnstileEnabled = container.dataset.turnstileEnabled === 'true'
+      var turnstileSiteKey = container.dataset.turnstileSiteKey
+      var turnstileTheme = container.dataset.turnstileTheme || 'dark'
+      var turnstileToken = null
+
+      // Validation helpers
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      var phoneRegex = /^[\d\s\-\+\(\)\.]{7,20}$/
+
+      // Build the form HTML natively (no Form.io dependency on frontend)
+      var components = schema.components || []
+      var formEl = document.createElement('form')
+      formEl.id = 'contact-form'
+      formEl.setAttribute('novalidate', '')
+      formEl.className = 'space-y-6'
+
+      var inputClass = 'w-full rounded-lg bg-slate-900/50 border border-slate-600/50 px-4 py-3 text-sm text-slate-50 placeholder-slate-500 focus:outline-none focus:border-flare-500 focus:ring-1 focus:ring-flare-500/30 transition-colors'
+      var inputErrorClass = 'w-full rounded-lg bg-slate-900/50 border border-red-500/50 px-4 py-3 text-sm text-slate-50 placeholder-slate-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/30 transition-colors'
+
+      components.forEach(function(comp) {
+        if (comp.type === 'button') return // handle submit separately
+
+        var group = document.createElement('div')
+
+        // Label
+        var label = document.createElement('label')
+        label.setAttribute('for', 'field-' + comp.key)
+        label.className = 'block text-sm font-medium text-slate-300 mb-2'
+        label.textContent = comp.label || comp.key
+        if (comp.validate && comp.validate.required) {
+          var asterisk = document.createElement('span')
+          asterisk.className = 'text-flare-500 ml-1'
+          asterisk.textContent = '*'
+          label.appendChild(asterisk)
+        }
+        group.appendChild(label)
+
+        // Input element
+        var input
+        if (comp.type === 'textarea') {
+          input = document.createElement('textarea')
+          input.rows = comp.rows || 5
+        } else if (comp.type === 'select') {
+          input = document.createElement('select')
+          var ph = document.createElement('option')
+          ph.value = ''
+          ph.textContent = comp.placeholder || 'Select...'
+          ph.disabled = true
+          ph.selected = true
+          input.appendChild(ph)
+          if (comp.data && comp.data.values) {
+            comp.data.values.forEach(function(opt) {
+              var option = document.createElement('option')
+              option.value = opt.value
+              option.textContent = opt.label
+              input.appendChild(option)
+            })
+          }
+        } else {
+          input = document.createElement('input')
+          if (comp.type === 'email') input.type = 'email'
+          else if (comp.type === 'phoneNumber') input.type = 'tel'
+          else if (comp.type === 'number') input.type = 'number'
+          else input.type = 'text'
+        }
+
+        input.id = 'field-' + comp.key
+        input.name = comp.key
+        if (comp.placeholder) input.placeholder = comp.placeholder
+        if (comp.validate && comp.validate.required) input.required = true
+        if (comp.validate && comp.validate.maxLength) input.maxLength = comp.validate.maxLength
+        if (comp.validate && comp.validate.minLength) input.minLength = comp.validate.minLength
+        input.className = inputClass
+
+        // Clear error on input
+        input.addEventListener('input', function() {
+          input.className = inputClass
+          var errEl = document.getElementById('error-' + comp.key)
+          if (errEl) {
+            errEl.classList.add('hidden')
+            errEl.textContent = ''
+          }
+        })
+
+        group.appendChild(input)
+
+        // Error message placeholder
+        var err = document.createElement('p')
+        err.className = 'hidden mt-1.5 text-xs text-red-400'
+        err.id = 'error-' + comp.key
+        group.appendChild(err)
+
+        formEl.appendChild(group)
+      })
+
+      // Turnstile widget container (before submit button)
+      if (turnstileEnabled) {
+        var turnstileGroup = document.createElement('div')
+        turnstileGroup.id = 'turnstile-container'
+        turnstileGroup.className = 'flex justify-center'
+        formEl.appendChild(turnstileGroup)
+
+        // Turnstile error message
+        var turnstileErr = document.createElement('p')
+        turnstileErr.className = 'hidden mt-1.5 text-xs text-red-400 text-center'
+        turnstileErr.id = 'error-turnstile'
+        formEl.appendChild(turnstileErr)
+      }
+
+      // Submit button
+      var submitGroup = document.createElement('div')
+      submitGroup.className = 'pt-2'
+      var submitBtn = document.createElement('button')
+      submitBtn.type = 'submit'
+      submitBtn.className = 'w-full rounded-lg bg-flare-500 hover:bg-flare-600 text-white font-medium py-3 px-6 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-flare-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed'
+
+      var submitComp = components.find(function(c) { return c.type === 'button' })
+      submitBtn.textContent = (submitComp && submitComp.label) || 'Submit'
+      submitGroup.appendChild(submitBtn)
+      formEl.appendChild(submitGroup)
+
+      // Replace loading spinner with form
+      container.textContent = ''
+      container.appendChild(formEl)
+
+      // Initialize Turnstile widget
+      if (turnstileEnabled && turnstileSiteKey) {
+        function initTurnstile() {
+          if (typeof turnstile === 'undefined' || !window.turnstile) {
+            setTimeout(initTurnstile, 200)
+            return
+          }
+          window.turnstile.render('#turnstile-container', {
+            sitekey: turnstileSiteKey,
+            theme: turnstileTheme,
+            callback: function(token) {
+              turnstileToken = token
+              var errEl = document.getElementById('error-turnstile')
+              if (errEl) {
+                errEl.classList.add('hidden')
+                errEl.textContent = ''
+              }
+            },
+            'expired-callback': function() {
+              turnstileToken = null
+            },
+            'error-callback': function() {
+              turnstileToken = null
+            }
+          })
+        }
+        initTurnstile()
+      }
+
+      // Validate a single field
+      function validateField(comp) {
+        if (comp.type === 'button') return true
+        var input = document.getElementById('field-' + comp.key)
+        if (!input) return true
+        var val = input.value.trim()
+        var errEl = document.getElementById('error-' + comp.key)
+
+        // Required
+        if (comp.validate && comp.validate.required && !val) {
+          showFieldError(input, errEl, (comp.label || comp.key) + ' is required')
+          return false
+        }
+
+        if (!val) return true // empty optional fields skip further checks
+
+        // Email format
+        if (comp.type === 'email' && !emailRegex.test(val)) {
+          showFieldError(input, errEl, 'Please enter a valid email address')
+          return false
+        }
+
+        // Phone format
+        if (comp.type === 'phoneNumber' && !phoneRegex.test(val)) {
+          showFieldError(input, errEl, 'Please enter a valid phone number')
+          return false
+        }
+
+        // Min length
+        if (comp.validate && comp.validate.minLength && val.length < comp.validate.minLength) {
+          showFieldError(input, errEl, 'Must be at least ' + comp.validate.minLength + ' characters')
+          return false
+        }
+
+        // Max length
+        if (comp.validate && comp.validate.maxLength && val.length > comp.validate.maxLength) {
+          showFieldError(input, errEl, 'Must be no more than ' + comp.validate.maxLength + ' characters')
+          return false
+        }
+
+        // Regex pattern (from builder Validation tab)
+        if (comp.validate && comp.validate.pattern) {
+          var regex = new RegExp(comp.validate.pattern)
+          if (!regex.test(val)) {
+            showFieldError(input, errEl, comp.validate.customMessage || 'Invalid format')
+            return false
+          }
+        }
+
+        return true
+      }
+
+      function showFieldError(input, errEl, message) {
+        input.className = inputErrorClass
+        if (errEl) {
+          errEl.textContent = message
+          errEl.classList.remove('hidden')
+        }
+      }
+
+      // Form submission
+      formEl.addEventListener('submit', function(e) {
+        e.preventDefault()
+
+        // Clear all errors
+        formEl.querySelectorAll('[id^="error-"]').forEach(function(el) {
+          el.classList.add('hidden')
+          el.textContent = ''
+        })
+        formEl.querySelectorAll('input, textarea, select').forEach(function(el) {
+          el.className = inputClass
+        })
+
+        // Validate all fields
+        var valid = true
+        components.forEach(function(comp) {
+          if (!validateField(comp)) valid = false
+        })
+
+        // Validate Turnstile
+        if (turnstileEnabled && !turnstileToken) {
+          var tsErr = document.getElementById('error-turnstile')
+          if (tsErr) {
+            tsErr.textContent = 'Please complete the security verification'
+            tsErr.classList.remove('hidden')
+          }
+          valid = false
+        }
+
+        if (!valid) return
+
+        // Gather data
+        var formData = {}
+        components.forEach(function(comp) {
+          if (comp.type === 'button') return
+          var input = document.getElementById('field-' + comp.key)
+          if (input) formData[comp.key] = input.value
+        })
+
+        // Include Turnstile token
+        if (turnstileEnabled && turnstileToken) {
+          formData.turnstile = turnstileToken
+        }
+
+        // Disable button
+        submitBtn.disabled = true
+        submitBtn.textContent = 'Sending...'
+
+        fetch(submitUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: formData })
+        })
+        .then(function(res) {
+          if (res.ok) {
+            container.classList.add('hidden')
+            document.getElementById('form-success').classList.remove('hidden')
+          } else {
+            return res.json().then(function(data) {
+              throw new Error(data.error || 'Submission failed')
+            })
+          }
+        })
+        .catch(function(err) {
+          submitBtn.disabled = false
+          submitBtn.textContent = (submitComp && submitComp.label) || 'Submit'
+
+          // Reset Turnstile for retry
+          if (turnstileEnabled && window.turnstile) {
+            window.turnstile.reset()
+            turnstileToken = null
+          }
+
+          var errDiv = document.createElement('div')
+          errDiv.className = 'mb-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400'
+          errDiv.textContent = err.message || 'Something went wrong. Please try again.'
+          formEl.insertBefore(errDiv, formEl.firstChild)
+          setTimeout(function() { errDiv.remove() }, 5000)
+        })
+      })
+
+      // "Send another" button
+      var sendAnother = document.getElementById('send-another')
+      if (sendAnother) {
+        sendAnother.addEventListener('click', function() {
+          document.getElementById('form-success').classList.add('hidden')
+          container.classList.remove('hidden')
+          formEl.reset()
+          submitBtn.disabled = false
+          submitBtn.textContent = (submitComp && submitComp.label) || 'Submit'
+          // Reset Turnstile
+          if (turnstileEnabled && window.turnstile) {
+            window.turnstile.reset()
+            turnstileToken = null
+          }
+        })
+      }
+    })
+  </script>
+</Layout>
