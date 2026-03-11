@@ -22,6 +22,7 @@ import {
   ChevronRight,
   AlertTriangle,
   Rocket,
+  BarChart3,
 } from "../icons";
 
 // Catalyst Checkbox Component (HTML implementation)
@@ -866,6 +867,12 @@ function renderCatalystSidebar(
     isActivePath('/admin/media')
   )
 
+  // Analytics (between content and system)
+  const analyticsItem = navLink(
+    { label: 'Analytics', path: '/admin/analytics', iconHtml: icon(BarChart3, 'h-5 w-5') },
+    isActivePath('/admin/analytics')
+  )
+
   // SYSTEM section
   const systemItems = [
     { label: 'Users', path: '/admin/users', iconHtml: icon(Users, 'h-5 w-5') },
@@ -930,6 +937,11 @@ function renderCatalystSidebar(
           ${collectionItems}
           ${contentAllItem}
           ${mediaItem}
+        </div>
+
+        <!-- ANALYTICS -->
+        <div class="flex flex-col gap-0.5 pt-2">
+          ${analyticsItem}
         </div>
 
         <!-- SYSTEM -->

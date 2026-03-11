@@ -1,0 +1,94 @@
+---
+/**
+ * FlareAnalytics — Privacy-first tracking beacon for Flare CMS
+ *
+ * Drop this component into your layout to start tracking page views.
+ * No cookies, no PII. Uses navigator.sendBeacon() for non-blocking delivery.
+ *
+ * Tracks:
+ *   - Page views (automatic on load)
+ *   - Exit clicks (automatic on external link clicks)
+ *
+ * Opt out: localStorage.flare_ignore = true
+ */
+
+const apiUrl = import.meta.env.PUBLIC_FLARE_API_URL || ''
+---
+
+<script define:vars={{ apiUrl }}>
+(function() {
+  if (!apiUrl) return
+
+  // Skip tracking for site owners: paste localStorage.flare_ignore=true in console
+  if (localStorage.getItem('flare_ignore')) return
+
+  const trackUrl = apiUrl + '/api/track'
+
+  // Generate a session ID (persists across pages in same tab)
+  const sid = sessionStorage.getItem('_fa_sid') || (() => {
+    const id = Math.random().toString(36).substring(2) + Date.now().toString(36)
+    sessionStorage.setItem('_fa_sid', id)
+    return id
+  })()
+
+  // Helper: send beacon
+  function beacon(payload) {
+    const data = JSON.stringify(payload)
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(trackUrl, new Blob([data], { type: 'text/plain' }))
+    } else {
+      fetch(trackUrl, {
+        method: 'POST',
+        body: data,
+        headers: { 'Content-Type': 'text/plain' },
+        keepalive: true,
+      }).catch(() => {})
+    }
+  }
+
+  // Collect UTM params from URL
+  const params = new URLSearchParams(window.location.search)
+
+  // --- Page view tracking ---
+  const sendPageView = () => {
+    beacon({
+      path: window.location.pathname,
+      referrer: document.referrer || null,
+      screenWidth: window.screen.width,
+      loadTime: Math.round(performance.now()),
+      sessionId: sid,
+      utmSource: params.get('utm_source') || null,
+      utmMedium: params.get('utm_medium') || null,
+      utmCampaign: params.get('utm_campaign') || null,
+    })
+  }
+
+  if (document.readyState === 'complete') {
+    sendPageView()
+  } else {
+    window.addEventListener('load', sendPageView, { once: true })
+  }
+
+  // --- Exit click tracking ---
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a[href]')
+    if (!link) return
+
+    const href = link.href
+    if (!href) return
+
+    // Only track external links
+    try {
+      const url = new URL(href)
+      if (url.hostname === window.location.hostname) return
+
+      beacon({
+        path: window.location.pathname,
+        eventType: 'exit',
+        eventData: url.hostname + url.pathname,
+        sessionId: sid,
+      })
+    } catch {}
+  })
+})()
+</script>

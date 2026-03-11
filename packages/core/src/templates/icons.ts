@@ -44,6 +44,7 @@ import {
   ClipboardList,
   CircleHelp,
   Rocket,
+  BarChart3,
 } from 'lucide-static'
 
 /**
@@ -125,4 +126,5 @@ export {
   ClipboardList,
   CircleHelp,
   Rocket,
+  BarChart3,
 }
