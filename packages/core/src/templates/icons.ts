@@ -45,6 +45,8 @@ import {
   CircleHelp,
   Rocket,
   BarChart3,
+  Sun,
+  Moon,
 } from 'lucide-static'
 
 /**
@@ -127,4 +129,6 @@ export {
   CircleHelp,
   Rocket,
   BarChart3,
+  Sun,
+  Moon,
 }
