@@ -17,12 +17,29 @@ export interface AdminLayoutData {
   content: string | HtmlEscapedString;
   dynamicMenuItems?: Array<{
     label: string;
-    path: string;
+    slug: string;
+    collectionId: string;
     icon: string;
   }>;
 }
 
+/**
+ * Module-level menu items set by adminMenuMiddleware.
+ * Safe for Workers: the set→render path is synchronous
+ * (no await between setDynamicMenuItems and renderAdminLayout),
+ * so concurrent requests cannot interleave during rendering.
+ */
+let _pendingMenuItems: AdminLayoutData['dynamicMenuItems'] | undefined
+
+export function setDynamicMenuItems(items: AdminLayoutData['dynamicMenuItems']) {
+  _pendingMenuItems = items
+}
+
 export function renderAdminLayout(data: AdminLayoutData): string {
+  // Auto-inject menu items from middleware if not explicitly provided
+  if (_pendingMenuItems && !data.dynamicMenuItems) {
+    data = { ...data, dynamicMenuItems: _pendingMenuItems }
+  }
   // Import and use the new Catalyst layout
   const {
     renderAdminLayoutCatalyst,
@@ -376,9 +393,9 @@ export function adminLayoutV2(data: AdminLayoutData): string {
       'default': 'bg-gradient-to-br from-slate-900 via-gray-900 to-black',
       'cosmic-blue': 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900',
       'matrix-green': 'bg-gradient-to-br from-gray-900 via-emerald-900 to-green-900',
-      'cyber-pink': 'bg-gradient-to-br from-gray-900 via-pink-900 to-rose-900',
+      'cyber-pink': 'bg-gradient-to-br from-gray-900 via-red-900 to-rose-900',
       'neon-orange': 'bg-gradient-to-br from-gray-900 via-orange-900 to-amber-900',
-      'purple-space': 'bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800',
+      'purple-space': 'bg-gradient-to-br from-gray-900 via-slate-900 to-violet-800',
       'blue-waves': 'svg-pattern-blue-waves',
       'blue-crescent': 'svg-pattern-blue-crescent',
       'blue-stars': 'svg-pattern-blue-stars',
@@ -500,7 +517,8 @@ function renderSidebar(
   user?: any,
   dynamicMenuItems?: Array<{
     label: string;
-    path: string;
+    slug: string;
+    collectionId: string;
     icon: string;
   }>
 ): string {
@@ -604,14 +622,18 @@ function renderSidebar(
 
   // Insert dynamic menu items after "Users"
   if (dynamicMenuItems && dynamicMenuItems.length > 0) {
+    const mappedItems = dynamicMenuItems.map(item => ({
+      label: item.label,
+      path: `/admin/content?collection=${item.collectionId}`,
+      icon: item.icon,
+    }));
     const usersIndex = allMenuItems.findIndex(
       (item) => item.path === "/admin/users"
     );
     if (usersIndex !== -1) {
-      allMenuItems.splice(usersIndex + 1, 0, ...dynamicMenuItems);
+      allMenuItems.splice(usersIndex + 1, 0, ...mappedItems);
     } else {
-      // Fallback: add to end if Users not found
-      allMenuItems.push(...dynamicMenuItems);
+      allMenuItems.push(...mappedItems);
     }
   }
 
@@ -699,7 +721,7 @@ function renderTopBar(pageTitle: string, user?: any): string {
                       </button>
                       
                       <!-- Cyber Pink -->
-                      <button onclick="setBackground('cyber-pink')" class="bg-preview bg-gradient-to-br from-gray-900 via-pink-900 to-rose-900 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
+                      <button onclick="setBackground('cyber-pink')" class="bg-preview bg-gradient-to-br from-gray-900 via-red-900 to-rose-900 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
                         <div class="absolute inset-0 bg-black/20 rounded-lg"></div>
                         <div class="absolute bottom-1 left-2 text-xs text-white font-medium">Cyber</div>
                       </button>
@@ -711,7 +733,7 @@ function renderTopBar(pageTitle: string, user?: any): string {
                       </button>
                       
                       <!-- Purple Space -->
-                      <button onclick="setBackground('purple-space')" class="bg-preview bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
+                      <button onclick="setBackground('purple-space')" class="bg-preview bg-gradient-to-br from-gray-900 via-slate-900 to-violet-800 h-16 rounded-lg border-2 border-white/20 hover:border-white/40 transition-all relative group">
                         <div class="absolute inset-0 bg-black/20 rounded-lg"></div>
                         <div class="absolute bottom-1 left-2 text-xs text-white font-medium">Purple</div>
                       </button>

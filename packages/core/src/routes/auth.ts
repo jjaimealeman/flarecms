@@ -619,9 +619,9 @@ authRoutes.post('/login/form',
 
     return c.html(html`
       <div id="form-response">
-        <div class="rounded-lg bg-green-100 dark:bg-lime-500/10 p-4 ring-1 ring-green-400 dark:ring-lime-500/20">
+        <div class="rounded-lg bg-green-100 dark:bg-emerald-500/10 p-4 ring-1 ring-green-400 dark:ring-emerald-500/20">
           <div class="flex items-start gap-x-3">
-            <svg class="h-5 w-5 text-green-600 dark:text-lime-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-5 w-5 text-green-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <div class="flex-1">

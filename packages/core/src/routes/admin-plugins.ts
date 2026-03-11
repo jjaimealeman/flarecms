@@ -15,12 +15,12 @@ adminPluginRoutes.use('*', requireAuth())
 // Available plugins registry - plugins that can be installed
 const AVAILABLE_PLUGINS = [
   {
-    id: 'third-party-faq',
+    id: 'faq-plugin',
     name: 'faq-plugin',
-    display_name: 'FAQ System',
-    description: 'Frequently Asked Questions management system with categories, search, and custom styling',
-    version: '2.0.0',
-    author: 'Community Developer',
+    display_name: 'FAQ Management',
+    description: 'Frequently Asked Questions management with categories, search, and custom styling. Admin UI at /admin/faq.',
+    version: '1.0.0',
+    author: 'Flare CMS Team',
     category: 'content',
     icon: '❓',
     permissions: ['manage:faqs'],
@@ -129,6 +129,19 @@ const AVAILABLE_PLUGINS = [
     icon: '🔍',
     permissions: [],
     dependencies: [],
+    is_core: true
+  },
+  {
+    id: 'otp-login',
+    name: 'otp-login',
+    display_name: 'OTP Login',
+    description: 'Passwordless authentication via email one-time codes. Requires email plugin to be configured first.',
+    version: '1.0.0-beta.1',
+    author: 'Flare CMS Team',
+    category: 'security',
+    icon: '🔑',
+    permissions: ['otp:manage', 'otp:request', 'otp:verify'],
+    dependencies: ['email'],
     is_core: true
   }
 ]
@@ -405,12 +418,12 @@ adminPluginRoutes.post('/install', async (c) => {
     // Handle FAQ plugin installation
     if (body.name === 'faq-plugin') {
       const faqPlugin = await pluginService.installPlugin({
-        id: 'third-party-faq',
+        id: 'faq-plugin',
         name: 'faq-plugin',
-        display_name: 'FAQ System',
-        description: 'Frequently Asked Questions management system with categories, search, and custom styling',
-        version: '2.0.0',
-        author: 'Community Developer',
+        display_name: 'FAQ Management',
+        description: 'Frequently Asked Questions management with categories, search, and custom styling. Admin UI at /admin/faq.',
+        version: '1.0.0',
+        author: 'Flare CMS Team',
         category: 'content',
         icon: '❓',
         permissions: ['manage:faqs'],
@@ -446,66 +459,6 @@ adminPluginRoutes.post('/install', async (c) => {
       })
 
       return c.json({ success: true, plugin: demoPlugin })
-    }
-
-    // Handle core Authentication System plugin installation
-    if (body.name === 'core-auth') {
-      const authPlugin = await pluginService.installPlugin({
-        id: 'core-auth',
-        name: 'core-auth',
-        display_name: 'Authentication System',
-        description: 'Core authentication and user management system',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'security',
-        icon: '🔐',
-        permissions: ['manage:users', 'manage:roles', 'manage:permissions'],
-        dependencies: [],
-        is_core: true,
-        settings: {}
-      })
-
-      return c.json({ success: true, plugin: authPlugin })
-    }
-
-    // Handle core Media Manager plugin installation
-    if (body.name === 'core-media') {
-      const mediaPlugin = await pluginService.installPlugin({
-        id: 'core-media',
-        name: 'core-media',
-        display_name: 'Media Manager',
-        description: 'Core media upload and management system',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'media',
-        icon: '📸',
-        permissions: ['manage:media', 'upload:files'],
-        dependencies: [],
-        is_core: true,
-        settings: {}
-      })
-
-      return c.json({ success: true, plugin: mediaPlugin })
-    }
-
-    // Handle core Workflow Engine plugin installation
-    if (body.name === 'core-workflow') {
-      const workflowPlugin = await pluginService.installPlugin({
-        id: 'core-workflow',
-        name: 'core-workflow',
-        display_name: 'Workflow Engine',
-        description: 'Content workflow and approval system',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'content',
-        icon: '🔄',
-        permissions: ['manage:workflows', 'approve:content'],
-        dependencies: [],
-        is_core: true,
-        settings: {}
-      })
-
-      return c.json({ success: true, plugin: workflowPlugin })
     }
 
     // Handle Database Tools plugin installation
@@ -693,6 +646,32 @@ adminPluginRoutes.post('/install', async (c) => {
       return c.json({ success: true, plugin: turnstilePlugin })
     }
 
+    // Handle OTP Login plugin installation
+    if (body.name === 'otp-login') {
+      const otpPlugin = await pluginService.installPlugin({
+        id: 'otp-login',
+        name: 'otp-login',
+        display_name: 'OTP Login',
+        description: 'Passwordless authentication via email one-time codes',
+        version: '1.0.0-beta.1',
+        author: 'Flare CMS Team',
+        category: 'security',
+        icon: '🔑',
+        permissions: ['otp:manage', 'otp:request', 'otp:verify'],
+        dependencies: ['email'],
+        is_core: true,
+        settings: {
+          codeLength: 6,
+          codeExpiryMinutes: 10,
+          maxAttempts: 3,
+          rateLimitPerHour: 5,
+          allowNewUserRegistration: false
+        }
+      })
+
+      return c.json({ success: true, plugin: otpPlugin })
+    }
+
     return c.json({ error: 'Plugin not found in registry' }, 404)
   } catch (error) {
     console.error('Error installing plugin:', error)
@@ -741,13 +720,6 @@ adminPluginRoutes.post('/:id/settings', async (c) => {
     const pluginService = new PluginService(db)
     await pluginService.updatePluginSettings(pluginId, settings)
 
-    // TODO: Clear auth validation cache if updating core-auth plugin
-    // Commented out until authValidationService is migrated
-    // if (pluginId === 'core-auth') {
-    //   authValidationService.clearCache()
-    //   console.log('[AuthSettings] Cache cleared after updating authentication settings')
-    // }
-
     return c.json({ success: true })
   } catch (error) {
     console.error('Error updating plugin settings:', error)
@@ -762,11 +734,16 @@ function formatLastUpdated(timestamp: number): string {
   const diff = now - timestamp
 
   if (diff < 60) return 'just now'
-  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`
-  if (diff < 604800) return `${Math.floor(diff / 86400)} days ago`
-  if (diff < 2592000) return `${Math.floor(diff / 604800)} weeks ago`
-  return `${Math.floor(diff / 2592000)} months ago`
+  const minutes = Math.floor(diff / 60)
+  if (diff < 3600) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`
+  const hours = Math.floor(diff / 3600)
+  if (diff < 86400) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`
+  const days = Math.floor(diff / 86400)
+  if (diff < 604800) return `${days} ${days === 1 ? 'day' : 'days'} ago`
+  const weeks = Math.floor(diff / 604800)
+  if (diff < 2592000) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
+  const months = Math.floor(diff / 2592000)
+  return `${months} ${months === 1 ? 'month' : 'months'} ago`
 }
 
 export { adminPluginRoutes }

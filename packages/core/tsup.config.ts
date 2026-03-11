@@ -61,6 +61,7 @@ export default defineConfig({
     'drizzle-zod',
     'marked',
     'highlight.js',
+    'lucide-static',
     'semver'
   ],
 

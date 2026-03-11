@@ -3,7 +3,7 @@ import { renderMarkdown } from '../../lib/markdown'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 import TableOfContents from '../../components/docs/TableOfContents.astro'
 import EditInCms from '../../components/docs/EditInCms.astro'
-import { getDocsSections, getDocsPages } from '../../lib/flare'
+import { getCollection } from 'astro:content'
 import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
 import '../../styles/code-blocks.css'
 import '../../styles/callouts.css'
@@ -20,11 +20,30 @@ if (parts.length !== 2) {
 
 const [sectionSlug, pageSlug] = parts
 
-// Fetch all data
-const [sections, docs] = await Promise.all([
-  getDocsSections(),
-  getDocsPages(),
-])
+// Fetch all data from Content Layer
+const rawSections = await getCollection('docsSections')
+const rawDocs = await getCollection('docs')
+
+// Map Content Layer entries to the shape buildNavTree expects
+const sections = rawSections
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+  .map(s => ({
+    id: s.id,
+    title: s.data.name || '',
+    slug: s.data.slug || '',
+    status: s.data._status || 'published',
+    data: s.data,
+  }))
+
+const docs = rawDocs
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+  .map(d => ({
+    id: d.id,
+    title: d.data.title || '',
+    slug: d.data.slug || '',
+    status: d.data._status || 'published',
+    data: d.data,
+  }))
 
 // Build navigation tree
 const navSections = buildNavTree(sections, docs)

@@ -124,7 +124,7 @@ export function renderActivityLogsPage(data: ActivityLogsPageData): string {
           <div class="md:col-span-2 lg:col-span-4 flex gap-3">
             <button 
               type="submit"
-              class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all"
+              class="px-6 py-2 bg-gradient-to-r from-blue-600 to-slate-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-slate-700 transition-all"
             >
               Apply Filters
             </button>
@@ -141,7 +141,7 @@ export function renderActivityLogsPage(data: ActivityLogsPageData): string {
       <!-- Activity Logs Table -->
       <div class="backdrop-blur-xl bg-white/10 rounded-xl border border-white/20 shadow-2xl overflow-hidden">
         <div class="relative px-6 py-4 border-b border-white/10">
-          <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-slate-600/10 to-red-600/10"></div>
           <div class="relative flex items-center justify-between">
             <h2 class="text-xl font-semibold text-white">Recent Activity</h2>
             <div class="text-sm text-gray-300">

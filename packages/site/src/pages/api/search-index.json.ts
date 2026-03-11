@@ -1,11 +1,6 @@
 import type { APIRoute } from 'astro'
 import MiniSearch from 'minisearch'
-import {
-  getDocsPages,
-  getDocsSections,
-  getBlogPosts,
-  getNewsArticles,
-} from '../../lib/flare'
+import { getCollection } from 'astro:content'
 import {
   MINISEARCH_OPTIONS,
   stripMarkdown,
@@ -15,10 +10,10 @@ import {
 export const GET: APIRoute = async () => {
   try {
     const [sections, docs, blogPosts, newsArticles] = await Promise.all([
-      getDocsSections(),
-      getDocsPages(),
-      getBlogPosts(),
-      getNewsArticles(),
+      getCollection('docsSections'),
+      getCollection('docs'),
+      getCollection('blogPosts'),
+      getCollection('news'),
     ])
 
     const sectionMap = new Map(
@@ -115,7 +110,7 @@ export const GET: APIRoute = async () => {
         content: plainContent,
         section: 'Blog',
         sectionSlug: 'blog',
-        slug: post.data.slug || post.slug,
+        slug: post.data.slug || '',
         headingId: '',
         headingText: '',
       })
@@ -127,11 +122,11 @@ export const GET: APIRoute = async () => {
 
       documents.push({
         id: article.id,
-        title: article.data.title || article.title,
+        title: article.data.title || '',
         content: plainContent,
         section: 'News',
         sectionSlug: 'news',
-        slug: article.slug,
+        slug: article.data.slug || '',
         headingId: '',
         headingText: '',
       })

@@ -92,27 +92,31 @@ adminFormsRoutes.get('/', async (c) => {
     const search = c.req.query('search') || ''
     const category = c.req.query('category') || ''
 
-    // Build query
-    let query = 'SELECT * FROM forms WHERE 1=1'
+    // Build query — use actual submission count from form_submissions table
+    let query = `SELECT f.*, COALESCE(sc.cnt, 0) AS real_submission_count
+      FROM forms f
+      LEFT JOIN (SELECT form_id, COUNT(*) AS cnt FROM form_submissions GROUP BY form_id) sc ON sc.form_id = f.id
+      WHERE 1=1`
     const params: string[] = []
 
     if (search) {
-      query += ' AND (name LIKE ? OR display_name LIKE ?)'
+      query += ' AND (f.name LIKE ? OR f.display_name LIKE ?)'
       params.push(`%${search}%`, `%${search}%`)
     }
 
     if (category) {
-      query += ' AND category = ?'
+      query += ' AND f.category = ?'
       params.push(category)
     }
 
-    query += ' ORDER BY created_at DESC'
+    query += ' ORDER BY f.created_at DESC'
 
     const result = await db.prepare(query).bind(...params).all()
 
-    // Format dates
+    // Format dates, use real submission count
     const forms = result.results.map((form: any) => ({
       ...form,
+      submission_count: form.real_submission_count,
       formattedDate: new Date(form.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
@@ -418,54 +422,297 @@ adminFormsRoutes.get('/:id/submissions', async (c) => {
       'SELECT * FROM form_submissions WHERE form_id = ? ORDER BY submitted_at DESC'
     ).bind(formId).all()
 
-    // Simple submissions page for now
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Submissions - ${form.display_name}</title>
-        <style>
-          body { font-family: system-ui; padding: 20px; }
-          h1 { margin-bottom: 20px; }
-          table { width: 100%; border-collapse: collapse; }
-          th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-          th { background: #f5f5f5; font-weight: 600; }
-          .back-link { display: inline-block; margin-bottom: 20px; color: #0066cc; text-decoration: none; }
-          .back-link:hover { text-decoration: underline; }
-        </style>
-      </head>
-      <body>
-        <a href="/admin/forms" class="back-link">← Back to Forms</a>
-        <h1>Submissions: ${form.display_name}</h1>
-        <p>Total submissions: ${submissions.results.length}</p>
-        ${submissions.results.length > 0 ? `
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Submitted</th>
-                <th>Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${submissions.results.map((sub: any) => `
-                <tr>
-                  <td>${sub.id.substring(0, 8)}</td>
-                  <td>${new Date(sub.submitted_at).toLocaleString()}</td>
-                  <td><pre>${JSON.stringify(JSON.parse(sub.submission_data), null, 2)}</pre></td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        ` : '<p>No submissions yet.</p>'}
-      </body>
-      </html>
+    // Parse submission data and extract field keys for table headers
+    const parsed = submissions.results.map((sub: any) => {
+      let data: Record<string, any> = {}
+      try { data = JSON.parse(sub.submission_data) } catch {}
+      return { ...sub, _data: data }
+    })
+
+    // Collect all unique field keys across submissions (skip internal fields)
+    const skipKeys = new Set(['turnstile', 'submit'])
+    const fieldKeys: string[] = []
+    parsed.forEach((sub: any) => {
+      Object.keys(sub._data).forEach((key: string) => {
+        if (!fieldKeys.includes(key) && !skipKeys.has(key)) fieldKeys.push(key)
+      })
+    })
+
+    // Friendly field label (capitalize, split camelCase)
+    function fieldLabel(key: string): string {
+      return key
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/[_-]/g, ' ')
+        .replace(/^\w/, (c: string) => c.toUpperCase())
+        .trim()
+    }
+
+    // Format date
+    function formatDate(ts: number): string {
+      const d = new Date(ts)
+      const month = (d.getMonth() + 1).toString().padStart(2, '0')
+      const day = d.getDate().toString().padStart(2, '0')
+      const year = d.getFullYear()
+      const hours = d.getHours()
+      const mins = d.getMinutes().toString().padStart(2, '0')
+      const ampm = hours >= 12 ? 'PM' : 'AM'
+      const h12 = hours % 12 || 12
+      return `${month}/${day}/${year} ${h12}:${mins} ${ampm}`
+    }
+
+    // Escape HTML
+    function esc(str: any): string {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+    }
+
+    const pageContent = `
+      <div>
+        <!-- Header -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <a href="/admin/forms" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </a>
+              <div>
+                <h1 class="text-2xl/8 font-semibold text-zinc-950 dark:text-white sm:text-xl/8">
+                  ${esc(form.display_name)} Submissions
+                </h1>
+                <p class="mt-1 text-sm/6 text-zinc-500 dark:text-zinc-400">
+                  ${parsed.length} submission${parsed.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <a
+                href="/admin/forms/${esc(formId)}/builder"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
+              >
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Edit Form
+              </a>
+            </div>
+          </div>
+        </div>
+
+        ${parsed.length === 0 ? `
+          <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-12 text-center">
+            <svg class="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            <p class="mt-4 text-sm font-medium text-zinc-900 dark:text-white">No submissions yet</p>
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Submissions will appear here when someone fills out this form.</p>
+          </div>
+        ` : `
+          <!-- Submissions table -->
+          <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-zinc-950/5 dark:divide-white/5">
+                <thead>
+                  <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">#</th>
+                    ${fieldKeys.map(key => `
+                      <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">${esc(fieldLabel(key))}</th>
+                    `).join('')}
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Submitted</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-950/5 dark:divide-white/5">
+                  ${parsed.map((sub: any, i: number) => `
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
+                      <td class="px-4 py-3 text-sm text-zinc-400 dark:text-zinc-500 whitespace-nowrap">${parsed.length - i}</td>
+                      ${fieldKeys.map(key => {
+                        const val = sub._data[key]
+                        const display = val !== undefined && val !== null && val !== '' ? esc(val) : '<span class="text-zinc-300 dark:text-zinc-600">&mdash;</span>'
+                        return `<td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 max-w-xs truncate">${display}</td>`
+                      }).join('')}
+                      <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">${formatDate(sub.submitted_at)}</td>
+                      <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <button
+                          onclick="viewSubmission('${esc(sub.id)}')"
+                          class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-zinc-950/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                          title="View details"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                          </svg>
+                        </button>
+                        <button
+                          onclick="deleteSubmission('${esc(sub.id)}')"
+                          class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-zinc-950/10 dark:border-white/10 text-zinc-400 dark:text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-800 transition-colors"
+                          title="Delete"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `}
+      </div>
+
+      <!-- Detail Modal -->
+      <div id="detail-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden ring-1 ring-zinc-950/5 dark:ring-white/10">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-950/5 dark:border-white/5">
+            <h2 class="text-base font-semibold text-zinc-950 dark:text-white">Submission Details</h2>
+            <button onclick="closeModal()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div id="detail-content" class="px-6 py-4 overflow-y-auto max-h-[60vh] space-y-4">
+          </div>
+          <div class="px-6 py-3 border-t border-zinc-950/5 dark:border-white/5 bg-zinc-50 dark:bg-zinc-800/50 flex justify-end">
+            <button onclick="closeModal()" class="px-4 py-1.5 text-sm font-medium rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        var submissionsData = ${JSON.stringify(parsed.map((s: any) => ({ id: s.id, data: s._data, submitted_at: s.submitted_at, ip_address: s.ip_address, user_agent: s.user_agent })))};
+
+        function viewSubmission(id) {
+          var sub = submissionsData.find(function(s) { return s.id === id });
+          if (!sub) return;
+
+          var content = document.getElementById('detail-content');
+          content.textContent = '';
+
+          // Timestamp
+          var timeDiv = document.createElement('div');
+          timeDiv.className = 'text-xs text-zinc-400 dark:text-zinc-500';
+          timeDiv.textContent = new Date(sub.submitted_at).toLocaleString();
+          content.appendChild(timeDiv);
+
+          // Field values
+          Object.keys(sub.data).forEach(function(key) {
+            var group = document.createElement('div');
+
+            var label = document.createElement('dt');
+            label.className = 'text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1';
+            label.textContent = key.replace(/([A-Z])/g, ' $1').replace(/[_-]/g, ' ').replace(/^\\w/, function(c) { return c.toUpperCase() });
+
+            var value = document.createElement('dd');
+            value.className = 'text-sm text-zinc-900 dark:text-zinc-100';
+            value.textContent = sub.data[key] || '—';
+
+            group.appendChild(label);
+            group.appendChild(value);
+            content.appendChild(group);
+          });
+
+          // Metadata
+          if (sub.ip_address) {
+            var ipDiv = document.createElement('div');
+            ipDiv.className = 'pt-3 border-t border-zinc-950/5 dark:border-white/5';
+
+            var ipLabel = document.createElement('dt');
+            ipLabel.className = 'text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1';
+            ipLabel.textContent = 'IP Address';
+            var ipVal = document.createElement('dd');
+            ipVal.className = 'text-xs text-zinc-500 dark:text-zinc-400 font-mono';
+            ipVal.textContent = sub.ip_address;
+
+            ipDiv.appendChild(ipLabel);
+            ipDiv.appendChild(ipVal);
+            content.appendChild(ipDiv);
+          }
+
+          document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+          document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // Close on backdrop click
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+          if (e.target.id === 'detail-modal') closeModal();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') closeModal();
+        });
+
+        function deleteSubmission(id) {
+          if (!confirm('Delete this submission? This cannot be undone.')) return;
+          fetch('/admin/forms/${formId}/submissions/' + id, { method: 'DELETE' })
+            .then(function(res) {
+              if (res.ok) location.reload();
+            });
+        }
+
+        // Auto-open detail modal if only 1 submission
+        if (submissionsData.length === 1) {
+          viewSubmission(submissionsData[0].id);
+        }
+      </script>
     `
-    
-    return c.html(html)
+
+    const { renderAdminLayoutCatalyst } = await import('../templates/layouts/admin-layout-catalyst.template')
+
+    return c.html(renderAdminLayoutCatalyst({
+      title: `${form.display_name} Submissions`,
+      content: pageContent,
+      user: user ? { name: user.email.split('@')[0] || user.email, email: user.email, role: user.role } : undefined,
+    }))
   } catch (error: any) {
     console.error('Error loading submissions:', error)
     return c.html('<p>Error loading submissions</p>', 500)
+  }
+})
+
+// Delete a single submission
+adminFormsRoutes.delete('/:id/submissions/:subId', async (c) => {
+  try {
+    const db = c.env.DB
+    const formId = c.req.param('id')
+    const subId = c.req.param('subId')
+
+    const sub = await db.prepare('SELECT id FROM form_submissions WHERE id = ? AND form_id = ?')
+      .bind(subId, formId)
+      .first()
+
+    if (!sub) {
+      return c.json({ error: 'Submission not found' }, 404)
+    }
+
+    await db.prepare('DELETE FROM form_submissions WHERE id = ?').bind(subId).run()
+
+    // Sync the cached count
+    const countResult = await db.prepare('SELECT COUNT(*) AS cnt FROM form_submissions WHERE form_id = ?')
+      .bind(formId)
+      .first<{ cnt: number }>()
+
+    await db.prepare('UPDATE forms SET submission_count = ? WHERE id = ?')
+      .bind(countResult?.cnt ?? 0, formId)
+      .run()
+
+    return c.json({ success: true })
+  } catch (error: any) {
+    console.error('Error deleting submission:', error)
+    return c.json({ error: 'Failed to delete submission' }, 500)
   }
 })
 

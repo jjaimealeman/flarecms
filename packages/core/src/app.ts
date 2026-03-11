@@ -23,17 +23,23 @@ import {
   adminCollectionsRoutes,
   adminSettingsRoutes,
   adminFormsRoutes,
+  adminFaqRoutes,
+  apiFaqRoutes,
   publicFormsRoutes,
   adminApiReferenceRoutes,
   adminApiTokensRoutes,
   adminPreviewRoutes,
-  adminSchemaMigrationsRoutes
+  adminSchemaMigrationsRoutes,
+  adminTestimonialsRoutes,
+  adminCodeExamplesRoutes,
+  adminDeployRoutes
 } from './routes'
 import { getCoreVersion, getVersionDisplay } from './utils/version'
 import { bootstrapMiddleware } from './middleware/bootstrap'
 import { metricsMiddleware } from './middleware/metrics'
 import { securityHeadersMiddleware } from './middleware/security-headers'
 import { csrfProtection } from './middleware/csrf'
+import { adminMenuMiddleware } from './middleware/admin-menu'
 import { createDatabaseToolsAdminRoutes } from './plugins/core-plugins/database-tools-plugin/admin-routes'
 import { createSeedDataAdminRoutes } from './plugins/core-plugins/seed-data-plugin/admin-routes'
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
@@ -93,6 +99,12 @@ export interface Variables {
   startTime?: number
   appVersion?: string
   csrfToken?: string
+  adminMenuItems?: Array<{
+    label: string
+    slug: string
+    collectionId: string
+    icon: string
+  }>
 }
 
 export interface FlareConfig {
@@ -259,6 +271,9 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
     await next()
   })
 
+  // Admin menu middleware — queries collections for sidebar nav (cached per isolate)
+  app.use('/admin/*', adminMenuMiddleware())
+
   // Core routes
   // Routes are being imported incrementally from routes/*
   // Each route is tested and migrated one-by-one
@@ -270,6 +285,8 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/collections', adminCollectionsRoutes)
   app.route('/admin/forms', adminFormsRoutes)
   app.route('/admin/settings', adminSettingsRoutes)
+  app.route('/admin/faq', adminFaqRoutes)
+  app.route('/api/faq', apiFaqRoutes)
   app.route('/forms', publicFormsRoutes)
   app.route('/api/forms', publicFormsRoutes) // API endpoint for form submissions
   app.route('/admin/api-reference', adminApiReferenceRoutes)
@@ -277,6 +294,9 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/api/preview', adminPreviewRoutes)
   app.route('/admin/preview', adminPreviewRoutes)
   app.route('/admin/schema-migrations', adminSchemaMigrationsRoutes)
+  app.route('/admin/deploy', adminDeployRoutes)
+  app.route('/admin/testimonials', adminTestimonialsRoutes)
+  app.route('/admin/code-examples', adminCodeExamplesRoutes)
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())
   app.route('/admin/seed-data', createSeedDataAdminRoutes())
   app.route('/admin/content', adminContentRoutes)

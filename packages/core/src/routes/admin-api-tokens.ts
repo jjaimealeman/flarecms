@@ -48,7 +48,7 @@ adminApiTokensRoutes.get('/', async (c) => {
           const isExpired = token.expires_at !== null && token.expires_at < Date.now()
           const statusBadge = isExpired
             ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-red-500/10 text-red-400 ring-1 ring-inset ring-red-500/20">Expired</span>`
-            : `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-lime-500/10 text-lime-300 ring-1 ring-inset ring-lime-400/20">Active</span>`
+            : `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/20">Active</span>`
 
           const collectionsDisplay = token.allowed_collections
             ? token.allowed_collections.map(c => `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-blue-500/10 text-blue-300 ring-1 ring-inset ring-blue-400/20 mr-1">${c}</span>`).join('')
@@ -343,7 +343,7 @@ adminApiTokensRoutes.post('/', async (c) => {
           </div>
           <div class="px-4 py-3 flex items-center justify-between">
             <span class="text-sm text-zinc-400">Permissions</span>
-            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-lime-500/10 text-lime-300 ring-1 ring-inset ring-lime-400/20">Read-only</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-300 ring-1 ring-inset ring-emerald-400/20">Read-only</span>
           </div>
         </div>
 

@@ -11,12 +11,22 @@ import type { CollectionSchema, FieldConfig } from '@flare-cms/core'
  * Map of Flare CMS field types to Zod schema constructors.
  * Each entry returns a fresh Zod type instance.
  */
+/**
+ * Coerce a value to Date, treating empty/invalid strings as undefined.
+ * z.coerce.date() turns "" into Invalid Date which fails validation.
+ */
+const safeDate = () =>
+  z.preprocess(
+    (val) => (val === '' || val === null || val === undefined ? undefined : val),
+    z.coerce.date(),
+  )
+
 const FIELD_TYPE_MAP: Record<string, () => z.ZodTypeAny> = {
   string: () => z.string(),
   number: () => z.number(),
   boolean: () => z.boolean(),
-  date: () => z.coerce.date(),
-  datetime: () => z.coerce.date(),
+  date: () => safeDate(),
+  datetime: () => safeDate(),
   email: () => z.string().email(),
   url: () => z.string().url(),
   richtext: () => z.string(),
@@ -79,8 +89,8 @@ export function flareSchemaToZod(schema: CollectionSchema): z.ZodObject<any> {
 
   // System fields (always optional — CMS manages these)
   shape._status = z.string().optional()
-  shape._createdAt = z.coerce.date().optional()
-  shape._updatedAt = z.coerce.date().optional()
+  shape._createdAt = safeDate().optional()
+  shape._updatedAt = safeDate().optional()
 
   return z.object(shape)
 }

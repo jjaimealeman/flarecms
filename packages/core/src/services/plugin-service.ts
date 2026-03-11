@@ -103,7 +103,7 @@ export class PluginService {
     const now = Math.floor(Date.now() / 1000)
     
     const stmt = this.db.prepare(`
-      INSERT INTO plugins (
+      INSERT OR IGNORE INTO plugins (
         id, name, display_name, description, version, author, category, icon,
         status, is_core, settings, permissions, dependencies, download_count, 
         rating, installed_at, last_updated

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import { getDocsSections, getDocsPages } from '../lib/flare'
+import { getCollection } from 'astro:content'
 
 interface SitemapUrl {
   loc: string
@@ -20,28 +20,20 @@ export const GET: APIRoute = async ({ site }) => {
     { loc: '/code-of-conduct', priority: '0.2', changefreq: 'yearly' },
   ]
 
-  // Dynamic docs pages (fetched from CMS API)
-  let docsUrls: SitemapUrl[] = []
+  // Dynamic docs pages (from Content Layer)
+  const sections = await getCollection('docsSections')
+  const docs = await getCollection('docs')
 
-  try {
-    const [sections, docs] = await Promise.all([
-      getDocsSections(),
-      getDocsPages(),
-    ])
-
-    docsUrls = docs.map((doc) => {
-      const section = sections.find((s) => s.id === doc.data.section)
-      const sectionSlug = section?.data.slug || section?.slug || ''
-      const pageSlug = doc.data.slug || doc.slug
-      return {
-        loc: `/docs/${sectionSlug}/${pageSlug}`,
-        priority: '0.7',
-        changefreq: 'monthly',
-      }
-    })
-  } catch {
-    // CMS API unavailable -- return sitemap with static pages only
-  }
+  const docsUrls: SitemapUrl[] = docs.map((doc) => {
+    const section = sections.find((s) => s.id === doc.data.section)
+    const sectionSlug = section?.data.slug || ''
+    const pageSlug = doc.data.slug || ''
+    return {
+      loc: `/docs/${sectionSlug}/${pageSlug}`,
+      priority: '0.7',
+      changefreq: 'monthly',
+    }
+  })
 
   const allUrls = [...staticPages, ...docsUrls]
 

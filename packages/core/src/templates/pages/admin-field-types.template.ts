@@ -749,7 +749,7 @@ function renderFieldTypeCard(fieldType: FieldTypeDefinition): string {
       <!-- Header -->
       <div class="flex items-start justify-between mb-4">
         <div class="flex items-center space-x-3">
-          <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center border border-blue-500/30">
+          <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500/20 to-slate-500/20 rounded-lg flex items-center justify-center border border-blue-500/30">
             ${fieldType.icon}
           </div>
           <div>
@@ -808,7 +808,7 @@ function renderFieldTypeCard(fieldType: FieldTypeDefinition): string {
                   <p class="text-sm text-gray-300 mb-2">${option.description}</p>
                   ${option.examples ? `
                     <div class="text-xs text-gray-400">
-                      Examples: ${option.examples.map(ex => `<code class="text-purple-400">${ex}</code>`).join(', ')}
+                      Examples: ${option.examples.map(ex => `<code class="text-slate-400">${ex}</code>`).join(', ')}
                     </div>
                   ` : ''}
                 </div>
@@ -865,7 +865,7 @@ function renderFieldTypeCard(fieldType: FieldTypeDefinition): string {
             <div class="space-y-3">
               ${fieldType.examples.map(example => `
                 <div class="bg-gray-800/30 rounded-lg p-3">
-                  <h5 class="text-purple-400 font-medium mb-2">${example.title}</h5>
+                  <h5 class="text-slate-400 font-medium mb-2">${example.title}</h5>
                   <div class="grid gap-2 text-xs">
                     <div>
                       <span class="text-gray-400">Configuration:</span>

@@ -62,7 +62,7 @@ export function renderCacheDashboard(data: CacheDashboardData): string {
           </button>
           <button
             onclick="clearAllCaches()"
-            class="inline-flex items-center gap-2 rounded-lg bg-red-600 dark:bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 dark:hover:bg-red-600"
+            class="inline-flex items-center gap-2 rounded-lg bg-red-600 dark:bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 dark:hover:bg-red-600 shadow-sm"
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -153,7 +153,7 @@ export function renderCacheDashboard(data: CacheDashboardData): string {
         <div class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             ${renderPerformanceMetric('Memory Cache', data.totals.hits, data.totals.misses)}
-            ${renderHealthStatus(parseFloat(data.totals.hitRate))}
+            ${renderHealthStatus(parseFloat(data.totals.hitRate), data.totals.requests)}
           </div>
         </div>
       </div>
@@ -257,9 +257,9 @@ export function renderCacheDashboard(data: CacheDashboardData): string {
 function renderStatCard(label: string, value: string, color: string, icon: string, colorOverride?: string): string {
   const finalColor = colorOverride || color
   const colorClasses = {
-    lime: 'bg-lime-50 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400 ring-lime-600/20 dark:ring-lime-500/20',
+    lime: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-emerald-600/20 dark:ring-emerald-500/20',
     blue: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-blue-600/20 dark:ring-blue-500/20',
-    purple: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 ring-purple-600/20 dark:ring-purple-500/20',
+    purple: 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 ring-slate-600/20 dark:ring-slate-500/20',
     sky: 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 ring-sky-600/20 dark:ring-sky-500/20',
     amber: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-amber-600/20 dark:ring-amber-500/20',
     red: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 ring-red-600/20 dark:ring-red-500/20'
@@ -286,14 +286,14 @@ function renderStatCard(label: string, value: string, color: string, icon: strin
 
 function renderNamespaceRow(namespace: string, stat: CacheStats): string {
   const hitRate = stat.hitRate.toFixed(1)
-  const hitRateColor = stat.hitRate > 70 ? 'text-lime-600 dark:text-lime-400' :
+  const hitRateColor = stat.hitRate > 70 ? 'text-emerald-600 dark:text-emerald-400' :
                        stat.hitRate > 40 ? 'text-amber-600 dark:text-amber-400' :
                        'text-red-600 dark:text-red-400'
 
   return `
     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
       <td class="px-6 py-4 whitespace-nowrap">
-        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ring-1 ring-inset ring-zinc-200 dark:ring-zinc-700">
+        <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ring-1 ring-inset ring-zinc-200 dark:ring-zinc-700">
           ${namespace}
         </span>
       </td>
@@ -351,7 +351,7 @@ function renderPerformanceMetric(label: string, hits: number, misses: number): s
             <span class="font-medium text-zinc-900 dark:text-zinc-100">${hitPercentage.toFixed(1)}%</span>
           </div>
           <div class="h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-            <div class="h-full bg-lime-500 dark:bg-lime-400" style="width: ${hitPercentage}%"></div>
+            <div class="h-full bg-emerald-500 dark:bg-emerald-400" style="width: ${hitPercentage}%"></div>
           </div>
         </div>
       </div>
@@ -359,7 +359,21 @@ function renderPerformanceMetric(label: string, hits: number, misses: number): s
   `
 }
 
-function renderHealthStatus(hitRate: number): string {
+function renderHealthStatus(hitRate: number, totalRequests?: number): string {
+  // Show "No data" when there are zero requests instead of "Critical"
+  if (totalRequests !== undefined && totalRequests === 0) {
+    return `
+      <div class="flex items-center gap-3 p-4 rounded-xl ring-1 ring-inset bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 ring-zinc-200 dark:ring-zinc-700">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <p class="font-semibold text-sm">No Data</p>
+          <p class="text-xs mt-0.5">No requests recorded yet</p>
+        </div>
+      </div>
+    `
+  }
   const status = hitRate > 70 ? 'healthy' : hitRate > 40 ? 'warning' : 'critical'
   const statusConfig = {
     healthy: {
@@ -387,7 +401,7 @@ function renderHealthStatus(hitRate: number): string {
 
   const config = statusConfig[status]
   const colorClasses = {
-    lime: 'bg-lime-50 dark:bg-lime-500/10 text-lime-600 dark:text-lime-400 ring-lime-600/20 dark:ring-lime-500/20',
+    lime: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-emerald-600/20 dark:ring-emerald-500/20',
     amber: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-amber-600/20 dark:ring-amber-500/20',
     red: 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 ring-red-600/20 dark:ring-red-500/20'
   }

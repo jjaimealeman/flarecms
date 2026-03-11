@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { getDocsSections, getDocsPages } from '../../lib/flare'
+import { getCollection } from 'astro:content'
 import { buildNavTree } from '../../lib/docs-nav'
 import IconRocket from '~icons/lucide/rocket'
 import IconLayers from '~icons/lucide/layers'
@@ -27,10 +27,30 @@ function getIcon(slug: string) {
   return iconMap[slug] || IconBookOpen
 }
 
-const [sections, docs] = await Promise.all([
-  getDocsSections(),
-  getDocsPages(),
-])
+const rawSections = await getCollection('docsSections')
+const rawDocs = await getCollection('docs')
+
+// Map Content Layer entries to the shape buildNavTree expects
+// (needs .slug, .title at top level as fallbacks, plus .data.* and .id)
+const sections = rawSections
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+  .map(s => ({
+    id: s.id,
+    title: s.data.name || '',
+    slug: s.data.slug || '',
+    status: s.data._status || 'published',
+    data: s.data,
+  }))
+
+const docs = rawDocs
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+  .map(d => ({
+    id: d.id,
+    title: d.data.title || '',
+    slug: d.data.slug || '',
+    status: d.data._status || 'published',
+    data: d.data,
+  }))
 
 const navSections = buildNavTree(sections, docs)
 ---

@@ -29,7 +29,7 @@ export { renderFilterBar } from './filter-bar.template'
 export type { FilterBarData, Filter, FilterOption } from './filter-bar.template'
 
 // Layout templates
-export { renderAdminLayout } from './layouts/admin-layout-v2.template'
+export { renderAdminLayout, setDynamicMenuItems } from './layouts/admin-layout-v2.template'
 export { renderAdminLayoutCatalyst } from './layouts/admin-layout-catalyst.template'
 export type { AdminLayoutData } from './layouts/admin-layout-v2.template'
 export type { AdminLayoutCatalystData } from './layouts/admin-layout-catalyst.template'
@@ -37,12 +37,17 @@ export type { AdminLayoutCatalystData } from './layouts/admin-layout-catalyst.te
 // Component templates
 export { renderLogo } from './components/logo.template'
 
+// Icons module
+export { icon, collectionIcon } from './icons'
+
 // Page templates - Admin
 export { renderDesignPage } from './pages/admin-design.template'
 export type { DesignPageData } from './pages/admin-design.template'
 export { renderCheckboxPage } from './pages/admin-checkboxes.template'
 export type { CheckboxPageData } from './pages/admin-checkboxes.template'
 export { renderTestimonialsList } from './pages/admin-testimonials-list.template'
+export { renderFaqList } from './pages/admin-faq-list.template'
+export { renderFaqForm } from './pages/admin-faq-form.template'
 export { renderCodeExamplesList } from './pages/admin-code-examples-list.template'
 export { renderFormsDocsPage } from './pages/admin-forms-docs.template'
 export type { FormsDocsPageData } from './pages/admin-forms-docs.template'

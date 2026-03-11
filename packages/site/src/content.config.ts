@@ -44,4 +44,14 @@ const docsSections = defineCollection({
   }),
 })
 
-export const collections = { blogPosts, news, docs, docsSections }
+// Dynamic pages (about, terms, etc.)
+const pages = defineCollection({
+  loader: flareLoader({
+    apiUrl: API_URL,
+    collection: 'pages',
+    apiToken: API_TOKEN,
+    filter: { status: 'published' },
+  }),
+})
+
+export const collections = { blogPosts, news, docs, docsSections, pages }

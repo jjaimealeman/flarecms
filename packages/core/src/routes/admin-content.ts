@@ -281,7 +281,8 @@ adminContentRoutes.get('/', async (c) => {
     // Get query parameters
     const page = parseInt(url.searchParams.get('page') || '1')
     const limit = parseInt(url.searchParams.get('limit') || '20')
-    const modelName = url.searchParams.get('model') || 'all'
+    let modelName = url.searchParams.get('model') || 'all'
+    const collectionParam = url.searchParams.get('collection') || ''
     const status = url.searchParams.get('status') || 'all'
     const search = url.searchParams.get('search') || ''
     const offset = (page - 1) * limit
@@ -299,11 +300,25 @@ adminContentRoutes.get('/', async (c) => {
     const filteredCollections = allowedCollectionIds !== null
       ? allCollections.filter(c => allowedCollectionIds!.includes(c.id))
       : allCollections
-    const models = filteredCollections.map((row) => ({
-      name: row.name,
-      displayName: row.display_name
-    }))
-    
+    // Deduplicate by collection name (guards against duplicate DB entries)
+    const seen = new Set<string>()
+    const models = filteredCollections
+      .filter((row) => {
+        if (seen.has(row.name)) return false
+        seen.add(row.name)
+        return true
+      })
+      .map((row) => ({
+        name: row.name,
+        displayName: row.display_name
+      }))
+
+    // Resolve ?collection=<id> to model name if ?model= wasn't provided
+    if (modelName === 'all' && collectionParam) {
+      const match = allCollections.find(c => c.id === collectionParam)
+      if (match) modelName = match.name
+    }
+
     // Build where conditions
     const conditions: string[] = []
     const params: any[] = []
@@ -419,7 +434,8 @@ adminContentRoutes.get('/', async (c) => {
         ? `${row.first_name} ${row.last_name}`
         : row.author_email || 'Unknown'
       
-      const formattedDate = new Date(row.updated_at).toLocaleDateString()
+      const updatedDate = new Date(row.updated_at)
+      const formattedDate = updatedDate.getFullYear() >= 2000 ? updatedDate.toLocaleDateString() : '—'
       
       // Determine available workflow actions based on status
       const availableActions: string[] = []
@@ -494,40 +510,46 @@ adminContentRoutes.get('/new', async (c) => {
         description: row.description
       }))
       
-      // Render collection selection page
-      const selectionHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Select Collection - Flare CMS Admin</title>
-          <script src="https://cdn.tailwindcss.com"></script>
-        </head>
-        <body class="bg-gray-900 text-white">
-          <div class="min-h-screen flex items-center justify-center">
-            <div class="max-w-2xl w-full mx-auto p-8">
-              <h1 class="text-3xl font-bold mb-8 text-center">Create New Content</h1>
-              <p class="text-gray-300 text-center mb-8">Select a collection to create content in:</p>
-              
-              <div class="grid gap-4">
-                ${collections.map(collection => `
-                  <a href="/admin/content/new?collection=${collection.id}" 
-                     class="block p-6 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                    <h3 class="text-xl font-semibold mb-2">${collection.display_name}</h3>
-                    <p class="text-gray-400">${collection.description || 'No description'}</p>
-                  </a>
-                `).join('')}
-              </div>
-              
-              <div class="mt-8 text-center">
-                <a href="/admin/content" class="text-blue-400 hover:text-blue-300">← Back to Content List</a>
-              </div>
-            </div>
+      // Deduplicate collections by name
+      const seenNames = new Set<string>()
+      const uniqueCollections = collections.filter(c => {
+        if (seenNames.has(c.name)) return false
+        seenNames.add(c.name)
+        return true
+      })
+
+      // Render collection selection using admin layout
+      const pageContent = `
+        <div class="max-w-2xl mx-auto">
+          <div class="mb-8">
+            <h1 class="text-2xl/8 font-semibold text-zinc-950 dark:text-white">Create New Content</h1>
+            <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Select a collection to create content in:</p>
           </div>
-        </body>
-        </html>
+
+          <div class="grid gap-4">
+            ${uniqueCollections.map(collection => `
+              <a href="/admin/content/new?collection=${collection.id}"
+                 class="block p-6 bg-white dark:bg-zinc-900 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ring-1 ring-zinc-950/5 dark:ring-white/10 shadow-sm">
+                <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-1">${collection.display_name}</h3>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">${collection.description || 'No description'}</p>
+              </a>
+            `).join('')}
+          </div>
+
+          <div class="mt-8 text-center">
+            <a href="/admin/content" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500">← Back to Content List</a>
+          </div>
+        </div>
       `
-      
-      return c.html(selectionHTML)
+
+      const { renderAdminLayout } = await import('../templates/layouts/admin-layout-v2.template')
+      return c.html(renderAdminLayout({
+        title: 'Select Collection',
+        pageTitle: 'Select Collection',
+        currentPath: '/admin/content',
+        user: user ? { name: user.email, email: user.email, role: user.role } : undefined,
+        content: pageContent,
+      }))
     }
     
     const db = c.env.DB
@@ -640,9 +662,11 @@ adminContentRoutes.get('/:id/edit', async (c) => {
         const contentStmt = db.prepare(`
           SELECT c.*, col.id as collection_id, col.name as collection_name,
                  col.display_name as collection_display_name, col.description as collection_description,
-                 col.schema as collection_schema
+                 col.schema as collection_schema,
+                 u.email as author_email, u.first_name as author_first_name, u.last_name as author_last_name
           FROM content c
           JOIN collections col ON c.collection_id = col.id
+          LEFT JOIN users u ON c.author_id = u.id
           WHERE c.id = ?
         `)
         return await contentStmt.bind(id).first() as any
@@ -673,6 +697,16 @@ adminContentRoutes.get('/:id/edit', async (c) => {
     
     const fields = await getCollectionFields(db, content.collection_id)
     const contentData = content.data ? JSON.parse(content.data) : {}
+
+    // Enrich content data with metadata for the form template
+    contentData.created_at = content.created_at
+    contentData.updated_at = content.updated_at
+    contentData.published_at = content.published_at
+    const authorName = content.author_first_name && content.author_last_name
+      ? `${content.author_first_name} ${content.author_last_name}`
+      : null
+    contentData.author_name = authorName
+    contentData.author_email = content.author_email
 
     // Check if workflow plugin is active
     const workflowEnabled = await isPluginActive(db, 'workflow')
@@ -831,10 +865,16 @@ adminContentRoutes.post('/', async (c) => {
     const scheduledPublishAt = formData.get('scheduled_publish_at') as string
     const scheduledUnpublishAt = formData.get('scheduled_unpublish_at') as string
     
+    // Store author display name in content data
+    const authorDisplay = formData.get('author_display') as string
+    if (authorDisplay) {
+      data.author_display = authorDisplay
+    }
+
     // Create content
     const contentId = crypto.randomUUID()
     const now = Date.now()
-    
+
     const insertStmt = db.prepare(`
       INSERT INTO content (
         id, collection_id, slug, title, data, status,
@@ -1066,6 +1106,12 @@ adminContentRoutes.put('/:id', async (c) => {
       publishedAt = Date.now()
     } else if (isUnpublishing) {
       publishedAt = null
+    }
+
+    // Store author display name in content data
+    const authorDisplay = formData.get('author_display') as string
+    if (authorDisplay) {
+      data.author_display = authorDisplay
     }
 
     // Update content
@@ -1335,7 +1381,7 @@ adminContentRoutes.get('/bulk-actions', async (c) => {
         <div class="space-y-2">
           <button
             onclick="performBulkAction('publish')"
-            class="w-full inline-flex items-center justify-center gap-x-2 px-4 py-2.5 bg-lime-600 dark:bg-lime-500 text-white rounded-lg hover:bg-lime-700 dark:hover:bg-lime-600 transition-colors"
+            class="w-full inline-flex items-center justify-center gap-x-2 px-4 py-2.5 bg-emerald-600 dark:bg-emerald-500 text-white rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors"
           >
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1532,7 +1578,7 @@ adminContentRoutes.delete('/:id', async (c) => {
       <div id="content-list" hx-get="/admin/content?model=${c.req.query('model') || 'post'}" hx-trigger="load" hx-swap="outerHTML">
         <div class="flex items-center justify-center p-8">
           <div class="text-center">
-            <svg class="mx-auto h-12 w-12 text-lime-500 dark:text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="mx-auto h-12 w-12 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
             <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Content deleted successfully. Refreshing...</p>

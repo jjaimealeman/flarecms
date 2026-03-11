@@ -1,19 +1,17 @@
 ---
-import { getPageBySlug } from '../lib/flare'
+import { getCollection } from 'astro:content'
 import Layout from '../layouts/Layout.astro'
 
 const { slug } = Astro.params
 
-let page: any = null
-try {
-  page = await getPageBySlug(slug!)
-} catch {
-  // CMS API unavailable
-}
+const allPages = await getCollection('pages')
+const entry = allPages.find(p => p.data.slug === slug)
 
-if (!page) {
+if (!entry) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
+
+const page = { data: entry.data }
 ---
 
 <Layout title={page.data.title} description={page.data.meta_description}>

@@ -104,6 +104,7 @@
   "dependencies": {
     "drizzle-zod": "^0.8.3",
     "highlight.js": "^11.11.1",
+    "lucide-static": "^0.577.0",
     "marked": "^16.4.1",
     "semver": "^7.7.3"
   },

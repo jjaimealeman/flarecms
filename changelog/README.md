@@ -4,6 +4,20 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [259c287 - Deploy Button + Astro Date Fix](259c287_deploy-button-and-astro-date-fix.md) [FEAT] [UI] [BACKEND] [ASTRO] [BUG_FIX]
+- [e3287ed - Fix Sticky Bar, Collection Filter, Epoch Dates, Branding](e3287ed_fix-sticky-bar-collection-filter-epoch-dates-branding.md) [UI] [BUG_FIX] [ROUTING]
+- [ccf9068 - Fix 4 UX Quick Wins](ccf9068_fix-ux-quick-wins-status-author-schema-branding.md) [UI] [BUG_FIX] [ENHANCEMENT]
+- [04c43ac - Dedup Collections in Picker](04c43ac_dedup-collections-in-picker-use-admin-layout-for.md) [BUG_FIX] [UI]
+- [7bbbbd4 - Wire Dynamic Sidebar, Fix Stat Cards](7bbbbd4_wire-dynamic-sidebar-fix-stat-cards-kill-neon-str.md) [UI] [FRONTEND]
+- [3f9e53b - Phase 3: Sticky Save Bar, Fix Author/Dates](3f9e53b_admin-phase-3-sticky-save-bar-fix-unknown-author-d.md) [UI] [BUG_FIX]
+- [cad71c3 - Phase 2: Purge All Neon Colors](cad71c3_admin-phase-2-purge-all-209-neon-color-occurrences.md) [UI] [STYLING]
+- [c5e3d23 - Phase 1: Admin UI Foundation](c5e3d23_admin-ui-phase1-foundation.md) [UI] [FRONTEND]
+- [2cbd0c6 - Update STATE.md with Quick Tasks](2cbd0c6_quick-001-update-state-md-with-quick-tasks-table.md) [DOCUMENTATION]
+- [38f926f - Complete Migrate Pages to Content Layer Plan](38f926f_quick-001-complete-migrate-pages-to-content-layer-.md) [DOCUMENTATION]
+- [aa1909a - Strip lib/flare.ts to getDraftContent Only](aa1909a_quick-001-strip-lib-flare-ts-to-getdraftcontent-on.md) [REFACTOR] [FRONTEND]
+- [538608c - Migrate All Pages to Astro Content Layer](538608c_quick-001-migrate-all-pages-from-lib-flare-to-astr.md) [FEAT] [FRONTEND]
+- [aecb9a0 - Branding Assets Update](aecb9a0_branding-assets-update.md) [UI] [BRANDING]
+- [380a11a - Hero Layout and Shiki Theme](380a11a_hero-layout-and-shiki-theme.md) [UI] [FRONTEND]
 - [8db0212 - Revise Phase 08 Plans](8db0212_revise-plans-based-on-checker-feedback.md) [PLANNING] [API] [BACKEND]
 - [75067cf - Fix Slug Fallback in getBlogPostBySlug](75067cf_use-top-level-slug-fallback-in-getblogpostbyslug.md) [FIX] [FRONTEND] [API]
 - [2c75184 - Fix Blog Post Links Slug/Title](2c75184_fall-back-to-top-level-slug-title-for-blog-post-links.md) [FIX] [FRONTEND]

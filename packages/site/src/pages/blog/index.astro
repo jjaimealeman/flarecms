@@ -1,6 +1,5 @@
 ---
-import { getBlogPosts } from '../../lib/flare'
-import { getAllStaticBlogPosts } from '../../data/blog-posts'
+import { getCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
 const categoryStyles: Record<string, string> = {
@@ -9,39 +8,20 @@ const categoryStyles: Record<string, string> = {
   amber: 'bg-amber-500/10 text-amber-400',
 }
 
-// Try CMS first, fall back to static data
-let cmsPosts: any[] = []
-try {
-  cmsPosts = await getBlogPosts()
-} catch {
-  // CMS unavailable
-}
+const allPosts = await getCollection('blogPosts')
 
-const staticPosts = getAllStaticBlogPosts()
-const hasCmsData = cmsPosts.length > 0
-
-// Normalize both sources into a common shape
-const posts = hasCmsData
-  ? cmsPosts.map(p => ({
-      slug: p.data.slug || p.slug,
-      title: p.data.title || p.title,
-      excerpt: p.data.excerpt || '',
-      category: '',
-      categoryColor: '',
-      author: p.data.author || '',
-      date: p.data.publishedAt || new Date(p.created_at).toISOString(),
-      featuredImage: p.data.featuredImage,
-    }))
-  : staticPosts.map(p => ({
-      slug: p.slug,
-      title: p.title,
-      excerpt: p.excerpt,
-      category: p.category,
-      categoryColor: p.categoryColor,
-      author: p.author,
-      date: p.date,
-      featuredImage: undefined as string | undefined,
-    }))
+const posts = allPosts
+  .map(p => ({
+    slug: p.data.slug || '',
+    title: p.data.title || '',
+    excerpt: p.data.excerpt || '',
+    category: '',
+    categoryColor: '',
+    author: p.data.author || '',
+    date: p.data.publishedAt || (p.data._createdAt ? p.data._createdAt.toISOString() : ''),
+    featuredImage: p.data.featuredImage as string | undefined,
+  }))
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 ---
 
 <Layout title="Blog">

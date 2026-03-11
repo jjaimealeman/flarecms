@@ -95,7 +95,7 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
   const opts = field.field_options || {}
   const required = field.is_required ? 'required' : ''
   const baseClasses = `w-full rounded-lg px-3 py-2 text-sm text-zinc-950 dark:text-white bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-shadow ${className}`
-  const errorClasses = errors.length > 0 ? 'ring-pink-600 dark:ring-pink-500 focus:ring-pink-600 dark:focus:ring-pink-500' : ''
+  const errorClasses = errors.length > 0 ? 'ring-red-600 dark:ring-red-500 focus:ring-red-600 dark:focus:ring-red-500' : ''
 
   const fieldId = `field-${field.field_name}`
   const fieldName = field.field_name
@@ -148,7 +148,7 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
 
           // Add auto-slug generation for slug fields
           if (fieldName === 'slug') {
-            patternHelp += '<button type="button" class="mt-1 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300" onclick="generateSlugFromTitle(\'${fieldId}\')">Regenerate from title</button>'
+            patternHelp += '<button type="button" class="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300" onclick="generateSlugFromTitle(\'${fieldId}\')">Regenerate from title</button>'
             autoSlugScript = `
               <script>
                 function findSlugSourceField() {
@@ -399,7 +399,7 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
           <div id="${fieldId}-status" class="slug-status mt-1 text-sm min-h-[20px]"></div>
           <button 
             type="button" 
-            class="regenerate-slug-btn mt-2 text-sm text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 flex items-center gap-1 transition-colors"
+            class="regenerate-slug-btn mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
             onclick="window.regenerateSlugFromTitle_${fieldId.replace(/-/g, '_')}()"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -742,12 +742,12 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
       ${showLabel ? `
       <label for="${fieldId}" class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">
         ${escapeHtml(field.field_label)}
-        ${field.is_required ? '<span class="text-pink-600 dark:text-pink-400 ml-1">*</span>' : ''}
+        ${field.is_required ? '<span class="text-red-600 dark:text-red-400 ml-1">*</span>' : ''}
       </label>
       ` : ''}
       ${fieldHTML}
       ${errors.length > 0 ? `
-        <div class="mt-2 text-sm text-pink-600 dark:text-pink-400">
+        <div class="mt-2 text-sm text-red-600 dark:text-red-400">
           ${errors.map(error => `<div>${escapeHtml(error)}</div>`).join('')}
         </div>
       ` : ''}
@@ -989,7 +989,7 @@ function renderStructuredArrayItem(
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 18l4-4m-4 4l-4-4m4 4V6"/>
             </svg>
           </button>
-          <button type="button" data-action="remove-item" class="inline-flex items-center gap-x-1 px-2.5 py-1.5 text-xs font-medium text-pink-700 dark:text-pink-300 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors">
+          <button type="button" data-action="remove-item" class="inline-flex items-center gap-x-1 px-2.5 py-1.5 text-xs font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
             </svg>
@@ -1256,7 +1256,7 @@ function renderBlockCard(
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 18l4-4m-4 4l-4-4m4 4V6"/>
             </svg>
           </button>
-          <button type="button" data-action="remove-block" class="inline-flex items-center gap-x-1 px-2.5 py-1.5 text-xs font-medium text-pink-700 dark:text-pink-300 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors">
+          <button type="button" data-action="remove-block" class="inline-flex items-center gap-x-1 px-2.5 py-1.5 text-xs font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
             </svg>

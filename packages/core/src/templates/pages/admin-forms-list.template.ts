@@ -39,7 +39,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         sortType: 'string',
         render: (_value: any, form: any) => `
             <div class="flex items-center gap-2 ml-2">
-                <span class="inline-flex items-center rounded-md bg-cyan-50 dark:bg-cyan-500/10 px-2.5 py-1 text-sm font-medium text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-700/10 dark:ring-cyan-400/20">
+                <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20">
                   ${form.name}
                 </span>
             </div>
@@ -59,14 +59,14 @@ export function renderFormsListPage(data: FormsListPageData): string {
         render: (_value: any, form: any) => {
           const categoryColors: Record<string, string> = {
             'contact': 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 ring-blue-700/10 dark:ring-blue-400/20',
-            'survey': 'bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 ring-purple-700/10 dark:ring-purple-400/20',
+            'survey': 'bg-slate-50 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300 ring-slate-700/10 dark:ring-slate-400/20',
             'registration': 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 ring-green-700/10 dark:ring-green-400/20',
             'feedback': 'bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300 ring-orange-700/10 dark:ring-orange-400/20',
             'general': 'bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-300 ring-gray-700/10 dark:ring-gray-400/20'
           }
           const colorClass = categoryColors[form.category] || categoryColors['general']
           return `
-            <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${colorClass}">
+            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${colorClass}">
               ${form.category || 'general'}
             </span>
           `
@@ -79,11 +79,23 @@ export function renderFormsListPage(data: FormsListPageData): string {
         sortType: 'number',
         render: (_value: any, form: any) => {
           const count = form.submission_count || 0
+          if (count === 0) {
+            return `
+              <div class="flex items-center">
+                <span class="inline-flex items-center rounded-full bg-zinc-50 dark:bg-zinc-500/10 px-2.5 py-1 text-sm font-medium text-zinc-500 dark:text-zinc-500 ring-1 ring-inset ring-zinc-700/10 dark:ring-zinc-400/20">
+                  0
+                </span>
+              </div>
+            `
+          }
           return `
             <div class="flex items-center">
-              <span class="inline-flex items-center rounded-md bg-pink-50 dark:bg-pink-500/10 px-2.5 py-1 text-sm font-medium text-pink-700 dark:text-pink-300 ring-1 ring-inset ring-pink-700/10 dark:ring-pink-400/20">
+              <a href="/admin/forms/${form.id}/submissions" class="group/sub inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 hover:ring-blue-700/20 dark:hover:ring-blue-400/30 transition-colors" title="View ${count} submission${count !== 1 ? 's' : ''}" onclick="event.stopPropagation()">
+                <svg class="w-3.5 h-3.5 opacity-60 group-hover/sub:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
                 ${count}
-              </span>
+              </a>
             </div>
           `
         }
@@ -96,13 +108,13 @@ export function renderFormsListPage(data: FormsListPageData): string {
         render: (_value: any, form: any) => {
           if (form.is_active) {
             return `
-              <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-700/10 dark:ring-green-400/20">
+              <span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-700/10 dark:ring-green-400/20">
                 Active
               </span>
             `
           } else {
             return `
-              <span class="inline-flex items-center rounded-md bg-gray-50 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-700/10 dark:ring-gray-400/20">
+              <span class="inline-flex items-center rounded-full bg-gray-50 dark:bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-700/10 dark:ring-gray-400/20">
                 Inactive
               </span>
             `
@@ -128,13 +140,13 @@ export function renderFormsListPage(data: FormsListPageData): string {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
               </a>
-              <a href="/forms/${form.name}" target="_blank" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors" title="View Public Form">
+              <a href="/forms/${form.name}" target="_blank" class="inline-flex items-center justify-center rounded-lg bg-white dark:bg-zinc-800 p-1.5 text-zinc-700 dark:text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" title="View Public Form">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                 </svg>
               </a>
-              <a href="/admin/forms/${form.id}/submissions" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors" title="View Submissions">
+              <a href="/admin/forms/${form.id}/submissions" class="inline-flex items-center justify-center rounded-lg bg-white dark:bg-zinc-800 p-1.5 text-zinc-700 dark:text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" title="View Submissions">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
@@ -156,16 +168,16 @@ export function renderFormsListPage(data: FormsListPageData): string {
           <h1 class="text-2xl/8 font-semibold text-zinc-950 dark:text-white sm:text-xl/8">Forms</h1>
           <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Create and manage forms with the visual form builder</p>
         </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 flex flex-wrap items-center gap-3">
+        <div class="mt-4 sm:mt-0 flex flex-wrap items-center gap-3">
           <!-- Documentation Links -->
-          <a href="/admin/forms/examples" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors" title="View interactive examples">
+          <a href="/admin/forms/examples" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" title="View interactive examples">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
             </svg>
             Examples
           </a>
-          <a href="/admin/forms/docs" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors" title="Quick reference guide">
+          <a href="/admin/forms/docs" class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors" title="Quick reference guide">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
@@ -185,7 +197,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-950/5 dark:border-white/10 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <svg class="h-8 w-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-8 w-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
             </div>
@@ -201,7 +213,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-950/5 dark:border-white/10 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <svg class="h-8 w-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-8 w-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
@@ -217,7 +229,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-950/5 dark:border-white/10 p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <svg class="h-8 w-8 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-8 w-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
             </div>
@@ -240,7 +252,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
               name="search"
               placeholder="Search forms..."
               value="${data.search || ''}"
-              class="block w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="block w-full rounded-lg border-2 border-blue-200/50 dark:border-blue-700/50 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
             />
           </div>
           <div class="w-full sm:w-48">
@@ -258,7 +270,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
           </div>
           <button
             type="submit"
-            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+            class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
