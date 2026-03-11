@@ -183,7 +183,7 @@ export function renderFaqForm(data: FaqFormData): string {
               <a href="/admin/faq" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shadow-sm">
                 Cancel
               </a>
-              <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm">
+              <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-950 dark:bg-blue-600 text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm">
                 ${isEdit ? 'Save Changes' : 'Create FAQ'}
               </button>
             </div>

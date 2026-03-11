@@ -141,7 +141,7 @@ export function renderPagination(data: PaginationData): string {
             <!-- Page number buttons -->
             ${generatePageNumbers().map(pageNum => `
               ${pageNum === data.currentPage ? `
-                <span class="rounded-lg bg-zinc-950 dark:bg-white px-3 py-2 text-sm font-semibold text-white dark:text-zinc-950">
+                <span class="rounded-lg bg-zinc-950 dark:bg-blue-600 px-3 py-2 text-sm font-semibold text-white dark:text-white">
                   ${pageNum}
                 </span>
               ` : `

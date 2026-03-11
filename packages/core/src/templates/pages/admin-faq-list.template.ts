@@ -118,7 +118,7 @@ export function renderFaqList(data: FaqListData): string {
         <div class="mt-4 sm:mt-0 flex items-center gap-3">
           <span class="text-sm text-zinc-500 dark:text-zinc-400">${totalCount} ${totalCount === 1 ? 'item' : 'items'}</span>
           <a href="/admin/faq/new"
-             class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm">
+             class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm">
             <svg class="w-4 h-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
             </svg>

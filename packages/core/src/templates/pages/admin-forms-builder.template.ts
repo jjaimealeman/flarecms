@@ -727,9 +727,9 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
 
       .dark .builder-component .btn-primary,
       .dark .formarea .btn-primary {
-        background: white !important;
-        border-color: white !important;
-        color: #18181b !important;
+        background: #2563eb !important;
+        border-color: #2563eb !important;
+        color: white !important;
       }
 
       /* ===================================
@@ -1282,7 +1282,7 @@ export function renderFormBuilderPage(data: FormBuilderPageData): string {
             <button
               id="save-btn"
               type="button"
-              class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3 py-1.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+              class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
             >
               <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [3d0efea - Dark Mode Button and UI Fixes](3d0efea_dark-mode-button-fixes.md) [UI] [STYLING] [BUG_FIX] [ENHANCEMENT]
 - [1eb857b - Astro Snippet Generator for Collections](1eb857b_astro-snippet-generator-for-collections.md) [FEATURE] [UI] [BACKEND] [API]
 - [4086e0b - Admin Dark/Light Mode Toggle](4086e0b_admin-dark-light-mode-toggle.md) [FEATURE] [UI] [FRONTEND]
 - [6a7eac6 - Built-in Analytics: Privacy-First Tracking](6a7eac6_built-in-analytics-privacy-first-tracking.md) [FEATURE] [DATABASE] [MIGRATION] [API] [BACKEND] [FRONTEND] [UI]

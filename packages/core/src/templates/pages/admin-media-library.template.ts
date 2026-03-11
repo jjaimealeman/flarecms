@@ -48,7 +48,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 flex gap-x-2">
           <button
-            class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+            class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
             onclick="document.getElementById('upload-modal').classList.remove('hidden')"
           >
             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -66,7 +66,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
             <!-- Upload Button -->
             <div>
               <button
-                class="w-full rounded-lg bg-zinc-950 dark:bg-white px-4 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+                class="w-full rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
                 onclick="document.getElementById('upload-modal').classList.remove('hidden')"
               >
                 Upload Files
@@ -81,7 +81,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                   <a href="/admin/media?folder=all"
                      class="block px-3 py-2 text-sm rounded-lg transition-colors ${
                        data.currentFolder === "all"
-                         ? "bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-medium"
+                         ? "bg-zinc-950 dark:bg-blue-600 text-white dark:text-white font-medium"
                          : "text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                      }">
                     All Files (${data.totalFiles})
@@ -94,7 +94,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                     <a href="/admin/media?folder=${folder.folder}"
                        class="block px-3 py-2 text-sm rounded-lg transition-colors ${
                          data.currentFolder === folder.folder
-                           ? "bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-medium"
+                           ? "bg-zinc-950 dark:bg-blue-600 text-white dark:text-white font-medium"
                            : "text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                        }">
                       ${folder.folder} (${folder.count})
@@ -114,7 +114,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                   <a href="/admin/media?type=all"
                      class="block px-3 py-2 text-sm rounded-lg transition-colors ${
                        data.currentType === "all"
-                         ? "bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-medium"
+                         ? "bg-zinc-950 dark:bg-blue-600 text-white dark:text-white font-medium"
                          : "text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                      }">
                     All Types
@@ -127,7 +127,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
                     <a href="/admin/media?type=${type.type}"
                        class="block px-3 py-2 text-sm rounded-lg transition-colors ${
                          data.currentType === type.type
-                           ? "bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-medium"
+                           ? "bg-zinc-950 dark:bg-blue-600 text-white dark:text-white font-medium"
                            : "text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                        }">
                       ${
@@ -417,7 +417,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
             <button
               type="submit"
               id="upload-btn"
-              class="rounded-lg bg-zinc-950 dark:bg-white px-4 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 disabled:opacity-50 transition-colors shadow-sm"
+              class="rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
               disabled
             >
               Upload Files
@@ -528,7 +528,7 @@ export function renderMediaLibraryPage(data: MediaLibraryPageData): string {
             </button>
             <button
               type="submit"
-              class="rounded-lg bg-zinc-950 dark:bg-white px-4 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+              class="rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
             >
               Create Folder
             </button>

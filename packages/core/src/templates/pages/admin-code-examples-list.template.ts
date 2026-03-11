@@ -40,7 +40,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <a href="/admin/code-examples/new"
-             class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm">
+             class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm">
             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
             </svg>
@@ -203,7 +203,7 @@ export function renderCodeExamplesList(data: CodeExamplesListData): string {
             <h3 class="mt-2 text-sm font-semibold text-zinc-950 dark:text-white">No code examples</h3>
             <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Get started by creating a new code example.</p>
             <div class="mt-6">
-              <a href="/admin/code-examples/new" class="inline-flex items-center rounded-lg bg-zinc-950 dark:bg-white px-3 py-2 text-sm font-semibold text-white dark:text-zinc-950 shadow-sm hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors">
+              <a href="/admin/code-examples/new" class="inline-flex items-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3 py-2 text-sm font-semibold text-white dark:text-white shadow-sm hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors">
                 <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                 </svg>

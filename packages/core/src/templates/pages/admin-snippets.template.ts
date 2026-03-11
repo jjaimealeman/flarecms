@@ -172,7 +172,7 @@ export function renderSnippetModal(data: SnippetData): string {
       id="tab-${s.id}"
       class="snippet-tab px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
         i === 0
-          ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950'
+          ? 'bg-zinc-950 text-white dark:bg-blue-600 dark:text-white'
           : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5'
       }"
     >${s.label}</button>
@@ -209,7 +209,7 @@ export function renderSnippetModal(data: SnippetData): string {
           panel.classList.add('hidden');
         });
         var activeTab = document.getElementById('tab-' + id);
-        activeTab.className = 'snippet-tab px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-zinc-950 text-white dark:bg-white dark:text-zinc-950';
+        activeTab.className = 'snippet-tab px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-zinc-950 text-white dark:bg-blue-600 dark:text-white';
         document.getElementById('panel-' + id).classList.remove('hidden');
       }
 
