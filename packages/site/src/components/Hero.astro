@@ -1,142 +1,114 @@
 ---
-const terminalLines = [
-  { prompt: true, text: 'git clone https://github.com/jjaimealeman/flarecms' },
-  { prompt: true, text: 'cd flarecms && pnpm install' },
-  { prompt: true, text: 'pnpm build' },
-  { prompt: false, text: '' },
-  { prompt: true, text: 'cd packages/cms && pnpm dev' },
-  { prompt: false, text: '⚡ Admin UI → http://localhost:8787/admin' },
-  { prompt: false, text: '' },
-  { prompt: true, text: 'cd packages/site && pnpm dev' },
-  { prompt: false, text: '⚡ Frontend → http://localhost:4321' },
-]
 ---
 
 <section class="relative overflow-hidden">
   <!-- Subtle grid pattern background -->
   <div class="absolute inset-0 bg-[linear-gradient(rgba(246,130,31,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(246,130,31,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
 
-  <div class="relative max-w-7xl mx-auto px-6 pt-24 pb-20">
-    <!-- Logo + version badge — full width, centered above grid -->
-    <div class="flex justify-center mb-12">
-      <div class="relative">
-        <a href="/">
-          <img src="/logo.svg" alt="Flare CMS" class="h-24 sm:h-28 lg:h-32 w-auto" />
-        </a>
-        <!-- Version badge — baseline-aligned, right of logo -->
-        <div class="absolute bottom-0 -right-4 translate-x-full inline-flex items-center gap-2 px-3 py-1 rounded-full bg-flare-500/10 border border-flare-500/20 text-flare-400 text-xs font-medium">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          v{__APP_VERSION__} is live
-        </div>
+  <div class="relative max-w-5xl mx-auto px-6 pt-28 pb-20">
+    <!-- Version badge pill -->
+    <div class="flex justify-center mb-8">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-flare-500/10 border border-flare-500/20 text-flare-400 text-xs font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        v{__APP_VERSION__} is live
       </div>
     </div>
 
-    <!-- Tagline — full width, centered -->
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold tracking-tight leading-[1.1] text-center mb-16">
-      The only CMS built for
-      <span class="bg-gradient-to-r from-cyan-400 to-flare-500 bg-clip-text text-transparent">Astro + Cloudflare</span>
+    <!-- Massive headline -->
+    <h1 class="text-5xl sm:text-7xl lg:text-[96px] font-bold tracking-tight leading-[1.05] text-center mb-6">
+      The CMS built for<br />
+      <span class="bg-gradient-to-r from-flare-400 via-flare-500 to-cyan-400 bg-clip-text text-transparent">the edge</span>
     </h1>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-stretch">
-      <!-- Left: Copy — flex column stretches to match terminal height, content spaced evenly -->
-      <div class="flex flex-col items-center lg:items-start h-full justify-between">
-        <p class="text-xl text-slate-400 leading-relaxed">
-          Flare CMS is an open-source, self-hosted headless CMS purpose-built for the Astro + Cloudflare Workers stack. Zero cold starts, D1 database, R2 media — all at the edge.
-        </p>
+    <!-- Subhead -->
+    <p class="text-lg sm:text-xl text-text-secondary text-center max-w-2xl mx-auto mb-10">
+      Open-source headless CMS on Cloudflare Workers. Zero cold starts, D1 database, R2 media — globally distributed.
+    </p>
 
-        <div class="flex flex-wrap items-center justify-center gap-4 w-full">
-          <a
-            href="/docs/getting-started/quickstart"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-flare-500 hover:bg-flare-400 text-slate-950 text-sm font-semibold rounded-lg transition-colors"
-          >
-            Quick Start
-          </a>
-          <a
-            href="/features"
-            class="inline-flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-slate-50 text-sm font-medium rounded-lg transition-all"
-          >
-            See Features
-          </a>
-        </div>
-
-        <!-- CLI one-liner -->
-        <div class="flex flex-col items-center gap-2 w-full">
-        <div class="inline-flex items-center gap-3 px-4 py-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50 font-mono text-sm text-slate-300 group cursor-pointer" id="cli-snippet" title="Click to copy">
-          <span class="text-slate-500">$</span>
-          <span>git clone https://github.com/jjaimealeman/flarecms my-site</span>
-          <button class="text-slate-500 hover:text-slate-300 transition-colors ml-1" aria-label="Copy command">
-            <svg class="w-4 h-4 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-            <svg class="w-4 h-4 check-icon hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
-        </div>
-        <span class="text-[11px] text-slate-600">
-          <code class="text-slate-500">npx create-flare-app</code> coming soon
-        </span>
-        </div>
-      </div>
-
-      <!-- Right: Terminal mockup -->
-      <div class="relative">
-        <div class="rounded-xl border border-slate-700/50 bg-slate-950 shadow-2xl shadow-flare-500/5 overflow-hidden">
-          <!-- Terminal header -->
-          <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800 bg-slate-900/50">
-            <div class="flex gap-1.5">
-              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-              <div class="w-3 h-3 rounded-full bg-slate-700"></div>
-            </div>
-            <span class="text-xs text-slate-500 font-mono ml-2">terminal -- zsh</span>
-          </div>
-
-          <!-- Terminal content -->
-          <div class="p-5 font-mono text-sm leading-7">
-            {terminalLines.map((line) => (
-              <div class:list={[
-                line.prompt ? 'text-slate-200' : 'text-slate-500',
-              ]}>
-                {line.prompt && <span class="text-flare-500">$ </span>}
-                {line.text ? (
-                  <span set:html={
-                    line.text
-                      .replace(/flarecms/g, '<span class="text-flare-400">flarecms</span>')
-                      .replace(/pnpm (install|build)/g, 'pnpm <span class="text-cyan-400">$1</span>')
-                      .replace(/wrangler dev/g, '<span class="text-amber-400">wrangler dev</span>')
-                      .replace(/✔/g, '<span class="text-emerald-400">✔</span>')
-                      .replace(/⚡/g, '<span class="text-amber-400">⚡</span>')
-                      .replace(/(http:\/\/localhost:\d+\S*)/g, '<span class="text-cyan-400">$1</span>')
-                      .replace(/@flare-cms\/core/g, '<span class="text-flare-400">@flare-cms/core</span>')
-                      .replace(/git clone/g, '<span class="text-slate-400">git clone</span>')
-                  } />
-                ) : (
-                  <br />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+    <!-- Two CTA buttons -->
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-10">
+      <a
+        href="/docs/getting-started/quickstart"
+        class="inline-flex items-center gap-2 px-7 py-3.5 bg-flare-500 hover:bg-flare-400 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-flare-500/20"
+      >
+        Quick Start
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </a>
+      <a
+        href="https://admin.flarecms.dev"
+        class="inline-flex items-center gap-2 px-7 py-3.5 border border-border hover:border-text-tertiary text-text-secondary hover:text-text-primary text-sm font-medium rounded-lg transition-all"
+      >
+        Admin Demo
+      </a>
     </div>
 
-    <!-- Trust badges — full-width strip below grid -->
-    <div class="mt-16 flex flex-wrap items-center justify-between gap-y-2 text-xs text-slate-500">
+    <!-- CLI snippet -->
+    <div class="flex flex-col items-center gap-2 mb-16">
+      <div class="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-surface-secondary border border-border font-mono text-sm text-text-secondary group cursor-pointer" id="cli-snippet" title="Click to copy">
+        <span class="text-text-tertiary">$</span>
+        <span>git clone https://github.com/jjaimealeman/flarecms my-site</span>
+        <button class="text-text-tertiary hover:text-text-secondary transition-colors ml-1" aria-label="Copy command">
+          <svg class="w-4 h-4 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <svg class="w-4 h-4 check-icon hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </button>
+      </div>
+      <span class="text-[11px] text-text-tertiary">
+        <code class="text-text-tertiary">npx create-flare-app</code> coming soon
+      </span>
+    </div>
+
+    <!-- Admin UI video / screenshot showcase -->
+    <div class="relative max-w-5xl mx-auto">
+      <div class="rounded-2xl border border-border overflow-hidden shadow-2xl shadow-black/20">
+        <!-- Browser chrome -->
+        <div class="flex items-center gap-2 px-4 py-3 bg-surface-secondary border-b border-border">
+          <div class="flex gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
+            <div class="w-3 h-3 rounded-full bg-amber-500/60"></div>
+            <div class="w-3 h-3 rounded-full bg-emerald-500/60"></div>
+          </div>
+          <div class="flex-1 flex justify-center">
+            <div class="px-4 py-1 rounded-md bg-surface-tertiary text-xs text-text-tertiary font-mono">
+              localhost:8787/admin
+            </div>
+          </div>
+        </div>
+        <!-- Video or poster placeholder -->
+        <video
+          autoplay
+          loop
+          muted
+          playsinline
+          poster="/images/admin-dashboard.webp"
+          class="w-full aspect-video bg-surface-tertiary"
+        >
+          <source src="/videos/admin-demo.webm" type="video/webm" />
+        </video>
+      </div>
+      <!-- Glow effect behind -->
+      <div class="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-b from-flare-500/5 to-transparent blur-2xl"></div>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-text-tertiary">
       <span class="flex items-center gap-1.5">
-        <span class="w-1 h-1 rounded-full bg-flare-500"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-flare-500"></span>
         Cloudflare Workers
       </span>
       <span class="flex items-center gap-1.5">
-        <span class="w-1 h-1 rounded-full bg-cyan-500"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
         Astro Frontend
       </span>
       <span class="flex items-center gap-1.5">
-        <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
         MIT License
       </span>
       <span class="flex items-center gap-1.5">
-        <span class="w-1 h-1 rounded-full bg-amber-500"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
         TypeScript
       </span>
     </div>

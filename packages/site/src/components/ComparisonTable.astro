@@ -5,11 +5,12 @@ import { comparisonRows } from '../data/homepage'
 <section class="py-24">
   <div class="max-w-7xl mx-auto px-6">
     <div class="text-center mb-16">
-      <h2 class="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">
         Why Flare CMS?
       </h2>
-      <p class="mt-4 text-slate-400 max-w-2xl mx-auto">
-        The only self-hosted CMS purpose-built for Astro + Cloudflare Workers
+      <p class="mt-4 text-text-secondary max-w-2xl mx-auto">
+        Most headless CMS platforms require external databases, separate hosting, and complex infrastructure.
+        Flare CMS runs entirely on Cloudflare — database, storage, and compute in one stack.
       </p>
       <a href="/comparison" class="inline-flex items-center gap-1 mt-3 text-sm text-flare-400 hover:text-flare-300 transition-colors">
         See full comparison with 7 CMS platforms
@@ -20,21 +21,21 @@ import { comparisonRows } from '../data/homepage'
     <!-- Desktop table (hidden on mobile) -->
     <div class="hidden md:block">
       <table class="w-full border-collapse">
-        <thead>
-          <tr class="border-b border-slate-800">
-            <th class="text-left py-4 px-6 text-sm font-medium text-slate-400">Feature</th>
-            <th class="text-left py-4 px-6 text-sm font-medium text-slate-400">Traditional CMS</th>
-            <th class="text-left py-4 px-6 text-sm font-medium text-cyan-400">Flare CMS</th>
+        <thead class="sticky top-16 z-10 bg-surface-primary">
+          <tr class="border-b border-border">
+            <th class="text-left py-4 px-6 text-sm font-medium text-text-secondary">Feature</th>
+            <th class="text-left py-4 px-6 text-sm font-medium text-text-secondary">Traditional CMS</th>
+            <th class="text-left py-4 px-6 text-sm font-medium text-flare-500 border-l-2 border-flare-500/30">Flare CMS</th>
           </tr>
         </thead>
         <tbody>
           {comparisonRows.map((row) => (
-            <tr class="border-b border-slate-800/50">
-              <td class="py-4 px-6 text-sm font-medium text-slate-200">{row.feature}</td>
-              <td class="py-4 px-6 text-sm text-slate-500">{row.traditional}</td>
+            <tr class="border-b border-border/50">
+              <td class="py-4 px-6 text-sm font-medium text-text-primary">{row.feature}</td>
+              <td class="py-4 px-6 text-sm text-text-tertiary">{row.traditional}</td>
               <td class:list={[
-                'py-4 px-6 text-sm font-medium',
-                row.flareHighlight ? 'text-cyan-400' : 'text-slate-300'
+                'py-4 px-6 text-sm font-medium border-l-2 border-flare-500/30 bg-flare-500/5',
+                row.flareHighlight ? 'text-cyan-400' : 'text-text-secondary'
               ]}>
                 {row.flare}
               </td>
@@ -47,18 +48,18 @@ import { comparisonRows } from '../data/homepage'
     <!-- Mobile card layout (hidden on desktop) -->
     <div class="md:hidden space-y-4">
       {comparisonRows.map((row) => (
-        <div class="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
-          <div class="text-sm font-medium text-slate-200 mb-3">{row.feature}</div>
+        <div class="rounded-xl border border-border bg-surface-secondary p-4">
+          <div class="text-sm font-medium text-text-primary mb-3">{row.feature}</div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <div class="text-xs text-slate-500 uppercase tracking-wide mb-1">Traditional</div>
-              <div class="text-sm text-slate-500">{row.traditional}</div>
+              <div class="text-xs text-text-tertiary uppercase tracking-wide mb-1">Traditional</div>
+              <div class="text-sm text-text-tertiary">{row.traditional}</div>
             </div>
             <div>
-              <div class="text-xs text-cyan-400 uppercase tracking-wide mb-1">Flare CMS</div>
+              <div class="text-xs text-flare-500 uppercase tracking-wide mb-1">Flare CMS</div>
               <div class:list={[
                 'text-sm font-medium',
-                row.flareHighlight ? 'text-cyan-400' : 'text-slate-300'
+                row.flareHighlight ? 'text-cyan-400' : 'text-text-secondary'
               ]}>
                 {row.flare}
               </div>

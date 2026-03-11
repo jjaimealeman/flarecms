@@ -4,6 +4,8 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [fb2c385 - Homepage Redesign + Design System Foundation](fb2c385_homepage-redesign-design-system-foundation.md) [FRONTEND] [STYLING] [UI] [COMPONENTS] [DEPENDENCIES] [FEATURE]
+- [3f27ab6 - Frontend Redesign Notes and Showcase Planning](3f27ab6_add-frontend-redesign-notes-and-showcase-planning-.md) [DOCUMENTATION] [PLANNING]
 - [3d0efea - Dark Mode Button and UI Fixes](3d0efea_dark-mode-button-fixes.md) [UI] [STYLING] [BUG_FIX] [ENHANCEMENT]
 - [1eb857b - Astro Snippet Generator for Collections](1eb857b_astro-snippet-generator-for-collections.md) [FEATURE] [UI] [BACKEND] [API]
 - [4086e0b - Admin Dark/Light Mode Toggle](4086e0b_admin-dark-light-mode-toggle.md) [FEATURE] [UI] [FRONTEND]

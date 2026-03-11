@@ -17,11 +17,11 @@ const page = { data: entry.data }
 <Layout title={page.data.title} description={page.data.meta_description}>
   <article class="max-w-3xl mx-auto px-6 pt-12 pb-20">
     <header class="mb-10">
-      <h1 class="text-4xl font-heading font-bold tracking-tight leading-tight">
+      <h1 class="text-4xl font-sans font-bold tracking-tight leading-tight">
         {page.data.title}
       </h1>
     </header>
 
-    <div class="prose prose-lg prose-invert max-w-none prose-headings:font-heading prose-headings:tracking-tight prose-a:text-flare-400 prose-pre:bg-slate-950 prose-pre:rounded-xl" set:html={page.data.content} />
+    <div class="prose prose-lg prose-invert max-w-none prose-headings:font-sans prose-headings:tracking-tight prose-a:text-flare-400 prose-pre:bg-slate-950 prose-pre:rounded-xl" set:html={page.data.content} />
   </article>
 </Layout>

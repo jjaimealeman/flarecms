@@ -18,18 +18,27 @@ const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
-<html lang="en" class="min-h-screen bg-slate-900">
+<html lang="en" class="min-h-screen">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <SEO title={title} description={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Theme: prevent FOUC -->
+    <script is:inline>
+      (function() {
+        var t = localStorage.getItem('flare-theme');
+        if (t === 'light' || (!t && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+          document.documentElement.classList.add('light');
+        }
+      })();
+    </script>
   </head>
-  <body class="min-h-screen bg-slate-900 text-slate-50 font-sans antialiased">
+  <body class="min-h-screen bg-surface-primary text-text-primary font-sans antialiased">
     <!-- Navigation -->
     <nav
       id="site-nav"
-      class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 transition-all duration-300"
+      class="sticky top-0 z-50 bg-surface-primary/80 backdrop-blur-xl border-b border-border transition-all duration-300"
     >
       <div
         class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between transition-all duration-300"
@@ -49,7 +58,7 @@ const currentPath = Astro.url.pathname;
               id="site-logo"
             />
           </a>
-          <div class="w-px h-5 bg-slate-700"></div>
+          <div class="w-px h-5 bg-border"></div>
           {
             navLinks
               .filter((link) => link.href !== "/")
@@ -64,33 +73,20 @@ const currentPath = Astro.url.pathname;
                         : currentPath.startsWith(link.href)
                     )
                       ? "text-flare-500"
-                      : "text-slate-400 hover:text-slate-50",
+                      : "text-text-secondary hover:text-text-primary",
                   ]}
                 >
                   {link.label}
                 </a>
               ))
           }
-          <a
-            href="https://github.com/jjaimealeman/flarecms"
-            target="_blank"
-            rel="noopener"
-            class="text-slate-400 hover:text-slate-50 transition-colors"
-            aria-label="GitHub"
-          >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-              ></path>
-            </svg>
-          </a>
         </div>
 
-        <!-- Search placeholder + CTA (desktop) -->
+        <!-- Search + Theme toggle + CTA (desktop) -->
         <div class="hidden md:flex items-center gap-3">
           <button
             id="search-trigger"
-            class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-500 hover:border-slate-600 transition-colors cursor-pointer"
+            class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-xs text-text-tertiary hover:border-text-tertiary transition-colors cursor-pointer"
             aria-label="Search docs"
           >
             <svg
@@ -105,13 +101,42 @@ const currentPath = Astro.url.pathname;
             </svg>
             <span>Search docs...</span>
             <kbd
-              class="ml-2 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-500 border border-slate-700"
+              class="ml-2 px-1.5 py-0.5 rounded bg-surface-tertiary text-[10px] font-mono text-text-tertiary border border-border"
               >Cmd+K</kbd
             >
           </button>
+          <!-- GitHub star badge -->
+          <a
+            href="https://github.com/jjaimealeman/flarecms"
+            target="_blank"
+            rel="noopener"
+            class="text-text-secondary hover:text-text-primary transition-colors"
+            aria-label="GitHub"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+              ></path>
+            </svg>
+          </a>
+          <!-- Theme toggle -->
+          <button
+            id="theme-toggle"
+            class="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-tertiary transition-colors cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            <!-- Sun icon (shown in dark mode) -->
+            <svg class="w-4 h-4 theme-icon-sun" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg class="w-4 h-4 theme-icon-moon hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
           <a
             href="https://admin.flarecms.dev"
-            class="text-sm font-medium text-slate-400 hover:text-slate-50 border border-slate-700 hover:border-slate-500 px-4 py-2 rounded-lg transition-all"
+            class="text-sm font-medium text-text-secondary hover:text-text-primary border border-border hover:border-text-tertiary px-4 py-2 rounded-lg transition-all"
           >
             Admin Demo
           </a>
@@ -121,24 +146,38 @@ const currentPath = Astro.url.pathname;
         <a href="/" class="md:hidden flex items-center">
           <img src="/logo.svg" alt="Flare CMS" class="h-6 w-auto" />
         </a>
-        <button
-          id="site-mobile-menu-btn"
-          class="md:hidden text-slate-400 hover:text-slate-50 transition-colors"
-          aria-label="Open menu"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            stroke-width="2"
+        <div class="md:hidden flex items-center gap-2">
+          <!-- Mobile theme toggle -->
+          <button
+            class="theme-toggle-mobile p-2 rounded-lg text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+            aria-label="Toggle theme"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
+            <svg class="w-5 h-5 theme-icon-sun" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            <svg class="w-5 h-5 theme-icon-moon hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+          <button
+            id="site-mobile-menu-btn"
+            class="text-text-secondary hover:text-text-primary transition-colors"
+            aria-label="Open menu"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -147,22 +186,22 @@ const currentPath = Astro.url.pathname;
       <!-- Backdrop -->
       <div
         id="site-mobile-backdrop"
-        class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+        class="absolute inset-0 bg-surface-primary/80 backdrop-blur-sm"
       >
       </div>
 
       <!-- Slide-in panel from right -->
       <div
-        class="absolute right-0 top-0 bottom-0 w-72 bg-slate-900 border-l border-slate-800 overflow-y-auto transform transition-transform"
+        class="absolute right-0 top-0 bottom-0 w-72 bg-surface-secondary border-l border-border overflow-y-auto transform transition-transform"
       >
         <!-- Close button -->
         <div
-          class="flex items-center justify-between p-4 border-b border-slate-800"
+          class="flex items-center justify-between p-4 border-b border-border"
         >
-          <span class="text-sm font-semibold text-slate-300">Menu</span>
+          <span class="text-sm font-semibold text-text-secondary">Menu</span>
           <button
             id="site-mobile-close-btn"
-            class="text-slate-400 hover:text-slate-200 transition-colors"
+            class="text-text-secondary hover:text-text-primary transition-colors"
             aria-label="Close menu"
           >
             <svg
@@ -183,7 +222,7 @@ const currentPath = Astro.url.pathname;
         <!-- Search trigger (mobile) -->
         <div class="px-4 pt-4 pb-2">
           <button
-            class="search-trigger-mobile flex items-center gap-2 w-full px-3 py-2.5 rounded-lg border border-slate-700 text-sm text-slate-400 hover:border-slate-600 hover:text-slate-300 transition-colors cursor-pointer"
+            class="search-trigger-mobile flex items-center gap-2 w-full px-3 py-2.5 rounded-lg border border-border text-sm text-text-secondary hover:border-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
           >
             <svg
               class="w-4 h-4"
@@ -213,7 +252,7 @@ const currentPath = Astro.url.pathname;
                       : currentPath.startsWith(link.href)
                   )
                     ? "text-flare-500 bg-flare-500/10"
-                    : "text-slate-300 hover:text-slate-50 hover:bg-slate-800",
+                    : "text-text-secondary hover:text-text-primary hover:bg-surface-tertiary",
                 ]}
               >
                 {link.label}
@@ -224,7 +263,7 @@ const currentPath = Astro.url.pathname;
             href="https://github.com/jjaimealeman/flarecms"
             target="_blank"
             rel="noopener"
-            class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:text-slate-50 hover:bg-slate-800 transition-colors"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-tertiary transition-colors"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -236,10 +275,10 @@ const currentPath = Astro.url.pathname;
         </div>
 
         <!-- CTA buttons -->
-        <div class="p-4 border-t border-slate-800 space-y-2">
+        <div class="p-4 border-t border-border space-y-2">
           <a
             href="https://admin.flarecms.dev"
-            class="block text-center text-sm font-medium text-slate-300 border border-slate-700 hover:border-slate-500 px-4 py-2.5 rounded-lg transition-all"
+            class="block text-center text-sm font-medium text-text-secondary border border-border hover:border-text-tertiary px-4 py-2.5 rounded-lg transition-all"
           >
             Admin Demo
           </a>
@@ -252,7 +291,7 @@ const currentPath = Astro.url.pathname;
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-800 mt-20 bg-slate-950">
+    <footer class="border-t border-border mt-20 bg-surface-primary">
       <div class="max-w-7xl mx-auto px-6 py-16">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           <!-- Brand column -->
@@ -263,11 +302,11 @@ const currentPath = Astro.url.pathname;
             >
               <img src="/favicon.svg" alt="Flare CMS" class="h-8 w-auto" />
             </a>
-            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+            <p class="mt-3 text-sm text-text-secondary leading-relaxed">
               Edge-native headless CMS for Cloudflare Workers.
             </p>
             <div
-              class="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-400"
+              class="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-tertiary border border-border text-xs text-text-secondary"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-flare-500"></span>
               Built with Flare CMS
@@ -277,7 +316,7 @@ const currentPath = Astro.url.pathname;
           <!-- Product -->
           <div>
             <h4
-              class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4"
+              class="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4"
             >
               Product
             </h4>
@@ -285,37 +324,37 @@ const currentPath = Astro.url.pathname;
               <li>
                 <a
                   href="/docs"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Documentation</a>
               </li>
               <li>
                 <a
                   href="/features"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Features</a>
               </li>
               <li>
                 <a
                   href="/comparison"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Comparison</a>
               </li>
               <li>
                 <a
                   href="/blog"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Blog</a>
               </li>
               <li>
                 <a
                   href="/faq"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >FAQ</a>
               </li>
               <li>
                 <a
                   href="https://admin.flarecms.dev"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Admin Demo</a>
               </li>
             </ul>
@@ -324,7 +363,7 @@ const currentPath = Astro.url.pathname;
           <!-- Developers -->
           <div>
             <h4
-              class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4"
+              class="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4"
             >
               Developers
             </h4>
@@ -332,7 +371,7 @@ const currentPath = Astro.url.pathname;
               <li>
                 <a
                   href="/docs"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Quick Start</a>
               </li>
               <li>
@@ -340,7 +379,7 @@ const currentPath = Astro.url.pathname;
                   href="https://github.com/jjaimealeman/flarecms"
                   target="_blank"
                   rel="noopener"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >GitHub</a>
               </li>
               <li>
@@ -348,7 +387,7 @@ const currentPath = Astro.url.pathname;
                   href="https://github.com/jjaimealeman/flarecms/issues"
                   target="_blank"
                   rel="noopener"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Issues</a>
               </li>
             </ul>
@@ -357,7 +396,7 @@ const currentPath = Astro.url.pathname;
           <!-- Legal -->
           <div>
             <h4
-              class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-4"
+              class="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4"
             >
               Legal
             </h4>
@@ -365,19 +404,19 @@ const currentPath = Astro.url.pathname;
               <li>
                 <a
                   href="/terms"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Terms of Service</a>
               </li>
               <li>
                 <a
                   href="/privacy"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Privacy Policy</a>
               </li>
               <li>
                 <a
                   href="/code-of-conduct"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >Code of Conduct</a>
               </li>
               <li>
@@ -385,7 +424,7 @@ const currentPath = Astro.url.pathname;
                   href="https://github.com/jjaimealeman/flarecms/blob/main/LICENSE"
                   target="_blank"
                   rel="noopener"
-                  class="text-sm text-slate-400 hover:text-slate-50 transition-colors"
+                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >MIT License</a>
               </li>
             </ul>
@@ -394,14 +433,14 @@ const currentPath = Astro.url.pathname;
 
         <!-- Bottom bar -->
         <div
-          class="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500"
+          class="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-tertiary"
         >
           <span>&copy; 2026 Flare CMS &middot; MIT License</span>
           <div class="flex items-center gap-4">
             <span>Built by Jaime Aleman in El Paso, TX</span>
             <span
               id="version-badge"
-              class="font-mono text-slate-500 cursor-pointer hover:text-slate-300 transition-colors"
+              class="font-mono text-text-tertiary cursor-pointer hover:text-text-secondary transition-colors"
               title="Click to copy"
             >
               v{__APP_VERSION__} &middot; {__GIT_HASH__}
@@ -462,6 +501,48 @@ const currentPath = Astro.url.pathname;
             }
           });
         }
+      })();
+    </script>
+
+    <!-- Theme toggle script -->
+    <script is:inline>
+      (function () {
+        function isLight() {
+          return document.documentElement.classList.contains('light');
+        }
+
+        function updateIcons() {
+          var light = isLight();
+          document.querySelectorAll('.theme-icon-sun').forEach(function(el) {
+            el.style.display = light ? 'none' : '';
+            el.classList.toggle('hidden', light);
+          });
+          document.querySelectorAll('.theme-icon-moon').forEach(function(el) {
+            el.style.display = light ? '' : 'none';
+            el.classList.toggle('hidden', !light);
+          });
+        }
+
+        function toggle() {
+          var light = isLight();
+          if (light) {
+            document.documentElement.classList.remove('light');
+            localStorage.setItem('flare-theme', 'dark');
+          } else {
+            document.documentElement.classList.add('light');
+            localStorage.setItem('flare-theme', 'light');
+          }
+          updateIcons();
+        }
+
+        // Bind all toggle buttons
+        var btn = document.getElementById('theme-toggle');
+        if (btn) btn.addEventListener('click', toggle);
+        document.querySelectorAll('.theme-toggle-mobile').forEach(function(el) {
+          el.addEventListener('click', toggle);
+        });
+
+        updateIcons();
       })();
     </script>
 
