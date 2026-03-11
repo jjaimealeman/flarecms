@@ -574,20 +574,24 @@ export function renderAdminLayoutCatalyst(
     </div>
   </div>
 
-  <!-- Deploy Hook Setup Modal -->
+  <!-- Deploy Setup Modal -->
   <div id="deploy-setup-modal" class="hidden fixed inset-0 z-50">
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeploySetup()"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
       <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-950/5 dark:ring-white/10">
         <div class="px-6 py-5">
-          <h2 class="text-lg font-semibold text-zinc-950 dark:text-white mb-2">Configure Deploy Hook</h2>
+          <h2 class="text-lg font-semibold text-zinc-950 dark:text-white mb-2">Configure GitHub Deploy</h2>
           <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-            Paste your Cloudflare Pages deploy hook URL. Create one in the Cloudflare dashboard under your Pages project &rarr; Settings &rarr; Builds &amp; deployments &rarr; Deploy hooks.
+            Deploy triggers a GitHub Actions workflow that builds and deploys your site. Enter your repo and a personal access token with <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">repo</code> scope.
           </p>
-          <input id="deploy-hook-input" type="url" placeholder="https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..." class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400" />
+          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">GitHub Repository</label>
+          <input id="deploy-repo-input" type="text" placeholder="owner/repo" class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 mb-3" />
+          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">GitHub Token</label>
+          <input id="deploy-token-input" type="password" placeholder="ghp_..." class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400" />
+          <p class="text-xs text-zinc-400 mt-1">Token is stored securely in your CMS database.</p>
           <div class="flex justify-end gap-3 mt-4">
             <button onclick="closeDeploySetup()" class="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
-            <button onclick="saveDeployHook()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">Save</button>
+            <button onclick="saveDeploySettings()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">Save</button>
           </div>
         </div>
       </div>
@@ -614,9 +618,9 @@ export function renderAdminLayoutCatalyst(
       try {
         const settingsRes = await fetch('/admin/deploy/api/settings');
         const settings = await settingsRes.json();
-        if (!settings.hookUrl) {
+        if (!settings.hasToken || !settings.githubRepo) {
           document.getElementById('deploy-setup-modal').classList.remove('hidden');
-          document.getElementById('deploy-hook-input').focus();
+          document.getElementById('deploy-repo-input').focus();
           return;
         }
       } catch (e) { return; }
@@ -722,20 +726,20 @@ export function renderAdminLayoutCatalyst(
       document.getElementById('deploy-setup-modal').classList.add('hidden');
     }
 
-    async function saveDeployHook() {
-      const input = document.getElementById('deploy-hook-input');
-      const url = input.value.trim();
-      if (!url) return;
+    async function saveDeploySettings() {
+      const repo = document.getElementById('deploy-repo-input').value.trim();
+      const token = document.getElementById('deploy-token-input').value.trim();
+      if (!repo || !token) { alert('Both fields are required'); return; }
       try {
         await fetch('/admin/deploy/api/settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ hookUrl: url })
+          body: JSON.stringify({ githubRepo: repo, githubToken: token })
         });
         closeDeploySetup();
         openDeployModal();
       } catch (e) {
-        alert('Failed to save deploy hook URL');
+        alert('Failed to save deploy settings');
       }
     }
 
@@ -749,7 +753,7 @@ export function renderAdminLayoutCatalyst(
         const res = await fetch('/admin/deploy/api/trigger', { method: 'POST' });
         const data = await res.json();
         if (data.success) {
-          status.textContent = 'Build triggered! Site will be live in ~30 seconds.';
+          status.textContent = 'Build triggered via GitHub Actions! Site will be live in ~60 seconds.';
           btn.textContent = 'Deployed';
           btn.className = 'rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
           const badge = document.getElementById('deploy-badge');
