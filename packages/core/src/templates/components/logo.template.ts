@@ -30,7 +30,7 @@ export function renderLogo(data: LogoData = {}): string {
   const sizeClass = sizeClasses[size]
 
   // Color mapping for variants
-  const textColor = variant === 'white' ? '#ffffff' : variant === 'dark' ? '#1f2937' : '#F1F2F2'
+  const textColor = variant === 'white' ? 'currentColor' : variant === 'dark' ? '#1f2937' : 'currentColor'
   const sparkColor = '#f6821f'
 
   // Flare CMS logo

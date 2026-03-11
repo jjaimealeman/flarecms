@@ -401,8 +401,8 @@ export function renderAdminLayoutCatalyst(
         <button onclick="openMobileSidebar()" class="relative flex items-center justify-center rounded-lg p-2 text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5" aria-label="Open navigation">
           ${icon(Menu, 'h-5 w-5')}
         </button>
-        <div class="ml-4 flex-1">
-          ${renderLogo({ size: "sm", showText: true, variant: "white", href: "/admin" })}
+        <div class="ml-4 flex-1 text-zinc-900 dark:text-white">
+          ${renderLogo({ size: "sm", showText: true, href: "/admin" })}
         </div>
       </header>
 
@@ -929,8 +929,8 @@ function renderCatalystSidebar(
       ${closeButton}
 
       <!-- Sidebar Header -->
-      <div class="relative flex flex-col items-center justify-center border-b border-zinc-200 px-4 py-6 dark:border-zinc-800">
-        ${renderLogo({ size: 'lg', showText: true, showVersion: false, variant: 'dark', href: '/admin' })}
+      <div class="relative flex flex-col items-center justify-center border-b border-zinc-200 px-4 py-6 dark:border-zinc-800 text-zinc-900 dark:text-white">
+        ${renderLogo({ size: 'lg', showText: true, showVersion: false, href: '/admin' })}
         ${version ? `<span class="absolute bottom-2 right-4 text-[10px] text-zinc-400 dark:text-zinc-500">${version}</span>` : ''}
       </div>
 
