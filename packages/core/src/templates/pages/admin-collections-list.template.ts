@@ -116,12 +116,22 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
       },
       {
         key: 'actions',
-        label: 'Content',
+        label: '',
         sortable: false,
         render: (_value: any, collection: any) => {
           if (!collection || !collection.id) return '<span class="text-zinc-500 dark:text-zinc-400">-</span>'
           return `
             <div class="flex items-center space-x-2">
+              <button
+                onclick="event.stopPropagation(); openSnippetModal('${collection.id}', '${(collection.display_name || collection.name).replace(/'/g, "\\'")}')"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 ring-1 ring-zinc-200 dark:ring-zinc-700 transition-colors"
+                title="Astro code snippets"
+              >
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/>
+                </svg>
+                Astro
+              </button>
               <a href="/admin/content?model=${collection.name}" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -270,6 +280,50 @@ export function renderCollectionsListPage(data: CollectionsListPageData): string
           </div>
         </div>
       ` : ''}
+
+      <!-- Snippet Modal -->
+      <div id="snippet-modal" class="hidden fixed inset-0 z-50">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSnippetModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+          <div class="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-950/5 dark:ring-white/10 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
+              <div>
+                <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Astro Code Snippets</h2>
+                <p id="snippet-subtitle" class="text-sm text-zinc-500 dark:text-zinc-400"></p>
+              </div>
+              <button onclick="closeSnippetModal()" class="rounded-lg p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div id="snippet-body" class="flex-1 overflow-y-auto px-6 py-4"
+              hx-indicator=".snippet-loader"
+            >
+              <div class="snippet-loader flex items-center justify-center py-8">
+                <div class="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600"></div>
+                <span class="ml-3 text-sm text-zinc-500">Generating snippets...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function openSnippetModal(collectionId, displayName) {
+          var modal = document.getElementById('snippet-modal');
+          var subtitle = document.getElementById('snippet-subtitle');
+          var body = document.getElementById('snippet-body');
+
+          subtitle.textContent = displayName;
+          modal.classList.remove('hidden');
+
+          // Use HTMX to load trusted server-rendered snippet partials
+          htmx.ajax('GET', '/admin/collections/' + collectionId + '/snippets', {target: '#snippet-body', swap: 'innerHTML'});
+        }
+
+        function closeSnippetModal() {
+          document.getElementById('snippet-modal').classList.add('hidden');
+        }
+      </script>
     </div>
   `
 

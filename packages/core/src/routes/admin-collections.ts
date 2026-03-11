@@ -5,6 +5,7 @@ import { isPluginActive } from '../middleware/plugin-middleware'
 import { SchemaMigrationService } from '../services/schema-migration'
 import { renderCollectionsListPage } from '../templates/pages/admin-collections-list.template'
 import { renderCollectionFormPage } from '../templates/pages/admin-collections-form.template'
+import { renderSnippetModal } from '../templates/pages/admin-snippets.template'
 
 // Type definitions for collections
 interface Collection {
@@ -354,6 +355,44 @@ adminCollectionsRoutes.post('/', async (c) => {
     } else {
       return c.redirect('/admin/collections/new')
     }
+  }
+})
+
+// Astro snippet generator (HTMX partial)
+adminCollectionsRoutes.get('/:id/snippets', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const db = c.env.DB
+
+    const stmt = db.prepare('SELECT id, name, display_name, schema FROM collections WHERE id = ?')
+    const collection = await stmt.bind(id).first() as any
+
+    if (!collection) {
+      return c.html('<p class="text-red-500">Collection not found.</p>')
+    }
+
+    let schema = {}
+    if (collection.schema) {
+      try {
+        schema = typeof collection.schema === 'string' ? JSON.parse(collection.schema) : collection.schema
+      } catch (_e) {
+        schema = {}
+      }
+    }
+
+    // Get CMS URL from request origin
+    const url = new URL(c.req.url)
+    const cmsUrl = `${url.protocol}//${url.host}`
+
+    return c.html(renderSnippetModal({
+      collectionName: collection.name,
+      displayName: collection.display_name,
+      schema,
+      cmsUrl,
+    }))
+  } catch (error) {
+    console.error('Error generating snippets:', error)
+    return c.html('<p class="text-red-500">Failed to generate snippets.</p>')
   }
 })
 
