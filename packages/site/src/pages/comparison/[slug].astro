@@ -70,7 +70,7 @@ const next = idx < competitors.length - 1 ? competitors[idx + 1] : null
       <div class="flex items-center gap-4 mb-4">
         <span class="text-4xl">{cms.logo}</span>
         <div>
-          <h1 class="text-3xl sm:text-4xl font-heading font-bold tracking-tight">
+          <h1 class="text-3xl sm:text-4xl font-sans font-bold tracking-tight">
             Flare CMS vs {cms.name}
           </h1>
           <p class="mt-1 text-sm text-slate-500">{cms.tagline} · <a href={cms.website} target="_blank" rel="noopener" class:list={['hover:underline', colors.text]}>{cms.website.replace('https://', '')}</a></p>
@@ -102,7 +102,7 @@ const next = idx < competitors.length - 1 ? competitors[idx + 1] : null
 
     <!-- Score Comparison -->
     <section class="mb-12">
-      <h2 class="text-xl font-heading font-bold tracking-tight mb-6">Score comparison</h2>
+      <h2 class="text-xl font-sans font-bold tracking-tight mb-6">Score comparison</h2>
       <div class="space-y-5">
         {scoreKeys.map((key) => {
           const flareScore = flareScores[key]
@@ -175,7 +175,7 @@ const next = idx < competitors.length - 1 ? competitors[idx + 1] : null
 
     <!-- Feature-by-Feature -->
     <section class="mb-12">
-      <h2 class="text-xl font-heading font-bold tracking-tight mb-6">Feature-by-feature</h2>
+      <h2 class="text-xl font-sans font-bold tracking-tight mb-6">Feature-by-feature</h2>
       <div class="space-y-4">
         {detailKeys.map((key) => (
           <div class="rounded-xl border border-slate-800 bg-slate-800/30 overflow-hidden">
@@ -199,7 +199,7 @@ const next = idx < competitors.length - 1 ? competitors[idx + 1] : null
 
     <!-- Pricing -->
     <section class="mb-12">
-      <h2 class="text-xl font-heading font-bold tracking-tight mb-4">Pricing</h2>
+      <h2 class="text-xl font-sans font-bold tracking-tight mb-4">Pricing</h2>
       <div class="grid sm:grid-cols-2 gap-4">
         <div class="rounded-xl border border-flare-500/20 bg-flare-500/5 p-5">
           <div class="text-sm font-semibold text-flare-400 mb-2">Flare CMS</div>
@@ -215,7 +215,7 @@ const next = idx < competitors.length - 1 ? competitors[idx + 1] : null
     <!-- CTA -->
     <section class="mb-12">
       <div class="rounded-2xl border border-flare-500/20 bg-gradient-to-r from-flare-500/10 to-transparent p-8 text-center">
-        <h2 class="text-2xl font-heading font-bold tracking-tight mb-3">Ready to try Flare CMS?</h2>
+        <h2 class="text-2xl font-sans font-bold tracking-tight mb-3">Ready to try Flare CMS?</h2>
         <p class="text-slate-400 mb-6 max-w-md mx-auto text-sm">
           Get started in minutes. One command to scaffold, one command to deploy.
         </p>

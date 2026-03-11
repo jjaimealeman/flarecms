@@ -135,7 +135,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
           if (!form || !form.id) return '<span class="text-zinc-500 dark:text-zinc-400">-</span>'
           return `
             <div class="flex items-center space-x-2">
-              <a href="/admin/forms/${form.id}/builder" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors" title="Edit Form">
+              <a href="/admin/forms/${form.id}/builder" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-zinc-950 dark:bg-blue-600 text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors" title="Edit Form">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
@@ -183,7 +183,7 @@ export function renderFormsListPage(data: FormsListPageData): string {
             </svg>
             Quick Reference
           </a>
-          <a href="/admin/forms/new" class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm">
+          <a href="/admin/forms/new" class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm">
             <svg class="w-4 h-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
             </svg>
@@ -252,13 +252,13 @@ export function renderFormsListPage(data: FormsListPageData): string {
               name="search"
               placeholder="Search forms..."
               value="${data.search || ''}"
-              class="block w-full rounded-lg border-2 border-blue-200/50 dark:border-blue-700/50 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="block w-full h-[38px] rounded-lg border-2 border-blue-200/50 dark:border-blue-700/50 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3"
             />
           </div>
           <div class="w-full sm:w-48">
             <select
               name="category"
-              class="block w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="block w-full h-[38px] rounded-lg border-2 border-blue-200/50 dark:border-blue-700/50 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3"
             >
               <option value="">All Categories</option>
               <option value="contact" ${data.category === 'contact' ? 'selected' : ''}>Contact</option>

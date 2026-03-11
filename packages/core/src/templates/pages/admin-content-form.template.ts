@@ -388,7 +388,7 @@ export function renderContentFormPage(data: ContentFormData): string {
             form="content-form"
             name="action"
             value="save"
-            class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+            class="inline-flex items-center justify-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
           >
             ${isEdit ? 'Update' : 'Save Draft'}
           </button>
@@ -470,7 +470,7 @@ export function renderContentFormPage(data: ContentFormData): string {
               </button>
               <button
                 onclick="closeMediaSelector()"
-                class="rounded-lg bg-zinc-950 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors">
+                class="rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors">
                 OK
               </button>
             </div>
@@ -769,7 +769,7 @@ export function renderContentFormPage(data: ContentFormData): string {
               <button
                 type="button"
                 onclick="closeReferenceSelector()"
-                class="rounded-lg bg-zinc-950 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
+                class="rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors"
               >
                 Close
               </button>

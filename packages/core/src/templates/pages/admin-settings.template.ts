@@ -621,7 +621,7 @@ function renderGeneralSettings(settings?: GeneralSettings): string {
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
           onclick="saveGeneralSettings()"
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -752,7 +752,7 @@ function renderAppearanceSettings(settings?: AppearanceSettings): string {
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
           disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-white/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-zinc-950/50 cursor-not-allowed shadow-sm"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -921,7 +921,7 @@ function renderSecuritySettings(settings?: SecuritySettings): string {
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
           disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-white/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-zinc-950/50 cursor-not-allowed shadow-sm"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1081,7 +1081,7 @@ function renderNotificationSettings(settings?: NotificationSettings): string {
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
           disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-white/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-zinc-950/50 cursor-not-allowed shadow-sm"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1198,7 +1198,7 @@ function renderStorageSettings(settings?: StorageSettings): string {
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
           disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-white/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-zinc-950/50 cursor-not-allowed shadow-sm"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

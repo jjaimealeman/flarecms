@@ -23,6 +23,8 @@ import {
   AlertTriangle,
   Rocket,
   BarChart3,
+  Sun,
+  Moon,
 } from "../icons";
 
 // Catalyst Checkbox Component (HTML implementation)
@@ -199,6 +201,13 @@ export function renderAdminLayoutCatalyst(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${data.title} - Flare CMS Admin</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- Dark mode init (before any rendering to prevent FOUC) -->
+  <script>
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -392,8 +401,8 @@ export function renderAdminLayoutCatalyst(
         <button onclick="openMobileSidebar()" class="relative flex items-center justify-center rounded-lg p-2 text-zinc-950 hover:bg-zinc-950/5 dark:text-white dark:hover:bg-white/5" aria-label="Open navigation">
           ${icon(Menu, 'h-5 w-5')}
         </button>
-        <div class="ml-4 flex-1">
-          ${renderLogo({ size: "sm", showText: true, variant: "white", href: "/admin" })}
+        <div class="ml-4 flex-1 text-zinc-900 dark:text-white">
+          ${renderLogo({ size: "sm", showText: true, href: "/admin" })}
         </div>
       </header>
 
@@ -500,9 +509,10 @@ export function renderAdminLayoutCatalyst(
       }, 5000);
     }
 
-    // Initialize dark mode — default is light; add 'dark' class if stored
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.documentElement.classList.add('dark');
+    // Dark mode toggle
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
     }
 
     // Migration banner functions
@@ -919,8 +929,8 @@ function renderCatalystSidebar(
       ${closeButton}
 
       <!-- Sidebar Header -->
-      <div class="relative flex flex-col items-center justify-center border-b border-zinc-200 px-4 py-6 dark:border-zinc-800">
-        ${renderLogo({ size: 'lg', showText: true, showVersion: false, variant: 'dark', href: '/admin' })}
+      <div class="relative flex flex-col items-center justify-center border-b border-zinc-200 px-4 py-6 dark:border-zinc-800 text-zinc-900 dark:text-white">
+        ${renderLogo({ size: 'lg', showText: true, showVersion: false, href: '/admin' })}
         ${version ? `<span class="absolute bottom-2 right-4 text-[10px] text-zinc-400 dark:text-zinc-500">${version}</span>` : ''}
       </div>
 
@@ -985,6 +995,12 @@ function renderCatalystSidebar(
                   ${icon(User, 'h-4 w-4')}
                   My Profile
                 </a>
+                <button onclick="toggleDarkMode()" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5">
+                  <span class="dark:hidden">${icon(Moon, 'h-4 w-4')}</span>
+                  <span class="hidden dark:inline">${icon(Sun, 'h-4 w-4')}</span>
+                  <span class="dark:hidden">Dark Mode</span>
+                  <span class="hidden dark:inline">Light Mode</span>
+                </button>
                 <a href="/auth/logout" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">
                   ${icon(LogOut, 'h-4 w-4')}
                   Sign Out

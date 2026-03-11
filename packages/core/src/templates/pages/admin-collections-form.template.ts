@@ -293,12 +293,12 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
             }
 
             .dark #collection-form .btn-primary {
-              background: white;
-              color: #09090b; /* zinc-950 */
+              background: #2563eb; /* blue-600 */
+              color: white;
             }
 
             .dark #collection-form .btn-primary:hover {
-              background: #f4f4f5; /* zinc-100 */
+              background: #1d4ed8; /* blue-700 */
             }
 
             #collection-form .form-help-text {
@@ -379,7 +379,7 @@ export function renderCollectionFormPage(data: CollectionFormData): string {
                 <button
                   type="button"
                   onclick="showAddFieldModal()"
-                  class="inline-flex items-center gap-x-1.5 px-3.5 py-2.5 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-semibold text-sm rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+                  class="inline-flex items-center gap-x-1.5 px-3.5 py-2.5 bg-zinc-950 dark:bg-blue-600 text-white dark:text-white font-semibold text-sm rounded-lg hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>

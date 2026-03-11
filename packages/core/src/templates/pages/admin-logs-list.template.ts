@@ -74,7 +74,7 @@ export function renderLogsListPage(data: LogsListPageData) {
           </a>
           <a
             href="/admin/logs/export?${new URLSearchParams(filters).toString()}"
-            class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+            class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
           >
             Export
           </a>
@@ -181,7 +181,7 @@ export function renderLogsListPage(data: LogsListPageData) {
                 <div class="sm:col-span-2 flex items-end gap-x-2">
                   <button
                     type="submit"
-                    class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm"
+                    class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
                   >
                     Apply Filters
                   </button>

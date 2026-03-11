@@ -40,7 +40,7 @@ export function renderDesignPage(data: DesignPageData): string {
             <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Component Library</h2>
             <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Browse all available components</p>
           </div>
-          <span class="inline-flex items-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-white px-3 py-1.5 text-xs font-semibold text-white dark:text-zinc-950">
+          <span class="inline-flex items-center gap-x-1.5 rounded-lg bg-zinc-950 dark:bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white dark:text-white">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
@@ -383,13 +383,13 @@ export function renderDesignPage(data: DesignPageData): string {
             <div>
               <h3 class="text-base font-semibold text-zinc-950 dark:text-white mb-4">Primary</h3>
               <div class="flex flex-wrap gap-3">
-                <button class="inline-flex items-center gap-x-2 rounded-lg bg-zinc-950 dark:bg-white px-4 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors">
+                <button class="inline-flex items-center gap-x-2 rounded-lg bg-zinc-950 dark:bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors">
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                   </svg>
                   Create New
                 </button>
-                <button class="rounded-lg bg-zinc-950 dark:bg-white px-5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors">
+                <button class="rounded-lg bg-zinc-950 dark:bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors">
                   Save Changes
                 </button>
               </div>
@@ -817,7 +817,7 @@ export function renderDesignPage(data: DesignPageData): string {
           <div class="rounded-xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-950/5 dark:ring-white/10 p-6">
             <div class="flex items-center gap-x-3 mb-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-950 dark:bg-white">
-                <svg class="h-5 w-5 text-white dark:text-zinc-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-5 w-5 text-white dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
               </div>

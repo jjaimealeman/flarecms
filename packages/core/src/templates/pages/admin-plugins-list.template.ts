@@ -538,7 +538,7 @@ function renderPluginCard(plugin: Plugin): string {
 
   let actionButton = ''
   if (plugin.status === 'uninstalled') {
-    actionButton = `<button onclick="event.stopPropagation(); installPlugin('${plugin.name}')" class="w-full sm:w-auto bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-100 text-white dark:text-zinc-900 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm">Install</button>`
+    actionButton = `<button onclick="event.stopPropagation(); installPlugin('${plugin.name}')" class="w-full sm:w-auto bg-zinc-900 dark:bg-blue-600 hover:bg-zinc-800 dark:hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm">Install</button>`
   } else {
     const isActive = plugin.status === 'active';
     const action = isActive ? 'deactivate' : 'activate';

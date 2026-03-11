@@ -225,7 +225,7 @@ export function renderContentListPage(data: ContentListPageData): string {
           <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Manage and organize your content items</p>
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <a href="/admin/content/new" class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-white px-3.5 py-2.5 text-sm font-semibold text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-sm">
+          <a href="/admin/content/new" class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm">
             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
             </svg>
@@ -319,7 +319,7 @@ export function renderContentListPage(data: ContentListPageData): string {
                     </div>
                     <button
                       type="submit"
-                      class="inline-flex items-center gap-x-1.5 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-500 dark:from-blue-400 dark:to-blue-400 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-500 shadow-md hover:shadow-lg transition-all duration-200"
+                      class="inline-flex items-center gap-x-1.5 px-4 py-2.5 bg-zinc-950 dark:bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 dark:hover:bg-blue-700 shadow-md hover:shadow-lg transition-all duration-200"
                     >
                       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
