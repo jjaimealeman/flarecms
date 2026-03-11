@@ -136,6 +136,34 @@ pre {
   overflow-x: auto;
 }
 
+/* Theme-aware prose (replaces prose-invert) */
+.prose-adaptive {
+  --tw-prose-body: var(--text-primary);
+  --tw-prose-headings: var(--text-primary);
+  --tw-prose-lead: var(--text-secondary);
+  --tw-prose-links: var(--text-primary);
+  --tw-prose-bold: var(--text-primary);
+  --tw-prose-counters: var(--text-secondary);
+  --tw-prose-bullets: var(--text-tertiary);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--text-primary);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--text-secondary);
+  --tw-prose-kbd: var(--text-primary);
+  --tw-prose-kbd-shadows: 0 0 0;
+  --tw-prose-code: var(--text-primary);
+  --tw-prose-pre-code: #e2e8f0;
+  --tw-prose-pre-bg: #0a0a0a;
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+}
+
+/* Inline code adapts to theme */
+.light .prose :where(code):not(:where(pre code)) {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
 /* Selection color */
 ::selection {
   background-color: rgba(246, 130, 31, 0.3);

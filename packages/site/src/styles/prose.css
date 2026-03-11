@@ -25,8 +25,8 @@ h4:hover .heading-anchor,
   color: rgb(246 130 31);
 }
 
-/* External link indicator */
-a[target="_blank"]::after {
+/* External link indicator (scoped to prose content only) */
+.prose a[target="_blank"]::after {
   content: '';
   display: inline-block;
   width: 0.75em;
