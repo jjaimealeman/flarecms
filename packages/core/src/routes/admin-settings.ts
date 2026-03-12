@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 // import { html } from 'hono/html'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { renderSettingsPage, SettingsPageData } from '../templates/pages/admin-settings.template'
 import { MigrationService } from '../services/migrations'
 import { SettingsService } from '../services/settings'
@@ -35,6 +35,7 @@ export const adminSettingsRoutes = new Hono<{ Bindings: Bindings; Variables: Var
 
 // Apply authentication middleware
 adminSettingsRoutes.use('*', requireAuth())
+adminSettingsRoutes.use('*', requireRole('admin'))
 
 // Helper function to get mock settings data
 function getMockSettings(user: any) {

@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { SchemaMigrationService } from '../services/schema-migration'
 import { renderSchemaMigrationsHistoryPage } from '../templates/pages/admin-schema-migrations-history.template'
 
@@ -33,6 +33,7 @@ export const adminSchemaMigrationsRoutes = new Hono<{ Bindings: Bindings; Variab
 
 // Apply authentication middleware
 adminSchemaMigrationsRoutes.use('*', requireAuth())
+adminSchemaMigrationsRoutes.use('*', requireRole('admin'))
 
 // ── GET / — Migration history page ───────────────────────────────────
 
