@@ -20,18 +20,24 @@ import { codeSchema } from '../data/homepage'
           <p class="text-sm text-text-secondary">Content management, media library, and user management out of the box.</p>
         </div>
         <div class="mt-4 mx-6 rounded-t-xl border border-b-0 border-border overflow-hidden bg-surface-tertiary">
-          <img
-            src="/images/admin-content-dark.webp"
-            alt="Flare CMS Content Management — Dark Mode"
+          <video
+            autoplay
+            loop
+            muted
+            playsinline
             class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity dark-only"
-            loading="lazy"
-          />
-          <img
-            src="/images/admin-content-light.webp"
-            alt="Flare CMS Content Management — Light Mode"
+          >
+            <source src="/videos/flare-demo-dark.mp4" type="video/mp4" />
+          </video>
+          <video
+            autoplay
+            loop
+            muted
+            playsinline
             class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity light-only hidden"
-            loading="lazy"
-          />
+          >
+            <source src="/videos/flare-demo-light.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
 
