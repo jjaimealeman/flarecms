@@ -95,7 +95,7 @@ jobs:
         working-directory: packages/site
         run: pnpm run build
         env:
-          PUBLIC_FLARE_API_URL: https://flare-cms.jjaimealeman.workers.dev
+          PUBLIC_FLARE_API_URL: https://admin.flarecms.dev
 
       - name: Deploy to Cloudflare Pages
         working-directory: packages/site
