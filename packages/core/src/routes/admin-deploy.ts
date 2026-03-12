@@ -1,11 +1,12 @@
 import { Hono } from 'hono'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { SettingsService } from '../services/settings'
 import type { Bindings, Variables } from '../app'
 
 const adminDeployRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 adminDeployRoutes.use('*', requireAuth())
+adminDeployRoutes.use('*', requireRole('admin'))
 
 /**
  * Get pending changes since last deploy

@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { renderFaqList } from '../templates/pages/admin-faq-list.template'
 import { renderFaqForm } from '../templates/pages/admin-faq-form.template'
 
@@ -32,6 +32,7 @@ const faqSchema = z.object({
 export const adminFaqRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 adminFaqRoutes.use('*', requireAuth())
+adminFaqRoutes.use('*', requireRole(['admin', 'editor']))
 
 // List all FAQs
 adminFaqRoutes.get('/', async (c) => {

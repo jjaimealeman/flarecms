@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { renderFormsListPage } from '../templates/pages/admin-forms-list.template'
 import { renderFormBuilderPage, type FormBuilderPageData } from '../templates/pages/admin-forms-builder.template'
 import { renderFormCreatePage } from '../templates/pages/admin-forms-create.template'
@@ -83,6 +83,7 @@ export const adminFormsRoutes = new Hono<{ Bindings: Bindings; Variables: Variab
 
 // Apply authentication middleware
 adminFormsRoutes.use('*', requireAuth())
+adminFormsRoutes.use('*', requireRole(['admin', 'editor']))
 
 // Forms management - List all forms
 adminFormsRoutes.get('/', async (c) => {

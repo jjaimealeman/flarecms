@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { html } from 'hono/html'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { isPluginActive } from '../middleware/plugin-middleware'
 import { SchemaMigrationService } from '../services/schema-migration'
 import { renderCollectionsListPage } from '../templates/pages/admin-collections-list.template'
@@ -94,6 +94,7 @@ export const adminCollectionsRoutes = new Hono<{ Bindings: Bindings; Variables: 
 
 // Apply authentication middleware
 adminCollectionsRoutes.use('*', requireAuth())
+adminCollectionsRoutes.use('*', requireRole('admin'))
 
 // Collections management - List all collections
 adminCollectionsRoutes.get('/', async (c) => {
