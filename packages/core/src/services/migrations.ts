@@ -214,6 +214,20 @@ export class MigrationService {
       }
     }
 
+    // Check if user_collection_permissions table exists (migration 034)
+    if (!appliedMigrations.has('034')) {
+      const hasUcpTable = await this.checkTablesExist(['user_collection_permissions'])
+      if (hasUcpTable) {
+        appliedMigrations.set('034', {
+          id: '034',
+          applied_at: new Date().toISOString(),
+          name: 'User Collection Permissions',
+          filename: '034_user_collection_permissions.sql'
+        })
+        await this.markMigrationApplied('034', 'User Collection Permissions', '034_user_collection_permissions.sql')
+      }
+    }
+
     // Check if settings table exists (migration 018)
     if (!appliedMigrations.has('018')) {
       const hasSettingsTable = await this.checkTablesExist(['settings'])
