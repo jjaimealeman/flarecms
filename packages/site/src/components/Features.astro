@@ -222,18 +222,18 @@ import { codeSchema } from '../data/homepage'
         </div>
 
         <!-- Cycling definitions synced to orbit -->
-        <div class="absolute bottom-3 inset-x-0 text-center h-8">
+        <div class="absolute bottom-2 inset-x-0 text-center h-9">
           <div class="orbit-def orbit-def-d1 absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500" style="opacity:0">
-            <span class="text-[11px] font-semibold text-amber-400">D1 Database</span>
-            <span class="text-[10px] text-text-tertiary">SQLite at the edge</span>
+            <span class="text-xs font-semibold text-amber-400">D1 Database</span>
+            <span class="text-[11px] text-text-tertiary">SQLite at the edge</span>
           </div>
           <div class="orbit-def orbit-def-r2 absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500" style="opacity:0">
-            <span class="text-[11px] font-semibold text-cyan-400">R2 Storage</span>
-            <span class="text-[10px] text-text-tertiary">S3-compatible object store</span>
+            <span class="text-xs font-semibold text-cyan-400">R2 Storage</span>
+            <span class="text-[11px] text-text-tertiary">S3-compatible object store</span>
           </div>
           <div class="orbit-def orbit-def-kv absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500" style="opacity:0">
-            <span class="text-[11px] font-semibold text-emerald-400">KV Cache</span>
-            <span class="text-[10px] text-text-tertiary">Global key-value storage</span>
+            <span class="text-xs font-semibold text-emerald-400">KV Cache</span>
+            <span class="text-[11px] text-text-tertiary">Global key-value storage</span>
           </div>
         </div>
       </div>
@@ -262,9 +262,9 @@ import { codeSchema } from '../data/homepage'
       </div>
 
       <!-- Request lifecycle flow (span 2 cols) -->
-      <div class="md:col-span-2 rounded-2xl border border-border bg-surface-secondary p-6 pb-5 overflow-hidden" id="flow-tile">
-        <h3 class="font-semibold text-text-primary mb-1">How a Request Flows</h3>
-        <p class="text-sm text-text-secondary mb-5">From browser to edge and back — every step at the speed of light.</p>
+      <div class="md:col-span-2 rounded-2xl border border-border bg-surface-secondary p-5 pb-4 overflow-hidden" id="flow-tile">
+        <h3 class="font-semibold text-text-primary mb-0.5">How a Request Flows</h3>
+        <p class="text-sm text-text-secondary mb-3">From browser to edge and back — sub-100ms at the edge.</p>
 
         <!-- Flow diagram — absolute positioned for precise dot animation
              All node `left` values = their CENTER (translateX(-50%) in CSS)
@@ -457,15 +457,15 @@ import { codeSchema } from '../data/homepage'
 
   .orbit-scene {
     position: relative;
-    width: 200px;
-    height: 160px;
+    width: 260px;
+    height: 200px;
     margin: auto;
   }
 
   /* Visible elliptical track — matches orbit ring scaleY */
   .orbit-track {
     position: absolute;
-    inset: 10px -10px;
+    inset: 5px -15px;
     border: 1px dashed var(--color-border);
     border-radius: 50%;
     scale: 1 0.5;
@@ -490,8 +490,8 @@ import { codeSchema } from '../data/homepage'
 
   .orbit-center-icon {
     position: relative;
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
     color: var(--color-flare-500);
     filter: drop-shadow(0 0 6px rgba(246, 130, 31, 0.4));
   }
@@ -538,21 +538,21 @@ import { codeSchema } from '../data/homepage'
 
   /* Each item counter-rotates to stay upright, accounting for its starting angle */
   .orbit-item-1 {
-    transform: rotate(0deg) translateX(90px) translateY(-10px);
+    transform: rotate(0deg) translateX(115px) translateY(-10px);
   }
   .orbit-item-1 .orbit-item-inner {
     animation: orbit-counter-spin-0 18s linear infinite;
   }
 
   .orbit-item-2 {
-    transform: rotate(120deg) translateX(90px) translateY(-10px);
+    transform: rotate(120deg) translateX(115px) translateY(-10px);
   }
   .orbit-item-2 .orbit-item-inner {
     animation: orbit-counter-spin-120 18s linear infinite;
   }
 
   .orbit-item-3 {
-    transform: rotate(240deg) translateX(90px) translateY(-10px);
+    transform: rotate(240deg) translateX(115px) translateY(-10px);
   }
   .orbit-item-3 .orbit-item-inner {
     animation: orbit-counter-spin-240 18s linear infinite;
@@ -592,9 +592,9 @@ import { codeSchema } from '../data/homepage'
   }
 
   .orbit-icon {
-    width: 32px;
-    height: 32px;
-    padding: 5px;
+    width: 38px;
+    height: 38px;
+    padding: 6px;
     border-radius: 8px;
     background: var(--color-surface-tertiary);
     border: 1px solid var(--color-border);
@@ -635,7 +635,7 @@ import { codeSchema } from '../data/homepage'
   /* ---- Request flow diagram ---- */
   .flow-scene {
     position: relative;
-    height: 150px;
+    height: 180px;
   }
 
   /* Layer 1: Lines (z-index 1), Layer 2: Dot (z-index 2), Layer 3: Nodes (z-index 3) */
@@ -660,7 +660,7 @@ import { codeSchema } from '../data/homepage'
   /* Path labels — crossfade synced to 8s dot loop */
   .flow-path-label {
     position: absolute;
-    font-size: 9px;
+    font-size: 11px;
     color: var(--color-text-tertiary);
     letter-spacing: 0.03em;
     z-index: 0;
@@ -700,9 +700,9 @@ import { codeSchema } from '../data/homepage'
   }
 
   .flow-node-icon {
-    width: 36px;
-    height: 36px;
-    padding: 7px;
+    width: 42px;
+    height: 42px;
+    padding: 8px;
     border-radius: 10px;
     border: 1px solid var(--color-border);
     background: var(--color-surface-tertiary);
@@ -721,13 +721,13 @@ import { codeSchema } from '../data/homepage'
   }
 
   .flow-node-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--color-text-primary);
   }
 
   .flow-node-desc {
-    font-size: 9px;
+    font-size: 11px;
     color: var(--color-text-tertiary);
     white-space: nowrap;
   }
@@ -772,8 +772,8 @@ import { codeSchema } from '../data/homepage'
   .flow-storage-item {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 9px;
+    gap: 6px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--color-text-secondary);
   }
@@ -785,9 +785,9 @@ import { codeSchema } from '../data/homepage'
   }
 
   .flow-storage-icon {
-    width: 22px;
-    height: 22px;
-    padding: 3px;
+    width: 26px;
+    height: 26px;
+    padding: 4px;
     border-radius: 6px;
     border: 1px solid var(--color-border);
     background: var(--color-surface-secondary);

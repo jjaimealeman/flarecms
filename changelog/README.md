@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [6a7c558 - Scale Up Bento Tiles and Fix Font Sizes](6a7c558_scale-up-bento-tiles-fix-font-sizes.md) [UI] [STYLING] [COMPONENTS]
 - [44931be - Animated Bento Tiles: Plugin Scroll, Orbit Stack, Request Flow](44931be_animated-bento-tiles-plugin-orbit-request-flow.md) [ANIMATION] [CSS] [HOMEPAGE] [BENTO] [UX]
 - [fb2c385 - Homepage Redesign + Design System Foundation](fb2c385_homepage-redesign-design-system-foundation.md) [FRONTEND] [STYLING] [UI] [COMPONENTS] [DEPENDENCIES] [FEATURE]
 - [3f27ab6 - Frontend Redesign Notes and Showcase Planning](3f27ab6_add-frontend-redesign-notes-and-showcase-planning-.md) [DOCUMENTATION] [PLANNING]
