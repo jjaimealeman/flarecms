@@ -24,6 +24,9 @@ const currentPath = Astro.url.pathname;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <SEO title={title} description={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Plausible Analytics -->
+    <script defer data-domain="flarecms.dev" src="https://stats.915websites.com/js/script.hash.outbound-links.pageview-props.tagged-events.js"></script>
+    <script is:inline>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
     <!-- Theme: prevent FOUC -->
     <script is:inline>
       (function() {
