@@ -36,9 +36,9 @@ export async function isRegistrationEnabled(db: D1Database): Promise<boolean> {
       const enabled = settings?.registration?.enabled
       return enabled !== false && enabled !== 0
     }
-    return true // Default to enabled if no settings
+    return false // Default to disabled if no settings (secure by default)
   } catch {
-    return true // Default to enabled on error
+    return false // Default to disabled on error (secure by default)
   }
 }
 
