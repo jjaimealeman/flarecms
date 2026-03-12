@@ -815,13 +815,18 @@ userRoutes.get('/users/:id/edit', async (c) => {
       }), 404)
     }
 
-    // Get user profile data
-    const profileStmt = db.prepare(`
-      SELECT display_name, bio, company, job_title, website, location, date_of_birth
-      FROM user_profiles
-      WHERE user_id = ?
-    `)
-    const profileData = await profileStmt.bind(userId).first() as any
+    // Get user profile data (table may not exist in older installs)
+    let profileData: any = null
+    try {
+      const profileStmt = db.prepare(`
+        SELECT display_name, bio, company, job_title, website, location, date_of_birth
+        FROM user_profiles
+        WHERE user_id = ?
+      `)
+      profileData = await profileStmt.bind(userId).first()
+    } catch {
+      // user_profiles table may not exist yet — gracefully skip
+    }
 
     // Convert profile to UserProfileData interface
     const profile: UserProfileData | undefined = profileData ? {
