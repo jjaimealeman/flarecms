@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [1e93118 - Fix Missing Tables, Disable Registration, Security Hardening Plan](1e93118_fix-missing-tables-and-registration-security.md) [BUG_FIX] [DATABASE] [SECURITY]
 - [6a7c558 - Scale Up Bento Tiles and Fix Font Sizes](6a7c558_scale-up-bento-tiles-fix-font-sizes.md) [UI] [STYLING] [COMPONENTS]
 - [44931be - Animated Bento Tiles: Plugin Scroll, Orbit Stack, Request Flow](44931be_animated-bento-tiles-plugin-orbit-request-flow.md) [ANIMATION] [CSS] [HOMEPAGE] [BENTO] [UX]
 - [fb2c385 - Homepage Redesign + Design System Foundation](fb2c385_homepage-redesign-design-system-foundation.md) [FRONTEND] [STYLING] [UI] [COMPONENTS] [DEPENDENCIES] [FEATURE]
