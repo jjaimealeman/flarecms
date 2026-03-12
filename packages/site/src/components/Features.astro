@@ -2,9 +2,9 @@
 import { codeSchema } from '../data/homepage'
 ---
 
-<section class="py-24">
+<section class="py-16">
   <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16">
+    <div class="text-center mb-12">
       <span class="text-xs text-cyan-400 uppercase tracking-widest font-medium">Why Flare CMS</span>
       <h2 class="mt-3 text-3xl sm:text-4xl font-bold tracking-tight">
         Everything you need at the edge
@@ -14,7 +14,7 @@ import { codeSchema } from '../data/homepage'
     <!-- Bento grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Admin UI screenshot (span 2 cols, tall) -->
-      <div class="md:col-span-2 md:row-span-2 rounded-2xl border border-border bg-surface-secondary overflow-hidden group">
+      <div class="md:col-span-2 md:row-span-2 rounded-2xl border border-border bg-surface-secondary overflow-hidden group" id="admin-ui-tile">
         <div class="p-6 pb-0">
           <h3 class="font-semibold text-text-primary mb-1">Built-in Admin UI</h3>
           <p class="text-sm text-text-secondary">Content management, media library, and user management out of the box.</p>
@@ -25,7 +25,7 @@ import { codeSchema } from '../data/homepage'
             loop
             muted
             playsinline
-            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity dark-only"
+            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity dark-only bento-video"
           >
             <source src="/videos/flare-demo-dark.mp4" type="video/mp4" />
           </video>
@@ -34,25 +34,208 @@ import { codeSchema } from '../data/homepage'
             loop
             muted
             playsinline
-            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity light-only hidden"
+            class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity light-only hidden bento-video"
           >
             <source src="/videos/flare-demo-light.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
 
-      <!-- Performance stat -->
-      <div class="rounded-2xl border border-border bg-surface-secondary p-8 flex flex-col items-center justify-center text-center">
-        <div class="text-5xl font-bold text-flare-500 mb-2">330+</div>
-        <div class="text-sm text-text-secondary">Edge locations worldwide</div>
-        <div class="mt-3 text-xs text-text-tertiary">Sub-50ms latency globally</div>
+      <!-- Plugin showcase (animated SVG scroll) -->
+      <div class="rounded-2xl border border-border bg-surface-secondary overflow-hidden relative group">
+        <div class="p-4 pb-2 relative z-10">
+          <h3 class="font-semibold text-text-primary text-sm">Plugin Ecosystem</h3>
+          <p class="text-[11px] text-text-tertiary mt-0.5">Extend everything</p>
+        </div>
+        <div class="relative overflow-hidden" style="height: 180px;">
+          <!-- Fade masks -->
+          <div class="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-surface-secondary to-transparent z-10 pointer-events-none"></div>
+          <div class="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-surface-secondary to-transparent z-10 pointer-events-none"></div>
+          <!-- Scrolling plugin cards -->
+          <div class="plugin-scroll-track">
+            <!-- Card: Analytics & Tracking -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">📊</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">Analytics & Tracking<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">Page views, event tracking, and visitor analytics</div>
+              <div class="plugin-tags"><span class="plugin-pill">seo</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <!-- Card: Cloudflare Turnstile -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">🛡️</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">Cloudflare Turnstile<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">CAPTCHA-free bot protection for forms</div>
+              <div class="plugin-tags"><span class="plugin-pill">security</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <!-- Card: AI Search -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">🔍</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">AI Search<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">Full-text and semantic search across collections</div>
+              <div class="plugin-tags"><span class="plugin-pill">search</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <!-- Card: OTP Login -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">🔑</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">OTP Login<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">Passwordless auth via email one-time codes</div>
+              <div class="plugin-tags"><span class="plugin-pill">security</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <!-- Card: Quill Editor -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">✍️</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">Quill Rich Text Editor<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">WYSIWYG editor with dark mode support</div>
+              <div class="plugin-tags"><span class="plugin-pill">editor</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <!-- Card: FAQ Management -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">❓</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">FAQ Management<span class="plugin-status-dot active"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">FAQ with categories, search, and custom styling</div>
+              <div class="plugin-tags"><span class="plugin-pill">content</span></div>
+            </div>
+            <!-- Duplicate set for seamless loop -->
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">📊</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">Analytics & Tracking<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">Page views, event tracking, and visitor analytics</div>
+              <div class="plugin-tags"><span class="plugin-pill">seo</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">🛡️</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">Cloudflare Turnstile<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">CAPTCHA-free bot protection for forms</div>
+              <div class="plugin-tags"><span class="plugin-pill">security</span><span class="plugin-pill">Core</span></div>
+            </div>
+            <div class="plugin-card">
+              <div class="plugin-card-header">
+                <span class="plugin-icon">🔍</span>
+                <div class="plugin-meta">
+                  <div class="plugin-name">AI Search<span class="plugin-status-dot"></span></div>
+                  <div class="plugin-version">v1.0.0 · Flare CMS Team</div>
+                </div>
+              </div>
+              <div class="plugin-desc">Full-text and semantic search across collections</div>
+              <div class="plugin-tags"><span class="plugin-pill">search</span><span class="plugin-pill">Core</span></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Zero cold starts -->
-      <div class="rounded-2xl border border-border bg-surface-secondary p-8 flex flex-col items-center justify-center text-center">
-        <div class="text-5xl font-bold text-cyan-400 mb-2">0</div>
-        <div class="text-sm text-text-secondary">Cold starts</div>
-        <div class="mt-3 text-xs text-text-tertiary">Always warm, always fast</div>
+      <!-- Edge Infrastructure Orbit -->
+      <div class="rounded-2xl border border-border bg-surface-secondary flex flex-col items-center justify-center text-center overflow-hidden relative orbit-tile" id="orbit-tile">
+        <!-- Orbit scene -->
+        <div class="orbit-scene">
+          <!-- Orbit track (visible ellipse) -->
+          <div class="orbit-track"></div>
+
+          <!-- Center: Workers/Flare hub -->
+          <div class="orbit-center">
+            <div class="orbit-center-glow"></div>
+            <svg class="orbit-center-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+          </div>
+
+          <!-- Orbiting icons wrapper -->
+          <div class="orbit-ring">
+            <!-- D1 Database (starts at 0deg) -->
+            <div class="orbit-item orbit-item-1">
+              <div class="orbit-item-inner">
+                <div class="orbit-icon orbit-icon-d1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <ellipse cx="12" cy="5" rx="8" ry="3" />
+                    <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
+                    <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
+                  </svg>
+                </div>
+                <span class="orbit-label">D1</span>
+              </div>
+            </div>
+
+            <!-- R2 Storage (starts at 120deg) -->
+            <div class="orbit-item orbit-item-2">
+              <div class="orbit-item-inner">
+                <div class="orbit-icon orbit-icon-r2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                    <path d="M12 12v9" /><path d="m8 17 4 4 4-4" />
+                  </svg>
+                </div>
+                <span class="orbit-label">R2</span>
+              </div>
+            </div>
+
+            <!-- KV Cache (starts at 240deg) -->
+            <div class="orbit-item orbit-item-3">
+              <div class="orbit-item-inner">
+                <div class="orbit-icon orbit-icon-kv">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                <span class="orbit-label">KV</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cycling definitions synced to orbit -->
+        <div class="absolute bottom-2 inset-x-0 text-center h-9">
+          <div class="orbit-def orbit-def-d1 absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500" style="opacity:0">
+            <span class="text-xs font-semibold text-amber-400">D1 Database</span>
+            <span class="text-[11px] text-text-tertiary">SQLite at the edge</span>
+          </div>
+          <div class="orbit-def orbit-def-r2 absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500" style="opacity:0">
+            <span class="text-xs font-semibold text-cyan-400">R2 Storage</span>
+            <span class="text-[11px] text-text-tertiary">S3-compatible object store</span>
+          </div>
+          <div class="orbit-def orbit-def-kv absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500" style="opacity:0">
+            <span class="text-xs font-semibold text-emerald-400">KV Cache</span>
+            <span class="text-[11px] text-text-tertiary">Global key-value storage</span>
+          </div>
+        </div>
       </div>
 
       <!-- Code snippet tile (schema definition) -->
@@ -78,38 +261,656 @@ import { codeSchema } from '../data/homepage'
         </div>
       </div>
 
-      <!-- Plugin architecture (span 2 cols) -->
-      <div class="md:col-span-2 rounded-2xl border border-border bg-surface-secondary p-8">
-        <h3 class="font-semibold text-text-primary mb-2">Plugin Architecture</h3>
-        <p class="text-sm text-text-secondary mb-6">Extend with custom fields, hooks, and middleware. Ship features as portable plugins.</p>
+      <!-- Request lifecycle flow (span 2 cols) -->
+      <div class="md:col-span-2 rounded-2xl border border-border bg-surface-secondary p-5 pb-4 overflow-hidden" id="flow-tile">
+        <h3 class="font-semibold text-text-primary mb-0.5">How a Request Flows</h3>
+        <p class="text-sm text-text-secondary mb-3">From browser to edge and back — sub-100ms at the edge.</p>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div class="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface-tertiary border border-border">
-            <svg class="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" />
-            </svg>
-            <span class="text-xs text-text-secondary font-medium">D1 Database</span>
+        <!-- Flow diagram — absolute positioned for precise dot animation
+             All node `left` values = their CENTER (translateX(-50%) in CSS)
+             Forward path line at top:30% = icon centers
+             Return path at top:85%
+             Node centers: Browser=10%, Website=35%, CMS=58%, Storage=84% -->
+        <div class="flow-scene" id="flow-scene">
+          <!-- Forward dashed line — one continuous line through all nodes -->
+          <div class="flow-line-h" style="left:10%;top:30%;width:74%"></div>
+
+          <!-- Return dashed line (bottom) -->
+          <div class="flow-line-h" style="left:10%;top:85%;width:74%"></div>
+          <!-- Vertical connectors: from icon center down to return path -->
+          <div class="flow-line-v" style="left:84%;top:30%;height:55%"></div>
+          <div class="flow-line-v" style="left:10%;top:30%;height:55%"></div>
+
+          <!-- Arrow labels — crossfade with dot direction -->
+          <span class="flow-path-label flow-label-request" style="left:47%;top:22%;transform:translateX(-50%)">request →</span>
+          <span class="flow-path-label flow-label-response" style="left:47%;top:90%;transform:translateX(-50%)">← response</span>
+
+          <!-- Nodes (left = center point) -->
+          <div class="flow-node" style="left:10%;top:6%">
+            <span class="flow-node-label">Browser</span>
+            <div class="flow-node-icon flow-icon-blue" data-step="0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <span class="flow-node-desc">You visit FlareCMS</span>
           </div>
-          <div class="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface-tertiary border border-border">
-            <svg class="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M12 12v9" /><path d="m8 17 4 4 4-4" />
-            </svg>
-            <span class="text-xs text-text-secondary font-medium">R2 Storage</span>
+
+          <div class="flow-node" style="left:35%;top:6%">
+            <span class="flow-node-label">Website</span>
+            <div class="flow-node-icon flow-icon-indigo" data-step="1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+            </div>
+            <span class="flow-node-desc">Astro renders your page</span>
           </div>
-          <div class="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface-tertiary border border-border">
-            <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <span class="text-xs text-text-secondary font-medium">KV Cache</span>
+
+          <div class="flow-node" style="left:58%;top:6%">
+            <span class="flow-node-label">CMS</span>
+            <div class="flow-node-icon flow-icon-orange" data-step="2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <span class="flow-node-desc">Workers fetches content</span>
           </div>
-          <div class="flex flex-col items-center gap-2 p-4 rounded-xl bg-surface-tertiary border border-border">
-            <svg class="w-6 h-6 text-flare-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.315 8.685a.98.98 0 0 1 .837-.276c.47.07.802.48.968.925a2.501 2.501 0 1 0 3.214-3.214c-.446-.166-.855-.497-.925-.968a.979.979 0 0 1 .276-.837l1.61-1.61a2.404 2.404 0 0 1 1.705-.707c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02z" />
-            </svg>
-            <span class="text-xs text-text-secondary font-medium">Plugins</span>
+
+          <!-- Storage group (left = center of bubble, uses translateX(-50%) too) -->
+          <div class="flow-storage-group" style="left:84%">
+            <span class="flow-node-label">Content</span>
+            <div class="flow-storage-bubble">
+              <div class="flow-storage-item">
+                <div class="flow-storage-icon flow-icon-amber" data-step="3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg>
+                </div>
+                <span>D1 <em>Database</em></span>
+              </div>
+              <div class="flow-storage-item">
+                <div class="flow-storage-icon flow-icon-cyan" data-step="3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></svg>
+                </div>
+                <span>R2 <em>Media</em></span>
+              </div>
+              <div class="flow-storage-item">
+                <div class="flow-storage-icon flow-icon-emerald" data-step="3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <span>KV <em>Cache</em></span>
+              </div>
+            </div>
+            <span class="flow-node-desc">Your data lives here</span>
           </div>
+
+          <!-- Single animated dot -->
+          <div class="flow-single-dot" id="flow-dot"></div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .plugin-scroll-track {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 12px;
+    animation: plugin-scroll 25s linear infinite;
+  }
+
+  .plugin-scroll-track:hover {
+    animation-play-state: paused;
+  }
+
+  .plugin-card {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-tertiary);
+  }
+
+  :global(.light) .plugin-card {
+    background: #fff;
+  }
+
+  .plugin-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .plugin-icon {
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-secondary);
+    border-radius: 6px;
+  }
+
+  .plugin-meta {
+    min-width: 0;
+  }
+
+  .plugin-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .plugin-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    flex-shrink: 0;
+  }
+
+  .plugin-version {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    margin-top: 1px;
+  }
+
+  .plugin-desc {
+    font-size: 10.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .plugin-tags {
+    display: flex;
+    gap: 4px;
+  }
+
+  .plugin-pill {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+  }
+
+  /* 6 original cards, each ~96px tall (card + gap). Scroll half then reset. */
+  @keyframes plugin-scroll {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(calc(-104px * 6));
+    }
+  }
+
+  /* ---- Orbit tile ---- */
+  .orbit-tile {
+    height: 100%;
+    min-height: 220px;
+  }
+
+  .orbit-scene {
+    position: relative;
+    width: 260px;
+    height: 200px;
+    margin: auto;
+  }
+
+  /* Visible elliptical track — matches orbit ring scaleY */
+  .orbit-track {
+    position: absolute;
+    inset: 5px -15px;
+    border: 1px dashed var(--color-border);
+    border-radius: 50%;
+    scale: 1 0.5;
+  }
+
+  /* Center hub */
+  .orbit-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+  }
+
+  .orbit-center-glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(246, 130, 31, 0.25) 0%, transparent 70%);
+    animation: center-pulse 3s ease-in-out infinite;
+  }
+
+  .orbit-center-icon {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    color: var(--color-flare-500);
+    filter: drop-shadow(0 0 6px rgba(246, 130, 31, 0.4));
+  }
+
+  @keyframes center-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  /* The ring that rotates all items together — scaleY squishes circle into ellipse */
+  .orbit-ring {
+    position: absolute;
+    inset: 0;
+    animation: orbit-spin 18s linear infinite;
+    transform-origin: center center;
+    scale: 1 0.5;
+  }
+
+  .orbit-tile:hover .orbit-ring,
+  .orbit-tile:hover .orbit-center-glow {
+    animation-play-state: paused;
+  }
+
+  @keyframes orbit-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Each orbiting item positioned on an elliptical path via absolute + transform */
+  .orbit-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+  }
+
+  .orbit-item-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* Each item counter-rotates to stay upright, accounting for its starting angle */
+  .orbit-item-1 {
+    transform: rotate(0deg) translateX(115px) translateY(-10px);
+  }
+  .orbit-item-1 .orbit-item-inner {
+    animation: orbit-counter-spin-0 18s linear infinite;
+  }
+
+  .orbit-item-2 {
+    transform: rotate(120deg) translateX(115px) translateY(-10px);
+  }
+  .orbit-item-2 .orbit-item-inner {
+    animation: orbit-counter-spin-120 18s linear infinite;
+  }
+
+  .orbit-item-3 {
+    transform: rotate(240deg) translateX(115px) translateY(-10px);
+  }
+  .orbit-item-3 .orbit-item-inner {
+    animation: orbit-counter-spin-240 18s linear infinite;
+  }
+
+  .orbit-tile:hover .orbit-item-inner {
+    animation-play-state: paused;
+  }
+
+  /* Counter-spin + depth: TOP of ellipse = far (small, faded), BOTTOM = near (full)
+     Items start at right (0deg). Clockwise: 90deg=bottom, 180deg=left, 270deg=top.
+     Item-0 starts 0deg:   bottom at 25%, top at 75%
+     Item-1 starts 120deg: bottom at 91.7%, top at 41.7%
+     Item-2 starts 240deg: bottom at 58.3%, top at 8.3% */
+  @keyframes orbit-counter-spin-0 {
+    0%   { transform: translate(-50%, -50%) rotate(0deg) scaleY(2) scale(0.85); opacity: 0.65; }
+    25%  { transform: translate(-50%, -50%) rotate(-90deg) scaleY(2) scale(1); opacity: 1; }
+    50%  { transform: translate(-50%, -50%) rotate(-180deg) scaleY(2) scale(0.85); opacity: 0.65; }
+    75%  { transform: translate(-50%, -50%) rotate(-270deg) scaleY(2) scale(0.7); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) rotate(-360deg) scaleY(2) scale(0.85); opacity: 0.65; }
+  }
+  @keyframes orbit-counter-spin-120 {
+    0%    { transform: translate(-50%, -50%) rotate(-120deg) scaleY(2) scale(0.95); opacity: 0.85; }
+    25%   { transform: translate(-50%, -50%) rotate(-210deg) scaleY(2) scale(0.75); opacity: 0.5; }
+    41.7% { transform: translate(-50%, -50%) rotate(-270deg) scaleY(2) scale(0.7); opacity: 0.4; }
+    66.7% { transform: translate(-50%, -50%) rotate(-360deg) scaleY(2) scale(0.9); opacity: 0.8; }
+    91.7% { transform: translate(-50%, -50%) rotate(-450deg) scaleY(2) scale(1); opacity: 1; }
+    100%  { transform: translate(-50%, -50%) rotate(-480deg) scaleY(2) scale(0.95); opacity: 0.85; }
+  }
+  @keyframes orbit-counter-spin-240 {
+    0%    { transform: translate(-50%, -50%) rotate(-240deg) scaleY(2) scale(0.75); opacity: 0.5; }
+    8.3%  { transform: translate(-50%, -50%) rotate(-270deg) scaleY(2) scale(0.7); opacity: 0.4; }
+    33.3% { transform: translate(-50%, -50%) rotate(-360deg) scaleY(2) scale(0.85); opacity: 0.65; }
+    58.3% { transform: translate(-50%, -50%) rotate(-450deg) scaleY(2) scale(1); opacity: 1; }
+    83.3% { transform: translate(-50%, -50%) rotate(-540deg) scaleY(2) scale(0.85); opacity: 0.65; }
+    100%  { transform: translate(-50%, -50%) rotate(-600deg) scaleY(2) scale(0.75); opacity: 0.5; }
+  }
+
+  .orbit-icon {
+    width: 38px;
+    height: 38px;
+    padding: 6px;
+    border-radius: 8px;
+    background: var(--color-surface-tertiary);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+  }
+
+  :global(.light) .orbit-icon {
+    background: #fff;
+  }
+
+  .orbit-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .orbit-icon-d1 {
+    color: #f59e0b;
+  }
+
+  .orbit-icon-r2 {
+    color: #22d3ee;
+  }
+
+  .orbit-icon-kv {
+    color: #34d399;
+  }
+
+  .orbit-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- Request flow diagram ---- */
+  .flow-scene {
+    position: relative;
+    height: 180px;
+  }
+
+  /* Layer 1: Lines (z-index 1), Layer 2: Dot (z-index 2), Layer 3: Nodes (z-index 3) */
+
+  /* Dashed lines — horizontal and vertical */
+  .flow-line-h, .flow-line-v {
+    position: absolute;
+    border-color: var(--color-border);
+    z-index: 1;
+  }
+
+  .flow-line-h {
+    height: 0;
+    border-top: 1.5px dashed var(--color-border);
+  }
+
+  .flow-line-v {
+    width: 0;
+    border-left: 1.5px dashed var(--color-border);
+  }
+
+  /* Path labels — crossfade synced to 8s dot loop */
+  .flow-path-label {
+    position: absolute;
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.03em;
+    z-index: 0;
+  }
+
+  /* "request →" visible during forward trip (0-38%), hidden during return */
+  .flow-label-request {
+    animation: flow-label-req 8s linear infinite;
+  }
+
+  /* "← response" visible during return trip (46-92%), hidden during forward */
+  .flow-label-response {
+    animation: flow-label-res 8s linear infinite;
+  }
+
+  @keyframes flow-label-req {
+    0%, 4% { opacity: 0; }
+    6%, 34% { opacity: 1; }
+    40%, 100% { opacity: 0; }
+  }
+
+  @keyframes flow-label-res {
+    0%, 44% { opacity: 0; }
+    50%, 86% { opacity: 1; }
+    92%, 100% { opacity: 0; }
+  }
+
+  /* Nodes */
+  .flow-node {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    z-index: 3;
+    transform: translateX(-50%);
+  }
+
+  .flow-node-icon {
+    width: 42px;
+    height: 42px;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.light) .flow-node-icon {
+    background: #fff;
+  }
+
+  .flow-node-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .flow-node-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .flow-node-desc {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+  }
+
+  /* Node icon colors */
+  .flow-icon-blue { color: #60a5fa; }
+  .flow-icon-indigo { color: #818cf8; }
+  .flow-icon-orange { color: var(--color-flare-500); }
+  .flow-icon-amber { color: #f59e0b; }
+  .flow-icon-cyan { color: #22d3ee; }
+  .flow-icon-emerald { color: #34d399; }
+
+  /* Storage group */
+  .flow-storage-group {
+    position: absolute;
+    z-index: 3;
+    /* Center horizontally on left value, vertically center on the 30% line */
+    top: 30%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .flow-storage-bubble {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    border: 1.5px dashed var(--color-border);
+    background: var(--color-surface-tertiary);
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+
+  :global(.light) .flow-storage-bubble {
+    background: rgba(255,255,255,0.7);
+  }
+
+  .flow-storage-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  .flow-storage-item em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--color-text-tertiary);
+  }
+
+  .flow-storage-icon {
+    width: 26px;
+    height: 26px;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.light) .flow-storage-icon {
+    background: #fff;
+  }
+
+  .flow-storage-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Single animated dot */
+  .flow-single-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #60a5fa;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+    z-index: 2;
+    pointer-events: none;
+    animation: flow-loop 8s linear infinite;
+  }
+
+  /* Dot travels: Browser → Website → CMS → Storage → (down) → return left → (up) → Browser
+     Percentages match the node positions */
+  @keyframes flow-loop {
+    0%   { left: 10%; top: 30%; background: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.8); }
+    12%  { left: 35%; top: 30%; background: #818cf8; box-shadow: 0 0 10px rgba(129, 140, 248, 0.8); }
+    25%  { left: 58%; top: 30%; background: var(--color-flare-500); box-shadow: 0 0 10px rgba(246, 130, 31, 0.8); }
+    38%  { left: 84%; top: 30%; background: #34d399; box-shadow: 0 0 10px rgba(52, 211, 153, 0.8); }
+    46%  { left: 84%; top: 85%; background: #22d3ee; box-shadow: 0 0 10px rgba(34, 211, 238, 0.8); }
+    80%  { left: 10%; top: 85%; }
+    92%  { left: 10%; top: 30%; background: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.8); }
+    100% { left: 10%; top: 30%; }
+  }
+
+  /* Node glow — CSS animations synced to same 8s loop as dot */
+  .flow-node-icon[data-step="0"] { animation: flow-glow-0 8s linear infinite; }
+  .flow-node-icon[data-step="1"] { animation: flow-glow-1 8s linear infinite; }
+  .flow-node-icon[data-step="2"] { animation: flow-glow-2 8s linear infinite; }
+  .flow-storage-item:nth-child(1) .flow-storage-icon { animation: flow-glow-3a 8s linear infinite; }
+  .flow-storage-item:nth-child(2) .flow-storage-icon { animation: flow-glow-3b 8s linear infinite; }
+  .flow-storage-item:nth-child(3) .flow-storage-icon { animation: flow-glow-3c 8s linear infinite; }
+  .flow-storage-bubble { animation: flow-glow-bubble 8s linear infinite; }
+
+  @keyframes flow-glow-0 {
+    0%, 8% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+    12%, 88% { box-shadow: none; transform: scale(1); }
+    92%, 100% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+  }
+  @keyframes flow-glow-1 {
+    0%, 10% { box-shadow: none; transform: scale(1); }
+    12%, 16% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+    20%, 100% { box-shadow: none; transform: scale(1); }
+  }
+  @keyframes flow-glow-2 {
+    0%, 23% { box-shadow: none; transform: scale(1); }
+    25%, 29% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+    33%, 100% { box-shadow: none; transform: scale(1); }
+  }
+  /* D1 — first to fire */
+  @keyframes flow-glow-3a {
+    0%, 36% { box-shadow: none; transform: scale(1); }
+    38%, 42% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+    46%, 100% { box-shadow: none; transform: scale(1); }
+  }
+  /* R2 — 1% later (~80ms) */
+  @keyframes flow-glow-3b {
+    0%, 37% { box-shadow: none; transform: scale(1); }
+    39%, 43% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+    47%, 100% { box-shadow: none; transform: scale(1); }
+  }
+  /* KV — 2% later (~160ms) */
+  @keyframes flow-glow-3c {
+    0%, 38% { box-shadow: none; transform: scale(1); }
+    40%, 44% { box-shadow: 0 0 14px currentColor; transform: scale(1.1); }
+    48%, 100% { box-shadow: none; transform: scale(1); }
+  }
+  @keyframes flow-glow-bubble {
+    0%, 36% { opacity: 0.6; border-color: var(--color-border); }
+    38%, 42% { opacity: 1; border-color: var(--color-text-tertiary); }
+    46%, 100% { opacity: 0.6; border-color: var(--color-border); }
+  }
+</style>
+
+<script>
+  const tile = document.getElementById('admin-ui-tile')
+  if (tile) {
+    const videos = tile.querySelectorAll('.bento-video')
+    tile.addEventListener('mouseenter', () => {
+      videos.forEach(v => (v as HTMLVideoElement).pause())
+    })
+    tile.addEventListener('mouseleave', () => {
+      videos.forEach(v => (v as HTMLVideoElement).play())
+    })
+  }
+
+  // Orbit definition labels — cycle in sync with 18s orbit
+  // D1 at bottom: 4.5s, KV at bottom: 10.5s, R2 at bottom: 16.5s
+  const defs = document.querySelectorAll('.orbit-def') as NodeListOf<HTMLElement>
+  if (defs.length === 3) {
+    const order = [0, 2, 1] // d1, kv, r2 — order they reach bottom
+    let active = -1
+
+    function showDef(idx: number) {
+      defs.forEach(d => d.style.opacity = '0')
+      defs[order[idx]].style.opacity = '1'
+      active = idx
+    }
+
+    // First label appears at 1.5s (D1 approaching bottom)
+    setTimeout(() => {
+      showDef(0)
+      setInterval(() => {
+        showDef((active + 1) % 3)
+      }, 6000)
+    }, 1500)
+  }
+</script>
