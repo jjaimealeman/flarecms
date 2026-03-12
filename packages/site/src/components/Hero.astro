@@ -30,6 +30,7 @@
       <a
         href="/docs/getting-started/quickstart"
         class="inline-flex items-center gap-2 px-7 py-3.5 bg-flare-500 hover:bg-flare-400 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-flare-500/20"
+        onclick="plausible('CTA: Quick Start', {props: {location: 'hero'}})"
       >
         Quick Start
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
@@ -124,6 +125,7 @@
     snippet.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText('git clone https://github.com/jjaimealeman/flarecms my-site')
+        window.plausible?.('Copy: Git Clone')
         const copyIcon = snippet.querySelector('.copy-icon')
         const checkIcon = snippet.querySelector('.check-icon')
         if (copyIcon && checkIcon) {

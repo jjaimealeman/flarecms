@@ -126,4 +126,15 @@ const categoryLabels: Record<string, string> = {
     )}
 
   </div>
+
+  <script is:inline>
+    document.querySelectorAll('details[data-faq-id]').forEach(function(el) {
+      el.addEventListener('toggle', function() {
+        if (el.open) {
+          var q = el.querySelector('summary span')
+          plausible('FAQ: Expanded', {props: {question: q ? q.textContent.trim() : 'unknown'}})
+        }
+      })
+    })
+  </script>
 </Layout>

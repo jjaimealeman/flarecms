@@ -353,12 +353,14 @@ const iconColorMap: Record<string, string> = {
           <a
             href="/docs/getting-started/quickstart"
             class="inline-flex items-center gap-2 px-6 py-3 bg-flare-500 hover:bg-flare-400 text-slate-950 text-sm font-semibold rounded-lg transition-colors"
+            onclick="plausible('CTA: Quick Start', {props: {location: 'features'}})"
           >
             Quick Start
           </a>
           <a
             href="https://admin.flarecms.dev"
             class="inline-flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-slate-50 text-sm font-medium rounded-lg transition-all"
+            onclick="plausible('CTA: Try Demo')"
           >
             Try the Admin Demo
           </a>

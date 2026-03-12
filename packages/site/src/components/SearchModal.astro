@@ -146,6 +146,7 @@
     modal.classList.remove('hidden')
     input.focus()
     if (mainEl) mainEl.setAttribute('inert', '')
+    window.plausible?.('Search: Opened')
     loadIndex()
     if (!input.value && searchIndex) {
       resultsContainer.innerHTML = renderPopularLinks()
