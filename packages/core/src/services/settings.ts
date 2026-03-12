@@ -16,6 +16,40 @@ export interface GeneralSettings {
   maintenanceMode: boolean
 }
 
+export interface SecuritySettings {
+  idleTimeout: number          // minutes: 0=disabled, 5,10,15,30,60,120
+  sessionDuration: number      // hours: 1,4,8,12,24,48,168(7d)
+  allowRememberMe: boolean
+  rememberMeDuration: number   // days: 7,14,30,60,90
+  maxSessions: number          // 0=unlimited, 1-10
+  idleWarningMinutes: number   // minutes before timeout to show warning: 1-10
+  minPasswordLength: number    // 6-128
+  requireUppercase: boolean
+  requireNumbers: boolean
+  requireSymbols: boolean
+  passwordExpiryDays: number   // 0=never, 30,60,90,180,365
+  maxFailedAttempts: number    // 3-20
+  lockoutDuration: number      // minutes: 5,15,30,60
+  ipWhitelist: string[]
+}
+
+export const SECURITY_DEFAULTS: SecuritySettings = {
+  idleTimeout: 30,
+  sessionDuration: 24,
+  allowRememberMe: true,
+  rememberMeDuration: 30,
+  maxSessions: 0,
+  idleWarningMinutes: 5,
+  minPasswordLength: 8,
+  requireUppercase: true,
+  requireNumbers: true,
+  requireSymbols: false,
+  passwordExpiryDays: 0,
+  maxFailedAttempts: 5,
+  lockoutDuration: 15,
+  ipWhitelist: []
+}
+
 export class SettingsService {
   constructor(private db: D1Database) {}
 
@@ -149,5 +183,53 @@ export class SettingsService {
     if (settings.maintenanceMode !== undefined) settingsToSave.maintenanceMode = settings.maintenanceMode
 
     return await this.setMultipleSettings('general', settingsToSave)
+  }
+
+  /**
+   * Get security settings with defaults
+   */
+  async getSecuritySettings(): Promise<SecuritySettings> {
+    const settings = await this.getCategorySettings('security')
+
+    return {
+      idleTimeout: settings.idleTimeout ?? SECURITY_DEFAULTS.idleTimeout,
+      sessionDuration: settings.sessionDuration ?? SECURITY_DEFAULTS.sessionDuration,
+      allowRememberMe: settings.allowRememberMe ?? SECURITY_DEFAULTS.allowRememberMe,
+      rememberMeDuration: settings.rememberMeDuration ?? SECURITY_DEFAULTS.rememberMeDuration,
+      maxSessions: settings.maxSessions ?? SECURITY_DEFAULTS.maxSessions,
+      idleWarningMinutes: settings.idleWarningMinutes ?? SECURITY_DEFAULTS.idleWarningMinutes,
+      minPasswordLength: settings.minPasswordLength ?? SECURITY_DEFAULTS.minPasswordLength,
+      requireUppercase: settings.requireUppercase ?? SECURITY_DEFAULTS.requireUppercase,
+      requireNumbers: settings.requireNumbers ?? SECURITY_DEFAULTS.requireNumbers,
+      requireSymbols: settings.requireSymbols ?? SECURITY_DEFAULTS.requireSymbols,
+      passwordExpiryDays: settings.passwordExpiryDays ?? SECURITY_DEFAULTS.passwordExpiryDays,
+      maxFailedAttempts: settings.maxFailedAttempts ?? SECURITY_DEFAULTS.maxFailedAttempts,
+      lockoutDuration: settings.lockoutDuration ?? SECURITY_DEFAULTS.lockoutDuration,
+      ipWhitelist: settings.ipWhitelist ?? SECURITY_DEFAULTS.ipWhitelist
+    }
+  }
+
+  /**
+   * Save security settings
+   */
+  async saveSecuritySettings(settings: Partial<SecuritySettings>): Promise<boolean> {
+    const settingsToSave: Record<string, any> = {}
+
+    if (settings.idleTimeout !== undefined) settingsToSave.idleTimeout = settings.idleTimeout
+    if (settings.sessionDuration !== undefined) settingsToSave.sessionDuration = settings.sessionDuration
+    if (settings.allowRememberMe !== undefined) settingsToSave.allowRememberMe = settings.allowRememberMe
+    if (settings.rememberMeDuration !== undefined) settingsToSave.rememberMeDuration = settings.rememberMeDuration
+    if (settings.maxSessions !== undefined) settingsToSave.maxSessions = settings.maxSessions
+    if (settings.idleWarningMinutes !== undefined) settingsToSave.idleWarningMinutes = settings.idleWarningMinutes
+    if (settings.minPasswordLength !== undefined) settingsToSave.minPasswordLength = settings.minPasswordLength
+    if (settings.requireUppercase !== undefined) settingsToSave.requireUppercase = settings.requireUppercase
+    if (settings.requireNumbers !== undefined) settingsToSave.requireNumbers = settings.requireNumbers
+    if (settings.requireSymbols !== undefined) settingsToSave.requireSymbols = settings.requireSymbols
+    if (settings.passwordExpiryDays !== undefined) settingsToSave.passwordExpiryDays = settings.passwordExpiryDays
+    if (settings.maxFailedAttempts !== undefined) settingsToSave.maxFailedAttempts = settings.maxFailedAttempts
+    if (settings.lockoutDuration !== undefined) settingsToSave.lockoutDuration = settings.lockoutDuration
+    if (settings.ipWhitelist !== undefined) settingsToSave.ipWhitelist = settings.ipWhitelist
+
+    return await this.setMultipleSettings('security', settingsToSave)
   }
 }
