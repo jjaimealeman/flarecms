@@ -287,7 +287,7 @@ export const requireRole = (requiredRole: string | string[]) => {
       // Check if this is a browser request (HTML accept header)
       const acceptHeader = c.req.header('Accept') || ''
       if (acceptHeader.includes('text/html')) {
-        return c.redirect('/auth/login?error=You do not have permission to access this area')
+        return c.redirect('/admin?error=You do not have permission to access this area')
       }
       return c.json({ error: 'Insufficient permissions' }, 403)
     }

@@ -509,6 +509,24 @@ export function renderAdminLayoutCatalyst(
       }, 5000);
     }
 
+    // Show URL-based notifications (e.g. from requireRole redirect)
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const error = params.get('error');
+      const message = params.get('message');
+      const type = params.get('type') || (error ? 'error' : 'success');
+      const text = error || message;
+      if (text) {
+        showNotification(text, type);
+        // Clean up URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('error');
+        url.searchParams.delete('message');
+        url.searchParams.delete('type');
+        window.history.replaceState({}, '', url.pathname + url.hash);
+      }
+    })();
+
     // Dark mode toggle
     function toggleDarkMode() {
       document.documentElement.classList.toggle('dark');
