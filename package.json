@@ -13,7 +13,9 @@
     "deploy:all": "echo '⚠️  Deploy via CI/CD: merge develop → main, then git push. GitHub Actions handles the rest.'",
     "dev:cms": "echo 'Run wrangler dev in packages/cms/ tmux pane'",
     "dev:site": "echo 'Run pnpm dev in packages/site/ tmux pane'",
-    "test": "pnpm --filter @flare-cms/core test"
+    "test": "pnpm --filter @flare-cms/core test",
+    "unlighthouse:run": "pnpm dlx unlighthouse-ci@0.17.2 --site https://flarecms.dev --build-static",
+    "unlighthouse:serve": "npx sirv-cli ./.unlighthouse"
   },
   "engines": {
     "node": ">=18.0.0"
