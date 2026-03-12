@@ -46,14 +46,19 @@ authRoutes.get('/login', async (c) => {
   const error = c.req.query('error')
   const message = c.req.query('message')
   
+  const db = c.env.DB
+
+  // Check if registration is enabled
+  const registrationEnabled = await isRegistrationEnabled(db)
+
   const pageData: LoginPageData = {
     error: error || undefined,
     message: message || undefined,
-    version: c.get('appVersion')
+    version: c.get('appVersion'),
+    registrationEnabled
   }
-  
+
   // Check if demo login plugin is active
-  const db = c.env.DB
   let demoLoginActive = false
   try {
     const plugin = await db.prepare('SELECT * FROM plugins WHERE id = ? AND status = ?')

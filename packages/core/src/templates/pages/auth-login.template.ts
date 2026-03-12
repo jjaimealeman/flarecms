@@ -4,6 +4,7 @@ export interface LoginPageData {
   error?: string
   message?: string
   version?: string
+  registrationEnabled?: boolean
 }
 
 export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = false): string {
@@ -115,6 +116,7 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
               </button>
             </form>
 
+            ${data.registrationEnabled ? `
             <!-- Links -->
             <div class="mt-6 text-center">
               <p class="text-sm text-zinc-400">
@@ -122,6 +124,7 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
                 <a href="/auth/register" class="font-semibold text-white hover:text-zinc-300 transition-colors">Create one here</a>
               </p>
             </div>
+            ` : ''}
           </div>
 
           <!-- Version -->
