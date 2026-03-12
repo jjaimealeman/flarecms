@@ -509,6 +509,24 @@ export function renderAdminLayoutCatalyst(
       }, 5000);
     }
 
+    // Show URL-based notifications (e.g. from requireRole redirect)
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const error = params.get('error');
+      const message = params.get('message');
+      const type = params.get('type') || (error ? 'error' : 'success');
+      const text = error || message;
+      if (text) {
+        showNotification(text, type);
+        // Clean up URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete('error');
+        url.searchParams.delete('message');
+        url.searchParams.delete('type');
+        window.history.replaceState({}, '', url.pathname + url.hash);
+      }
+    })();
+
     // Dark mode toggle
     function toggleDarkMode() {
       document.documentElement.classList.toggle('dark');
@@ -863,6 +881,11 @@ function renderCatalystSidebar(
     currentPath === '/admin' || currentPath === '/admin/dashboard'
   )
 
+  // --- Role-based visibility ---
+  const userRole = user?.role || 'viewer'
+  const isAdmin = userRole === 'admin'
+  const isEditorOrAbove = isAdmin || userRole === 'editor'
+
   // CONTENT section: dynamic collections + Content (all) + Media
   const hasCollections = dynamicMenuItems && dynamicMenuItems.length > 0
   const collectionItems = hasCollections
@@ -883,19 +906,27 @@ function renderCatalystSidebar(
     isActivePath('/admin/analytics')
   )
 
-  // SYSTEM section
-  const systemItems = [
-    { label: 'Users', path: '/admin/users', iconHtml: icon(Users, 'h-5 w-5') },
-    { label: 'Collections', path: '/admin/collections', iconHtml: icon(Layers, 'h-5 w-5') },
-    { label: 'Forms', path: '/admin/forms', iconHtml: icon(ClipboardList, 'h-5 w-5') },
-    { label: 'FAQs', path: '/admin/faq', iconHtml: icon(CircleHelp, 'h-5 w-5') },
-    { label: 'Plugins', path: '/admin/plugins', iconHtml: icon(Plug, 'h-5 w-5') },
-    { label: 'Cache', path: '/admin/cache', iconHtml: icon(HardDrive, 'h-5 w-5') },
-    { label: 'Migrations', path: '/admin/schema-migrations', iconHtml: icon(Database, 'h-5 w-5') },
-  ].map(item => navLink(item, isActivePath(item.path))).join('')
+  // SYSTEM section — filtered by role
+  // Admin-only: Users, Collections, Plugins, Cache, Migrations
+  // Editor+: Forms, FAQs
+  const systemItemsList: Array<{ label: string; path: string; iconHtml: string }> = []
+  if (isAdmin) {
+    systemItemsList.push({ label: 'Users', path: '/admin/users', iconHtml: icon(Users, 'h-5 w-5') })
+    systemItemsList.push({ label: 'Collections', path: '/admin/collections', iconHtml: icon(Layers, 'h-5 w-5') })
+  }
+  if (isEditorOrAbove) {
+    systemItemsList.push({ label: 'Forms', path: '/admin/forms', iconHtml: icon(ClipboardList, 'h-5 w-5') })
+    systemItemsList.push({ label: 'FAQs', path: '/admin/faq', iconHtml: icon(CircleHelp, 'h-5 w-5') })
+  }
+  if (isAdmin) {
+    systemItemsList.push({ label: 'Plugins', path: '/admin/plugins', iconHtml: icon(Plug, 'h-5 w-5') })
+    systemItemsList.push({ label: 'Cache', path: '/admin/cache', iconHtml: icon(HardDrive, 'h-5 w-5') })
+    systemItemsList.push({ label: 'Migrations', path: '/admin/schema-migrations', iconHtml: icon(Database, 'h-5 w-5') })
+  }
+  const systemItems = systemItemsList.map(item => navLink(item, isActivePath(item.path))).join('')
 
-  // Deploy button (pinned bottom, above settings)
-  const deployItem = `
+  // Deploy button (admin only, pinned bottom)
+  const deployItem = isAdmin ? `
     <button
       onclick="openDeployModal()"
       class="relative flex w-full items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-white/5 sm:text-sm/5 transition-colors"
@@ -904,13 +935,13 @@ function renderCatalystSidebar(
       <span>Deploy</span>
       <span id="deploy-badge" class="ml-auto hidden min-w-[20px] rounded-full bg-blue-600 px-1.5 py-0.5 text-center text-[10px] font-bold text-white"></span>
     </button>
-  `
+  ` : ''
 
-  // Settings (pinned bottom)
-  const settingsItem = navLink(
+  // Settings (admin only, pinned bottom)
+  const settingsItem = isAdmin ? navLink(
     { label: 'Settings', path: '/admin/settings', iconHtml: icon(Settings, 'h-5 w-5') },
     isActivePath('/admin/settings')
-  )
+  ) : ''
 
   // Close button for mobile
   const closeButton = isMobile ? `
@@ -955,17 +986,21 @@ function renderCatalystSidebar(
         </div>
 
         <!-- SYSTEM -->
-        ${sectionHeader('System')}
-        <div class="flex flex-col gap-0.5">
-          ${systemItems}
-        </div>
+        ${systemItemsList.length > 0 ? `
+          ${sectionHeader('System')}
+          <div class="flex flex-col gap-0.5">
+            ${systemItems}
+          </div>
+        ` : ''}
       </div>
 
-      <!-- Deploy + Settings (Bottom) -->
-      <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800 flex flex-col gap-0.5">
-        ${deployItem}
-        ${settingsItem}
-      </div>
+      <!-- Deploy + Settings (Bottom, admin only) -->
+      ${isAdmin ? `
+        <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800 flex flex-col gap-0.5">
+          ${deployItem}
+          ${settingsItem}
+        </div>
+      ` : ''}
 
 
       <!-- Sidebar Footer (User) -->

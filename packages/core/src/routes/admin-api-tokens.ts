@@ -6,7 +6,7 @@
  */
 
 import { Hono } from 'hono'
-import { requireAuth } from '../middleware'
+import { requireAuth, requireRole } from '../middleware'
 import { createApiToken, listApiTokens, revokeApiToken } from '../services/api-tokens'
 import { renderAdminLayoutCatalyst } from '../templates/layouts/admin-layout-catalyst.template'
 import type { Bindings, Variables } from '../app'
@@ -15,6 +15,7 @@ export const adminApiTokensRoutes = new Hono<{ Bindings: Bindings; Variables: Va
 
 // Apply authentication middleware — only admins can manage tokens
 adminApiTokensRoutes.use('*', requireAuth())
+adminApiTokensRoutes.use('*', requireRole('admin'))
 
 // ============================================================================
 // Helper: format timestamp
