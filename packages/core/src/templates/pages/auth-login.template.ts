@@ -24,6 +24,11 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
           theme: {
             extend: {
               colors: {
+                flare: {
+                  400: '#fb923c',
+                  500: '#f6821f',
+                  600: '#ea680c'
+                },
                 error: '#ef4444'
               }
             }
@@ -31,15 +36,22 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
         }
       </script>
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
         body {
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+        }
+
+        .login-card {
+          background: linear-gradient(135deg, rgba(246,130,31,0.06) 0%, rgba(24,24,27,1) 50%, rgba(34,211,238,0.04) 100%);
         }
       </style>
     </head>
     <body class="h-full bg-zinc-950">
-      <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <!-- Dot grid background -->
+      <div class="fixed inset-0 bg-[linear-gradient(rgba(246,130,31,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(246,130,31,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+
+      <div class="relative flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <!-- Logo Section -->
         <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
           <div class="mx-auto w-64 mb-8">
@@ -59,78 +71,84 @@ export function renderLoginPage(data: LoginPageData, demoLoginActive: boolean = 
 
         <!-- Form Container -->
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div class="bg-zinc-900 shadow-sm ring-1 ring-white/10 rounded-xl px-6 py-8 sm:px-10">
-            <!-- Alerts -->
-            ${data.error ? `<div class="mb-6">${renderAlert({ type: 'error', message: data.error })}</div>` : ''}
-            ${data.message ? `<div class="mb-6">${renderAlert({ type: 'success', message: data.message })}</div>` : ''}
+          <div class="relative">
+            <!-- Glow effect behind card -->
+            <div class="absolute -inset-1 rounded-2xl bg-gradient-to-b from-flare-500/20 via-transparent to-cyan-500/10 blur-xl"></div>
 
-            <!-- Form Response (HTMX target) -->
-            <div id="form-response" class="mb-6"></div>
+            <div class="login-card relative rounded-xl border border-white/10 px-6 py-8 sm:px-10 shadow-2xl shadow-flare-500/5">
+              <!-- Alerts -->
+              ${data.error ? `<div class="mb-6">${renderAlert({ type: 'error', message: data.error })}</div>` : ''}
+              ${data.message ? `<div class="mb-6">${renderAlert({ type: 'success', message: data.message })}</div>` : ''}
 
-            <!-- Form -->
-            <form
-              id="login-form"
-              hx-post="/auth/login/form"
-              hx-target="#form-response"
-              hx-swap="innerHTML"
-              class="space-y-6"
-            >
-              <!-- Email -->
-              <div>
-                <label for="email" class="block text-sm font-medium text-white mb-2">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autocomplete="email"
-                  required
-                  class="w-full rounded-lg bg-zinc-800 px-3 py-2 text-sm text-white shadow-sm ring-1 ring-inset ring-white/10 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-white transition-shadow"
-                  placeholder="Enter your email"
-                >
-              </div>
+              <!-- Form Response (HTMX target) -->
+              <div id="form-response" class="mb-6"></div>
 
-              <!-- Password -->
-              <div>
-                <label for="password" class="block text-sm font-medium text-white mb-2">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autocomplete="current-password"
-                  required
-                  class="w-full rounded-lg bg-zinc-800 px-3 py-2 text-sm text-white shadow-sm ring-1 ring-inset ring-white/10 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-white transition-shadow"
-                  placeholder="Enter your password"
-                >
-              </div>
-
-              <!-- Submit Button -->
-              <button
-                type="submit"
-                class="w-full rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-900 transition-colors"
+              <!-- Form -->
+              <form
+                id="login-form"
+                hx-post="/auth/login/form"
+                hx-target="#form-response"
+                hx-swap="innerHTML"
+                class="space-y-6"
               >
-                Sign In
-              </button>
-            </form>
+                <!-- Email -->
+                <div>
+                  <label for="email" class="block text-sm font-medium text-zinc-300 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autocomplete="email"
+                    required
+                    autofocus
+                    class="w-full rounded-lg bg-zinc-900/80 px-3.5 py-2.5 text-sm text-white shadow-sm border border-white/10 placeholder:text-zinc-500 focus:outline-none focus:border-flare-500/50 focus:ring-1 focus:ring-flare-500/50 transition-all"
+                    placeholder="Enter your email"
+                  >
+                </div>
 
-            ${data.registrationEnabled ? `
-            <!-- Links -->
-            <div class="mt-6 text-center">
-              <p class="text-sm text-zinc-400">
-                Don't have an account?
-                <a href="/auth/register" class="font-semibold text-white hover:text-zinc-300 transition-colors">Create one here</a>
-              </p>
+                <!-- Password -->
+                <div>
+                  <label for="password" class="block text-sm font-medium text-zinc-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                    class="w-full rounded-lg bg-zinc-900/80 px-3.5 py-2.5 text-sm text-white shadow-sm border border-white/10 placeholder:text-zinc-500 focus:outline-none focus:border-flare-500/50 focus:ring-1 focus:ring-flare-500/50 transition-all"
+                    placeholder="Enter your password"
+                  >
+                </div>
+
+                <!-- Submit Button -->
+                <button
+                  type="submit"
+                  class="w-full rounded-lg bg-gradient-to-r from-flare-500 to-flare-400 px-4 py-2.5 text-sm font-semibold text-white hover:from-flare-600 hover:to-flare-500 focus:outline-none focus:ring-2 focus:ring-flare-500 focus:ring-offset-2 focus:ring-offset-zinc-950 transition-all shadow-lg shadow-flare-500/25"
+                >
+                  Sign In
+                </button>
+              </form>
+
+              ${data.registrationEnabled ? `
+              <!-- Links -->
+              <div class="mt-6 text-center">
+                <p class="text-sm text-zinc-400">
+                  Don't have an account?
+                  <a href="/auth/register" class="font-semibold text-flare-400 hover:text-flare-300 transition-colors">Create one here</a>
+                </p>
+              </div>
+              ` : ''}
             </div>
-            ` : ''}
           </div>
 
           <!-- Version -->
           <div class="mt-6 text-center">
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-blue-500/10 text-blue-400 ring-1 ring-inset ring-blue-500/20">
-              v${data.version || '0.1.0'}
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-flare-500/10 text-flare-400 ring-1 ring-inset ring-flare-500/20">
+              ${data.version || 'v0.1.0'}
             </span>
           </div>
         </div>

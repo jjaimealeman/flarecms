@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [71c7911 - Restyle Login and Register Pages to Match Homepage Design](71c7911_restyle-login-register-pages.md) [UI] [STYLING] [FRONTEND]
 - [966154d - Secure Registration Default and Hide Link When Disabled](966154d_secure-registration-default-hide-link.md) [SECURITY] [BACKEND] [UI] [CRITICAL]
 - [1e93118 - Fix Missing Tables, Disable Registration, Security Hardening Plan](1e93118_fix-missing-tables-and-registration-security.md) [BUG_FIX] [DATABASE] [SECURITY]
 - [6a7c558 - Scale Up Bento Tiles and Fix Font Sizes](6a7c558_scale-up-bento-tiles-fix-font-sizes.md) [UI] [STYLING] [COMPONENTS]
