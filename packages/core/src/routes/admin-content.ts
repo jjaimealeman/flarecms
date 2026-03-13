@@ -535,14 +535,14 @@ adminContentRoutes.get('/new', async (c) => {
       const db = c.env.DB
       const collectionsStmt = db.prepare('SELECT id, name, display_name, description FROM collections WHERE is_active = 1 ORDER BY display_name')
       const { results } = await collectionsStmt.all()
-      
+
       const collections = (results || []).map((row: any) => ({
         id: row.id,
         name: row.name,
         display_name: row.display_name,
         description: row.description
       }))
-      
+
       // Deduplicate collections by name
       const seenNames = new Set<string>()
       const uniqueCollections = collections.filter(c => {
@@ -550,6 +550,18 @@ adminContentRoutes.get('/new', async (c) => {
         seenNames.add(c.name)
         return true
       })
+
+      // Filter collections by RBAC permissions (non-admin users only see collections they can create in)
+      let filteredCollections = uniqueCollections
+      if (user && user.role !== 'admin') {
+        const userPerms = await getCollectionPermissions(db, user.userId)
+        const createableIds = new Set(
+          userPerms
+            .filter(p => p.role === 'editor' || p.role === 'author')
+            .map(p => p.collectionId)
+        )
+        filteredCollections = uniqueCollections.filter(c => createableIds.has(c.id))
+      }
 
       // Render collection selection using admin layout
       const pageContent = `
@@ -559,8 +571,15 @@ adminContentRoutes.get('/new', async (c) => {
             <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Select a collection to create content in:</p>
           </div>
 
+          ${filteredCollections.length === 0 ? `
+            <div class="text-center py-12">
+              <p class="text-sm text-zinc-500 dark:text-zinc-400">You don't have permission to create content in any collection.</p>
+              <a href="/admin/content" class="mt-4 inline-block text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500">← Back to Content List</a>
+            </div>
+          ` : ''}
+
           <div class="grid gap-4">
-            ${uniqueCollections.map(collection => `
+            ${filteredCollections.map(collection => `
               <a href="/admin/content/new?collection=${collection.id}"
                  class="block p-6 bg-white dark:bg-zinc-900 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ring-1 ring-zinc-950/5 dark:ring-white/10 shadow-sm">
                 <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-1">${collection.display_name}</h3>
@@ -584,10 +603,25 @@ adminContentRoutes.get('/new', async (c) => {
         content: pageContent,
       }))
     }
-    
+
     const db = c.env.DB
+
+    // RBAC: check create permission on this collection
+    if (user && user.role !== 'admin') {
+      const canCreate = await checkCollectionPermission(db, user.userId, user.role, collectionId, 'create')
+      if (!canCreate) {
+        const formData: ContentFormData = {
+          collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
+          fields: [],
+          error: 'You do not have permission to create content in this collection.',
+          user: { name: user.email, email: user.email, role: user.role }
+        }
+        return c.html(renderContentFormPage(formData))
+      }
+    }
+
     const collection = await getCollection(db, collectionId)
-    
+
     if (!collection) {
       const formData: ContentFormData = {
         collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
@@ -719,7 +753,34 @@ adminContentRoutes.get('/:id/edit', async (c) => {
       }
       return c.html(renderContentFormPage(formData))
     }
-    
+
+    // RBAC: check edit permission on this collection
+    if (user && user.role !== 'admin') {
+      const canEdit = await checkCollectionPermission(db, user.userId, user.role, content.collection_id, 'edit')
+      if (!canEdit) {
+        const formData: ContentFormData = {
+          collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
+          fields: [],
+          error: 'You do not have permission to edit content in this collection.',
+          user: { name: user.email, email: user.email, role: user.role }
+        }
+        return c.html(renderContentFormPage(formData))
+      }
+      // Author role: can only edit their own content
+      const permRow = await db.prepare(
+        'SELECT role FROM user_collection_permissions WHERE user_id = ? AND collection_id = ?'
+      ).bind(user.userId, content.collection_id).first<{ role: string }>()
+      if (permRow && !isAuthorAllowedToEdit(permRow.role, content.author_id, user.userId)) {
+        const formData: ContentFormData = {
+          collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
+          fields: [],
+          error: 'Authors can only edit their own content.',
+          user: { name: user.email, email: user.email, role: user.role }
+        }
+        return c.html(renderContentFormPage(formData))
+      }
+    }
+
     const collection = {
       id: content.collection_id,
       name: content.collection_name,
