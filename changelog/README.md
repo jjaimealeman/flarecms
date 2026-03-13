@@ -4,6 +4,7 @@ Dev changelog entries for Flare CMS monorepo.
 
 ## March 2026
 
+- [1273564 - Fix CSP Blocking Login Page CDNs](1273564_fix-csp-allow-login-page-cdns.md) [SECURITY] [BUG_FIX] [CONFIG]
 - [73b98b6 - Content RBAC UI Gates for Collection Picker, Create, and Edit Forms](73b98b6_content-rbac-ui-gates.md) [SECURITY] [BACKEND] [ROUTING] [FEATURE]
 - [71c7911 - Restyle Login and Register Pages to Match Homepage Design](71c7911_restyle-login-register-pages.md) [UI] [STYLING] [FRONTEND]
 - [966154d - Secure Registration Default and Hide Link When Disabled](966154d_secure-registration-default-hide-link.md) [SECURITY] [BACKEND] [UI] [CRITICAL]
