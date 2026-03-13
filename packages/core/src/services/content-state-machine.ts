@@ -11,6 +11,7 @@ export const VALID_TRANSITIONS: Record<string, string[]> = {
   draft: ['published', 'archived'],
   published: ['draft', 'archived'],
   archived: ['draft'],
+  deleted: ['draft'],
 }
 
 /**

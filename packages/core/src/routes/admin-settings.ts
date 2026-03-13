@@ -56,15 +56,20 @@ function getMockSettings(user: any) {
       customCSS: ''
     },
     security: {
-      twoFactorEnabled: false,
-      sessionTimeout: 30,
-      passwordRequirements: {
-        minLength: 8,
-        requireUppercase: true,
-        requireNumbers: true,
-        requireSymbols: false
-      },
-      ipWhitelist: []
+      idleTimeout: 30,
+      sessionDuration: 24,
+      allowRememberMe: true,
+      rememberMeDuration: 30,
+      maxSessions: 0,
+      idleWarningMinutes: 5,
+      minPasswordLength: 8,
+      requireUppercase: true,
+      requireNumbers: true,
+      requireSymbols: false,
+      passwordExpiryDays: 0,
+      maxFailedAttempts: 5,
+      lockoutDuration: 15,
+      ipWhitelist: [] as string[]
     },
     notifications: {
       emailNotifications: true,
@@ -144,15 +149,23 @@ adminSettingsRoutes.get('/appearance', (c) => {
 })
 
 // Security settings
-adminSettingsRoutes.get('/security', (c) => {
+adminSettingsRoutes.get('/security', async (c) => {
   const user = c.get('user')
+  const db = c.env.DB
+  const settingsService = new SettingsService(db)
+
+  const securitySettings = await settingsService.getSecuritySettings()
+
+  const mockSettings = getMockSettings(user)
+  mockSettings.security = securitySettings
+
   const pageData: SettingsPageData = {
     user: user ? {
       name: user.email,
       email: user.email,
       role: user.role
     } : undefined,
-    settings: getMockSettings(user),
+    settings: mockSettings,
     activeTab: 'security',
     version: c.get('appVersion')
   }
@@ -481,7 +494,8 @@ adminSettingsRoutes.post('/general', async (c) => {
       adminEmail: formData.get('adminEmail') as string,
       timezone: formData.get('timezone') as string,
       language: formData.get('language') as string,
-      maintenanceMode: formData.get('maintenanceMode') === 'true'
+      maintenanceMode: formData.get('maintenanceMode') === 'true',
+      trashRetentionDays: parseInt(formData.get('trashRetentionDays') as string, 10) || 30
     }
 
     // Validate required fields
@@ -512,6 +526,52 @@ adminSettingsRoutes.post('/general', async (c) => {
       success: false,
       error: 'Failed to save settings. Please try again.'
     }, 500)
+  }
+})
+
+// Save security settings
+adminSettingsRoutes.post('/security', async (c) => {
+  try {
+    const user = c.get('user')
+
+    if (!user || user.role !== 'admin') {
+      return c.json({ success: false, error: 'Unauthorized. Admin access required.' }, 403)
+    }
+
+    const formData = await c.req.formData()
+    const db = c.env.DB
+    const settingsService = new SettingsService(db)
+
+    const ipRaw = (formData.get('ipWhitelist') as string) || ''
+    const ipList = ipRaw.split('\n').map(ip => ip.trim()).filter(Boolean)
+
+    const settings = {
+      idleTimeout: parseInt(formData.get('idleTimeout') as string, 10) || 0,
+      sessionDuration: parseInt(formData.get('sessionDuration') as string, 10) || 24,
+      allowRememberMe: formData.get('allowRememberMe') === 'true',
+      rememberMeDuration: parseInt(formData.get('rememberMeDuration') as string, 10) || 30,
+      maxSessions: parseInt(formData.get('maxSessions') as string, 10) || 0,
+      idleWarningMinutes: parseInt(formData.get('idleWarningMinutes') as string, 10) || 5,
+      minPasswordLength: Math.max(6, Math.min(128, parseInt(formData.get('minPasswordLength') as string, 10) || 8)),
+      requireUppercase: formData.get('requireUppercase') === 'true',
+      requireNumbers: formData.get('requireNumbers') === 'true',
+      requireSymbols: formData.get('requireSymbols') === 'true',
+      passwordExpiryDays: parseInt(formData.get('passwordExpiryDays') as string, 10) || 0,
+      maxFailedAttempts: parseInt(formData.get('maxFailedAttempts') as string, 10) || 5,
+      lockoutDuration: parseInt(formData.get('lockoutDuration') as string, 10) || 15,
+      ipWhitelist: ipList
+    }
+
+    const success = await settingsService.saveSecuritySettings(settings)
+
+    if (success) {
+      return c.json({ success: true, message: 'Security settings saved successfully!' })
+    } else {
+      return c.json({ success: false, error: 'Failed to save settings' }, 500)
+    }
+  } catch (error) {
+    console.error('Error saving security settings:', error)
+    return c.json({ success: false, error: 'Failed to save settings. Please try again.' }, 500)
   }
 })
 

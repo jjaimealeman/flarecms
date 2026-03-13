@@ -283,7 +283,8 @@ describe('SettingsService', () => {
         adminEmail: 'admin@example.com',
         timezone: 'UTC',
         language: 'en',
-        maintenanceMode: false
+        maintenanceMode: false,
+        trashRetentionDays: 30
       })
     })
 
@@ -303,7 +304,8 @@ describe('SettingsService', () => {
         adminEmail: 'admin@example.com',
         timezone: 'UTC',
         language: 'fr',
-        maintenanceMode: false
+        maintenanceMode: false,
+        trashRetentionDays: 30
       })
     })
 
@@ -347,7 +349,8 @@ describe('SettingsService', () => {
         adminEmail: 'admin@test.com',
         timezone: 'America/New_York',
         language: 'de',
-        maintenanceMode: true
+        maintenanceMode: true,
+        trashRetentionDays: 30
       })
     })
   })

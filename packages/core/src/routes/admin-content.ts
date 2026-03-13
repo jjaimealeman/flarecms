@@ -13,8 +13,38 @@ import { logStatusChange, logContentEdit, computeFieldDiff } from '../services/a
 import type { Bindings, Variables } from '../app'
 import { PluginService } from '../services/plugin-service'
 import { getBlocksFieldConfig, parseBlocksValue } from '../utils/blocks'
+import { SettingsService } from '../services/settings'
 
 const adminContentRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+/**
+ * Auto-purge trash items past their retention period.
+ * Cascades to content_versions and workflow_history.
+ */
+async function purgeExpiredTrash(db: D1Database): Promise<void> {
+  const settingsService = new SettingsService(db)
+  const retentionDays = await settingsService.getSetting('general', 'trashRetentionDays') ?? 30
+  if (retentionDays <= 0) return // 0 = keep forever
+
+  const cutoffMs = Date.now() - (retentionDays * 24 * 60 * 60 * 1000)
+
+  // Find expired trash items
+  const { results } = await db.prepare(
+    'SELECT id FROM content WHERE status = ? AND deleted_at IS NOT NULL AND deleted_at < ?'
+  ).bind('deleted', cutoffMs).all()
+
+  if (!results || results.length === 0) return
+
+  const ids = results.map((r: any) => r.id)
+  const placeholders = ids.map(() => '?').join(',')
+
+  // Cascade delete: children first, then content
+  await db.prepare(`DELETE FROM workflow_history WHERE content_id IN (${placeholders})`).bind(...ids).run()
+  await db.prepare(`DELETE FROM content_versions WHERE content_id IN (${placeholders})`).bind(...ids).run()
+  await db.prepare(`DELETE FROM content WHERE id IN (${placeholders})`).bind(...ids).run()
+
+  console.log(`Auto-purged ${ids.length} expired trash item(s)`)
+}
 
 // Field definition type for form processing
 interface FieldDefinition {
@@ -286,7 +316,10 @@ adminContentRoutes.get('/', async (c) => {
     const status = url.searchParams.get('status') || 'all'
     const search = url.searchParams.get('search') || ''
     const offset = (page - 1) * limit
-    
+
+    // Auto-purge expired trash (fire-and-forget, non-blocking)
+    purgeExpiredTrash(db).catch(err => console.error('Auto-purge error:', err))
+
     // Get collections — non-admin users only see collections they have permission for
     let allowedCollectionIds: string[] | null = null
     if (user && user.role !== 'admin') {
@@ -1470,14 +1503,14 @@ adminContentRoutes.post('/bulk-action', async (c) => {
     const now = Date.now()
 
     if (action === 'delete') {
-      // Soft delete by setting status to 'deleted'
+      // Soft delete by setting status to 'deleted' with timestamp
       const placeholders = ids.map(() => '?').join(',')
       const stmt = db.prepare(`
         UPDATE content
-        SET status = 'deleted', updated_at = ?
+        SET status = 'deleted', deleted_at = ?, updated_at = ?
         WHERE id IN (${placeholders})
       `)
-      await stmt.bind(now, ...ids).run()
+      await stmt.bind(now, now, ...ids).run()
     } else if (action === 'publish' || action === 'draft') {
       // Validate transitions per item and update respecting state machine
       const targetStatus = action === 'publish' ? 'published' : 'draft'
@@ -1509,6 +1542,28 @@ adminContentRoutes.post('/bulk-action', async (c) => {
         WHERE id IN (${placeholders})
       `)
       await stmt.bind(targetStatus, publishedAt, now, ...ids).run()
+    } else if (action === 'restore') {
+      // Restore from trash — admin only
+      if (user!.role !== 'admin') {
+        return c.json({ success: false, error: 'Only admins can restore content' }, 403)
+      }
+      const placeholders = ids.map(() => '?').join(',')
+      const stmt = db.prepare(`
+        UPDATE content
+        SET status = 'draft', deleted_at = NULL, updated_at = ?
+        WHERE id IN (${placeholders}) AND status = 'deleted'
+      `)
+      await stmt.bind(now, ...ids).run()
+    } else if (action === 'purge') {
+      // Permanent delete — admin only
+      if (user!.role !== 'admin') {
+        return c.json({ success: false, error: 'Only admins can permanently delete content' }, 403)
+      }
+      const placeholders = ids.map(() => '?').join(',')
+      // Cascade: delete child records first
+      await db.prepare(`DELETE FROM workflow_history WHERE content_id IN (${placeholders})`).bind(...ids).run()
+      await db.prepare(`DELETE FROM content_versions WHERE content_id IN (${placeholders})`).bind(...ids).run()
+      await db.prepare(`DELETE FROM content WHERE id IN (${placeholders}) AND status = 'deleted'`).bind(...ids).run()
     } else {
       return c.json({ success: false, error: 'Invalid action' })
     }
@@ -1559,14 +1614,14 @@ adminContentRoutes.delete('/:id', async (c) => {
       }
     }
 
-    // Soft delete by setting status to 'deleted'
+    // Soft delete by setting status to 'deleted' with timestamp
     const now = Date.now()
     const deleteStmt = db.prepare(`
       UPDATE content
-      SET status = 'deleted', updated_at = ?
+      SET status = 'deleted', deleted_at = ?, updated_at = ?
       WHERE id = ?
     `)
-    await deleteStmt.bind(now, id).run()
+    await deleteStmt.bind(now, now, id).run()
 
     // Invalidate cache
     const cache = getCacheService(CACHE_CONFIGS.content!)
@@ -1589,6 +1644,105 @@ adminContentRoutes.delete('/:id', async (c) => {
   } catch (error) {
     console.error('Delete content error:', error)
     return c.json({ success: false, error: 'Failed to delete content' }, 500)
+  }
+})
+
+// Restore content from trash
+adminContentRoutes.post('/:id/restore', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const db = c.env.DB
+    const user = c.get('user')
+
+    // Only admins can restore from trash
+    if (user!.role !== 'admin') {
+      return c.json({ success: false, error: 'Only admins can restore content' }, 403)
+    }
+
+    // Verify content exists and is deleted
+    const item = await db.prepare('SELECT id, title, collection_id FROM content WHERE id = ? AND status = ?')
+      .bind(id, 'deleted').first() as any
+
+    if (!item) {
+      return c.json({ success: false, error: 'Deleted content not found' }, 404)
+    }
+
+    // Restore to draft status, clear deleted_at
+    const now = Date.now()
+    await db.prepare(`
+      UPDATE content
+      SET status = 'draft', deleted_at = NULL, updated_at = ?
+      WHERE id = ?
+    `).bind(now, id).run()
+
+    // Invalidate cache
+    const cache = getCacheService(CACHE_CONFIGS.content!)
+    await cache.delete(cache.generateKey('content', id))
+    await cache.invalidate('content:list:*')
+
+    return c.html(`
+      <div id="content-list" hx-get="/admin/content?status=deleted" hx-trigger="load" hx-swap="outerHTML">
+        <div class="flex items-center justify-center p-8">
+          <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">"${item.title}" restored to drafts. Refreshing...</p>
+          </div>
+        </div>
+      </div>
+    `)
+  } catch (error) {
+    console.error('Restore content error:', error)
+    return c.json({ success: false, error: 'Failed to restore content' }, 500)
+  }
+})
+
+// Permanently delete content (hard delete with cascade)
+adminContentRoutes.delete('/:id/purge', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const db = c.env.DB
+    const user = c.get('user')
+
+    // Only admins can permanently delete
+    if (user!.role !== 'admin') {
+      return c.json({ success: false, error: 'Only admins can permanently delete content' }, 403)
+    }
+
+    // Verify content exists and is deleted (only purge from trash)
+    const item = await db.prepare('SELECT id, title FROM content WHERE id = ? AND status = ?')
+      .bind(id, 'deleted').first() as any
+
+    if (!item) {
+      return c.json({ success: false, error: 'Deleted content not found' }, 404)
+    }
+
+    // Cascade: delete child records first, then content
+    await db.prepare('DELETE FROM workflow_history WHERE content_id = ?').bind(id).run()
+    await db.prepare('DELETE FROM content_versions WHERE content_id = ?').bind(id).run()
+    await db.prepare('DELETE FROM content WHERE id = ?').bind(id).run()
+
+    // Invalidate cache
+    const cache = getCacheService(CACHE_CONFIGS.content!)
+    await cache.delete(cache.generateKey('content', id))
+    await cache.invalidate('content:list:*')
+
+    return c.html(`
+      <div id="content-list" hx-get="/admin/content?status=deleted" hx-trigger="load" hx-swap="outerHTML">
+        <div class="flex items-center justify-center p-8">
+          <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">"${item.title}" permanently deleted. Refreshing...</p>
+          </div>
+        </div>
+      </div>
+    `)
+  } catch (error) {
+    console.error('Purge content error:', error)
+    return c.json({ success: false, error: 'Failed to permanently delete content' }, 500)
   }
 })
 
