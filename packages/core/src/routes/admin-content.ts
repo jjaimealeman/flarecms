@@ -10,6 +10,7 @@ import { getCacheService, CACHE_CONFIGS } from '../services/cache'
 import { validateStatusTransition, isSlugLocked } from '../services/content-state-machine'
 import { checkCollectionPermission, getCollectionPermissions, isAuthorAllowedToEdit } from '../services/rbac'
 import { logStatusChange, logContentEdit, computeFieldDiff } from '../services/audit-trail'
+import { createPendingRevision } from '../services/revisions'
 import type { Bindings, Variables } from '../app'
 import { PluginService } from '../services/plugin-service'
 import { getBlocksFieldConfig, parseBlocksValue } from '../utils/blocks'
@@ -1208,7 +1209,44 @@ adminContentRoutes.put('/:id', async (c) => {
       data.author_display = authorDisplay
     }
 
-    // Update content
+    // Content Staging: if editing published content and user is not bypassing,
+    // create a pending revision instead of overwriting the live version.
+    const publishImmediately = formData.get('publish_immediately') === 'on'
+    const isPublishedContent = existingContent.status === 'published'
+    const isAdmin = user?.role === 'admin'
+    const shouldStage = isPublishedContent && !(isAdmin && publishImmediately)
+
+    if (shouldStage) {
+      await createPendingRevision(db, {
+        contentId: id,
+        data,
+        authorId: user?.userId || 'unknown',
+        status,
+        title: data.title || data.name || 'Untitled',
+        slug,
+        metaTitle: data.meta_title || null,
+        metaDescription: data.meta_description || null,
+        scheduledPublishAt: resolvedScheduledPublishAt ? new Date(resolvedScheduledPublishAt).getTime() : null,
+        scheduledUnpublishAt: resolvedScheduledUnpublishAt ? new Date(resolvedScheduledUnpublishAt).getTime() : null,
+      })
+
+      // Redirect with staging-specific success message
+      const referrerParams = formData.get('referrer_params') as string
+      const stagingMsg = 'Changes saved as pending revision. Use Sync to publish.'
+      const redirectUrl = action === 'save_and_continue'
+        ? `/admin/content/${id}/edit?success=${encodeURIComponent(stagingMsg)}${referrerParams ? `&ref=${encodeURIComponent(referrerParams)}` : ''}`
+        : referrerParams
+          ? `/admin/content?${referrerParams}&success=${encodeURIComponent(stagingMsg)}`
+          : `/admin/content?collection=${existingContent.collection_id}&success=${encodeURIComponent(stagingMsg)}`
+
+      const isHTMX = c.req.header('HX-Request') === 'true'
+      if (isHTMX) {
+        return c.text('', 200, { 'HX-Redirect': redirectUrl })
+      }
+      return c.redirect(redirectUrl)
+    }
+
+    // Direct save path: draft content, or admin with "publish immediately" bypass
     const now = Date.now()
 
     const updateStmt = db.prepare(`
@@ -1246,12 +1284,12 @@ adminContentRoutes.put('/:id', async (c) => {
       const versionCountStmt = db.prepare('SELECT MAX(version) as max_version FROM content_versions WHERE content_id = ?')
       const versionResult = await versionCountStmt.bind(id).first() as any
       const nextVersion = (versionResult?.max_version || 0) + 1
-      
+
       const versionStmt = db.prepare(`
-        INSERT INTO content_versions (id, content_id, version, data, author_id, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO content_versions (id, content_id, version, data, author_id, created_at, status)
+        VALUES (?, ?, ?, ?, ?, ?, 'history')
       `)
-      
+
       await versionStmt.bind(
         crypto.randomUUID(),
         id,
