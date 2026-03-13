@@ -494,7 +494,8 @@ adminSettingsRoutes.post('/general', async (c) => {
       adminEmail: formData.get('adminEmail') as string,
       timezone: formData.get('timezone') as string,
       language: formData.get('language') as string,
-      maintenanceMode: formData.get('maintenanceMode') === 'true'
+      maintenanceMode: formData.get('maintenanceMode') === 'true',
+      trashRetentionDays: parseInt(formData.get('trashRetentionDays') as string, 10) || 30
     }
 
     // Validate required fields

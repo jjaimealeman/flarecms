@@ -14,6 +14,7 @@ export interface GeneralSettings {
   timezone: string
   language: string
   maintenanceMode: boolean
+  trashRetentionDays: number  // 0=keep forever, 7,14,30,60,90
 }
 
 export interface SecuritySettings {
@@ -165,7 +166,8 @@ export class SettingsService {
       adminEmail: settings.adminEmail || userEmail || 'admin@example.com',
       timezone: settings.timezone || 'UTC',
       language: settings.language || 'en',
-      maintenanceMode: settings.maintenanceMode || false
+      maintenanceMode: settings.maintenanceMode || false,
+      trashRetentionDays: settings.trashRetentionDays ?? 30
     }
   }
 
@@ -181,6 +183,7 @@ export class SettingsService {
     if (settings.timezone !== undefined) settingsToSave.timezone = settings.timezone
     if (settings.language !== undefined) settingsToSave.language = settings.language
     if (settings.maintenanceMode !== undefined) settingsToSave.maintenanceMode = settings.maintenanceMode
+    if (settings.trashRetentionDays !== undefined) settingsToSave.trashRetentionDays = settings.trashRetentionDays
 
     return await this.setMultipleSettings('general', settingsToSave)
   }

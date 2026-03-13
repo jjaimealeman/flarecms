@@ -37,8 +37,9 @@ export const content = sqliteTable('content', {
   slug: text('slug').notNull(),
   title: text('title').notNull(),
   data: text('data', { mode: 'json' }).notNull(), // JSON content data
-  status: text('status').notNull().default('draft'), // 'draft', 'published', 'archived'
+  status: text('status').notNull().default('draft'), // 'draft', 'published', 'archived', 'deleted'
   publishedAt: integer('published_at', { mode: 'timestamp' }),
+  deletedAt: integer('deleted_at', { mode: 'timestamp' }),
   authorId: text('author_id').notNull().references(() => users.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),

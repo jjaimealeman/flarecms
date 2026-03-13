@@ -597,6 +597,24 @@ function renderGeneralSettings(settings?: GeneralSettings): string {
             </select>
           </div>
           
+          <!-- Trash Retention -->
+          <div>
+            <label for="trashRetentionDays" class="block text-sm/6 font-medium text-zinc-950 dark:text-white">Trash Retention</label>
+            <p class="text-sm/6 text-zinc-500 dark:text-zinc-400 mb-2">How long deleted content stays in trash before auto-purge. Set to "Keep Forever" to disable auto-purge.</p>
+            <select
+              id="trashRetentionDays"
+              name="trashRetentionDays"
+              class="block w-full rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="0" ${settings?.trashRetentionDays === 0 ? 'selected' : ''}>Keep Forever</option>
+              <option value="7" ${settings?.trashRetentionDays === 7 ? 'selected' : ''}>7 days</option>
+              <option value="14" ${settings?.trashRetentionDays === 14 ? 'selected' : ''}>14 days</option>
+              <option value="30" ${!settings || settings?.trashRetentionDays === 30 ? 'selected' : ''}>30 days (default)</option>
+              <option value="60" ${settings?.trashRetentionDays === 60 ? 'selected' : ''}>60 days</option>
+              <option value="90" ${settings?.trashRetentionDays === 90 ? 'selected' : ''}>90 days</option>
+            </select>
+          </div>
+
           <div class="flex gap-3">
             <div class="flex h-6 shrink-0 items-center">
               <div class="group grid size-4 grid-cols-1">

@@ -46,6 +46,7 @@ export function renderContentListPage(data: ContentListPageData): string {
 
   // Check if filters are active (not in default state)
   const hasActiveFilters = data.modelName !== 'all' || data.status !== 'all' || !!data.search
+  const isTrashView = data.status === 'deleted'
 
   // Prepare filter bar data
   const filterBarData: FilterBarData = {
@@ -88,11 +89,16 @@ export function renderContentListPage(data: ContentListPageData): string {
         onclick: 'location.reload()'
       }
     ],
-    bulkActions: [
-      { label: 'Publish', value: 'publish', icon: 'check-circle' },
-      { label: 'Unpublish', value: 'unpublish', icon: 'x-circle' },
-      { label: 'Delete', value: 'delete', icon: 'trash', className: 'text-red-600' }
-    ]
+    bulkActions: isTrashView
+      ? [
+          { label: 'Restore', value: 'restore', icon: 'rotate-ccw' },
+          { label: 'Delete Permanently', value: 'purge', icon: 'trash', className: 'text-red-600' }
+        ]
+      : [
+          { label: 'Publish', value: 'publish', icon: 'check-circle' },
+          { label: 'Unpublish', value: 'unpublish', icon: 'x-circle' },
+          { label: 'Delete', value: 'delete', icon: 'trash', className: 'text-red-600' }
+        ]
   }
 
   // Prepare table data
@@ -146,7 +152,34 @@ export function renderContentListPage(data: ContentListPageData): string {
       label: 'Actions',
       sortable: false,
       className: 'text-sm font-medium',
-      render: (value, row) => `
+      render: (value, row) => isTrashView ? `
+        <div class="flex space-x-2">
+          <button
+            class="inline-flex items-center justify-center p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-1 ring-inset ring-emerald-600/20 dark:ring-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+            hx-post="/admin/content/${row.id}/restore"
+            hx-confirm="Restore this item to drafts?"
+            hx-target="#content-list"
+            hx-swap="outerHTML"
+            title="Restore"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 0 1 0 10H9m-6-10 3-3m-3 3 3 3"/>
+            </svg>
+          </button>
+          <button
+            class="inline-flex items-center justify-center p-1.5 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/20 dark:ring-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors"
+            hx-delete="/admin/content/${row.id}/purge"
+            hx-confirm="Permanently delete this item? This cannot be undone."
+            hx-target="#content-list"
+            hx-swap="outerHTML"
+            title="Delete Permanently"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      ` : `
         <div class="flex space-x-2">
           <button
             class="inline-flex items-center justify-center p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors"

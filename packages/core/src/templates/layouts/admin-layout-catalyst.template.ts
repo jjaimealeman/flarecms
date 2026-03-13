@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   Rocket,
   BarChart3,
+  Trash2,
   Sun,
   Moon,
 } from "../icons";
@@ -899,6 +900,10 @@ function renderCatalystSidebar(
     { label: 'Media', path: '/admin/media', iconHtml: icon(Image, 'h-5 w-5') },
     isActivePath('/admin/media')
   )
+  const trashItem = navLink(
+    { label: 'Trash', path: '/admin/content?status=deleted', iconHtml: icon(Trash2, 'h-5 w-5') },
+    currentPath?.includes('status=deleted') || false
+  )
 
   // Analytics (between content and system)
   const analyticsItem = navLink(
@@ -978,6 +983,7 @@ function renderCatalystSidebar(
           ${collectionItems}
           ${contentAllItem}
           ${mediaItem}
+          ${trashItem}
         </div>
 
         <!-- ANALYTICS -->
