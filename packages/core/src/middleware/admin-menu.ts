@@ -8,6 +8,7 @@
 import type { Context, Next } from 'hono'
 import { icon, collectionIcon } from '../templates/icons'
 import { setDynamicMenuItems } from '../templates/layouts/admin-layout-v2.template'
+import { setCatalystDynamicMenuItems } from '../templates/layouts/admin-layout-catalyst.template'
 
 export interface AdminMenuItem {
   label: string
@@ -56,6 +57,7 @@ export function adminMenuMiddleware() {
     const items = cachedItems || []
     c.set('adminMenuItems', items)
     setDynamicMenuItems(items)
+    setCatalystDynamicMenuItems(items)
     await next()
   }
 }

@@ -191,9 +191,24 @@ export interface AdminLayoutCatalystData {
   }>;
 }
 
+/**
+ * Module-level menu items set by adminMenuMiddleware.
+ * Safe for Workers: the set→render path is synchronous
+ * (no await between set and render), so concurrent requests cannot interleave.
+ */
+let _pendingMenuItems: AdminLayoutCatalystData['dynamicMenuItems'] | undefined
+
+export function setCatalystDynamicMenuItems(items: AdminLayoutCatalystData['dynamicMenuItems']) {
+  _pendingMenuItems = items
+}
+
 export function renderAdminLayoutCatalyst(
   data: AdminLayoutCatalystData
 ): string {
+  // Auto-inject menu items from middleware if not explicitly provided
+  if (_pendingMenuItems && !data.dynamicMenuItems) {
+    data = { ...data, dynamicMenuItems: _pendingMenuItems }
+  }
   if (!data.version) data.version = getVersionDisplay();
   return `<!DOCTYPE html>
 <html lang="en">
@@ -239,7 +254,7 @@ export function renderAdminLayoutCatalyst(
 
   <!-- Additional Styles -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
     * {
       margin: 0;
@@ -248,7 +263,7 @@ export function renderAdminLayoutCatalyst(
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }

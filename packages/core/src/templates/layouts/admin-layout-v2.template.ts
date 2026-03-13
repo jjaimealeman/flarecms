@@ -114,7 +114,7 @@ export function adminLayoutV2(data: AdminLayoutData): string {
   
   <!-- Additional Styles -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
     
     * {
       margin: 0;
@@ -123,7 +123,7 @@ export function adminLayoutV2(data: AdminLayoutData): string {
     }
     
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
     }
     
     /* Custom scrollbar */
