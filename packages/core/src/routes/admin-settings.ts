@@ -575,6 +575,21 @@ adminSettingsRoutes.post('/security', async (c) => {
   }
 })
 
+// API: Get idle timeout settings (used by admin layout JS)
+adminSettingsRoutes.get('/api/idle-config', async (c) => {
+  try {
+    const db = c.env.DB
+    const settingsService = new SettingsService(db)
+    const settings = await settingsService.getSecuritySettings()
+    return c.json({
+      idleTimeout: settings.idleTimeout,
+      idleWarningMinutes: settings.idleWarningMinutes
+    })
+  } catch {
+    return c.json({ idleTimeout: 0, idleWarningMinutes: 5 })
+  }
+})
+
 // Save settings (legacy endpoint - redirect to general)
 adminSettingsRoutes.post('/', async (c) => {
   return c.redirect('/admin/settings/general')

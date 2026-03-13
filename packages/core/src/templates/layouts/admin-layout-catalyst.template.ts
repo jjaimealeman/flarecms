@@ -571,6 +571,112 @@ export function renderAdminLayoutCatalyst(
 
     // Check for pending migrations when the page loads
     document.addEventListener('DOMContentLoaded', checkPendingMigrations);
+
+    // --- Idle Timeout ---
+    (function() {
+      fetch('/admin/settings/api/idle-config').then(function(r) { return r.json(); }).then(function(cfg) {
+        initIdleTimeout(cfg.idleTimeout || 0, cfg.idleWarningMinutes || 5);
+      }).catch(function() {});
+
+      function initIdleTimeout(IDLE_TIMEOUT, WARNING_BEFORE) {
+      if (IDLE_TIMEOUT <= 0) return;
+
+      const timeoutMs = IDLE_TIMEOUT * 60 * 1000;
+      const warningMs = (IDLE_TIMEOUT - WARNING_BEFORE) * 60 * 1000;
+      let lastActivity = Date.now();
+      let warningShown = false;
+      let warningModal = null;
+
+      function resetTimer() {
+        lastActivity = Date.now();
+        if (warningShown && warningModal) {
+          warningModal.remove();
+          warningShown = false;
+        }
+      }
+
+      ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function(evt) {
+        document.addEventListener(evt, resetTimer, { passive: true });
+      });
+
+      function buildWarningModal(secsLeft) {
+        var modal = document.createElement('div');
+        modal.id = 'idle-warning-modal';
+        modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm';
+
+        var card = document.createElement('div');
+        card.className = 'bg-white dark:bg-zinc-800 rounded-xl shadow-2xl p-6 max-w-sm mx-4 ring-1 ring-zinc-200 dark:ring-zinc-700';
+
+        var header = document.createElement('div');
+        header.className = 'flex items-center gap-3 mb-3';
+
+        var iconWrap = document.createElement('div');
+        iconWrap.className = 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20';
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('class', 'h-5 w-5 text-amber-600 dark:text-amber-400');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        var path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('stroke-linejoin', 'round');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('d', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z');
+        svg.appendChild(path);
+        iconWrap.appendChild(svg);
+        header.appendChild(iconWrap);
+
+        var title = document.createElement('h3');
+        title.className = 'text-lg font-semibold text-zinc-900 dark:text-white';
+        title.textContent = 'Session Expiring';
+        header.appendChild(title);
+        card.appendChild(header);
+
+        var msg = document.createElement('p');
+        msg.className = 'text-sm text-zinc-600 dark:text-zinc-400 mb-4';
+        msg.textContent = 'You will be logged out in ';
+        var countdown = document.createElement('strong');
+        countdown.id = 'idle-countdown';
+        countdown.className = 'text-amber-600 dark:text-amber-400';
+        countdown.textContent = String(Math.ceil(secsLeft));
+        msg.appendChild(countdown);
+        var suffix = document.createTextNode(' seconds due to inactivity.');
+        msg.appendChild(suffix);
+        card.appendChild(msg);
+
+        var btn = document.createElement('button');
+        btn.className = 'w-full rounded-lg bg-zinc-900 dark:bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 dark:hover:bg-blue-700 transition-colors';
+        btn.textContent = "I'm still here";
+        btn.addEventListener('click', function() { modal.remove(); warningShown = false; });
+        card.appendChild(btn);
+
+        modal.appendChild(card);
+        return modal;
+      }
+
+      function showWarning(secsLeft) {
+        if (warningShown) {
+          var counter = document.getElementById('idle-countdown');
+          if (counter) counter.textContent = String(Math.max(0, Math.ceil(secsLeft)));
+          return;
+        }
+        warningShown = true;
+        warningModal = buildWarningModal(secsLeft);
+        document.body.appendChild(warningModal);
+      }
+
+      setInterval(function() {
+        var elapsed = Date.now() - lastActivity;
+        if (elapsed >= timeoutMs) {
+          window.location.href = '/auth/logout?error=Session expired due to inactivity';
+        } else if (elapsed >= warningMs && warningMs > 0) {
+          var secsLeft = (timeoutMs - elapsed) / 1000;
+          showWarning(secsLeft);
+        }
+      }, 1000);
+      } // end initIdleTimeout
+    })();
   </script>
 
   <!-- Deploy Modal -->

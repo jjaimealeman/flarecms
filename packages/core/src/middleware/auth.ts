@@ -250,6 +250,21 @@ export const requireAuth = () => {
         return c.json({ error: 'Invalid or expired token' }, 401)
       }
 
+      // Check KV blacklist for force-logout revocation
+      const kvCheck = c.env?.CACHE_KV || c.env?.KV
+      if (kvCheck) {
+        const revoked = await kvCheck.get(`revoked:${payload.userId}`)
+        if (revoked) {
+          // Clear the auth cookie and redirect to login
+          setCookie(c, 'auth_token', '', { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 0 })
+          const acceptHeader = c.req.header('Accept') || ''
+          if (acceptHeader.includes('text/html')) {
+            return c.redirect('/auth/login?error=Your session was revoked by an administrator')
+          }
+          return c.json({ error: 'Session revoked' }, 401)
+        }
+      }
+
       // Add user info to context
       c.set('user', payload)
 

@@ -1035,6 +1035,61 @@ userRoutes.put('/users/:id', async (c) => {
 })
 
 /**
+ * POST /admin/users/:id/force-logout - Force logout a user via KV blacklist
+ */
+userRoutes.post('/users/:id/force-logout', async (c) => {
+  const db = c.env.DB
+  const user = c.get('user')
+  const userId = c.req.param('id')
+
+  try {
+    // Prevent self-logout
+    if (userId === user!.userId) {
+      return c.json({ error: 'You cannot force logout yourself' }, 400)
+    }
+
+    // Check if user exists
+    const targetUser = await db.prepare('SELECT id, email FROM users WHERE id = ?')
+      .bind(userId).first() as any
+
+    if (!targetUser) {
+      return c.json({ error: 'User not found' }, 404)
+    }
+
+    // Add to KV blacklist with 24h TTL (matches JWT max lifetime)
+    const kv = c.env.CACHE_KV
+    if (!kv) {
+      return c.json({ error: 'KV namespace not available' }, 500)
+    }
+
+    await kv.put(`revoked:${userId}`, JSON.stringify({
+      revokedBy: user!.userId,
+      revokedAt: Date.now(),
+      email: targetUser.email
+    }), { expirationTtl: 86400 }) // 24 hours
+
+    // Also clear any cached auth tokens for this user
+    // (We can't enumerate KV keys efficiently, but the blacklist check will catch it)
+
+    // Log the activity
+    await logActivity(
+      db, user!.userId, 'user.force_logout', 'users', userId,
+      { email: targetUser.email },
+      c.req.header('x-forwarded-for') || c.req.header('cf-connecting-ip'),
+      c.req.header('user-agent')
+    )
+
+    return c.json({
+      success: true,
+      message: `${targetUser.email} has been forcefully logged out`
+    })
+  } catch (error) {
+    console.error('Force logout error:', error)
+    return c.json({ error: 'Failed to force logout user' }, 500)
+  }
+})
+
+/**
  * POST /admin/users/:id/toggle - Toggle user active status
  */
 userRoutes.post('/users/:id/toggle', async (c) => {
