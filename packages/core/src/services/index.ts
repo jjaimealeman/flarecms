@@ -111,6 +111,15 @@ export {
   logContentEdit,
 } from './audit-trail'
 
+// Audit Log Service — Comprehensive admin action logging
+export {
+  logAudit,
+  queryAuditLog,
+  getResourceHistory,
+  getClientIP,
+} from './audit-log'
+export type { AuditEntry, AuditLogRow, AuditFilter } from './audit-log'
+
 // Schema Migration Service — Schema evolution tracking
 export { SchemaMigrationService } from './schema-migration'
 export type { SchemaChange, SchemaMigration } from './schema-migration'

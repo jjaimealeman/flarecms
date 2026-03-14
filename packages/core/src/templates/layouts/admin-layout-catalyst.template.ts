@@ -1149,6 +1149,7 @@ function renderCatalystSidebar(
     systemItemsList.push({ label: 'FAQs', path: '/admin/faq', iconHtml: icon(CircleHelp, 'h-5 w-5') })
   }
   if (isAdmin) {
+    systemItemsList.push({ label: 'Audit Log', path: '/admin/audit-log', iconHtml: icon(ClipboardList, 'h-5 w-5') })
     systemItemsList.push({ label: 'Plugins', path: '/admin/plugins', iconHtml: icon(Plug, 'h-5 w-5') })
     systemItemsList.push({ label: 'Cache', path: '/admin/cache', iconHtml: icon(HardDrive, 'h-5 w-5') })
     systemItemsList.push({ label: 'Migrations', path: '/admin/schema-migrations', iconHtml: icon(Database, 'h-5 w-5') })

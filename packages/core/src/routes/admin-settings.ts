@@ -4,6 +4,7 @@ import { requireAuth, requireRole } from '../middleware'
 import { renderSettingsPage, SettingsPageData } from '../templates/pages/admin-settings.template'
 import { MigrationService } from '../services/migrations'
 import { SettingsService } from '../services/settings'
+import { logAudit, getClientIP } from '../services/audit-log'
 
 type Bindings = {
   DB: D1Database
@@ -534,6 +535,7 @@ adminSettingsRoutes.post('/general', async (c) => {
     const success = await settingsService.saveGeneralSettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'general', ipAddress: getClientIP(c.req) })
       return c.json({
         success: true,
         message: 'General settings saved successfully!'
@@ -589,6 +591,7 @@ adminSettingsRoutes.post('/security', async (c) => {
     const success = await settingsService.saveSecuritySettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'security', ipAddress: getClientIP(c.req) })
       return c.json({ success: true, message: 'Security settings saved successfully!' })
     } else {
       return c.json({ success: false, error: 'Failed to save settings' }, 500)
@@ -641,6 +644,7 @@ adminSettingsRoutes.post('/appearance', async (c) => {
     const success = await settingsService.saveAppearanceSettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'appearance', ipAddress: getClientIP(c.req) })
       return c.json({ success: true, message: 'Appearance settings saved successfully!' })
     } else {
       return c.json({ success: false, error: 'Failed to save settings' }, 500)
@@ -675,6 +679,7 @@ adminSettingsRoutes.post('/notifications', async (c) => {
     const success = await settingsService.saveNotificationSettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'notifications', ipAddress: getClientIP(c.req) })
       return c.json({ success: true, message: 'Notification settings saved successfully!' })
     } else {
       return c.json({ success: false, error: 'Failed to save settings' }, 500)
@@ -712,6 +717,7 @@ adminSettingsRoutes.post('/storage', async (c) => {
     const success = await settingsService.saveStorageSettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'storage', ipAddress: getClientIP(c.req) })
       return c.json({ success: true, message: 'Storage settings saved successfully!' })
     } else {
       return c.json({ success: false, error: 'Failed to save settings' }, 500)

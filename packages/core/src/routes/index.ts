@@ -39,6 +39,7 @@ export { adminPreviewRoutes } from './admin-preview'
 export { adminSchemaMigrationsRoutes } from './admin-schema-migrations'
 export { adminDeployRoutes } from './admin-deploy'
 export { adminSyncRoutes } from './admin-sync'
+export { adminAuditLogRoutes } from './admin-audit-log'
 export { adminAnalyticsRoutes } from './admin-analytics'
 export { apiAnalyticsRoutes } from './api-analytics'
 

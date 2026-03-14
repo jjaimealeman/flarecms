@@ -22,6 +22,7 @@ import {
   computeDiff,
 } from '../services/revisions'
 import { getCacheService, CACHE_CONFIGS } from '../services/cache'
+import { logAudit, getClientIP } from '../services/audit-log'
 import type { Bindings, Variables } from '../app'
 
 const adminSyncRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
@@ -111,6 +112,8 @@ adminSyncRoutes.post('/api/approve', async (c) => {
     await apiCache.invalidate('*')
     const newVersion = await bumpContentVersion(c.env.CACHE_KV)
 
+    logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'content.sync_approve', resourceType: 'content', resourceId: body.versionId, ipAddress: getClientIP(c.req) })
+
     return c.json({ success: true, message: 'Revision approved and published', contentVersion: newVersion })
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to approve revision' }, 500)
@@ -132,6 +135,8 @@ adminSyncRoutes.post('/api/approve-all', requireRole('admin'), async (c) => {
     await apiCache.invalidate('*')
     const newVersion = await bumpContentVersion(c.env.CACHE_KV)
 
+    logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'content.sync_approve', resourceType: 'content', details: { count }, ipAddress: getClientIP(c.req) })
+
     return c.json({ success: true, message: `${count} revision(s) approved and published`, count, contentVersion: newVersion })
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to approve revisions' }, 500)
@@ -150,6 +155,9 @@ adminSyncRoutes.post('/api/reject', async (c) => {
 
   try {
     await rejectRevision(db, body.versionId, user!.userId, body.comment)
+
+    logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'content.sync_reject', resourceType: 'content', resourceId: body.versionId, ipAddress: getClientIP(c.req) })
+
     return c.json({ success: true, message: 'Revision rejected' })
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to reject revision' }, 500)
