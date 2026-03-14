@@ -1,10 +1,10 @@
 ---
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 import Layout from '../layouts/Layout.astro'
 
 const { slug } = Astro.params
 
-const allPages = await getCollection('pages')
+const allPages = (await getLiveCollection('pages'))?.entries || []
 const entry = allPages.find(p => p.data.slug === slug)
 
 if (!entry) {

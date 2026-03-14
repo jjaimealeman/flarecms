@@ -1,25 +1,10 @@
 /**
- * @experimental Live loader for Flare CMS — requires Astro 5.10+ with
- * experimental.liveContentCollections enabled. API may change.
+ * Live loader for Flare CMS — requires Astro 5.10+ with
+ * experimental.liveContentCollections enabled.
  */
+import type { LiveLoader } from 'astro/loaders'
 import type { FlareLoaderOptions, FlareContentItem } from './types'
 import { FlareClient } from './client'
-
-/**
- * Shape of a live Content Layer loader for Astro SSR.
- *
- * Defined inline rather than imported from astro/loaders because the
- * LiveLoader type is not yet stable across Astro versions.
- */
-interface LiveLoader {
-  name: string
-  loadCollection: (opts: { filter?: Record<string, any> }) => Promise<{
-    entries: Array<{ id: string; data: Record<string, unknown> }>
-  }>
-  loadEntry: (opts: { filter: string | Record<string, any> }) => Promise<
-    { id: string; data: Record<string, unknown> } | { error: Error }
-  >
-}
 
 /**
  * Map a Flare content item to the shape expected by Astro's Content Layer.
@@ -57,7 +42,7 @@ function mapItemToEntry(item: FlareContentItem): { id: string; data: Record<stri
  * })
  * ```
  */
-export function flareLiveLoader(options: FlareLoaderOptions): LiveLoader {
+export function flareLiveLoader(options: FlareLoaderOptions): LiveLoader<Record<string, unknown>> {
   return {
     name: 'flare-live-loader',
 
@@ -67,16 +52,22 @@ export function flareLiveLoader(options: FlareLoaderOptions): LiveLoader {
         apiToken: options.apiToken,
       })
 
-      let items = await client.fetchCollection(options.collection)
+      try {
+        let items = await client.fetchCollection(options.collection)
+        console.log(`[flare-live] ${options.collection}: fetched ${items?.length ?? 0} items`)
 
-      // Client-side filtering (API filters are broken, so we filter here)
-      const statusFilter = options.filter?.status || filter?.status
-      if (statusFilter) {
-        items = items.filter((item) => item.status === statusFilter)
-      }
+        // Client-side filtering (API filters are broken, so we filter here)
+        const statusFilter = options.filter?.status || (filter as any)?.status
+        if (statusFilter) {
+          items = items.filter((item) => item.status === statusFilter)
+        }
 
-      return {
-        entries: items.map(mapItemToEntry),
+        return {
+          entries: items.map(mapItemToEntry),
+        }
+      } catch (err) {
+        console.error(`[flare-live] ${options.collection} error:`, err)
+        return { error: new Error(`Failed to load ${options.collection}: ${err}`) }
       }
     },
 

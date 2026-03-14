@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro'
 import MiniSearch from 'minisearch'
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 import {
   MINISEARCH_OPTIONS,
   stripMarkdown,
@@ -9,12 +9,16 @@ import {
 
 export const GET: APIRoute = async () => {
   try {
-    const [sections, docs, blogPosts, newsArticles] = await Promise.all([
-      getCollection('docsSections'),
-      getCollection('docs'),
-      getCollection('blogPosts'),
-      getCollection('news'),
+    const [sectionsResult, docsResult, blogPostsResult, newsResult] = await Promise.all([
+      getLiveCollection('docsSections'),
+      getLiveCollection('docs'),
+      getLiveCollection('blogPosts'),
+      getLiveCollection('news'),
     ])
+    const sections = sectionsResult?.entries || []
+    const docs = docsResult?.entries || []
+    const blogPosts = blogPostsResult?.entries || []
+    const newsArticles = newsResult?.entries || []
 
     const sectionMap = new Map(
       sections.map((s) => [s.id, { name: s.data.name, slug: s.data.slug }])

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 
 interface SitemapUrl {
   loc: string
@@ -21,8 +21,8 @@ export const GET: APIRoute = async ({ site }) => {
   ]
 
   // Dynamic docs pages (from Content Layer)
-  const sections = await getCollection('docsSections')
-  const docs = await getCollection('docs')
+  const sections = (await getLiveCollection('docsSections'))?.entries || []
+  const docs = (await getLiveCollection('docs'))?.entries || []
 
   const docsUrls: SitemapUrl[] = docs.map((doc) => {
     const section = sections.find((s) => s.id === doc.data.section)

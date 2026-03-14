@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 import { buildNavTree } from '../../lib/docs-nav'
 import IconRocket from '~icons/lucide/rocket'
 import IconLayers from '~icons/lucide/layers'
@@ -27,8 +27,10 @@ function getIcon(slug: string) {
   return iconMap[slug] || IconBookOpen
 }
 
-const rawSections = await getCollection('docsSections')
-const rawDocs = await getCollection('docs')
+const sectionsResult = await getLiveCollection('docsSections')
+const docsResult = await getLiveCollection('docs')
+const rawSections = sectionsResult?.entries || []
+const rawDocs = docsResult?.entries || []
 
 // Map Content Layer entries to the shape buildNavTree expects
 // (needs .slug, .title at top level as fallbacks, plus .data.* and .id)

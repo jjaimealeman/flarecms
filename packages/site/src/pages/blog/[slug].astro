@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
 const { slug } = Astro.params
@@ -10,7 +10,7 @@ const categoryStyles: Record<string, string> = {
   amber: 'bg-amber-500/10 text-amber-400',
 }
 
-const allPosts = await getCollection('blogPosts')
+const allPosts = (await getLiveCollection('blogPosts'))?.entries || []
 const entry = allPosts.find(p => p.data.slug === slug)
 
 if (!entry) {

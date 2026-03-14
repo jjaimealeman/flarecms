@@ -7,10 +7,12 @@
  *   POST /api/approve        — approve a single revision
  *   POST /api/approve-all    — approve all pending revisions
  *   POST /api/reject         — reject a revision
+ *   GET  /api/content-version — current content version (public, for frontend freshness check)
  */
 
 import { Hono } from 'hono'
 import { requireAuth, requireRole } from '../middleware'
+import type { KVNamespace } from '@cloudflare/workers-types'
 import {
   getPendingCount,
   getPendingRevisions,
@@ -24,8 +26,43 @@ import type { Bindings, Variables } from '../app'
 
 const adminSyncRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-// All sync routes require auth
-adminSyncRoutes.use('/*', requireAuth())
+const CONTENT_VERSION_KEY = 'flare:content_version'
+
+/**
+ * Get the current content version from KV.
+ * Returns 0 if not set (first run).
+ */
+async function getContentVersion(kv: KVNamespace): Promise<number> {
+  const val = await kv.get(CONTENT_VERSION_KEY)
+  return val ? parseInt(val, 10) : 0
+}
+
+/**
+ * Bump the content version in KV.
+ * Called after Go Live approves revisions.
+ */
+async function bumpContentVersion(kv: KVNamespace): Promise<number> {
+  const current = await getContentVersion(kv)
+  const next = current + 1
+  await kv.put(CONTENT_VERSION_KEY, String(next))
+  return next
+}
+
+// Public endpoint — no auth required. Frontend calls this to check freshness.
+adminSyncRoutes.get('/api/content-version', async (c) => {
+  const kv = c.env.CACHE_KV
+  const version = await getContentVersion(kv)
+  return c.json({ version }, 200, {
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+  })
+})
+
+// Auth for all routes except content-version (which is public)
+adminSyncRoutes.use('/api/pending-count', requireAuth())
+adminSyncRoutes.use('/api/pending', requireAuth())
+adminSyncRoutes.use('/api/approve', requireAuth())
+adminSyncRoutes.use('/api/approve-all', requireAuth())
+adminSyncRoutes.use('/api/reject', requireAuth())
 
 // Badge count — lightweight, called on every page load
 adminSyncRoutes.get('/api/pending-count', async (c) => {
@@ -67,11 +104,14 @@ adminSyncRoutes.post('/api/approve', async (c) => {
   try {
     await approveRevision(db, body.versionId, user!.userId)
 
-    // Invalidate content cache
-    const cache = getCacheService(CACHE_CONFIGS.content!)
-    await cache.invalidate('content:*')
+    // Invalidate ALL caches (admin content cache + public API cache)
+    const contentCache = getCacheService(CACHE_CONFIGS.content!)
+    await contentCache.invalidate('*')
+    const apiCache = getCacheService(CACHE_CONFIGS.api!)
+    await apiCache.invalidate('*')
+    const newVersion = await bumpContentVersion(c.env.CACHE_KV)
 
-    return c.json({ success: true, message: 'Revision approved and published' })
+    return c.json({ success: true, message: 'Revision approved and published', contentVersion: newVersion })
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to approve revision' }, 500)
   }
@@ -85,11 +125,14 @@ adminSyncRoutes.post('/api/approve-all', requireRole('admin'), async (c) => {
   try {
     const count = await approveAllRevisions(db, user!.userId)
 
-    // Invalidate content cache
-    const cache = getCacheService(CACHE_CONFIGS.content!)
-    await cache.invalidate('content:*')
+    // Invalidate ALL caches (admin content cache + public API cache)
+    const contentCache = getCacheService(CACHE_CONFIGS.content!)
+    await contentCache.invalidate('*')
+    const apiCache = getCacheService(CACHE_CONFIGS.api!)
+    await apiCache.invalidate('*')
+    const newVersion = await bumpContentVersion(c.env.CACHE_KV)
 
-    return c.json({ success: true, message: `${count} revision(s) approved and published`, count })
+    return c.json({ success: true, message: `${count} revision(s) approved and published`, count, contentVersion: newVersion })
   } catch (err: any) {
     return c.json({ error: err.message || 'Failed to approve revisions' }, 500)
   }

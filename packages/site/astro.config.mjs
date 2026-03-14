@@ -16,6 +16,10 @@ export default defineConfig({
   site: 'https://flare-site.pages.dev',
   adapter: cloudflare(),
 
+  experimental: {
+    liveContentCollections: true,
+  },
+
   vite: {
     plugins: [
       tailwindcss(),

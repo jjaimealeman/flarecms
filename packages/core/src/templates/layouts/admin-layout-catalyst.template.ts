@@ -1005,7 +1005,7 @@ export function renderAdminLayoutCatalyst(
     function truncateValue(val) {
       if (val === null || val === undefined || val === '') return '';
       var str = typeof val === 'object' ? JSON.stringify(val) : String(val);
-      return str.length > 80 ? str.substring(0, 80) + '...' : str;
+      return str.length > 300 ? str.substring(0, 300) + '...' : str;
     }
 
     function formatTimeAgo(ts) {
