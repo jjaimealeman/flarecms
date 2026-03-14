@@ -383,6 +383,17 @@ export function renderContentFormPage(data: ContentFormData): string {
         </div>
 
         <div class="flex items-center gap-x-3">
+          ${isEdit && data.status === 'published' ? `
+            <span class="text-xs text-zinc-500 dark:text-zinc-400">
+              ${data.user?.role === 'admin' ? `
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" name="publish_immediately" form="content-form"
+                    class="rounded border-zinc-300 dark:border-zinc-600 text-blue-600 focus:ring-blue-500 h-3.5 w-3.5" />
+                  <span>Publish immediately</span>
+                </label>
+              ` : 'Edits will be staged for review'}
+            </span>
+          ` : ''}
           <button
             type="submit"
             form="content-form"

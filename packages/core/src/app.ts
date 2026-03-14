@@ -33,6 +33,7 @@ import {
   adminTestimonialsRoutes,
   adminCodeExamplesRoutes,
   adminDeployRoutes,
+  adminSyncRoutes,
   adminAnalyticsRoutes,
   apiAnalyticsRoutes
 } from './routes'
@@ -297,6 +298,7 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/preview', adminPreviewRoutes)
   app.route('/admin/schema-migrations', adminSchemaMigrationsRoutes)
   app.route('/admin/deploy', adminDeployRoutes)
+  app.route('/admin/sync', adminSyncRoutes)
   app.route('/admin/analytics', adminAnalyticsRoutes)
   app.route('/api', apiAnalyticsRoutes)
   app.route('/admin/testimonials', adminTestimonialsRoutes)

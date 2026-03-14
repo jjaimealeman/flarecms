@@ -90,6 +90,20 @@ export type {
   ValidateApiTokenResult,
 } from './api-tokens'
 
+// Revision Service — Content Staging Layer
+export {
+  createPendingRevision,
+  getPendingCount,
+  getPendingRevisions,
+  approveRevision,
+  approveAllRevisions,
+  rejectRevision,
+  computeDiff,
+  hasPendingRevision,
+  getLatestPendingRevision,
+} from './revisions'
+export type { RevisionStatus, PendingRevision, RevisionDiff } from './revisions'
+
 // Audit Trail Service — Workflow History Logging
 export {
   computeFieldDiff,
