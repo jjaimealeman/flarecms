@@ -11,6 +11,7 @@ import { validateStatusTransition, isSlugLocked } from '../services/content-stat
 import { checkCollectionPermission, getCollectionPermissions, isAuthorAllowedToEdit } from '../services/rbac'
 import { logStatusChange, logContentEdit, computeFieldDiff } from '../services/audit-trail'
 import { createPendingRevision, getLatestPendingRevision } from '../services/revisions'
+import { logAudit, getClientIP } from '../services/audit-log'
 import type { Bindings, Variables } from '../app'
 import { PluginService } from '../services/plugin-service'
 import { getBlocksFieldConfig, parseBlocksValue } from '../utils/blocks'
@@ -1032,7 +1033,9 @@ adminContentRoutes.post('/', async (c) => {
     } catch (auditErr) {
       console.error('[audit] Failed to log admin content creation:', auditErr)
     }
-    
+
+    logAudit(db, { userId: user?.userId || 'unknown', userEmail: user?.email || '', action: 'content.create', resourceType: 'content', resourceId: contentId, resourceTitle: data.title || data.name || 'Untitled', ipAddress: getClientIP(c.req) })
+
     // Handle different actions
     const referrerParams = formData.get('referrer_params') as string
     const redirectUrl = action === 'save_and_continue'
@@ -1241,6 +1244,8 @@ adminContentRoutes.put('/:id', async (c) => {
         scheduledUnpublishAt: resolvedScheduledUnpublishAt ? new Date(resolvedScheduledUnpublishAt).getTime() : null,
       })
 
+      logAudit(db, { userId: user?.userId || 'unknown', userEmail: user?.email || '', action: 'content.update', resourceType: 'content', resourceId: id, resourceTitle: data.title || data.name || existingContent.title, details: { staged: true }, ipAddress: getClientIP(c.req) })
+
       // Redirect with staging-specific success message
       const referrerParams = formData.get('referrer_params') as string
       const stagingMsg = 'Changes saved as pending revision. Use Sync to publish.'
@@ -1355,7 +1360,9 @@ adminContentRoutes.put('/:id', async (c) => {
     } catch (auditErr) {
       console.error('[audit] Failed to log admin content update:', auditErr)
     }
-    
+
+    logAudit(db, { userId: user?.userId || 'unknown', userEmail: user?.email || '', action: 'content.update', resourceType: 'content', resourceId: id, resourceTitle: data.title || data.name || existingContent.title, ipAddress: getClientIP(c.req) })
+
     // Handle different actions
     const referrerParams = formData.get('referrer_params') as string
     const redirectUrl = action === 'save_and_continue'
@@ -1690,6 +1697,17 @@ adminContentRoutes.post('/bulk-action', async (c) => {
     // Also invalidate list caches (they contain content from potentially multiple collections)
     await cache.invalidate('content:list:*')
 
+    // Audit log for bulk actions
+    const auditAction = action === 'delete' ? 'content.delete'
+      : action === 'restore' ? 'content.restore'
+      : action === 'purge' ? 'content.delete'
+      : action === 'publish' ? 'content.publish'
+      : action === 'draft' ? 'content.unpublish'
+      : 'content.update'
+    for (const contentId of ids) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: auditAction, resourceType: 'content', resourceId: contentId, details: { bulk: true, count: ids.length }, ipAddress: getClientIP(c.req) })
+    }
+
     return c.json({ success: true, count: ids.length })
   } catch (error) {
     console.error('Bulk action error:', error)
@@ -1741,6 +1759,8 @@ adminContentRoutes.delete('/:id', async (c) => {
     const cache = getCacheService(CACHE_CONFIGS.content!)
     await cache.delete(cache.generateKey('content', id))
     await cache.invalidate('content:list:*')
+
+    logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'content.delete', resourceType: 'content', resourceId: id, resourceTitle: content.title, ipAddress: getClientIP(c.req) })
 
     // Return success - let HTMX reload the page
     return c.html(`
