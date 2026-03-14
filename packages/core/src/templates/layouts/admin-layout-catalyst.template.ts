@@ -725,6 +725,26 @@ export function renderAdminLayoutCatalyst(
     </div>
   </div>
 
+  <!-- Reject Confirmation Modal -->
+  <div id="reject-confirm-modal" class="hidden fixed inset-0 z-[60]">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeRejectConfirm()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="relative w-full max-w-sm rounded-xl bg-white dark:bg-zinc-800 shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-700 p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+            <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Reject Revision</h3>
+        </div>
+        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-5">This revision will be discarded. The live content will remain unchanged.</p>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeRejectConfirm()" class="rounded-lg bg-zinc-100 dark:bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">Cancel</button>
+          <button onclick="confirmReject()" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors">Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Sync feature — content staging
     let _syncRevisions = [];
@@ -825,12 +845,74 @@ export function renderAdminLayoutCatalyst(
               info.appendChild(titleLink);
               info.appendChild(meta);
 
-              // Show changed fields
+              // Show changed fields with expandable diff
               if (rev.diffs && rev.diffs.length > 0) {
-                const diffLine = document.createElement('p');
-                diffLine.className = 'text-xs text-zinc-400 dark:text-zinc-500 mt-1';
-                diffLine.textContent = 'Changed: ' + rev.diffs.map(function(d) { return d.field; }).join(', ');
-                info.appendChild(diffLine);
+                var diffToggle = document.createElement('button');
+                diffToggle.className = 'text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 flex items-center gap-1';
+                diffToggle.textContent = rev.diffs.length + ' field' + (rev.diffs.length === 1 ? '' : 's') + ' changed';
+                var arrow = document.createElement('span');
+                arrow.className = 'transition-transform text-[10px]';
+                arrow.textContent = '\u25B6';
+                diffToggle.prepend(arrow);
+
+                var diffDetails = document.createElement('div');
+                diffDetails.className = 'hidden mt-2 space-y-1.5';
+
+                for (var di = 0; di < rev.diffs.length; di++) {
+                  var d = rev.diffs[di];
+                  var diffRow = document.createElement('div');
+                  diffRow.className = 'text-xs rounded bg-zinc-50 dark:bg-zinc-800/50 px-2 py-1.5';
+
+                  var fieldName = document.createElement('span');
+                  fieldName.className = 'font-medium text-zinc-600 dark:text-zinc-300';
+                  fieldName.textContent = d.field;
+                  diffRow.appendChild(fieldName);
+
+                  var oldVal = truncateValue(d.oldValue);
+                  var newVal = truncateValue(d.newValue);
+
+                  if (oldVal && newVal) {
+                    // Changed value
+                    var oldSpan = document.createElement('div');
+                    oldSpan.className = 'text-red-500/70 dark:text-red-400/70 line-through mt-0.5';
+                    oldSpan.textContent = oldVal;
+                    diffRow.appendChild(oldSpan);
+                    var newSpan = document.createElement('div');
+                    newSpan.className = 'text-emerald-600 dark:text-emerald-400';
+                    newSpan.textContent = newVal;
+                    diffRow.appendChild(newSpan);
+                  } else if (newVal) {
+                    // Added
+                    var addedSpan = document.createElement('div');
+                    addedSpan.className = 'text-emerald-600 dark:text-emerald-400 mt-0.5';
+                    addedSpan.textContent = '+ ' + newVal;
+                    diffRow.appendChild(addedSpan);
+                  } else if (oldVal) {
+                    // Removed
+                    var removedSpan = document.createElement('div');
+                    removedSpan.className = 'text-red-500 dark:text-red-400 line-through mt-0.5';
+                    removedSpan.textContent = oldVal;
+                    diffRow.appendChild(removedSpan);
+                  }
+
+                  diffDetails.appendChild(diffRow);
+                }
+
+                diffToggle.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  var details = this.nextElementSibling;
+                  var arr = this.querySelector('span');
+                  if (details.classList.contains('hidden')) {
+                    details.classList.remove('hidden');
+                    arr.style.transform = 'rotate(90deg)';
+                  } else {
+                    details.classList.add('hidden');
+                    arr.style.transform = '';
+                  }
+                });
+
+                info.appendChild(diffToggle);
+                info.appendChild(diffDetails);
               }
 
               const rejectBtn = document.createElement('button');
@@ -838,7 +920,7 @@ export function renderAdminLayoutCatalyst(
               rejectBtn.textContent = 'Reject';
               rejectBtn.title = 'Reject';
               rejectBtn.setAttribute('data-version-id', rev.versionId);
-              rejectBtn.addEventListener('click', function() { rejectRevision(this.getAttribute('data-version-id')); });
+              rejectBtn.addEventListener('click', function() { showRejectConfirm(this.getAttribute('data-version-id')); });
 
               row.appendChild(info);
               row.appendChild(rejectBtn);
@@ -890,20 +972,40 @@ export function renderAdminLayoutCatalyst(
       }
     }
 
-    async function rejectRevision(versionId) {
-      if (!confirm('Reject this revision? The live content will remain unchanged.')) return;
+    var _rejectTargetId = null;
+
+    function showRejectConfirm(versionId) {
+      _rejectTargetId = versionId;
+      document.getElementById('reject-confirm-modal').classList.remove('hidden');
+    }
+
+    function closeRejectConfirm() {
+      _rejectTargetId = null;
+      document.getElementById('reject-confirm-modal').classList.add('hidden');
+    }
+
+    async function confirmReject() {
+      if (!_rejectTargetId) return;
+      var versionId = _rejectTargetId;
+      closeRejectConfirm();
       try {
-        const res = await fetch('/admin/sync/api/reject', {
+        var res = await fetch('/admin/sync/api/reject', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ versionId: versionId })
         });
-        const data = await res.json();
+        var data = await res.json();
         if (data.success) {
-          openSyncModal(); // Refresh the list
+          openSyncModal();
           checkPendingSync();
         }
       } catch (e) { /* silent */ }
+    }
+
+    function truncateValue(val) {
+      if (val === null || val === undefined || val === '') return '';
+      var str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+      return str.length > 80 ? str.substring(0, 80) + '...' : str;
     }
 
     function formatTimeAgo(ts) {

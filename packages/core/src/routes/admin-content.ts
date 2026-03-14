@@ -10,7 +10,7 @@ import { getCacheService, CACHE_CONFIGS } from '../services/cache'
 import { validateStatusTransition, isSlugLocked } from '../services/content-state-machine'
 import { checkCollectionPermission, getCollectionPermissions, isAuthorAllowedToEdit } from '../services/rbac'
 import { logStatusChange, logContentEdit, computeFieldDiff } from '../services/audit-trail'
-import { createPendingRevision } from '../services/revisions'
+import { createPendingRevision, getLatestPendingRevision } from '../services/revisions'
 import type { Bindings, Variables } from '../app'
 import { PluginService } from '../services/plugin-service'
 import { getBlocksFieldConfig, parseBlocksValue } from '../utils/blocks'
@@ -791,7 +791,18 @@ adminContentRoutes.get('/:id/edit', async (c) => {
     }
     
     const fields = await getCollectionFields(db, content.collection_id)
-    const contentData = content.data ? JSON.parse(content.data) : {}
+    let contentData = content.data ? JSON.parse(content.data) : {}
+
+    // If published content has a pending revision, load that instead of live data.
+    // This ensures subsequent edits build on the previous pending changes.
+    if (content.status === 'published') {
+      const pendingRev = await getLatestPendingRevision(db, id)
+      if (pendingRev) {
+        const pendingData = { ...pendingRev.data }
+        delete pendingData._revision_meta
+        contentData = pendingData
+      }
+    }
 
     // Enrich content data with metadata for the form template
     contentData.created_at = content.created_at

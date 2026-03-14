@@ -60,6 +60,20 @@ export async function createPendingRevision(
   const metaId = crypto.randomUUID()
   const now = Date.now()
 
+  // Replace any existing pending revision for this content item
+  // (only one pending revision per content item at a time)
+  await db
+    .prepare(
+      `DELETE FROM content_revision_meta WHERE version_id IN
+       (SELECT id FROM content_versions WHERE content_id = ? AND status = 'pending')`
+    )
+    .bind(params.contentId)
+    .run()
+  await db
+    .prepare("DELETE FROM content_versions WHERE content_id = ? AND status = 'pending'")
+    .bind(params.contentId)
+    .run()
+
   // Get next version number
   const versionResult = await db
     .prepare('SELECT MAX(version) as max_version FROM content_versions WHERE content_id = ?')
@@ -296,6 +310,14 @@ export async function rejectRevision(
  * Compute field-by-field diff between live and pending data.
  * Returns only fields that changed.
  */
+/**
+ * Normalize empty-ish values so undefined, null, and "" compare as equal.
+ */
+function normalizeValue(val: unknown): unknown {
+  if (val === undefined || val === null || val === '') return null
+  return val
+}
+
 export function computeDiff(
   liveData: Record<string, unknown>,
   pendingData: Record<string, unknown>
@@ -307,11 +329,11 @@ export function computeDiff(
     // Skip internal fields
     if (key === '_revision_meta') continue
 
-    const oldVal = liveData[key]
-    const newVal = pendingData[key]
+    const oldVal = normalizeValue(liveData[key])
+    const newVal = normalizeValue(pendingData[key])
 
     if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
-      diffs.push({ field: key, oldValue: oldVal, newValue: newVal })
+      diffs.push({ field: key, oldValue: liveData[key], newValue: pendingData[key] })
     }
   }
 
