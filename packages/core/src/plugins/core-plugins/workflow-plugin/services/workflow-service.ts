@@ -166,19 +166,18 @@ export class WorkflowEngine {
         WHERE id = ?
       `).bind(toStateId, Date.now(), contentId).run()
 
-      // Record history
+      // Record history (actual table columns: content_id, action, from_status, to_status, user_id, comment)
       await this.db.prepare(`
         INSERT INTO workflow_history
-        (content_id, workflow_id, from_state_id, to_state_id, user_id, comment, metadata)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        (content_id, action, from_status, to_status, user_id, comment)
+        VALUES (?, ?, ?, ?, ?, ?)
       `).bind(
         contentId,
-        currentStatus.workflow_id,
+        'transition',
         currentStatus.current_state_id,
         toStateId,
         userIdOrRole,
-        comment ?? null,
-        metadata ? JSON.stringify(metadata) : null
+        comment ?? null
       ).run()
 
       // Auto-publish if state is 'published'
@@ -250,6 +249,7 @@ export class WorkflowEngine {
   }
 
   async getWorkflowHistory(contentId: string): Promise<WorkflowHistoryEntry[]> {
+    // Actual table columns: id, content_id, action, from_status, to_status, user_id, comment, created_at
     const { results } = await this.db.prepare(`
       SELECT
         wh.*,
@@ -258,8 +258,8 @@ export class WorkflowEngine {
         ts.name as to_state_name
       FROM workflow_history wh
       LEFT JOIN users u ON wh.user_id = u.id
-      LEFT JOIN workflow_states fs ON wh.from_state_id = fs.id
-      LEFT JOIN workflow_states ts ON wh.to_state_id = ts.id
+      LEFT JOIN workflow_states fs ON wh.from_status = fs.id
+      LEFT JOIN workflow_states ts ON wh.to_status = ts.id
       WHERE wh.content_id = ?
       ORDER BY wh.created_at DESC
     `).bind(contentId).all()

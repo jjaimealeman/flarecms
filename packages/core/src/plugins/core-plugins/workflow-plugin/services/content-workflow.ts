@@ -437,16 +437,16 @@ export class WorkflowManager {
       `)
       await updateStmt.bind(updatedContent.status, updatedContent.updatedAt, contentId).run()
 
-      // Log action to workflow_history
+      // Log action to workflow_history (actual columns: id, content_id, action, from_status, to_status, user_id, comment)
       const historyStmt = this.db.prepare(`
         INSERT INTO workflow_history
-        (id, content_id, workflow_id, from_state_id, to_state_id, user_id, comment)
+        (id, content_id, action, from_status, to_status, user_id, comment)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `)
       await historyStmt.bind(
         historyEntry.id,
         historyEntry.contentId,
-        'default',
+        'transition',
         historyEntry.fromStatus,
         historyEntry.toStatus,
         historyEntry.userId,
@@ -519,16 +519,16 @@ export class WorkflowManager {
         const updateStmt = this.db.prepare('UPDATE content SET status = ?, updated_at = ? WHERE id = ?')
         await updateStmt.bind(newStatus, Date.now(), contentId).run()
 
-        // Log to workflow_history
+        // Log to workflow_history (actual columns: id, content_id, action, from_status, to_status, user_id, comment)
         const historyStmt = this.db.prepare(`
           INSERT INTO workflow_history
-          (id, content_id, workflow_id, from_state_id, to_state_id, user_id, comment)
+          (id, content_id, action, from_status, to_status, user_id, comment)
           VALUES (?, ?, ?, ?, ?, ?, ?)
         `)
         await historyStmt.bind(
           crypto.randomUUID(),
           contentId,
-          'default',
+          'bulk_update',
           'unknown',
           newStatus,
           userId,

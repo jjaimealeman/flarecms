@@ -130,54 +130,65 @@ export function createWorkflowAdminRoutes() {
     }
 
     const contentId = c.req.param('contentId')
-    const workflowEngine = new WorkflowEngine(c.env.DB)
 
-    // Get content details (LEFT JOIN users — author_id may not match users.id)
-    const content = await c.env.DB.prepare(`
-      SELECT c.*, col.name as collection_name, u.username as author_name
-      FROM content c
-      JOIN collections col ON c.collection_id = col.id
-      LEFT JOIN users u ON c.author_id = u.id
-      WHERE c.id = ?
-    `).bind(contentId).first()
+    try {
+      const workflowEngine = new WorkflowEngine(c.env.DB)
 
-    if (!content) {
-      return c.text('Content not found', 404)
+      // Get content details (LEFT JOIN users — author_id may not match users.id)
+      const content = await c.env.DB.prepare(`
+        SELECT c.*, col.name as collection_name, u.username as author_name
+        FROM content c
+        JOIN collections col ON c.collection_id = col.id
+        LEFT JOIN users u ON c.author_id = u.id
+        WHERE c.id = ?
+      `).bind(contentId).first()
+
+      if (!content) {
+        return c.text('Content not found', 404)
+      }
+
+      // Get workflow status
+      const workflowStatus = await workflowEngine.getContentWorkflowStatus(contentId)
+      const currentState = await c.env.DB.prepare(`
+        SELECT * FROM workflow_states WHERE id = ?
+      `).bind(workflowStatus?.current_state_id || 'draft').first()
+
+      // Get available transitions (uses userRole, not userId)
+      const availableTransitions = workflowStatus
+        ? await workflowEngine.getAvailableTransitions(
+            workflowStatus.workflow_id,
+            workflowStatus.current_state_id,
+            user.role || 'viewer'
+          )
+        : []
+
+      // Get workflow history
+      const history = await workflowEngine.getWorkflowHistory(contentId)
+
+      // Get scheduled actions
+      let scheduledActions: unknown[] = []
+      try {
+        const scheduler = new SchedulerService(c.env.DB)
+        scheduledActions = await scheduler.getScheduledContentForContent(contentId)
+      } catch (schedErr) {
+        console.error('[workflow] Scheduled actions query failed:', schedErr)
+      }
+
+      const data = {
+        user,
+        content,
+        currentState,
+        workflowStatus,
+        availableTransitions,
+        history,
+        scheduledActions
+      }
+
+      return c.html(renderWorkflowContentDetail(data))
+    } catch (error) {
+      console.error('[workflow] Content detail error:', error)
+      return c.json({ error: 'Internal Server Error', detail: (error as Error).message }, 500)
     }
-
-    // Get workflow status
-    const workflowStatus = await workflowEngine.getContentWorkflowStatus(contentId)
-    const currentState = await c.env.DB.prepare(`
-      SELECT * FROM workflow_states WHERE id = ?
-    `).bind(workflowStatus?.current_state_id || 'draft').first()
-
-    // Get available transitions (uses userRole, not userId)
-    const availableTransitions = workflowStatus
-      ? await workflowEngine.getAvailableTransitions(
-          workflowStatus.workflow_id,
-          workflowStatus.current_state_id,
-          user.role || 'viewer'
-        )
-      : []
-
-    // Get workflow history
-    const history = await workflowEngine.getWorkflowHistory(contentId)
-
-    // Get scheduled actions
-    const scheduler = new SchedulerService(c.env.DB)
-    const scheduledActions = await scheduler.getScheduledContentForContent(contentId)
-
-    const data = {
-      user,
-      content,
-      currentState,
-      workflowStatus,
-      availableTransitions,
-      history,
-      scheduledActions
-    }
-
-    return c.html(renderWorkflowContentDetail(data))
   })
 
   // Get scheduled content
