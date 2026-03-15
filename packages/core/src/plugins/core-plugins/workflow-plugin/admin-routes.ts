@@ -131,13 +131,13 @@ export function createWorkflowAdminRoutes() {
 
     const contentId = c.req.param('contentId')
     const workflowEngine = new WorkflowEngine(c.env.DB)
-    
-    // Get content details
+
+    // Get content details (LEFT JOIN users — author_id may not match users.id)
     const content = await c.env.DB.prepare(`
       SELECT c.*, col.name as collection_name, u.username as author_name
       FROM content c
       JOIN collections col ON c.collection_id = col.id
-      JOIN users u ON c.author_id = u.id
+      LEFT JOIN users u ON c.author_id = u.id
       WHERE c.id = ?
     `).bind(contentId).first()
 
@@ -151,12 +151,12 @@ export function createWorkflowAdminRoutes() {
       SELECT * FROM workflow_states WHERE id = ?
     `).bind(workflowStatus?.current_state_id || 'draft').first()
 
-    // Get available transitions
-    const availableTransitions = workflowStatus 
+    // Get available transitions (uses userRole, not userId)
+    const availableTransitions = workflowStatus
       ? await workflowEngine.getAvailableTransitions(
-          workflowStatus.workflow_id, 
-          workflowStatus.current_state_id, 
-          user.userId
+          workflowStatus.workflow_id,
+          workflowStatus.current_state_id,
+          user.role || 'viewer'
         )
       : []
 
