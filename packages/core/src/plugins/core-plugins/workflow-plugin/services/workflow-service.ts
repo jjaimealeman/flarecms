@@ -199,10 +199,24 @@ export class WorkflowEngine {
 
   async initializeContentWorkflow(contentId: string, collectionId: string): Promise<boolean> {
     try {
-      // Get workflow for collection
-      const workflow = await this.getWorkflowByCollection(collectionId)
+      // Get workflow for collection, auto-create default if missing
+      let workflow = await this.getWorkflowByCollection(collectionId)
       if (!workflow) {
-        return false
+        // Auto-create default workflow for this collection (matches migration 005 pattern)
+        const workflowId = `default-${collectionId}`
+        await this.db.prepare(`
+          INSERT OR IGNORE INTO workflows (id, name, description, collection_id, is_active, require_approval, approval_levels)
+          VALUES (?, ?, ?, ?, 1, 1, 1)
+        `).bind(
+          workflowId,
+          `Default Workflow for ${collectionId}`,
+          'Standard content approval workflow',
+          collectionId
+        ).run()
+        workflow = await this.getWorkflow(workflowId)
+        if (!workflow) {
+          return false
+        }
       }
 
       // Get initial state

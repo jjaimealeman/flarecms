@@ -4,6 +4,7 @@ import { getCacheService, CACHE_CONFIGS, validateStatusTransition, isSlugLocked,
 import { getHookSystem } from '../plugins/hooks-singleton'
 import { HOOKS } from '../types'
 import { deliverWebhooks } from '../services/webhook-delivery'
+import { WorkflowEngine } from '../plugins/core-plugins/workflow-plugin/services/workflow-service'
 import type { Bindings, Variables } from '../app'
 import { log } from '../lib/logger'
 
@@ -187,6 +188,14 @@ apiContentCrudRoutes.post('/', requireAuth(), async (c) => {
     await cache.invalidate('content-filtered:*')
 
     log.info('content.created', { contentId, collectionId, userId: user?.userId || 'system', status: status || 'draft' })
+
+    // Initialize workflow status (auto-creates default workflow if needed)
+    try {
+      const workflowEngine = new WorkflowEngine(db)
+      await workflowEngine.initializeContentWorkflow(contentId, collectionId)
+    } catch (wfErr) {
+      console.error('[workflow] Failed to initialize content workflow:', wfErr)
+    }
 
     // Get the created content
     const getStmt = db.prepare('SELECT * FROM content WHERE id = ?')
@@ -400,6 +409,26 @@ apiContentCrudRoutes.put('/:id', requireAuth(), async (c) => {
     `)
 
     await updateStmt.bind(...params).run()
+
+    // Sync workflow state when content status changes
+    if (body.status !== undefined && body.status !== existing.status) {
+      try {
+        const workflowEngine = new WorkflowEngine(db)
+        // Map content status to workflow state ID (they use the same names)
+        const stateId = body.status as string // 'draft', 'published', 'archived'
+        await workflowEngine.initializeContentWorkflow(id, existing.collection_id)
+        // Update workflow state to match new content status
+        await db.prepare(`
+          UPDATE content_workflow_status SET current_state_id = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE content_id = ?
+        `).bind(stateId, id).run()
+        await db.prepare(`
+          UPDATE content SET workflow_state_id = ? WHERE id = ?
+        `).bind(stateId, id).run()
+      } catch (wfErr) {
+        console.error('[workflow] Failed to sync workflow state:', wfErr)
+      }
+    }
 
     // Audit trail: log status change and/or field edits (non-blocking)
     try {

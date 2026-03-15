@@ -27,7 +27,33 @@ export function createWorkflowAdminRoutes() {
 
     try {
       const workflowEngine = new WorkflowEngine(c.env.DB)
-      
+
+      // Auto-enroll any content missing workflow status (one-time backfill per item)
+      try {
+        const { results: unenrolled } = await c.env.DB.prepare(`
+          SELECT c.id, c.collection_id, c.status
+          FROM content c
+          LEFT JOIN content_workflow_status cws ON c.id = cws.content_id
+          WHERE cws.id IS NULL
+        `).all() as { results: Array<{ id: string, collection_id: string, status: string }> }
+        for (const item of unenrolled) {
+          await workflowEngine.initializeContentWorkflow(item.id, item.collection_id)
+          // Sync workflow state to match current content status
+          const stateId = item.status || 'draft'
+          await c.env.DB.prepare(`
+            UPDATE content_workflow_status SET current_state_id = ? WHERE content_id = ?
+          `).bind(stateId, item.id).run()
+          await c.env.DB.prepare(`
+            UPDATE content SET workflow_state_id = ? WHERE id = ?
+          `).bind(stateId, item.id).run()
+        }
+        if (unenrolled.length > 0) {
+          console.log(`[workflow] Backfilled ${unenrolled.length} content items into workflow`)
+        }
+      } catch (backfillErr) {
+        console.error('[workflow] Backfill failed:', backfillErr)
+      }
+
       // Get workflow states and counts with error handling
       console.log('Fetching workflow states...')
       const states = await workflowEngine.getWorkflowStates()
