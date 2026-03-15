@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 9 complete -- Quick task 001 complete (Content Layer migration)
+**Current focus:** Phase 10 - Workflow Engine Activation (plans 01 and 02 complete)
 
 ## Current Position
 
 Phase: 10 of 10 (Workflow Engine Activation)
 Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-03-15 — Completed 10-02-PLAN.md (fix route types + migrate templates to Catalyst)
+Status: In progress (plans 01 + 02 done, plan 03 remaining)
+Last activity: 2026-03-15 — Completed 10-01-PLAN.md (type-safe workflow services) + 10-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████░░] 96% (2/3 plans in phase 10)
 
@@ -79,6 +79,10 @@ Recent decisions affecting current work:
 - [09-04]: Rollback creates inverse audit entry for traceability
 - [09-04]: Safe DOM methods (createElement/textContent) for dynamic dialog content
 - [09-04]: Impact endpoint pattern for pre-deletion content count
+- [10-01]: Replace user_permissions with role_permissions + permissions JOIN (user_permissions table doesn't exist)
+- [10-01]: Replace content_audit_log with workflow_history (content_audit_log doesn't exist)
+- [10-01]: getAvailableTransitions accepts userRole string (not userId) for permission JOIN
+- [10-01]: PluginDbService import removed (module doesn't exist; was hidden by @ts-nocheck)
 - [10-02]: ../../../app relative path for workflow-plugin (3 levels, not 4)
 - [10-02]: ../../../../templates/layouts/ for templates subdir of workflow-plugin (4 levels)
 - [10-02]: User name falls back to email in Catalyst layout (JWT has no display name)
@@ -102,5 +106,5 @@ None -- all v2 phases complete.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 10-02-PLAN.md (workflow route types + Catalyst template migration)
+Stopped at: Completed 10-01-PLAN.md (type-safe workflow services)
 Resume file: None
