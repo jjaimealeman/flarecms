@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 10 - Workflow Engine Activation (plans 01 and 02 complete)
+**Current focus:** Phase 10 - Workflow Engine Activation (ALL plans complete)
 
 ## Current Position
 
 Phase: 10 of 10 (Workflow Engine Activation)
-Plan: 2 of 3 in current phase
-Status: In progress (plans 01 + 02 done, plan 03 remaining)
-Last activity: 2026-03-15 — Completed 10-01-PLAN.md (type-safe workflow services) + 10-02-PLAN.md
+Plan: 3 of 3 in current phase
+Status: Phase complete (all 3 plans done)
+Last activity: 2026-03-15 — Completed 10-03-PLAN.md (wire routes and sidebar)
 
-Progress: [████████████████████████████████████████████████████░░] 96% (2/3 plans in phase 10)
+Progress: [█████████████████████████████████████████████████████████] 100% (3/3 plans in phase 10)
 
 ## Performance Metrics
 
@@ -86,6 +86,10 @@ Recent decisions affecting current work:
 - [10-02]: ../../../app relative path for workflow-plugin (3 levels, not 4)
 - [10-02]: ../../../../templates/layouts/ for templates subdir of workflow-plugin (4 levels)
 - [10-02]: User name falls back to email in Catalyst layout (JWT has no display name)
+- [10-03]: requireAuth() applied at route factory level in workflow routes (JWT never decoded without it)
+- [10-03]: initializeContentWorkflow auto-creates default workflow per collection if none exists
+- [10-03]: workflow_history actual columns: action, from_status, to_status (not from_state_id, to_state_id)
+- [10-03]: LEFT JOIN users on workflow_history queries (INNER JOIN 500s on missing user rows)
 
 ### Pending Todos
 
@@ -106,5 +110,5 @@ None -- all v2 phases complete.
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 10-01-PLAN.md (type-safe workflow services)
+Stopped at: Completed 10-03-PLAN.md (wire routes and sidebar) — Phase 10 complete
 Resume file: None
