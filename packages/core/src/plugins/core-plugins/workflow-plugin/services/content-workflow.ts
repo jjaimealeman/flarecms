@@ -85,8 +85,8 @@ export interface ContentItem {
   status: ContentStatus
   authorId: string
   modelName: string
-  data: Record<string, any>
-  
+  data: Record<string, unknown>
+
   // Workflow fields
   publishedAt?: number
   scheduledAt?: number
@@ -94,17 +94,17 @@ export interface ContentItem {
   reviewedAt?: number
   archivedAt?: number
   deletedAt?: number
-  
+
   // Timestamps
   createdAt: number
   updatedAt: number
-  
+
   // Version tracking
   version: number
   parentVersion?: string
 }
 
-// Workflow history entry
+// Workflow history entry (in-memory representation)
 export interface WorkflowHistoryEntry {
   id: string
   contentId: string
@@ -152,8 +152,8 @@ export class ContentWorkflow {
     isAuthor: boolean = false,
     permissions: WorkflowPermissions = defaultWorkflowPermissions
   ): WorkflowAction[] {
-    const allActions = workflowTransitions[currentStatus] || []
-    
+    const allActions = workflowTransitions[currentStatus] ?? []
+
     return allActions.filter(action =>
       this.canPerformAction(action, currentStatus, userRole, isAuthor, permissions)
     )
@@ -196,7 +196,7 @@ export class ContentWorkflow {
         break
       case WorkflowAction.SCHEDULE:
         newStatus = ContentStatus.SCHEDULED
-        updatedContent.scheduledAt = scheduledAt || now
+        updatedContent.scheduledAt = scheduledAt ?? now
         break
       case WorkflowAction.ARCHIVE:
         newStatus = ContentStatus.ARCHIVED
@@ -232,8 +232,8 @@ export class ContentWorkflow {
 
   // Check if content should be auto-published (for scheduled content)
   static shouldAutoPublish(content: ContentItem): boolean {
-    return content.status === ContentStatus.SCHEDULED && 
-           content.scheduledAt !== undefined && 
+    return content.status === ContentStatus.SCHEDULED &&
+           content.scheduledAt !== undefined &&
            content.scheduledAt <= Date.now()
   }
 
@@ -263,7 +263,7 @@ export class ContentWorkflow {
     userId?: string
   ): ContentItem[] {
     const visibleStatuses = this.getContentVisibility(userRole, false)
-    
+
     return content.filter(item => {
       // Check status visibility
       if (!visibleStatuses.includes(item.status)) {
@@ -298,27 +298,27 @@ export class ContentWorkflow {
   // Generate workflow action buttons HTML
   static generateActionButtons(
     contentId: string,
-    currentStatus: ContentStatus,
+    _currentStatus: ContentStatus,
     availableActions: WorkflowAction[]
   ): string {
     const actionConfig = {
-      [WorkflowAction.SAVE_DRAFT]: { class: 'btn-secondary', text: 'Save Draft', icon: '💾' },
-      [WorkflowAction.SUBMIT_FOR_REVIEW]: { class: 'btn-primary', text: 'Submit for Review', icon: '👁️' },
-      [WorkflowAction.APPROVE]: { class: 'btn-success', text: 'Approve', icon: '✅' },
-      [WorkflowAction.REJECT]: { class: 'btn-warning', text: 'Reject', icon: '❌' },
-      [WorkflowAction.PUBLISH]: { class: 'btn-success', text: 'Publish', icon: '🚀' },
-      [WorkflowAction.UNPUBLISH]: { class: 'btn-warning', text: 'Unpublish', icon: '📥' },
-      [WorkflowAction.SCHEDULE]: { class: 'btn-info', text: 'Schedule', icon: '⏰' },
-      [WorkflowAction.ARCHIVE]: { class: 'btn-secondary', text: 'Archive', icon: '📦' },
-      [WorkflowAction.DELETE]: { class: 'btn-danger', text: 'Delete', icon: '🗑️' },
-      [WorkflowAction.RESTORE]: { class: 'btn-success', text: 'Restore', icon: '♻️' }
+      [WorkflowAction.SAVE_DRAFT]: { class: 'btn-secondary', text: 'Save Draft', icon: 'save' },
+      [WorkflowAction.SUBMIT_FOR_REVIEW]: { class: 'btn-primary', text: 'Submit for Review', icon: 'eye' },
+      [WorkflowAction.APPROVE]: { class: 'btn-success', text: 'Approve', icon: 'check' },
+      [WorkflowAction.REJECT]: { class: 'btn-warning', text: 'Reject', icon: 'x' },
+      [WorkflowAction.PUBLISH]: { class: 'btn-success', text: 'Publish', icon: 'upload' },
+      [WorkflowAction.UNPUBLISH]: { class: 'btn-warning', text: 'Unpublish', icon: 'download' },
+      [WorkflowAction.SCHEDULE]: { class: 'btn-info', text: 'Schedule', icon: 'clock' },
+      [WorkflowAction.ARCHIVE]: { class: 'btn-secondary', text: 'Archive', icon: 'archive' },
+      [WorkflowAction.DELETE]: { class: 'btn-danger', text: 'Delete', icon: 'trash' },
+      [WorkflowAction.RESTORE]: { class: 'btn-success', text: 'Restore', icon: 'refresh' }
     }
 
     const buttons = availableActions.map(action => {
       const config = actionConfig[action]
       return `
-        <button 
-          class="btn ${config.class}" 
+        <button
+          class="btn ${config.class}"
           hx-post="/admin/content/${contentId}/workflow"
           hx-vals='{"action": "${action}"}'
           hx-target="#content-status"
@@ -333,12 +333,25 @@ export class ContentWorkflow {
   }
 }
 
+// Database row type for content records
+interface ContentDbRow {
+  id: string
+  title: string
+  slug: string
+  data: string | null
+  status: string
+  author_id: string
+  model_name: string | null
+  created_at: number
+  updated_at: number
+}
+
 // Database-backed workflow manager for testing compatibility
 export class WorkflowManager {
-  private db: any
+  private db: D1Database
   private permissions: WorkflowPermissions
 
-  constructor(db: any, permissions: WorkflowPermissions = defaultWorkflowPermissions) {
+  constructor(db: D1Database, permissions: WorkflowPermissions = defaultWorkflowPermissions) {
     this.db = db
     this.permissions = permissions
   }
@@ -353,8 +366,8 @@ export class WorkflowManager {
     try {
       // Get content from database
       const stmt = this.db.prepare('SELECT * FROM content WHERE id = ?')
-      const content = await stmt.bind(contentId).first()
-      
+      const content = await stmt.bind(contentId).first() as ContentDbRow | null
+
       if (!content) {
         return false
       }
@@ -378,7 +391,7 @@ export class WorkflowManager {
     action: WorkflowAction,
     userId: string,
     userRole: string,
-    metadata?: any
+    metadata?: { scheduledAt?: number; comment?: string }
   ): Promise<{ success: boolean; newStatus?: ContentStatus; error?: string }> {
     try {
       // Check permissions first
@@ -389,8 +402,8 @@ export class WorkflowManager {
 
       // Get content
       const stmt = this.db.prepare('SELECT * FROM content WHERE id = ?')
-      const content = await stmt.bind(contentId).first()
-      
+      const content = await stmt.bind(contentId).first() as ContentDbRow | null
+
       if (!content) {
         return { success: false, error: 'Content not found' }
       }
@@ -401,11 +414,11 @@ export class WorkflowManager {
           id: content.id,
           title: content.title,
           slug: content.slug,
-          content: content.data || '',
+          content: content.data ?? '',
           status: content.status as ContentStatus,
           authorId: content.author_id,
-          modelName: content.model_name || '',
-          data: content.data ? JSON.parse(content.data) : {},
+          modelName: content.model_name ?? '',
+          data: content.data ? (JSON.parse(content.data) as Record<string, unknown>) : {},
           createdAt: content.created_at,
           updatedAt: content.updated_at,
           version: 1
@@ -418,27 +431,26 @@ export class WorkflowManager {
 
       // Update content in database
       const updateStmt = this.db.prepare(`
-        UPDATE content 
-        SET status = ?, updated_at = ? 
+        UPDATE content
+        SET status = ?, updated_at = ?
         WHERE id = ?
       `)
       await updateStmt.bind(updatedContent.status, updatedContent.updatedAt, contentId).run()
 
-      // Log action to audit trail
-      const auditStmt = this.db.prepare(`
-        INSERT INTO content_audit_log 
-        (id, content_id, action, from_status, to_status, user_id, timestamp, metadata)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      // Log action to workflow_history
+      const historyStmt = this.db.prepare(`
+        INSERT INTO workflow_history
+        (id, content_id, workflow_id, from_state_id, to_state_id, user_id, comment)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `)
-      await auditStmt.bind(
+      await historyStmt.bind(
         historyEntry.id,
         historyEntry.contentId,
-        historyEntry.action,
+        'default',
         historyEntry.fromStatus,
         historyEntry.toStatus,
         historyEntry.userId,
-        historyEntry.createdAt,
-        JSON.stringify(metadata || {})
+        historyEntry.comment ?? null
       ).run()
 
       return { success: true, newStatus: updatedContent.status }
@@ -448,18 +460,15 @@ export class WorkflowManager {
   }
 
   // Get workflow history for content
-  async getWorkflowHistory(contentId: string): Promise<any[]> {
+  async getWorkflowHistory(contentId: string): Promise<unknown[]> {
     const stmt = this.db.prepare(`
-      SELECT * FROM content_audit_log 
-      WHERE content_id = ? 
-      ORDER BY timestamp DESC
+      SELECT * FROM workflow_history
+      WHERE content_id = ?
+      ORDER BY created_at DESC
     `)
     const result = await stmt.bind(contentId).all()
-    
-    return (result.results || []).map((entry: any) => ({
-      ...entry,
-      metadata: this.parseMetadata(entry.metadata)
-    }))
+
+    return result.results
   }
 
   // Get available actions for content
@@ -470,8 +479,8 @@ export class WorkflowManager {
   ): Promise<WorkflowAction[]> {
     try {
       const stmt = this.db.prepare('SELECT * FROM content WHERE id = ?')
-      const content = await stmt.bind(contentId).first()
-      
+      const content = await stmt.bind(contentId).first() as ContentDbRow | null
+
       if (!content) {
         return []
       }
@@ -494,7 +503,7 @@ export class WorkflowManager {
     newStatus: ContentStatus,
     userId: string,
     userRole: string,
-    metadata?: any
+    metadata?: unknown
   ): Promise<{ success: boolean; updatedCount?: number; errors?: string[]; error?: string }> {
     // Check bulk permissions
     if (!this.hasPermissionForStatus(userRole, newStatus)) {
@@ -510,21 +519,20 @@ export class WorkflowManager {
         const updateStmt = this.db.prepare('UPDATE content SET status = ?, updated_at = ? WHERE id = ?')
         await updateStmt.bind(newStatus, Date.now(), contentId).run()
 
-        // Log audit entry
-        const auditStmt = this.db.prepare(`
-          INSERT INTO content_audit_log 
-          (id, content_id, action, from_status, to_status, user_id, timestamp, metadata)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        // Log to workflow_history
+        const historyStmt = this.db.prepare(`
+          INSERT INTO workflow_history
+          (id, content_id, workflow_id, from_state_id, to_state_id, user_id, comment)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `)
-        await auditStmt.bind(
+        await historyStmt.bind(
           crypto.randomUUID(),
           contentId,
-          'bulk_update',
+          'default',
           'unknown',
           newStatus,
           userId,
-          Date.now(),
-          JSON.stringify(metadata || {})
+          metadata ? `bulk_update: ${JSON.stringify(metadata)}` : 'bulk_update'
         ).run()
 
         updatedCount++
@@ -542,14 +550,16 @@ export class WorkflowManager {
   private hasPermissionForStatus(userRole: string, status: ContentStatus): boolean {
     return this.permissions[status].includes(userRole)
   }
+}
 
-  // Parse metadata JSON safely
-  private parseMetadata(metadata: string | null): any {
-    if (!metadata) return {}
-    try {
-      return JSON.parse(metadata)
-    } catch {
-      return {}
-    }
-  }
+// D1Database interface (subset needed for WorkflowManager)
+interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement
+  first<T = unknown>(): Promise<T | null>
+  all<T = unknown>(): Promise<{ results: T[] }>
+  run(): Promise<{ changes: number }>
+}
+
+interface D1Database {
+  prepare(query: string): D1PreparedStatement
 }
