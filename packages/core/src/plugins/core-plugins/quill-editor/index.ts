@@ -211,16 +211,35 @@ export function getQuillCDN(version: string = '2.0.2'): string {
 
     <!-- Quill Theme Styles -->
     <style>
+      /* Quill container constraints — prevent content overflow */
+      .quill-editor-container {
+        position: relative;
+        max-width: 100%;
+      }
+
+      .ql-container {
+        overflow: hidden !important;
+      }
+
+      .ql-editor {
+        overflow-y: auto !important;
+        max-height: 600px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
       /* Light mode — ensure Quill matches the admin theme */
       .ql-toolbar {
         background-color: #ffffff !important;
         border-color: #e4e4e7 !important;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
       }
 
       .ql-container {
         background-color: #ffffff !important;
         border-color: #e4e4e7 !important;
         color: #18181b !important;
+        border-radius: 0 0 0.5rem 0.5rem !important;
       }
 
       .ql-editor {

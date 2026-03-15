@@ -21,8 +21,8 @@ export const securityHeadersMiddleware = () => {
     c.header('Content-Security-Policy', [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com",
+      "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://maxcdn.bootstrapcdn.com https://fonts.bunny.net https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com",
       "img-src 'self' data: blob: https://imagedelivery.net https://*.r2.dev",
       "connect-src 'self'",
       "frame-ancestors 'self'",
