@@ -134,6 +134,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 7. Astro Content Layer Loader | 3/3 | Complete | 2026-03-09 |
 | 8. Live Preview API | 3/3 | Complete | 2026-03-09 |
 | 9. Schema Migrations UI | 4/4 | Complete | 2026-03-09 |
+| 10. Workflow Engine Activation | 3/3 | Complete | 2026-03-15 |
 
 ---
 
@@ -173,6 +174,18 @@ Plans:
 - [x] 09-02-PLAN.md — Wire migration tracking into field add/edit/delete routes
 - [x] 09-03-PLAN.md — Migration history page with human-readable descriptions, filtering, pagination
 - [x] 09-04-PLAN.md — Rollback support + destructive change warnings with content impact counts
+
+### Phase 10: Workflow Engine Activation
+**Goal**: Activate the existing workflow engine plugin so multi-user teams can use content approval workflows (Draft -> In Review -> Approved -> Published), coexisting with content staging/Sync
+**Impact**: Team Collaboration, Editorial Workflow
+**Effort**: Medium (3 plans, activation of existing code)
+**Status**: Complete (2026-03-15)
+**Plans**: 3 plans
+
+Plans:
+- [x] 10-01-PLAN.md — Fix all service type safety (@ts-nocheck removal, user_permissions -> role_permissions, content_audit_log -> workflow_history)
+- [x] 10-02-PLAN.md — Fix route type imports (Bindings/Variables from app.ts) and migrate 3 templates to Catalyst layout
+- [x] 10-03-PLAN.md — Wire routes into app.ts, add sidebar navigation, visual verification
 
 ### DX Note: AI-Assisted Development
 This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.
