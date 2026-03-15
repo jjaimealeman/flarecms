@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 
 ## Current Position
 
-Phase: 9 of 9 (Schema Migrations UI)
-Plan: 4 of 4 in current phase
-Status: Phase 9 complete, verified
-Last activity: 2026-03-09 — Quick task 001 complete (migrate pages to Content Layer)
+Phase: 10 of 10 (Workflow Engine Activation)
+Plan: 2 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-15 — Completed 10-02-PLAN.md (fix route types + migrate templates to Catalyst)
 
-Progress: [████████████████████████████████████████████████████] 100% (28/28 plans)
+Progress: [████████████████████████████████████████████████████░░] 96% (2/3 plans in phase 10)
 
 ## Performance Metrics
 
@@ -79,6 +79,9 @@ Recent decisions affecting current work:
 - [09-04]: Rollback creates inverse audit entry for traceability
 - [09-04]: Safe DOM methods (createElement/textContent) for dynamic dialog content
 - [09-04]: Impact endpoint pattern for pre-deletion content count
+- [10-02]: ../../../app relative path for workflow-plugin (3 levels, not 4)
+- [10-02]: ../../../../templates/layouts/ for templates subdir of workflow-plugin (4 levels)
+- [10-02]: User name falls back to email in Catalyst layout (JWT has no display name)
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ None -- all v2 phases complete.
 
 ## Session Continuity
 
-Last session: 2026-03-09
-Stopped at: Completed quick-001 (migrate pages to Content Layer)
+Last session: 2026-03-15
+Stopped at: Completed 10-02-PLAN.md (workflow route types + Catalyst template migration)
 Resume file: None
