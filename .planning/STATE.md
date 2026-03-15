@@ -2,26 +2,23 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-08)
+See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** Phase 10 - Workflow Engine Activation (ALL plans complete)
+**Current focus:** v2.0 milestone complete -- ready for next milestone
 
 ## Current Position
 
-Phase: 10 of 10 (Workflow Engine Activation)
-Plan: 3 of 3 in current phase
-Status: Phase complete (all 3 plans done)
-Last activity: 2026-03-15 — Completed 10-03-PLAN.md (wire routes and sidebar)
-
-Progress: [█████████████████████████████████████████████████████████] 100% (3/3 plans in phase 10)
+Phase: v2.0 complete (10 phases, 31 plans)
+Status: Milestone shipped
+Last activity: 2026-03-15 -- v2.0 Platform Maturity milestone archived
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 28
-- Average duration: ~8 min
-- Total execution time: ~214 min
+- Total plans completed: 31
+- Timeline: 8 days (2026-03-08 -> 2026-03-15)
+- Commits: 236
 
 **By Phase:**
 
@@ -34,81 +31,31 @@ Progress: [███████████████████████
 | 5 | 5 | ~37min | ~7.4min |
 | 6 | 3 | ~16min | ~5.3min |
 | 7 | 3 | ~10min | ~3.3min |
-| 8 | 3/3 | ~11min | ~3.7min |
-| 9 | 4/4 | ~15min | ~3.75min |
-
-## v2 Roadmap
-
-| Phase | Feature | Impact | Status |
-|-------|---------|--------|--------|
-| 7 | Astro Content Layer Loader | Astro Integration 5/5 | Complete |
-| 8 | Live Preview API | Developer Experience 5/5 | Complete |
-| 9 | Schema Migrations UI | Content Modeling 5/5 | Complete |
+| 8 | 3 | ~11min | ~3.7min |
+| 9 | 4 | ~15min | ~3.75min |
+| 10 | 3 | ~20min | ~6.7min |
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Full decision log archived in milestones/v2.0-ROADMAP.md.
+PROJECT.md Key Decisions table has the summary.
 
-- [07-01]: astro/zod for Zod imports (Astro re-exports Zod for Content Layer compatibility)
-- [07-01]: Graceful API client returns empty data on failure instead of throwing
-- [07-01]: System fields (_status, _createdAt, _updatedAt) always optional in generated schemas
-- [07-02]: Client-side status filtering in loader (API filters broken)
-- [07-02]: Permissive passthrough fallback schema when CMS unreachable
-- [07-02]: store.clear() before each build for clean state
-- [07-03]: 5 collections in content.config.ts: blogPosts, news, docs, docsSections, pages
-- [quick-001]: All pages use Content Layer exclusively (flare.ts stripped to getDraftContent only)
-- [07-03]: CMS API returns title/slug at root level, not inside item.data — loaders flatten both
-- [08-01]: GET /draft/:token unauthenticated -- token is the credential for cross-origin Astro iframe
-- [08-01]: Selective requireAuth per-route (not per-router) for mixed auth endpoints
-- [08-02]: Standalone page (no admin layout) for full-viewport split-screen preview
-- [08-02]: Dual mount at /api/preview and /admin/preview for API and page access
-- [08-02]: iframe.src replacement for preview updates -- postMessage deferred to Plan 03
-- [08-03]: Generic preview template for all collections (not per-collection templates)
-- [08-03]: 401 for missing token, 410 for expired/not-found (clear HTTP semantics)
-- [09-01]: Migration bundle ID 032 (next after 031) for schema_migrations table
-- [09-01]: No FK constraints on schema_migrations -- avoids cascade issues
-- [09-01]: validateFieldChange uses changeType param for selective duplicate checking
-- [09-02]: Best-effort migration recording (try/catch, non-blocking on failure)
-- [09-02]: Schema update moved inside field-exists check for correct variable scoping
-- [09-03]: Schema Migrations sidebar in main nav (not Settings sub-page)
-- [09-03]: HTML details/summary for expandable migration details (no-JS progressive enhancement)
-- [09-03]: User display shows email (JWT lacks display name)
-- [09-04]: Rollback creates inverse audit entry for traceability
-- [09-04]: Safe DOM methods (createElement/textContent) for dynamic dialog content
-- [09-04]: Impact endpoint pattern for pre-deletion content count
-- [10-01]: Replace user_permissions with role_permissions + permissions JOIN (user_permissions table doesn't exist)
-- [10-01]: Replace content_audit_log with workflow_history (content_audit_log doesn't exist)
-- [10-01]: getAvailableTransitions accepts userRole string (not userId) for permission JOIN
-- [10-01]: PluginDbService import removed (module doesn't exist; was hidden by @ts-nocheck)
-- [10-02]: ../../../app relative path for workflow-plugin (3 levels, not 4)
-- [10-02]: ../../../../templates/layouts/ for templates subdir of workflow-plugin (4 levels)
-- [10-02]: User name falls back to email in Catalyst layout (JWT has no display name)
-- [10-03]: requireAuth() applied at route factory level in workflow routes (JWT never decoded without it)
-- [10-03]: initializeContentWorkflow auto-creates default workflow per collection if none exists
-- [10-03]: workflow_history actual columns: action, from_status, to_status (not from_state_id, to_state_id)
-- [10-03]: LEFT JOIN users on workflow_history queries (INNER JOIN 500s on missing user rows)
+### Tech Debt (carried forward from v2.0)
 
-### Pending Todos
-
-None -- all v2 phases complete.
-
-### Quick Tasks Completed
-
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 001 | Migrate pages from lib/flare.ts to Astro Content Layer | 2026-03-09 | ef3bdd3 | [001-migrate-pages-to-content-layer](./quick/001-migrate-pages-to-content-layer/) |
+- `schema_migrations` DDL not in migrations-bundle.ts (fresh installs affected)
+- `workflowPlugin` object is dead code (routes wired directly instead)
+- Workflow plugin hook names mismatch
+- Workflow routes not exported from public API
+- Phase 6 missing VERIFICATION.md
 
 ### Blockers/Concerns
 
-- [Research]: Broken API filters force client-side filtering -- follow existing pattern, mitigate with KV caching
-- [Phase 1]: Local wrangler dev uploads to local R2 -- expected, works in production
-- [Phase 3]: Astro SSR dev server slow to reflect changes (~30s for Shiki singleton reinit) -- dev experience only
+- Broken API filters force client-side filtering -- inherited from SonicJS v2.8.0
 
 ## Session Continuity
 
 Last session: 2026-03-15
-Stopped at: Completed 10-03-PLAN.md (wire routes and sidebar) — Phase 10 complete
+Stopped at: v2.0 milestone archived
 Resume file: None

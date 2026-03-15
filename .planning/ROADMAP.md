@@ -1,196 +1,30 @@
-# Roadmap: Flare CMS Documentation Site
+# Roadmap: Flare CMS
 
-## Overview
+## Milestones
 
-Transform the existing Astro 5 frontend into a full documentation website for Flare CMS, with all content managed through the CMS itself (100% dogfooding). The build progresses from CMS content foundation through layout, rendering, and site shell to documentation authoring and search — each phase delivering a coherent, verifiable capability that unblocks the next. The dependency chain is strict: collections must exist before layout can fetch data, layout must exist before content renders into it, and content must exist before search can index it.
+- SHIPPED **v2.0 Platform Maturity** -- Phases 1-10 (shipped 2026-03-15)
 
-## Phases
+<details>
+<summary>v2.0 Platform Maturity (Phases 1-10) -- SHIPPED 2026-03-15</summary>
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+- [x] Phase 1: CMS Content Foundation (2/2 plans) -- 2026-03-08
+- [x] Phase 2: Docs Layout & Navigation (2/2 plans) -- 2026-03-08
+- [x] Phase 3: Content Rendering & Route (3/3 plans) -- 2026-03-08
+- [x] Phase 4: Site Shell & Homepage (3/3 plans) -- 2026-03-08
+- [x] Phase 5: Documentation Content (5/5 plans) -- 2026-03-08
+- [x] Phase 6: Search & Deploy (3/3 plans) -- 2026-03-09
+- [x] Phase 7: Astro Content Layer Loader (3/3 plans) -- 2026-03-09
+- [x] Phase 8: Live Preview API (3/3 plans) -- 2026-03-09
+- [x] Phase 9: Schema Migrations UI (4/4 plans) -- 2026-03-09
+- [x] Phase 10: Workflow Engine Activation (3/3 plans) -- 2026-03-15
 
-Decimal phases appear between their surrounding integers in numeric order.
+Full details: milestones/v2.0-ROADMAP.md
 
-- [x] **Phase 1: CMS Content Foundation** - Collections, schemas, and EasyMDE editor for code-heavy docs
-- [x] **Phase 2: Docs Layout & Navigation** - API layer, 3-column layout shell, sidebar, breadcrumbs, prev/next
-- [x] **Phase 3: Content Rendering & Route** - Catch-all route, Shiki highlighting, copy buttons, callouts, tabs
-- [x] **Phase 4: Site Shell & Homepage** - Header, footer, homepage redesign, SEO, "Edit in CMS" links
-- [x] **Phase 5: Documentation Content** - Author and seed all 8 documentation sections via API script
-- [x] **Phase 6: Search & Deploy** - MiniSearch with Cmd+K, comparison pages, and Astro integration page
+</details>
 
-## Phase Details
+## Next Milestone
 
-### Phase 1: CMS Content Foundation
-**Goal**: Docs and docs-sections collections exist in the CMS with a validated EasyMDE editor workflow for code-heavy documentation content
-**Depends on**: Nothing (first phase)
-**Requirements**: CMS-01, CMS-02, CMS-03
-**Success Criteria** (what must be TRUE):
-  1. Admin user can create a docs-sections entry with name, slug, description, icon, and order fields in the CMS admin UI
-  2. Admin user can create a docs entry with title, slug, content (markdown), section reference, order, and prev/next fields
-  3. Admin user can write markdown with fenced code blocks in 5+ languages using EasyMDE — content round-trips correctly (create, save, reload, edit)
-  4. Content with code examples, blockquote-based callouts, and tables renders correctly when fetched via the REST API
-**Plans**: 2 plans
-
-Plans:
-- [x] 01-01-PLAN.md — Create docs-sections and docs collections, register in CMS, fix FieldType union
-- [x] 01-02-PLAN.md — Enhance EasyMDE with code block button and R2 image upload, verify full workflow
-
-### Phase 2: Docs Layout & Navigation
-**Goal**: A visitor navigating to /docs sees a responsive 3-column layout with working sidebar navigation, breadcrumbs, and prev/next links — all generated from CMS data
-**Depends on**: Phase 1
-**Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05
-**Success Criteria** (what must be TRUE):
-  1. Visitor sees a 3-column layout (sidebar, content area, TOC placeholder) at desktop widths, 2-column at tablet, and single-column with hamburger menu on mobile
-  2. Left sidebar shows navigation grouped by docs-sections with collapsible groups and active page highlighting, generated entirely from CMS API data
-  3. Breadcrumbs display the path Docs > Section Name > Page Title on every docs page
-  4. Prev/next navigation at the bottom of each docs page links to the correct adjacent pages based on section and order
-  5. Mobile sidebar collapses to a hamburger toggle and content reflows to full width
-**Plans**: 2 plans
-
-Plans:
-- [x] 02-01-PLAN.md — Data layer (API functions, nav tree builder) and layout/navigation components (DocsLayout, sidebar, breadcrumbs, prev/next)
-- [x] 02-02-PLAN.md — Route wiring (docs landing page, catch-all route) and visual verification
-
-### Phase 3: Content Rendering & Route
-**Goal**: A visitor can read any docs page with properly highlighted code blocks, copy buttons, callout boxes, and tabbed code examples
-**Depends on**: Phase 2
-**Requirements**: RENDER-01, RENDER-02, RENDER-03, RENDER-04
-**Success Criteria** (what must be TRUE):
-  1. Code blocks render with Shiki syntax highlighting in a dark theme matching the site palette, with language labels visible
-  2. Every code block has a copy button that copies the code content to clipboard on click
-  3. Callout boxes (info, warning, tip, caution) render with distinct icons, colors, and styling when authored as blockquotes with a prefix convention
-  4. Tabbed code examples (TypeScript/JavaScript) switch between variants on click and persist the user's language preference across pages
-**Plans**: 3 plans
-
-Plans:
-- [x] 03-01-PLAN.md — Unified/rehype rendering pipeline (Shiki, callouts, heading anchors) + CSS styling + route wiring
-- [x] 03-02-PLAN.md — Table of Contents component + client-side scripts (copy, tabs, scroll-spy, lightbox)
-- [x] 03-03-PLAN.md — Visual verification of all rendering features
-
-### Phase 4: Site Shell & Homepage
-**Goal**: The site has a polished header, footer, redesigned homepage per Stitch v2 mockups, proper SEO metadata, and "Edit in CMS" links on every docs page
-**Depends on**: Phase 1 (homepage uses CMS data), Phase 3 (docs pages must exist for "Edit in CMS")
-**Requirements**: SITE-01, SITE-03, SITE-04, SITE-05, SITE-06
-**Success Criteria** (what must be TRUE):
-  1. Header displays logo, navigation links (Docs, Blog, GitHub), search placeholder, and CTA buttons across all pages
-  2. Footer displays GitHub link, MIT License badge, "Built with Flare CMS" badge, and legal page links across all pages
-  3. Homepage shows hero section, feature cards, comparison table, and CTA per Stitch v2 mockup with dark navy/cyan/orange theme
-  4. Every docs page has an "Edit in CMS" link that opens the correct admin edit URL for that content item
-  5. Every page has proper meta tags and Open Graph tags, and the site generates an auto-updated sitemap
-**Plans**: 3 plans
-
-Plans:
-- [x] 04-01-PLAN.md — SEO component, Edit-in-CMS component, sitemap endpoint, astro.config site property
-- [x] 04-02-PLAN.md — Layout.astro header/footer redesign with mobile nav, SEO integration, legal pages
-- [x] 04-03-PLAN.md — Homepage redesign: Hero, Features, ComparisonTable, CTA per Stitch v2 mockups
-
-### Phase 5: Documentation Content
-**Goal**: All 8 documentation sections are authored with substantive technical content and seeded via a reproducible API script
-**Depends on**: Phase 3 (rendering pipeline must work), Phase 4 (site shell for full visual context)
-**Requirements**: CMS-04, DOCS-01, DOCS-02, DOCS-03, DOCS-04, DOCS-05, DOCS-06, DOCS-07, DOCS-08
-**Success Criteria** (what must be TRUE):
-  1. A reproducible seed script populates all documentation content via the CMS API and can be re-run to reset content to a known state
-  2. Getting Started section has quickstart, installation, and project structure pages that a new developer can follow from zero to a running FlareCMS instance
-  3. All 8 documentation sections (Getting Started, Core Concepts, API Reference, Admin, Security, Plugins, Deployment, Configuration) are navigable from the sidebar and contain substantive, accurate technical content
-  4. Code examples in docs are accurate and reflect the current FlareCMS API surface
-**Plans**: 5 plans
-
-Plans:
-- [x] 05-01-PLAN.md — Seed script, prompt generator, content directory structure with 8 section metadata files
-- [x] 05-02-PLAN.md — Author Getting Started (3 pages), Core Concepts (4 pages), Configuration (3 pages)
-- [x] 05-03-PLAN.md — Author Admin (5 pages), API Reference (4 pages)
-- [x] 05-04-PLAN.md — Author Plugins (3 pages), Security (4 pages), Deployment (5 pages)
-- [x] 05-05-PLAN.md — Run seed script, verify all content renders, confirm idempotency
-
-### Phase 6: Search & Deploy
-**Goal**: Visitors can search all documentation content via keyboard shortcut and the complete docs site is live on Cloudflare Pages
-**Depends on**: Phase 5 (search needs content to index, deploy needs everything complete)
-**Requirements**: SITE-02, DEPLOY-01
-**Success Criteria** (what must be TRUE):
-  1. Visitor can press Cmd/Ctrl+K to open a search modal and find docs pages by title or content with fuzzy matching
-  2. Search results show relevant page titles with section context and link directly to the correct docs page
-  3. The complete docs site is deployed to Cloudflare Pages with all routes functional — homepage, all docs pages, and search working in production
-**Plans**: 3 plans
-
-Plans:
-- [x] 06-01-PLAN.md — Install MiniSearch, shared search config, server-side search index endpoint
-- [x] 06-02-PLAN.md — Search modal UI with keyboard navigation, match highlighting, Text Fragments API
-- [x] 06-03-PLAN.md — Production seed safety, homepage positioning, comparison pages, Astro integration page
-
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. CMS Content Foundation | 2/2 | Complete | 2026-03-08 |
-| 2. Docs Layout & Navigation | 2/2 | Complete | 2026-03-08 |
-| 3. Content Rendering & Route | 3/3 | Complete | 2026-03-08 |
-| 4. Site Shell & Homepage | 3/3 | Complete | 2026-03-08 |
-| 5. Documentation Content | 5/5 | Complete | 2026-03-08 |
-| 6. Search & Deploy | 3/3 | Complete | 2026-03-09 |
-| 7. Astro Content Layer Loader | 3/3 | Complete | 2026-03-09 |
-| 8. Live Preview API | 3/3 | Complete | 2026-03-09 |
-| 9. Schema Migrations UI | 4/4 | Complete | 2026-03-09 |
-| 10. Workflow Engine Activation | 3/3 | Complete | 2026-03-15 |
+Not yet defined. Run `/gsd:new-milestone` to start.
 
 ---
-
-## v2 Roadmap: Platform Maturity
-
-Future phases to close the remaining gaps and reach 5/5 across all dimensions.
-
-### Phase 7: Astro Content Layer Loader (`@flare-cms/astro`) ✓
-**Goal**: A dedicated Astro integration package that plugs into Astro's Content Layer API, enabling `getCollection('blog-posts')` with full type safety — no manual fetch calls
-**Impact**: Astro Integration 4→5, Developer Experience 4→5
-**Effort**: Low (200-400 lines)
-**Status**: Complete (2026-03-09)
-**Plans**: 3 plans
-- [x] 07-01-PLAN.md — Package scaffold, types, schema converter, API client
-- [x] 07-02-PLAN.md — Build-time Content Layer loader (flareLoader)
-- [x] 07-03-PLAN.md — Experimental live loader + site dogfood integration
-
-### Phase 8: Live Preview API ✓
-**Goal**: Content editors see real-time preview of draft changes rendered through the actual Astro frontend, leveraging same-edge-network latency (<50ms round-trip)
-**Impact**: Developer Experience 4→5, competitive moat (unique edge advantage)
-**Effort**: Medium (dedicated phase, 3 plans)
-**Status**: Complete (2026-03-09)
-**Plans**: 3 plans
-- [x] 08-01-PLAN.md — Draft content API endpoints (POST/GET) with KV storage and deterministic tokens
-- [x] 08-02-PLAN.md — Split-screen preview page template, draggable divider, debounced updates, admin button wiring
-- [x] 08-03-PLAN.md — Astro SSR preview route, getDraftContent helper, postMessage listener
-
-### Phase 9: Schema Migrations UI
-**Goal**: Non-technical users can add/modify collection fields from the admin dashboard without touching code or running CLI commands
-**Impact**: Content Modeling 4→5, broadens user base beyond developers
-**Effort**: High (dedicated phase, 4 plans)
-**Status**: Complete (2026-03-09)
-**Plans**: 4 plans
-
-Plans:
-- [x] 09-01-PLAN.md — Schema migrations table DDL + SchemaMigrationService (record, query, validate)
-- [x] 09-02-PLAN.md — Wire migration tracking into field add/edit/delete routes
-- [x] 09-03-PLAN.md — Migration history page with human-readable descriptions, filtering, pagination
-- [x] 09-04-PLAN.md — Rollback support + destructive change warnings with content impact counts
-
-### Phase 10: Workflow Engine Activation
-**Goal**: Activate the existing workflow engine plugin so multi-user teams can use content approval workflows (Draft -> In Review -> Approved -> Published), coexisting with content staging/Sync
-**Impact**: Team Collaboration, Editorial Workflow
-**Effort**: Medium (3 plans, activation of existing code)
-**Status**: Complete (2026-03-15)
-**Plans**: 3 plans
-
-Plans:
-- [x] 10-01-PLAN.md — Fix all service type safety (@ts-nocheck removal, user_permissions -> role_permissions, content_audit_log -> workflow_history)
-- [x] 10-02-PLAN.md — Fix route type imports (Bindings/Variables from app.ts) and migrate 3 templates to Catalyst layout
-- [x] 10-03-PLAN.md — Wire routes into app.ts, add sidebar navigation, visual verification
-
-### DX Note: AI-Assisted Development
-This project was built with Claude Code using MCP servers for Astro docs and Cloudflare bindings. Developers building on Flare CMS can use the same tools to streamline their workflow with D1, R2, KV, and Workers concepts.
-
----
-*Roadmap created: 2026-03-08*
-*v1 coverage: 28/28 requirements mapped*
-*v2 roadmap added: 2026-03-09*
+*Last updated: 2026-03-15 after v2.0 milestone completion*
