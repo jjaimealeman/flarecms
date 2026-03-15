@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { D1Database } from '@cloudflare/workers-types'
+import type { D1Database } from '@cloudflare/workers-types'
 
 export interface Notification {
   id: string
@@ -7,7 +6,7 @@ export interface Notification {
   type: 'workflow' | 'schedule' | 'system'
   title: string
   message: string
-  data?: any
+  data?: unknown
   is_read: boolean
   created_at: string
 }
@@ -21,6 +20,43 @@ export interface NotificationPreference {
   digest_frequency: 'immediate' | 'hourly' | 'daily' | 'weekly'
 }
 
+// D1 row types
+interface NotificationRow {
+  id: string
+  user_id: string
+  type: Notification['type']
+  title: string
+  message: string
+  data: string | null
+  is_read: number
+  created_at: string
+}
+
+interface NotificationPreferenceRow {
+  id: string
+  user_id: string
+  notification_type: string
+  email_enabled: number
+  in_app_enabled: number
+  digest_frequency: NotificationPreference['digest_frequency']
+}
+
+interface ContentWithCollectionRow {
+  title: string
+  slug: string
+  collection_name: string
+}
+
+interface UserRow {
+  username: string
+}
+
+interface DigestUserRow {
+  user_id: string
+  email: string
+  username: string
+}
+
 export class NotificationService {
   constructor(private db: D1Database) {}
 
@@ -29,12 +65,12 @@ export class NotificationService {
     type: 'workflow' | 'schedule' | 'system',
     title: string,
     message: string,
-    data?: any
+    data?: unknown
   ): Promise<string> {
-    const notificationId = globalThis.crypto.randomUUID()
-    
+    const notificationId = crypto.randomUUID()
+
     await this.db.prepare(`
-      INSERT INTO notifications 
+      INSERT INTO notifications
       (id, user_id, type, title, message, data)
       VALUES (?, ?, ?, ?, ?, ?)
     `).bind(
@@ -57,36 +93,37 @@ export class NotificationService {
   }
 
   async getUserNotifications(
-    userId: string, 
-    limit: number = 50, 
+    userId: string,
+    limit: number = 50,
     unreadOnly: boolean = false
   ): Promise<Notification[]> {
-    const whereClause = unreadOnly 
+    const whereClause = unreadOnly
       ? 'WHERE user_id = ? AND is_read = 0'
       : 'WHERE user_id = ?'
-    
+
     const { results } = await this.db.prepare(`
-      SELECT * FROM notifications 
+      SELECT * FROM notifications
       ${whereClause}
       ORDER BY created_at DESC
       LIMIT ?
-    `).bind(userId, limit).all()
-    
+    `).bind(userId, limit).all() as { results: NotificationRow[] }
+
     return results.map(row => ({
       ...row,
-      data: row.data ? JSON.parse(row.data) : null
+      data: row.data ? JSON.parse(row.data) as unknown : null,
+      is_read: Boolean(row.is_read)
     })) as Notification[]
   }
 
   async markAsRead(notificationId: string, userId: string): Promise<boolean> {
     try {
       const result = await this.db.prepare(`
-        UPDATE notifications 
-        SET is_read = 1 
+        UPDATE notifications
+        SET is_read = 1
         WHERE id = ? AND user_id = ?
       `).bind(notificationId, userId).run()
 
-      return result.changes > 0
+      return result.meta.changes > 0
     } catch (error) {
       console.error('Failed to mark notification as read:', error)
       return false
@@ -96,8 +133,8 @@ export class NotificationService {
   async markAllAsRead(userId: string): Promise<boolean> {
     try {
       await this.db.prepare(`
-        UPDATE notifications 
-        SET is_read = 1 
+        UPDATE notifications
+        SET is_read = 1
         WHERE user_id = ? AND is_read = 0
       `).bind(userId).run()
 
@@ -111,11 +148,11 @@ export class NotificationService {
   async deleteNotification(notificationId: string, userId: string): Promise<boolean> {
     try {
       const result = await this.db.prepare(`
-        DELETE FROM notifications 
+        DELETE FROM notifications
         WHERE id = ? AND user_id = ?
       `).bind(notificationId, userId).run()
 
-      return result.changes > 0
+      return result.meta.changes > 0
     } catch (error) {
       console.error('Failed to delete notification:', error)
       return false
@@ -124,27 +161,33 @@ export class NotificationService {
 
   async getUnreadCount(userId: string): Promise<number> {
     const result = await this.db.prepare(`
-      SELECT COUNT(*) as count FROM notifications 
+      SELECT COUNT(*) as count FROM notifications
       WHERE user_id = ? AND is_read = 0
-    `).bind(userId).first()
+    `).bind(userId).first() as { count: number } | null
 
-    return result?.count || 0
+    return result?.count ?? 0
   }
 
   async getUserPreferences(userId: string, notificationType?: string): Promise<NotificationPreference | null> {
-    const whereClause = notificationType 
+    const whereClause = notificationType
       ? 'WHERE user_id = ? AND notification_type = ?'
       : 'WHERE user_id = ?'
-    
-    const params = notificationType ? [userId, notificationType] : [userId]
-    
+
+    const params: unknown[] = notificationType ? [userId, notificationType] : [userId]
+
     const preference = await this.db.prepare(`
-      SELECT * FROM notification_preferences 
+      SELECT * FROM notification_preferences
       ${whereClause}
       LIMIT 1
-    `).bind(...params).first()
+    `).bind(...params).first() as NotificationPreferenceRow | null
 
-    return preference as NotificationPreference | null
+    if (!preference) return null
+
+    return {
+      ...preference,
+      email_enabled: Boolean(preference.email_enabled),
+      in_app_enabled: Boolean(preference.in_app_enabled)
+    } as NotificationPreference
   }
 
   async updateUserPreferences(
@@ -156,7 +199,7 @@ export class NotificationService {
   ): Promise<boolean> {
     try {
       await this.db.prepare(`
-        INSERT OR REPLACE INTO notification_preferences 
+        INSERT OR REPLACE INTO notification_preferences
         (user_id, notification_type, email_enabled, in_app_enabled, digest_frequency, updated_at)
         VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       `).bind(
@@ -176,12 +219,16 @@ export class NotificationService {
 
   async getAllUserPreferences(userId: string): Promise<NotificationPreference[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM notification_preferences 
+      SELECT * FROM notification_preferences
       WHERE user_id = ?
       ORDER BY notification_type
-    `).bind(userId).all()
+    `).bind(userId).all() as { results: NotificationPreferenceRow[] }
 
-    return results as NotificationPreference[]
+    return results.map(row => ({
+      ...row,
+      email_enabled: Boolean(row.email_enabled),
+      in_app_enabled: Boolean(row.in_app_enabled)
+    })) as NotificationPreference[]
   }
 
   // Bulk notification methods for system events
@@ -197,7 +244,7 @@ export class NotificationService {
       FROM content c
       JOIN collections col ON c.collection_id = col.id
       WHERE c.id = ?
-    `).bind(contentId).first()
+    `).bind(contentId).first() as ContentWithCollectionRow | null
 
     if (!content) return
 
@@ -208,7 +255,7 @@ export class NotificationService {
       JOIN content_workflow_status cws ON u.id = cws.assigned_to
       WHERE cws.content_id = ?
       AND u.id != ?
-    `).bind(contentId, userId).all()
+    `).bind(contentId, userId).all() as { results: { id: string }[] }
 
     const title = `Content "${content.title}" moved to ${toState}`
     const message = `The content "${content.title}" in ${content.collection_name} has been moved from ${fromState} to ${toState}.`
@@ -235,7 +282,7 @@ export class NotificationService {
       FROM content c
       JOIN collections col ON c.collection_id = col.id
       WHERE c.id = ?
-    `).bind(contentId).first()
+    `).bind(contentId).first() as ContentWithCollectionRow | null
 
     if (!content) return
 
@@ -262,17 +309,17 @@ export class NotificationService {
       FROM content c
       JOIN collections col ON c.collection_id = col.id
       WHERE c.id = ?
-    `).bind(contentId).first()
+    `).bind(contentId).first() as ContentWithCollectionRow | null
 
     if (!content) return
 
     const assignedBy = await this.db.prepare(`
       SELECT username FROM users WHERE id = ?
-    `).bind(assignedByUserId).first()
+    `).bind(assignedByUserId).first() as UserRow | null
 
     const dueDateText = dueDate ? ` (due: ${new Date(dueDate).toLocaleDateString()})` : ''
     const title = `You've been assigned content: "${content.title}"`
-    const message = `${assignedBy?.username || 'Someone'} has assigned you the content "${content.title}" for review${dueDateText}.`
+    const message = `${assignedBy?.username ?? 'Someone'} has assigned you the content "${content.title}" for review${dueDateText}.`
 
     await this.createNotification(
       assignedToUserId,
@@ -297,18 +344,18 @@ export class NotificationService {
       FROM notification_preferences np
       JOIN users u ON np.user_id = u.id
       WHERE np.digest_frequency = ? AND np.email_enabled = 1
-    `).bind(frequency).all()
+    `).bind(frequency).all() as { results: DigestUserRow[] }
 
     let sentCount = 0
 
     for (const user of users) {
       // Get unread notifications for this user since the last digest
       const { results: notifications } = await this.db.prepare(`
-        SELECT * FROM notifications 
-        WHERE user_id = ? AND is_read = 0 
+        SELECT * FROM notifications
+        WHERE user_id = ? AND is_read = 0
         AND created_at >= ${timeFilter}
         ORDER BY created_at DESC
-      `).bind(user.user_id).all()
+      `).bind(user.user_id).all() as { results: NotificationRow[] }
 
       if (notifications.length > 0) {
         // In a real implementation, this would send an email
@@ -323,10 +370,10 @@ export class NotificationService {
   // Clean up old notifications
   async cleanupOldNotifications(daysToKeep: number = 30): Promise<number> {
     const result = await this.db.prepare(`
-      DELETE FROM notifications 
+      DELETE FROM notifications
       WHERE created_at < datetime('now', '-${daysToKeep} days')
     `).run()
 
-    return result.changes
+    return result.meta.changes
   }
 }

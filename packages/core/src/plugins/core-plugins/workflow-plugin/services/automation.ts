@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { D1Database } from '@cloudflare/workers-types'
+import type { D1Database } from '@cloudflare/workers-types'
 import { WorkflowEngine } from './workflow-service'
 import { NotificationService } from './notifications'
 import { SchedulerService } from './scheduler'
@@ -9,9 +8,9 @@ export interface AutomationRule {
   name: string
   description?: string
   trigger_type: 'content_created' | 'content_updated' | 'workflow_transition' | 'schedule'
-  trigger_conditions?: any
+  trigger_conditions?: unknown
   action_type: 'workflow_transition' | 'send_notification' | 'webhook_call' | 'auto_save'
-  action_config?: any
+  action_config?: unknown
   is_active: boolean
 }
 
@@ -21,8 +20,79 @@ export interface AutoSaveDraft {
   user_id: string
   title?: string
   content?: string
-  fields?: any
+  fields?: unknown
   last_saved_at: string
+}
+
+// D1 row type for automation rules
+interface AutomationRuleRow {
+  id: string
+  name: string
+  description?: string
+  trigger_type: AutomationRule['trigger_type']
+  trigger_conditions: string | null
+  action_type: AutomationRule['action_type']
+  action_config: string | null
+  is_active: number
+}
+
+// D1 row type for auto-save drafts
+interface AutoSaveDraftRow {
+  id: string
+  content_id?: string
+  user_id: string
+  title?: string
+  content?: string
+  fields: string | null
+  last_saved_at: string
+}
+
+// D1 row type for content versions
+interface ContentVersionRow {
+  content_id: string
+  version_number: number
+  title: string
+  content: string
+  fields: string | null
+  user_id: string
+  change_summary?: string
+}
+
+// Trigger context types
+interface TriggerContext {
+  contentId?: string
+  userId?: string
+  event?: string
+  changes?: unknown
+  fromState?: string
+  toState?: string
+}
+
+// Action config type
+interface ActionConfig {
+  to_state?: string
+  user_id?: string
+  role?: string
+  title?: string
+  message?: string
+  webhook_url?: string
+  headers?: Record<string, string>
+}
+
+// User row for role lookup
+interface UserRow {
+  id: string
+  role: string
+}
+
+// Collection row
+interface CollectionRow {
+  collection_id: string
+}
+
+// Latest version row
+interface LatestVersionRow {
+  max_version: number | null
 }
 
 export class AutomationEngine {
@@ -32,14 +102,14 @@ export class AutomationEngine {
     name: string,
     description: string,
     triggerType: 'content_created' | 'content_updated' | 'workflow_transition' | 'schedule',
-    triggerConditions: any,
+    triggerConditions: unknown,
     actionType: 'workflow_transition' | 'send_notification' | 'webhook_call' | 'auto_save',
-    actionConfig: any
+    actionConfig: unknown
   ): Promise<string> {
-    const ruleId = globalThis.crypto.randomUUID()
-    
+    const ruleId = crypto.randomUUID()
+
     await this.db.prepare(`
-      INSERT INTO automation_rules 
+      INSERT INTO automation_rules
       (id, name, description, trigger_type, trigger_conditions, action_type, action_config, is_active)
       VALUES (?, ?, ?, ?, ?, ?, ?, 1)
     `).bind(
@@ -57,18 +127,19 @@ export class AutomationEngine {
 
   async getAutomationRules(isActive?: boolean): Promise<AutomationRule[]> {
     const whereClause = isActive !== undefined ? 'WHERE is_active = ?' : ''
-    const params = isActive !== undefined ? [isActive ? 1 : 0] : []
+    const params: unknown[] = isActive !== undefined ? [isActive ? 1 : 0] : []
 
     const { results } = await this.db.prepare(`
-      SELECT * FROM automation_rules 
+      SELECT * FROM automation_rules
       ${whereClause}
       ORDER BY created_at DESC
-    `).bind(...params).all()
+    `).bind(...params).all() as { results: AutomationRuleRow[] }
 
     return results.map(row => ({
       ...row,
-      trigger_conditions: row.trigger_conditions ? JSON.parse(row.trigger_conditions) : null,
-      action_config: row.action_config ? JSON.parse(row.action_config) : null
+      trigger_conditions: row.trigger_conditions ? JSON.parse(row.trigger_conditions) as unknown : null,
+      action_config: row.action_config ? JSON.parse(row.action_config) as unknown : null,
+      is_active: Boolean(row.is_active)
     })) as AutomationRule[]
   }
 
@@ -77,8 +148,8 @@ export class AutomationEngine {
     updates: Partial<AutomationRule>
   ): Promise<boolean> {
     try {
-      const fields = []
-      const values = []
+      const fields: string[] = []
+      const values: unknown[] = []
 
       if (updates.name !== undefined) {
         fields.push('name = ?')
@@ -107,7 +178,7 @@ export class AutomationEngine {
       values.push(ruleId)
 
       await this.db.prepare(`
-        UPDATE automation_rules 
+        UPDATE automation_rules
         SET ${fields.join(', ')}
         WHERE id = ?
       `).bind(...values).run()
@@ -125,7 +196,7 @@ export class AutomationEngine {
         DELETE FROM automation_rules WHERE id = ?
       `).bind(ruleId).run()
 
-      return result.changes > 0
+      return result.meta.changes > 0
     } catch (error) {
       console.error('Failed to delete automation rule:', error)
       return false
@@ -135,7 +206,7 @@ export class AutomationEngine {
   // Trigger automation when content is created
   async triggerContentCreated(contentId: string, userId: string): Promise<void> {
     const rules = await this.getActiveRulesByTrigger('content_created')
-    
+
     for (const rule of rules) {
       try {
         // Check if conditions match
@@ -151,9 +222,9 @@ export class AutomationEngine {
   }
 
   // Trigger automation when content is updated
-  async triggerContentUpdated(contentId: string, userId: string, changes: any): Promise<void> {
+  async triggerContentUpdated(contentId: string, userId: string, changes: unknown): Promise<void> {
     const rules = await this.getActiveRulesByTrigger('content_updated')
-    
+
     for (const rule of rules) {
       try {
         if (rule.trigger_conditions && !await this.evaluateConditions(rule.trigger_conditions, { contentId, userId, changes, event: 'updated' })) {
@@ -170,7 +241,7 @@ export class AutomationEngine {
   // Trigger automation when workflow state changes
   async triggerWorkflowTransition(contentId: string, fromState: string, toState: string, userId: string): Promise<void> {
     const rules = await this.getActiveRulesByTrigger('workflow_transition')
-    
+
     for (const rule of rules) {
       try {
         if (rule.trigger_conditions && !await this.evaluateConditions(rule.trigger_conditions, { contentId, fromState, toState, userId, event: 'transition' })) {
@@ -186,45 +257,48 @@ export class AutomationEngine {
 
   private async getActiveRulesByTrigger(triggerType: string): Promise<AutomationRule[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM automation_rules 
+      SELECT * FROM automation_rules
       WHERE trigger_type = ? AND is_active = 1
       ORDER BY created_at ASC
-    `).bind(triggerType).all()
+    `).bind(triggerType).all() as { results: AutomationRuleRow[] }
 
     return results.map(row => ({
       ...row,
-      trigger_conditions: row.trigger_conditions ? JSON.parse(row.trigger_conditions) : null,
-      action_config: row.action_config ? JSON.parse(row.action_config) : null
+      trigger_conditions: row.trigger_conditions ? JSON.parse(row.trigger_conditions) as unknown : null,
+      action_config: row.action_config ? JSON.parse(row.action_config) as unknown : null,
+      is_active: Boolean(row.is_active)
     })) as AutomationRule[]
   }
 
-  private async evaluateConditions(conditions: any, context: any): Promise<boolean> {
+  private async evaluateConditions(conditions: unknown, context: TriggerContext): Promise<boolean> {
     try {
+      const cond = conditions as Record<string, unknown>
+
       // Simple condition evaluation - in production this would be more sophisticated
-      if (conditions.collection_id && context.contentId) {
+      if (cond['collection_id'] && context.contentId) {
         const content = await this.db.prepare(`
           SELECT collection_id FROM content WHERE id = ?
-        `).bind(context.contentId).first()
-        
-        if (content && content.collection_id !== conditions.collection_id) {
+        `).bind(context.contentId).first() as CollectionRow | null
+
+        if (content && content.collection_id !== cond['collection_id']) {
           return false
         }
       }
 
-      if (conditions.from_state && context.fromState !== conditions.from_state) {
+      if (cond['from_state'] && context.fromState !== cond['from_state']) {
         return false
       }
 
-      if (conditions.to_state && context.toState !== conditions.to_state) {
+      if (cond['to_state'] && context.toState !== cond['to_state']) {
         return false
       }
 
-      if (conditions.user_role && context.userId) {
+      if (cond['user_role'] && context.userId) {
         const user = await this.db.prepare(`
           SELECT role FROM users WHERE id = ?
-        `).bind(context.userId).first()
-        
-        if (user && user.role !== conditions.user_role) {
+        `).bind(context.userId).first() as UserRow | null
+
+        if (user && user.role !== cond['user_role']) {
           return false
         }
       }
@@ -236,35 +310,39 @@ export class AutomationEngine {
     }
   }
 
-  private async executeAction(rule: AutomationRule, context: any): Promise<void> {
+  private async executeAction(rule: AutomationRule, context: TriggerContext): Promise<void> {
     const workflowEngine = new WorkflowEngine(this.db)
     const notificationService = new NotificationService(this.db)
+    // SchedulerService accepts optional env and ctx - pass undefined for automation-triggered calls
     const schedulerService = new SchedulerService(this.db)
+    void schedulerService // referenced to avoid unused variable warning
+
+    const actionConfig = rule.action_config as ActionConfig | null
 
     switch (rule.action_type) {
       case 'workflow_transition':
-        if (rule.action_config?.to_state && context.contentId) {
+        if (actionConfig?.to_state && context.contentId) {
           await workflowEngine.transitionContent(
             context.contentId,
-            rule.action_config.to_state,
-            context.userId || 'system',
+            actionConfig.to_state,
+            context.userId ?? 'system',
             'Automated transition'
           )
         }
         break
 
       case 'send_notification':
-        if (rule.action_config?.user_id || rule.action_config?.role) {
-          let targetUsers = []
-          
-          if (rule.action_config.user_id) {
-            targetUsers.push(rule.action_config.user_id)
+        if (actionConfig?.user_id || actionConfig?.role) {
+          const targetUsers: string[] = []
+
+          if (actionConfig.user_id) {
+            targetUsers.push(actionConfig.user_id)
           }
-          
-          if (rule.action_config.role) {
+
+          if (actionConfig.role) {
             const { results } = await this.db.prepare(`
               SELECT id FROM users WHERE role = ? AND is_active = 1
-            `).bind(rule.action_config.role).all()
+            `).bind(actionConfig.role).all() as { results: { id: string }[] }
             targetUsers.push(...results.map(u => u.id))
           }
 
@@ -272,8 +350,8 @@ export class AutomationEngine {
             await notificationService.createNotification(
               userId,
               'system',
-              rule.action_config.title || 'Automated Action',
-              rule.action_config.message || 'An automated action was triggered',
+              actionConfig.title ?? 'Automated Action',
+              actionConfig.message ?? 'An automated action was triggered',
               context
             )
           }
@@ -281,14 +359,14 @@ export class AutomationEngine {
         break
 
       case 'webhook_call':
-        if (rule.action_config?.webhook_url) {
+        if (actionConfig?.webhook_url) {
           // In production, this would use a queue or background job
           try {
-            await fetch(rule.action_config.webhook_url, {
+            await fetch(actionConfig.webhook_url, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                ...(rule.action_config.headers || {})
+                ...(actionConfig.headers ?? {})
               },
               body: JSON.stringify({
                 rule_id: rule.id,
@@ -315,12 +393,12 @@ export class AutomationEngine {
     contentId: string | null,
     title?: string,
     content?: string,
-    fields?: any
+    fields?: unknown
   ): Promise<string> {
-    const draftId = globalThis.crypto.randomUUID()
-    
+    const draftId = crypto.randomUUID()
+
     await this.db.prepare(`
-      INSERT OR REPLACE INTO auto_save_drafts 
+      INSERT OR REPLACE INTO auto_save_drafts
       (id, content_id, user_id, title, content, fields, last_saved_at)
       VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `).bind(
@@ -337,40 +415,40 @@ export class AutomationEngine {
 
   async getAutoSaveDrafts(userId: string): Promise<AutoSaveDraft[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM auto_save_drafts 
+      SELECT * FROM auto_save_drafts
       WHERE user_id = ?
       ORDER BY last_saved_at DESC
       LIMIT 50
-    `).bind(userId).all()
+    `).bind(userId).all() as { results: AutoSaveDraftRow[] }
 
     return results.map(row => ({
       ...row,
-      fields: row.fields ? JSON.parse(row.fields) : null
+      fields: row.fields ? JSON.parse(row.fields) as unknown : null
     })) as AutoSaveDraft[]
   }
 
   async getAutoSaveDraft(draftId: string, userId: string): Promise<AutoSaveDraft | null> {
     const draft = await this.db.prepare(`
-      SELECT * FROM auto_save_drafts 
+      SELECT * FROM auto_save_drafts
       WHERE id = ? AND user_id = ?
-    `).bind(draftId, userId).first()
+    `).bind(draftId, userId).first() as AutoSaveDraftRow | null
 
     if (!draft) return null
 
     return {
       ...draft,
-      fields: draft.fields ? JSON.parse(draft.fields) : null
+      fields: draft.fields ? JSON.parse(draft.fields) as unknown : null
     } as AutoSaveDraft
   }
 
   async deleteAutoSaveDraft(draftId: string, userId: string): Promise<boolean> {
     try {
       const result = await this.db.prepare(`
-        DELETE FROM auto_save_drafts 
+        DELETE FROM auto_save_drafts
         WHERE id = ? AND user_id = ?
       `).bind(draftId, userId).run()
 
-      return result.changes > 0
+      return result.meta.changes > 0
     } catch (error) {
       console.error('Failed to delete auto-save draft:', error)
       return false
@@ -379,11 +457,11 @@ export class AutomationEngine {
 
   async cleanupOldAutoSaves(daysToKeep: number = 7): Promise<number> {
     const result = await this.db.prepare(`
-      DELETE FROM auto_save_drafts 
+      DELETE FROM auto_save_drafts
       WHERE last_saved_at < datetime('now', '-${daysToKeep} days')
     `).run()
 
-    return result.changes
+    return result.meta.changes
   }
 
   // Content versioning
@@ -391,21 +469,21 @@ export class AutomationEngine {
     contentId: string,
     title: string,
     content: string,
-    fields: any,
+    fields: unknown,
     userId: string,
     changeSummary?: string
   ): Promise<number> {
     // Get next version number
     const latestVersion = await this.db.prepare(`
-      SELECT MAX(version_number) as max_version 
-      FROM content_versions 
+      SELECT MAX(version_number) as max_version
+      FROM content_versions
       WHERE content_id = ?
-    `).bind(contentId).first()
+    `).bind(contentId).first() as LatestVersionRow | null
 
-    const nextVersion = (latestVersion?.max_version || 0) + 1
+    const nextVersion = (latestVersion?.max_version ?? 0) + 1
 
     await this.db.prepare(`
-      INSERT INTO content_versions 
+      INSERT INTO content_versions
       (content_id, version_number, title, content, fields, user_id, change_summary)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).bind(
@@ -426,20 +504,20 @@ export class AutomationEngine {
     return nextVersion
   }
 
-  async getContentVersions(contentId: string): Promise<any[]> {
+  async getContentVersions(contentId: string): Promise<unknown[]> {
     const { results } = await this.db.prepare(`
-      SELECT 
+      SELECT
         cv.*,
         u.username as user_name
       FROM content_versions cv
       LEFT JOIN users u ON cv.user_id = u.id
       WHERE cv.content_id = ?
       ORDER BY cv.version_number DESC
-    `).bind(contentId).all()
+    `).bind(contentId).all() as { results: (ContentVersionRow & { user_name?: string })[] }
 
     return results.map(row => ({
       ...row,
-      fields: row.fields ? JSON.parse(row.fields) : null
+      fields: row.fields ? JSON.parse(row.fields) as unknown : null
     }))
   }
 
@@ -451,15 +529,15 @@ export class AutomationEngine {
     try {
       // Get the version data
       const version = await this.db.prepare(`
-        SELECT * FROM content_versions 
+        SELECT * FROM content_versions
         WHERE content_id = ? AND version_number = ?
-      `).bind(contentId, versionNumber).first()
+      `).bind(contentId, versionNumber).first() as ContentVersionRow | null
 
       if (!version) return false
 
       // Update the content
       await this.db.prepare(`
-        UPDATE content 
+        UPDATE content
         SET title = ?, data = ?, updated_at = ?
         WHERE id = ?
       `).bind(
@@ -474,7 +552,7 @@ export class AutomationEngine {
         contentId,
         version.title,
         version.content,
-        JSON.parse(version.fields || '{}'),
+        JSON.parse(version.fields ?? '{}') as unknown,
         userId,
         `Rolled back to version ${versionNumber}`
       )

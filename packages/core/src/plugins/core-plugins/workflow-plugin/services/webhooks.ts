@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { D1Database } from '@cloudflare/workers-types'
+import type { D1Database } from '@cloudflare/workers-types'
 
 export interface Webhook {
   id: string
@@ -19,11 +18,43 @@ export interface WebhookDelivery {
   id: string
   webhook_id: string
   event_type: string
-  payload: any
+  payload: unknown
   response_status?: number
   response_body?: string
   attempt_count: number
   delivered_at: string
+}
+
+// D1 row types
+interface WebhookRow {
+  id: string
+  name: string
+  url: string
+  secret?: string
+  events: string
+  is_active: number
+  retry_count: number
+  timeout_seconds: number
+  last_success_at?: string
+  last_failure_at?: string
+  failure_count: number
+}
+
+interface WebhookDeliveryRow {
+  id: string
+  webhook_id: string
+  event_type: string
+  payload: string
+  response_status?: number
+  response_body?: string
+  attempt_count: number
+  delivered_at: string
+}
+
+interface WebhookStatsRow {
+  total_deliveries: number
+  successful_deliveries: number
+  failed_deliveries: number
 }
 
 export class WebhookService {
@@ -37,10 +68,10 @@ export class WebhookService {
     retryCount: number = 3,
     timeoutSeconds: number = 30
   ): Promise<string> {
-    const webhookId = globalThis.crypto.randomUUID()
-    
+    const webhookId = crypto.randomUUID()
+
     await this.db.prepare(`
-      INSERT INTO webhooks 
+      INSERT INTO webhooks
       (id, name, url, secret, events, is_active, retry_count, timeout_seconds)
       VALUES (?, ?, ?, ?, ?, 1, ?, ?)
     `).bind(
@@ -58,16 +89,16 @@ export class WebhookService {
 
   async getWebhooks(activeOnly: boolean = false): Promise<Webhook[]> {
     const whereClause = activeOnly ? 'WHERE is_active = 1' : ''
-    
+
     const { results } = await this.db.prepare(`
-      SELECT * FROM webhooks 
+      SELECT * FROM webhooks
       ${whereClause}
       ORDER BY created_at DESC
-    `).all()
+    `).all() as { results: WebhookRow[] }
 
     return results.map(row => ({
       ...row,
-      events: JSON.parse(row.events),
+      events: JSON.parse(row.events) as string[],
       is_active: Boolean(row.is_active)
     })) as Webhook[]
   }
@@ -75,13 +106,13 @@ export class WebhookService {
   async getWebhook(webhookId: string): Promise<Webhook | null> {
     const webhook = await this.db.prepare(`
       SELECT * FROM webhooks WHERE id = ?
-    `).bind(webhookId).first()
+    `).bind(webhookId).first() as WebhookRow | null
 
     if (!webhook) return null
 
     return {
       ...webhook,
-      events: JSON.parse(webhook.events),
+      events: JSON.parse(webhook.events) as string[],
       is_active: Boolean(webhook.is_active)
     } as Webhook
   }
@@ -91,8 +122,8 @@ export class WebhookService {
     updates: Partial<Webhook>
   ): Promise<boolean> {
     try {
-      const fields = []
-      const values = []
+      const fields: string[] = []
+      const values: unknown[] = []
 
       if (updates.name !== undefined) {
         fields.push('name = ?')
@@ -129,7 +160,7 @@ export class WebhookService {
       values.push(webhookId)
 
       await this.db.prepare(`
-        UPDATE webhooks 
+        UPDATE webhooks
         SET ${fields.join(', ')}
         WHERE id = ?
       `).bind(...values).run()
@@ -147,16 +178,16 @@ export class WebhookService {
         DELETE FROM webhooks WHERE id = ?
       `).bind(webhookId).run()
 
-      return result.changes > 0
+      return result.meta.changes > 0
     } catch (error) {
       console.error('Failed to delete webhook:', error)
       return false
     }
   }
 
-  async triggerWebhooks(eventType: string, payload: any): Promise<void> {
+  async triggerWebhooks(eventType: string, payload: unknown): Promise<void> {
     const webhooks = await this.getWebhooksForEvent(eventType)
-    
+
     for (const webhook of webhooks) {
       // In production, this would be queued for background processing
       this.deliverWebhook(webhook, eventType, payload).catch(error => {
@@ -167,14 +198,14 @@ export class WebhookService {
 
   private async getWebhooksForEvent(eventType: string): Promise<Webhook[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM webhooks 
-      WHERE is_active = 1 
+      SELECT * FROM webhooks
+      WHERE is_active = 1
       AND json_extract(events, '$') LIKE '%"${eventType}"%'
-    `).all()
+    `).all() as { results: WebhookRow[] }
 
     return results.map(row => ({
       ...row,
-      events: JSON.parse(row.events),
+      events: JSON.parse(row.events) as string[],
       is_active: Boolean(row.is_active)
     })) as Webhook[]
   }
@@ -182,12 +213,12 @@ export class WebhookService {
   private async deliverWebhook(
     webhook: Webhook,
     eventType: string,
-    payload: any,
+    payload: unknown,
     attemptCount: number = 1
   ): Promise<boolean> {
-    const deliveryId = globalThis.crypto.randomUUID()
+    const deliveryId = crypto.randomUUID()
     const timestamp = new Date().toISOString()
-    
+
     const webhookPayload = {
       id: deliveryId,
       event: eventType,
@@ -199,7 +230,7 @@ export class WebhookService {
     try {
       // Create delivery record
       await this.db.prepare(`
-        INSERT INTO webhook_deliveries 
+        INSERT INTO webhook_deliveries
         (id, webhook_id, event_type, payload, attempt_count)
         VALUES (?, ?, ?, ?, ?)
       `).bind(
@@ -242,7 +273,7 @@ export class WebhookService {
 
       // Update delivery record
       await this.db.prepare(`
-        UPDATE webhook_deliveries 
+        UPDATE webhook_deliveries
         SET response_status = ?, response_body = ?
         WHERE id = ?
       `).bind(response.status, responseBody, deliveryId).run()
@@ -250,7 +281,7 @@ export class WebhookService {
       if (response.ok) {
         // Update webhook success
         await this.db.prepare(`
-          UPDATE webhooks 
+          UPDATE webhooks
           SET last_success_at = CURRENT_TIMESTAMP, failure_count = 0
           WHERE id = ?
         `).bind(webhook.id).run()
@@ -263,16 +294,18 @@ export class WebhookService {
     } catch (error) {
       console.error(`Webhook delivery failed (attempt ${attemptCount}):`, error)
 
+      const errorMessage = (error instanceof Error) ? error.message : String(error)
+
       // Update delivery record with error
       await this.db.prepare(`
-        UPDATE webhook_deliveries 
+        UPDATE webhook_deliveries
         SET response_status = ?, response_body = ?
         WHERE id = ?
-      `).bind(0, error.message, deliveryId).run()
+      `).bind(0, errorMessage, deliveryId).run()
 
       // Update webhook failure
       await this.db.prepare(`
-        UPDATE webhooks 
+        UPDATE webhooks
         SET last_failure_at = CURRENT_TIMESTAMP, failure_count = failure_count + 1
         WHERE id = ?
       `).bind(webhook.id).run()
@@ -306,7 +339,7 @@ export class WebhookService {
     const signature = await crypto.subtle.sign('HMAC', cryptoKey, data)
     const hashArray = Array.from(new Uint8Array(signature))
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-    
+
     return `sha256=${hashHex}`
   }
 
@@ -315,18 +348,18 @@ export class WebhookService {
     limit: number = 50
   ): Promise<WebhookDelivery[]> {
     const whereClause = webhookId ? 'WHERE webhook_id = ?' : ''
-    const params = webhookId ? [webhookId, limit] : [limit]
+    const params: unknown[] = webhookId ? [webhookId, limit] : [limit]
 
     const { results } = await this.db.prepare(`
-      SELECT * FROM webhook_deliveries 
+      SELECT * FROM webhook_deliveries
       ${whereClause}
       ORDER BY delivered_at DESC
       LIMIT ?
-    `).bind(...params).all()
+    `).bind(...params).all() as { results: WebhookDeliveryRow[] }
 
     return results.map(row => ({
       ...row,
-      payload: JSON.parse(row.payload)
+      payload: JSON.parse(row.payload) as unknown
     })) as WebhookDelivery[]
   }
 
@@ -336,7 +369,7 @@ export class WebhookService {
         SELECT wd.*, w.* FROM webhook_deliveries wd
         JOIN webhooks w ON wd.webhook_id = w.id
         WHERE wd.id = ?
-      `).bind(deliveryId).first()
+      `).bind(deliveryId).first() as (WebhookDeliveryRow & WebhookRow) | null
 
       if (!delivery) return false
 
@@ -345,7 +378,7 @@ export class WebhookService {
         name: delivery.name,
         url: delivery.url,
         secret: delivery.secret,
-        events: JSON.parse(delivery.events),
+        events: JSON.parse(delivery.events) as string[],
         is_active: Boolean(delivery.is_active),
         retry_count: delivery.retry_count,
         timeout_seconds: delivery.timeout_seconds,
@@ -354,12 +387,12 @@ export class WebhookService {
         failure_count: delivery.failure_count
       }
 
-      const payload = JSON.parse(delivery.payload)
-      
+      const parsedPayload = JSON.parse(delivery.payload) as { data: unknown }
+
       return await this.deliverWebhook(
         webhook,
         delivery.event_type,
-        payload.data,
+        parsedPayload.data,
         delivery.attempt_count + 1
       )
     } catch (error) {
@@ -375,47 +408,47 @@ export class WebhookService {
     average_response_time: number
   }> {
     const whereClause = webhookId ? 'WHERE webhook_id = ?' : ''
-    const params = webhookId ? [webhookId] : []
+    const params: unknown[] = webhookId ? [webhookId] : []
 
     const stats = await this.db.prepare(`
-      SELECT 
+      SELECT
         COUNT(*) as total_deliveries,
         SUM(CASE WHEN response_status >= 200 AND response_status < 300 THEN 1 ELSE 0 END) as successful_deliveries,
         SUM(CASE WHEN response_status < 200 OR response_status >= 300 THEN 1 ELSE 0 END) as failed_deliveries
-      FROM webhook_deliveries 
+      FROM webhook_deliveries
       ${whereClause}
-    `).bind(...params).first()
+    `).bind(...params).first() as WebhookStatsRow | null
 
     return {
-      total_deliveries: stats?.total_deliveries || 0,
-      successful_deliveries: stats?.successful_deliveries || 0,
-      failed_deliveries: stats?.failed_deliveries || 0,
+      total_deliveries: stats?.total_deliveries ?? 0,
+      successful_deliveries: stats?.successful_deliveries ?? 0,
+      failed_deliveries: stats?.failed_deliveries ?? 0,
       average_response_time: 0 // Would need to track timing for this
     }
   }
 
   // Predefined webhook events
-  async triggerContentCreated(contentId: string, content: any): Promise<void> {
+  async triggerContentCreated(contentId: string, content: unknown): Promise<void> {
     await this.triggerWebhooks('content.created', {
       id: contentId,
-      ...content,
+      ...(content as Record<string, unknown>),
       action: 'created'
     })
   }
 
-  async triggerContentUpdated(contentId: string, content: any, changes: any): Promise<void> {
+  async triggerContentUpdated(contentId: string, content: unknown, changes: unknown): Promise<void> {
     await this.triggerWebhooks('content.updated', {
       id: contentId,
-      ...content,
+      ...(content as Record<string, unknown>),
       changes,
       action: 'updated'
     })
   }
 
-  async triggerContentPublished(contentId: string, content: any): Promise<void> {
+  async triggerContentPublished(contentId: string, content: unknown): Promise<void> {
     await this.triggerWebhooks('content.published', {
       id: contentId,
-      ...content,
+      ...(content as Record<string, unknown>),
       action: 'published'
     })
   }
@@ -429,10 +462,10 @@ export class WebhookService {
     })
   }
 
-  async triggerUserCreated(userId: string, user: any): Promise<void> {
+  async triggerUserCreated(userId: string, user: unknown): Promise<void> {
     await this.triggerWebhooks('user.created', {
       id: userId,
-      ...user,
+      ...(user as Record<string, unknown>),
       action: 'created'
     })
   }
@@ -440,10 +473,10 @@ export class WebhookService {
   // Clean up old deliveries
   async cleanupOldDeliveries(daysToKeep: number = 30): Promise<number> {
     const result = await this.db.prepare(`
-      DELETE FROM webhook_deliveries 
+      DELETE FROM webhook_deliveries
       WHERE delivered_at < datetime('now', '-${daysToKeep} days')
     `).run()
 
-    return result.changes
+    return result.meta.changes
   }
 }
