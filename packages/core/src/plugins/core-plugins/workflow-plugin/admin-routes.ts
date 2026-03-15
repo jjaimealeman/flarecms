@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import type { Bindings, Variables } from '../../../app'
+import { requireAuth } from '../../../middleware'
 import { WorkflowEngine } from './services/workflow-service'
 import { SchedulerService } from './services/scheduler'
 import { renderWorkflowDashboard } from './templates/workflow-dashboard'
@@ -8,6 +9,9 @@ import { renderScheduledContent } from './templates/scheduled-content'
 
 export function createWorkflowAdminRoutes() {
   const adminRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+  // Auth middleware — decodes JWT and sets c.get('user') for all workflow admin routes
+  adminRoutes.use('*', requireAuth())
 
   // Workflow Dashboard
   adminRoutes.get('/dashboard', async (c) => {

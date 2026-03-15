@@ -1,11 +1,15 @@
 import { Hono } from 'hono'
 import type { Bindings, Variables } from '../../../app'
+import { requireAuth } from '../../../middleware'
 import { WorkflowEngine } from './services/workflow-service'
 import { SchedulerService } from './services/scheduler'
 import { NotificationService } from './services/notifications'
 
 export function createWorkflowRoutes() {
   const workflowRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+  // Auth middleware — decodes JWT and sets c.get('user') for all workflow API routes
+  workflowRoutes.use('*', requireAuth())
 
   // Debug endpoint to check workflow functionality
   workflowRoutes.get('/debug', async (c) => {
