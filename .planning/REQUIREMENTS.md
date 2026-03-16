@@ -14,11 +14,11 @@
 
 ### Sandbox
 
-- [ ] **SAND-01**: `demo-sandbox` collection exists with sample fields (title, content, status)
-- [ ] **SAND-02**: Demo role has read-only access to all collections except sandbox
-- [ ] **SAND-03**: Demo role has full CRUD on `demo-sandbox` collection only
-- [ ] **SAND-04**: Demo users limited to 50 mutations per session
-- [ ] **SAND-05**: Demo file uploads restricted to images only, max 2MB
+- [x] **SAND-01**: `demo-sandbox` collection exists with sample fields (title, content, status)
+- [x] **SAND-02**: Demo role has read-only access to all collections except sandbox
+- [x] **SAND-03**: Demo role has full CRUD on `demo-sandbox` collection only
+- [x] **SAND-04**: Demo users limited to 50 mutations per session
+- [x] **SAND-05**: Demo file uploads restricted to images only, max 2MB
 
 ### Demo Page
 
@@ -54,12 +54,12 @@
 | DEMO-01 | Phase 12 | Pending |
 | DEMO-02 | Phase 12 | Pending |
 | DEMO-03 | Phase 12 | Pending |
-| DEMO-04 | Phase 11 | Pending |
-| SAND-01 | Phase 11 | Pending |
-| SAND-02 | Phase 11 | Pending |
-| SAND-03 | Phase 11 | Pending |
-| SAND-04 | Phase 11 | Pending |
-| SAND-05 | Phase 11 | Pending |
+| DEMO-04 | Phase 11 | Complete |
+| SAND-01 | Phase 11 | Complete |
+| SAND-02 | Phase 11 | Complete |
+| SAND-03 | Phase 11 | Complete |
+| SAND-04 | Phase 11 | Complete |
+| SAND-05 | Phase 11 | Complete |
 | PAGE-01 | Phase 13 | Pending |
 | PAGE-02 | Phase 13 | Pending |
 | PAGE-03 | Phase 13 | Pending |

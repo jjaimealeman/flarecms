@@ -29,7 +29,7 @@ Full details: milestones/v2.0-ROADMAP.md
 
 ### Phase Overview
 
-- [ ] **Phase 11: Sandbox Foundation** - Demo role, sandbox collection, permission boundaries, rate limiting
+- [x] **Phase 11: Sandbox Foundation** - Demo role, sandbox collection, permission boundaries, rate limiting
 - [ ] **Phase 12: Demo Authentication** - OTP email login flow with 30-minute session expiry
 - [ ] **Phase 13: Demo Page** - Astro /demo page with email gate, OTP entry, and admin redirect
 - [ ] **Phase 14: Reset & Cleanup** - Cron trigger to reset sandbox data and purge expired sessions
@@ -51,7 +51,7 @@ Full details: milestones/v2.0-ROADMAP.md
 Plans:
 - [x] 11-01-PLAN.md -- Demo sandbox plugin, migration 038, collection + demo-service, plugin registration
 - [x] 11-02-PLAN.md -- Mutation rate limiting, upload restrictions middleware
-- [ ] 11-03-PLAN.md -- Gap closure: grant viewer on all collections for demo users (SAND-02)
+- [x] 11-03-PLAN.md -- Gap closure: grant viewer on all collections for demo users (SAND-02)
 
 #### Phase 12: Demo Authentication
 **Goal**: A visitor can go from entering their email to sitting in the admin dashboard in under 60 seconds, with no password to remember
@@ -99,10 +99,10 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v2.0 | 31/31 | Complete | 2026-03-15 |
-| 11. Sandbox Foundation | v2.1 | 2/3 | In progress | - |
+| 11. Sandbox Foundation | v2.1 | 3/3 | Complete | 2026-03-16 |
 | 12. Demo Authentication | v2.1 | 0/1 | Not started | - |
 | 13. Demo Page | v2.1 | 0/1 | Not started | - |
 | 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-03-16 after Phase 11 gap closure planning*
+*Last updated: 2026-03-16 after Phase 11 complete*

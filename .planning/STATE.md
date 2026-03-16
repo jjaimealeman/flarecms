@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** v2.1 Live Demo -- Phase 11: Sandbox Foundation
+**Current focus:** v2.1 Live Demo -- Phase 12: Demo Authentication
 
 ## Current Position
 
-Phase: 11 of 14 (Sandbox Foundation)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-03-16 -- Completed 11-03-PLAN.md (viewer grants on all collections for demo users)
+Phase: 12 of 14 (Demo Authentication)
+Plan: 0 of 1 in current phase
+Status: Not started
+Last activity: 2026-03-16 -- Completed Phase 11 (Sandbox Foundation)
 
-Progress: [████░░░░░░] 40% (3/5 plans)
+Progress: [██████░░░░] 60% (3/5 plans)
 
 ## Performance Metrics
 
@@ -23,7 +23,7 @@ Progress: [████░░░░░░] 40% (3/5 plans)
 
 **Current milestone (v2.1):**
 - 4 phases, 5 plans estimated
-- Plans completed: 2
+- Plans completed: 3
 
 ## Accumulated Context
 
@@ -60,6 +60,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-16T19:49:34Z
-Stopped at: Completed 11-03-PLAN.md (viewer grants on all collections for demo users)
+Last session: 2026-03-16T19:55:00Z
+Stopped at: Phase 11 complete, ready for Phase 12
 Resume file: None
