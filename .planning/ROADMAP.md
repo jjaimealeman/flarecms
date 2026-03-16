@@ -46,11 +46,12 @@ Full details: milestones/v2.0-ROADMAP.md
   3. A demo user who exceeds 50 mutations in a session receives a clear "limit reached" response and is blocked from further writes
   4. Demo file uploads accept only images under 2MB; other file types or oversized images are rejected with a clear message
   5. Every demo signup is recorded in a `demo_signups` table with email, IP address, and timestamp
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
-- [ ] 11-01-PLAN.md -- Demo sandbox plugin, migration 038, collection + demo-service, plugin registration
-- [ ] 11-02-PLAN.md -- Mutation rate limiting, upload restrictions middleware
+- [x] 11-01-PLAN.md -- Demo sandbox plugin, migration 038, collection + demo-service, plugin registration
+- [x] 11-02-PLAN.md -- Mutation rate limiting, upload restrictions middleware
+- [ ] 11-03-PLAN.md -- Gap closure: grant viewer on all collections for demo users (SAND-02)
 
 #### Phase 12: Demo Authentication
 **Goal**: A visitor can go from entering their email to sitting in the admin dashboard in under 60 seconds, with no password to remember
@@ -98,10 +99,10 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v2.0 | 31/31 | Complete | 2026-03-15 |
-| 11. Sandbox Foundation | v2.1 | 0/2 | Not started | - |
+| 11. Sandbox Foundation | v2.1 | 2/3 | In progress | - |
 | 12. Demo Authentication | v2.1 | 0/1 | Not started | - |
 | 13. Demo Page | v2.1 | 0/1 | Not started | - |
 | 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-03-16 after Phase 11 planning*
+*Last updated: 2026-03-16 after Phase 11 gap closure planning*
