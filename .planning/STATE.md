@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 11 of 14 (Sandbox Foundation)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-03-16 -- Roadmap created for v2.1 Live Demo
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-16 -- Completed 11-01-PLAN.md (demo-sandbox plugin + migration 038)
 
-Progress: [░░░░░░░░░░] 0% (0/5 plans)
+Progress: [██░░░░░░░░] 20% (1/5 plans)
 
 ## Performance Metrics
 
@@ -23,7 +23,7 @@ Progress: [░░░░░░░░░░] 0% (0/5 plans)
 
 **Current milestone (v2.1):**
 - 4 phases, 5 plans estimated
-- Plans completed: 0
+- Plans completed: 1
 
 ## Accumulated Context
 
@@ -34,6 +34,9 @@ Full decision log in PROJECT.md.
 Recent decisions:
 - Minimal gate for demo (not polished landing) -- get people into admin fast
 - Demo as plugin approach (not core) -- not every install needs public demo
+- Migration SQL in packages/core/migrations/ (not src/db/migrations/) -- pre-commit hook auto-bundles
+- Plugin import in app.ts is direct (no pluginManager.install()) for Phase 11; routes added in Phase 12
+- demo-sandbox collection managed=1 so it shows in admin but schema UI cannot modify it
 
 ### Prerequisites Verified
 
@@ -53,6 +56,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-16
-Stopped at: Roadmap created for v2.1, ready to plan Phase 11
+Last session: 2026-03-16T19:09:30Z
+Stopped at: Completed 11-01-PLAN.md (demo-sandbox plugin + migration 038)
 Resume file: None
