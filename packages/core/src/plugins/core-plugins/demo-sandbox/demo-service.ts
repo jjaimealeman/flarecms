@@ -2,7 +2,7 @@
  * Demo Sandbox Service
  *
  * Handles demo user creation with scoped collection permissions.
- * Creates viewer users with editor-level access to demo-sandbox-collection only.
+ * Creates viewer users with editor permission on demo-sandbox-collection and viewer on all other collections.
  */
 
 import { AuthManager } from '../../../middleware'
@@ -16,7 +16,7 @@ export interface CreateDemoUserResult {
 /**
  * Create or return an existing demo user.
  *
- * - New users get a viewer role with editor permission on demo-sandbox-collection.
+ * - New users get a viewer role with editor permission on demo-sandbox-collection and viewer on all other collections.
  * - Returning users get their mutation counter reset and a fresh token.
  * - All signups are recorded in demo_signups for analytics.
  *
@@ -71,13 +71,30 @@ export async function createDemoUser(
     .bind(userId, normalizedEmail, username, 'Demo', 'User', 'viewer', 1, now, now)
     .run()
 
-  // Grant editor permission on demo-sandbox-collection only
+  // Grant editor permission on demo-sandbox-collection (must come first to avoid viewer downgrade)
   await grantCollectionPermission(db, {
     userId,
     collectionId: 'demo-sandbox-collection',
     role: 'editor',
     grantedBy: 'system'
   })
+
+  // Grant viewer permission on all other active collections so admin content list shows them read-only
+  const { results: allCollections } = await db
+    .prepare('SELECT id FROM collections WHERE is_active = 1')
+    .all<{ id: string }>()
+
+  if (allCollections) {
+    for (const col of allCollections) {
+      if (col.id === 'demo-sandbox-collection') continue
+      await grantCollectionPermission(db, {
+        userId,
+        collectionId: col.id,
+        role: 'viewer',
+        grantedBy: 'system'
+      })
+    }
+  }
 
   // Record signup
   const signupId = crypto.randomUUID()
