@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 11 of 14 (Sandbox Foundation)
-Plan: 2 of 2 in current phase
+Plan: 3 of 3 in current phase
 Status: Phase complete
-Last activity: 2026-03-16 -- Completed 11-02-PLAN.md (demo mutation guard + upload guard middleware)
+Last activity: 2026-03-16 -- Completed 11-03-PLAN.md (viewer grants on all collections for demo users)
 
-Progress: [████░░░░░░] 40% (2/5 plans)
+Progress: [████░░░░░░] 40% (3/5 plans)
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Recent decisions:
 - Demo user detection uses KV key existence (demo-mutations:{userId}), NOT role check -- avoids false-positive on viewer role shared by API token users
 - Middleware wired in app.ts (not plugin index) so guards apply to existing /api/content/* and /api/media/* routes
 - formData body-consumption solved: guard parses once, stores as parsedFormData on context, downstream reuses it
+- Demo user creation grants editor on demo-sandbox-collection first, then viewer on all other active collections -- editor granted first to prevent downgrade via ON CONFLICT DO UPDATE; continue guard provides defense-in-depth
 
 ### Prerequisites Verified
 
@@ -59,6 +60,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-16T19:15:43Z
-Stopped at: Completed 11-02-PLAN.md (demo mutation guard + upload guard middleware)
+Last session: 2026-03-16T19:49:34Z
+Stopped at: Completed 11-03-PLAN.md (viewer grants on all collections for demo users)
 Resume file: None
