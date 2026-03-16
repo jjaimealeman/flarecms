@@ -5,34 +5,35 @@
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** v2.1 Live Demo — public demo with OTP access and sandbox
+**Current focus:** v2.1 Live Demo -- Phase 11: Sandbox Foundation
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-16 — Milestone v2.1 started
+Phase: 11 of 14 (Sandbox Foundation)
+Plan: 0 of 2 in current phase
+Status: Ready to plan
+Last activity: 2026-03-16 -- Roadmap created for v2.1 Live Demo
+
+Progress: [░░░░░░░░░░] 0% (0/5 plans)
 
 ## Performance Metrics
 
 **Previous milestone (v2.0):**
 - 10 phases, 31 plans, 236 commits, 8 days
 
+**Current milestone (v2.1):**
+- 4 phases, 5 plans estimated
+- Plans completed: 0
+
 ## Accumulated Context
 
 ### Decisions
 
-Full decision log in milestones/v2.0-ROADMAP.md.
+Full decision log in PROJECT.md.
 
-### Tech Debt (remaining from v2.0)
-
-- `workflowPlugin` dead code deferred (routes work via direct wiring)
-- Phase 6 missing VERIFICATION.md
-
-### Blockers/Concerns
-
-- Broken API filters force client-side filtering — inherited from SonicJS v2.8.0
+Recent decisions:
+- Minimal gate for demo (not polished landing) -- get people into admin fast
+- Demo as plugin approach (not core) -- not every install needs public demo
 
 ### Prerequisites Verified
 
@@ -41,8 +42,17 @@ Full decision log in milestones/v2.0-ROADMAP.md.
 - Audit logging shipped
 - OTP login plugin wired (depends on email plugin)
 
+### Tech Debt (remaining from v2.0)
+
+- `workflowPlugin` dead code deferred (routes work via direct wiring)
+- Phase 6 missing VERIFICATION.md
+
+### Blockers/Concerns
+
+- Broken API filters force client-side filtering -- inherited from SonicJS v2.8.0
+
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Defining requirements for v2.1
+Stopped at: Roadmap created for v2.1, ready to plan Phase 11
 Resume file: None

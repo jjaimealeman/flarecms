@@ -1,7 +1,7 @@
-# Requirements: Flare CMS — Live Demo
+# Requirements: Flare CMS -- Live Demo
 
 **Defined:** 2026-03-16
-**Core Value:** Let visitors experience FlareCMS firsthand with zero friction — email in, demo out.
+**Core Value:** Let visitors experience FlareCMS firsthand with zero friction -- email in, demo out.
 
 ## v2.1 Requirements
 
@@ -51,26 +51,27 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEMO-01 | TBD | Pending |
-| DEMO-02 | TBD | Pending |
-| DEMO-03 | TBD | Pending |
-| DEMO-04 | TBD | Pending |
-| SAND-01 | TBD | Pending |
-| SAND-02 | TBD | Pending |
-| SAND-03 | TBD | Pending |
-| SAND-04 | TBD | Pending |
-| SAND-05 | TBD | Pending |
-| PAGE-01 | TBD | Pending |
-| PAGE-02 | TBD | Pending |
-| PAGE-03 | TBD | Pending |
-| RESET-01 | TBD | Pending |
-| RESET-02 | TBD | Pending |
-| RESET-03 | TBD | Pending |
+| DEMO-01 | Phase 12 | Pending |
+| DEMO-02 | Phase 12 | Pending |
+| DEMO-03 | Phase 12 | Pending |
+| DEMO-04 | Phase 11 | Pending |
+| SAND-01 | Phase 11 | Pending |
+| SAND-02 | Phase 11 | Pending |
+| SAND-03 | Phase 11 | Pending |
+| SAND-04 | Phase 11 | Pending |
+| SAND-05 | Phase 11 | Pending |
+| PAGE-01 | Phase 13 | Pending |
+| PAGE-02 | Phase 13 | Pending |
+| PAGE-03 | Phase 13 | Pending |
+| RESET-01 | Phase 14 | Pending |
+| RESET-02 | Phase 14 | Pending |
+| RESET-03 | Phase 14 | Pending |
 
 **Coverage:**
 - v2.1 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-16*
+*Traceability updated: 2026-03-16*
