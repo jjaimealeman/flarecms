@@ -205,14 +205,6 @@ export async function approveRevision(
   const historyId = crypto.randomUUID()
   const historyVersion = version.version + 1
 
-  await db
-    .prepare(
-      `INSERT INTO content_versions (id, content_id, version, data, author_id, created_at, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'history')`
-    )
-    .bind(historyId, version.content_id, historyVersion, liveContent.data, liveContent.author_id, now)
-    .run()
-
   // Parse the pending revision data
   const pendingData = JSON.parse(version.data || '{}')
   const revisionMeta = pendingData._revision_meta || {}
@@ -226,8 +218,14 @@ export async function approveRevision(
     ? now
     : liveContent.published_at
 
-  await db
-    .prepare(`
+  // Batch all writes atomically to avoid D1 internal errors from unbatched writes
+  await db.batch([
+    db.prepare(
+      `INSERT INTO content_versions (id, content_id, version, data, author_id, created_at, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'history')`
+    ).bind(historyId, version.content_id, historyVersion, liveContent.data, liveContent.author_id, now),
+
+    db.prepare(`
       UPDATE content SET
         slug = ?, title = ?, data = ?, status = ?,
         published_at = ?,
@@ -235,8 +233,7 @@ export async function approveRevision(
         meta_title = ?, meta_description = ?,
         updated_at = ?
       WHERE id = ?
-    `)
-    .bind(
+    `).bind(
       slug,
       title,
       JSON.stringify(pendingData),
@@ -248,20 +245,14 @@ export async function approveRevision(
       revisionMeta.metaDescription ?? null,
       now,
       version.content_id
-    )
-    .run()
+    ),
 
-  // Mark revision as approved
-  await db
-    .prepare("UPDATE content_versions SET status = 'approved' WHERE id = ?")
-    .bind(versionId)
-    .run()
+    db.prepare("UPDATE content_versions SET status = 'approved' WHERE id = ?")
+      .bind(versionId),
 
-  // Update revision meta with reviewer
-  await db
-    .prepare('UPDATE content_revision_meta SET reviewed_by = ?, reviewed_at = ? WHERE version_id = ?')
-    .bind(reviewedBy, now, versionId)
-    .run()
+    db.prepare('UPDATE content_revision_meta SET reviewed_by = ?, reviewed_at = ? WHERE version_id = ?')
+      .bind(reviewedBy, now, versionId),
+  ])
 }
 
 /**
