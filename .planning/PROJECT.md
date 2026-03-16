@@ -41,9 +41,16 @@ Prove that Flare CMS works by using it to power its own documentation — every 
 - ✓ Workflow Engine with approval workflows (Draft -> Review -> Approved -> Published) — v2
 - ✓ Deployed to Cloudflare Pages with all routes live — v2
 
-### Active
+### Active (v2.1 — Live Demo)
 
-(No active milestone — define with `/gsd:new-milestone`)
+- [ ] Public demo page at flarecms.dev/demo with minimal email gate
+- [ ] OTP email login for demo visitors via Resend
+- [ ] Auto-assigned `demo` role with read-only + sandbox CRUD
+- [ ] `demo-sandbox` collection for visitors to experiment with
+- [ ] 30-minute session expiry for demo users
+- [ ] Cron trigger to reset sandbox data every 6 hours
+- [ ] `demo_signups` table for email capture
+- [ ] Rate limiting (50 ops per demo session)
 
 ### Out of Scope
 
@@ -59,9 +66,8 @@ Prove that Flare CMS works by using it to power its own documentation — every 
 **Stack:** Cloudflare Workers + D1 + R2 + KV, Hono, Astro 5 SSR, Drizzle ORM
 **Production:** admin.flarecms.dev (CMS), flarecms.dev (site)
 
-**Known tech debt (from v2 audit):**
-- `schema_migrations` DDL not in migrations-bundle.ts (fresh installs 500 on schema migrations page)
-- `workflowPlugin` object is dead code (routes wired directly in app.ts instead)
+**Known tech debt (remaining):**
+- `workflowPlugin` dead code deferred (routes work via direct wiring)
 - Phase 6 missing VERIFICATION.md
 
 ## Context
@@ -94,8 +100,10 @@ Prove that Flare CMS works by using it to power its own documentation — every 
 | Seed docs via API, not manual entry | Reproducible, version-controlled | ✓ Good — idempotent re-seeding |
 | Content Layer Loader (`@flare-cms/astro`) | First-class Astro DX, type safety | ✓ Good — `getCollection()` just works |
 | Live Preview via KV draft storage | Same-edge-network latency (<50ms) | ✓ Good — unique edge advantage |
-| Direct route wiring for workflow (not plugin system) | Plugin activation incomplete, direct wiring reliable | ⚠️ Revisit — plugin dead code needs cleanup |
-| Schema migrations in DB (not code) | Non-technical users can modify fields | ⚠️ Revisit — migration bundle entry missing |
+| Direct route wiring for workflow (not plugin system) | Plugin activation incomplete, direct wiring reliable | ✓ Good — dead code cleaned up in v2.0.1 |
+| Schema migrations in DB (not code) | Non-technical users can modify fields | ✓ Good — migration bundle fixed in v2.0.1 |
+| Minimal gate for demo (not polished landing) | Get people into admin fast, polish later | — Pending |
+| Demo as plugin (not core) | Not every install needs a public demo | — Pending |
 
 ---
-*Last updated: 2026-03-15 after v2.0 milestone*
+*Last updated: 2026-03-16 after v2.1 milestone start*
