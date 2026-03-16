@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { D1Database } from '@cloudflare/workers-types'
+import type { D1Database } from '@cloudflare/workers-types'
 import { getCacheService, CACHE_CONFIGS } from '../../../../services/cache'
 import { getHookSystem } from '../../../hooks-singleton'
 import { deliverWebhooks } from '../../../../services/webhook-delivery'
@@ -31,7 +30,7 @@ export class SchedulerService {
     timezone: string = 'UTC',
     userId: string
   ): Promise<string> {
-    const scheduleId = globalThis.crypto.randomUUID()
+    const scheduleId = crypto.randomUUID()
     
     await this.db.prepare(`
       INSERT INTO scheduled_content 
@@ -87,13 +86,13 @@ export class SchedulerService {
 
   async getPendingScheduledContent(limit: number = 100): Promise<ScheduledContent[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM scheduled_content 
+      SELECT * FROM scheduled_content
       WHERE status = 'pending' AND scheduled_at <= datetime('now')
       ORDER BY scheduled_at ASC
       LIMIT ?
     `).bind(limit).all()
-    
-    return results as ScheduledContent[]
+
+    return results as unknown as ScheduledContent[]
   }
 
   async getScheduledContentForUser(userId: string): Promise<any[]> {
@@ -115,12 +114,12 @@ export class SchedulerService {
 
   async getScheduledContentForContent(contentId: string): Promise<ScheduledContent[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM scheduled_content 
+      SELECT * FROM scheduled_content
       WHERE content_id = ? AND status = 'pending'
       ORDER BY scheduled_at ASC
     `).bind(contentId).all()
-    
-    return results as ScheduledContent[]
+
+    return results as unknown as ScheduledContent[]
   }
 
   async executeScheduledAction(scheduleId: string): Promise<boolean> {
@@ -164,13 +163,13 @@ export class SchedulerService {
       return success
     } catch (error) {
       console.error('Failed to execute scheduled action:', error)
-      
+
       // Mark as failed
       await this.db.prepare(`
-        UPDATE scheduled_content 
+        UPDATE scheduled_content
         SET status = 'failed', executed_at = CURRENT_TIMESTAMP, error_message = ?
         WHERE id = ?
-      `).bind(error.message, scheduleId).run()
+      `).bind((error instanceof Error) ? error.message : String(error), scheduleId).run()
 
       return false
     }

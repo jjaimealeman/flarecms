@@ -46,6 +46,8 @@ import { csrfProtection } from './middleware/csrf'
 import { adminMenuMiddleware } from './middleware/admin-menu'
 import { createDatabaseToolsAdminRoutes } from './plugins/core-plugins/database-tools-plugin/admin-routes'
 import { createSeedDataAdminRoutes } from './plugins/core-plugins/seed-data-plugin/admin-routes'
+import { createWorkflowRoutes } from './plugins/core-plugins/workflow-plugin/routes'
+import { createWorkflowAdminRoutes } from './plugins/core-plugins/workflow-plugin/admin-routes'
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
 import { otpLoginPlugin } from './plugins/core-plugins/otp-login-plugin'
 import { aiSearchPlugin } from './plugins/core-plugins/ai-search-plugin'
@@ -303,6 +305,8 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/audit-log', adminAuditLogRoutes)
   app.route('/admin/analytics', adminAnalyticsRoutes)
   app.route('/api', apiAnalyticsRoutes)
+  app.route('/api/workflow', createWorkflowRoutes())
+  app.route('/admin/workflow', createWorkflowAdminRoutes())
   app.route('/admin/testimonials', adminTestimonialsRoutes)
   app.route('/admin/code-examples', adminCodeExamplesRoutes)
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())

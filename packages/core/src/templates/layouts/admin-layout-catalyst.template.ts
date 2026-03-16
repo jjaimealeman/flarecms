@@ -26,6 +26,7 @@ import {
   Trash2,
   Sun,
   Moon,
+  GitBranch,
 } from "../icons";
 
 // Catalyst Checkbox Component (HTML implementation)
@@ -1136,6 +1137,12 @@ function renderCatalystSidebar(
     isActivePath('/admin/analytics')
   )
 
+  // Workflow (admin/editor only, between analytics and system)
+  const workflowItem = isEditorOrAbove ? navLink(
+    { label: 'Workflow', path: '/admin/workflow/dashboard', iconHtml: icon(GitBranch, 'h-5 w-5') },
+    isActivePath('/admin/workflow')
+  ) : ''
+
   // SYSTEM section — filtered by role
   // Admin-only: Users, Collections, Plugins, Cache, Migrations
   // Editor+: Forms, FAQs
@@ -1217,9 +1224,10 @@ function renderCatalystSidebar(
           ${trashItem}
         </div>
 
-        <!-- ANALYTICS -->
+        <!-- ANALYTICS + WORKFLOW -->
         <div class="flex flex-col gap-0.5 pt-2">
           ${analyticsItem}
+          ${workflowItem}
         </div>
 
         <!-- SYSTEM -->

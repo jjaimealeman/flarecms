@@ -1,4 +1,4 @@
-import { renderAdminLayout } from '@flare-cms/core/templates'
+import { renderAdminLayoutCatalyst, type AdminLayoutCatalystData } from '../../../../templates/layouts/admin-layout-catalyst.template'
 
 export interface ScheduledContentData {
   user: any
@@ -398,11 +398,16 @@ export function renderScheduledContent(data: ScheduledContentData): string {
     </script>
   `
 
-  return renderAdminLayout({
+  const layoutData: AdminLayoutCatalystData = {
     title: 'Scheduled Content - Flare CMS',
     pageTitle: 'Scheduled Content',
-    content,
-    user: data.user,
-    currentPath: 'workflow'
-  })
+    currentPath: 'workflow',
+    user: data.user ? {
+      name: data.user.email || data.user.name || 'User',
+      email: data.user.email || '',
+      role: data.user.role || 'viewer'
+    } : undefined,
+    content
+  }
+  return renderAdminLayoutCatalyst(layoutData)
 }

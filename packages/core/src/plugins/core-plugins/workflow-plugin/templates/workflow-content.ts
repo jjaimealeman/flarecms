@@ -1,4 +1,4 @@
-import { renderAdminLayout } from '@flare-cms/core/templates'
+import { renderAdminLayoutCatalyst, type AdminLayoutCatalystData } from '../../../../templates/layouts/admin-layout-catalyst.template'
 
 export interface WorkflowContentDetailData {
   user: any
@@ -294,11 +294,16 @@ export function renderWorkflowContentDetail(data: WorkflowContentDetailData): st
     </script>
   `
 
-  return renderAdminLayout({
+  const layoutData: AdminLayoutCatalystData = {
     title: `${data.content.title} - Workflow - Flare CMS`,
     pageTitle: `${data.content.title} - Workflow`,
-    content,
-    user: data.user,
-    currentPath: 'workflow'
-  })
+    currentPath: 'workflow',
+    user: data.user ? {
+      name: data.user.email || data.user.name || 'User',
+      email: data.user.email || '',
+      role: data.user.role || 'viewer'
+    } : undefined,
+    content
+  }
+  return renderAdminLayoutCatalyst(layoutData)
 }

@@ -1,31 +1,15 @@
 import { Hono } from 'hono'
+import type { Bindings, Variables } from '../../../app'
+import { requireAuth } from '../../../middleware'
 import { WorkflowEngine } from './services/workflow-service'
 import { SchedulerService } from './services/scheduler'
 import { NotificationService } from './services/notifications'
 
-type Bindings = {
-  DB: D1Database
-  KV: KVNamespace
-  MEDIA_BUCKET: R2Bucket
-  EMAIL_QUEUE?: Queue
-  SENDGRID_API_KEY?: string
-  DEFAULT_FROM_EMAIL?: string
-  IMAGES_ACCOUNT_ID?: string
-  IMAGES_API_TOKEN?: string
-}
-
-type Variables = {
-  user: {
-    userId: string
-    email: string
-    role: string
-    exp: number
-    iat: number
-  }
-}
-
 export function createWorkflowRoutes() {
   const workflowRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+  // Auth middleware — decodes JWT and sets c.get('user') for all workflow API routes
+  workflowRoutes.use('*', requireAuth())
 
   // Debug endpoint to check workflow functionality
   workflowRoutes.get('/debug', async (c) => {
@@ -138,7 +122,7 @@ export function createWorkflowRoutes() {
 
   // Get content by workflow state
   workflowRoutes.get('/state/:stateId', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
@@ -156,7 +140,7 @@ export function createWorkflowRoutes() {
 
   // Transition content workflow state
   workflowRoutes.post('/content/:contentId/transition', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
@@ -196,7 +180,7 @@ export function createWorkflowRoutes() {
 
   // Assign content to user
   workflowRoutes.post('/content/:contentId/assign', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
@@ -236,7 +220,7 @@ export function createWorkflowRoutes() {
 
   // Schedule content action
   workflowRoutes.post('/content/:contentId/schedule', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
@@ -265,7 +249,7 @@ export function createWorkflowRoutes() {
 
   // Cancel scheduled action
   workflowRoutes.delete('/scheduled/:scheduleId', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
     }
@@ -293,7 +277,7 @@ export function createWorkflowRoutes() {
 
   // Get workflow analytics
   workflowRoutes.get('/analytics', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401)
     }

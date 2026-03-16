@@ -1,6 +1,4 @@
-// @ts-nocheck
-import { D1Database } from '@cloudflare/workers-types'
-import type { PluginDbService } from '../../../../types/plugin-types'
+import type { D1Database } from '@cloudflare/workers-types'
 
 export interface WorkflowState {
   id: string
@@ -29,7 +27,7 @@ export interface WorkflowTransition {
   to_state_id: string
   required_permission?: string
   auto_transition: boolean
-  transition_conditions?: any
+  transition_conditions?: unknown
 }
 
 export interface ContentWorkflowStatus {
@@ -49,11 +47,11 @@ export interface WorkflowHistoryEntry {
   to_state_id: string
   user_id: string
   comment?: string
-  metadata?: any
+  metadata?: unknown
   created_at: string
 }
 
-export class WorkflowService implements PluginDbService {
+export class WorkflowService {
   constructor(private db: D1Database) {}
 
   // Legacy compatibility - alias for WorkflowEngine
@@ -68,72 +66,71 @@ export class WorkflowEngine {
 
   async getWorkflowStates(): Promise<WorkflowState[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM workflow_states 
+      SELECT * FROM workflow_states
       ORDER BY is_initial DESC, name ASC
     `).all()
-    
-    return results as WorkflowState[]
+
+    return results as unknown as WorkflowState[]
   }
 
   async getWorkflow(workflowId: string): Promise<Workflow | null> {
     const workflow = await this.db.prepare(`
       SELECT * FROM workflows WHERE id = ?
     `).bind(workflowId).first()
-    
+
     return workflow as Workflow | null
   }
 
   async getWorkflowByCollection(collectionId: string): Promise<Workflow | null> {
     const workflow = await this.db.prepare(`
-      SELECT * FROM workflows 
+      SELECT * FROM workflows
       WHERE collection_id = ? AND is_active = 1
       ORDER BY created_at DESC
       LIMIT 1
     `).bind(collectionId).first()
-    
+
     return workflow as Workflow | null
   }
 
   async getWorkflowTransitions(workflowId: string): Promise<WorkflowTransition[]> {
     const { results } = await this.db.prepare(`
-      SELECT * FROM workflow_transitions 
+      SELECT * FROM workflow_transitions
       WHERE workflow_id = ?
       ORDER BY from_state_id, to_state_id
     `).bind(workflowId).all()
-    
-    return results as WorkflowTransition[]
+
+    return results as unknown as WorkflowTransition[]
   }
 
-  async getAvailableTransitions(workflowId: string, currentStateId: string, userId: string): Promise<WorkflowTransition[]> {
-    // Get user permissions (simplified - would integrate with permission system)
+  async getAvailableTransitions(workflowId: string, currentStateId: string, userRole: string): Promise<WorkflowTransition[]> {
     const { results } = await this.db.prepare(`
-      SELECT wt.* 
+      SELECT wt.*
       FROM workflow_transitions wt
       WHERE wt.workflow_id = ? AND wt.from_state_id = ?
-      AND (wt.required_permission IS NULL OR 
-           EXISTS (
-             SELECT 1 FROM user_permissions up 
-             WHERE up.user_id = ? AND up.permission = wt.required_permission
-           ))
-    `).bind(workflowId, currentStateId, userId).all()
-    
-    return results as WorkflowTransition[]
+      AND (wt.required_permission IS NULL
+           OR ? = 'admin'
+           OR EXISTS (SELECT 1 FROM role_permissions rp
+                      JOIN permissions p ON rp.permission_id = p.id
+                      WHERE rp.role = ? AND p.name = wt.required_permission))
+    `).bind(workflowId, currentStateId, userRole, userRole).all()
+
+    return results as unknown as WorkflowTransition[]
   }
 
   async getContentWorkflowStatus(contentId: string): Promise<ContentWorkflowStatus | null> {
     const status = await this.db.prepare(`
       SELECT * FROM content_workflow_status WHERE content_id = ?
     `).bind(contentId).first()
-    
+
     return status as ContentWorkflowStatus | null
   }
 
   async transitionContent(
-    contentId: string, 
-    toStateId: string, 
-    userId: string, 
+    contentId: string,
+    toStateId: string,
+    userIdOrRole: string,
     comment?: string,
-    metadata?: any
+    metadata?: unknown
   ): Promise<boolean> {
     try {
       // Get current status
@@ -143,12 +140,13 @@ export class WorkflowEngine {
       }
 
       // Validate transition is allowed
+      // userIdOrRole is treated as a role string for permission checking
       const availableTransitions = await this.getAvailableTransitions(
-        currentStatus.workflow_id, 
-        currentStatus.current_state_id, 
-        userId
+        currentStatus.workflow_id,
+        currentStatus.current_state_id,
+        userIdOrRole
       )
-      
+
       const validTransition = availableTransitions.find(t => t.to_state_id === toStateId)
       if (!validTransition) {
         throw new Error('Transition not allowed')
@@ -156,37 +154,36 @@ export class WorkflowEngine {
 
       // Begin transaction
       await this.db.prepare(`
-        UPDATE content_workflow_status 
+        UPDATE content_workflow_status
         SET current_state_id = ?, updated_at = CURRENT_TIMESTAMP
         WHERE content_id = ?
       `).bind(toStateId, contentId).run()
 
       // Update content table workflow state
       await this.db.prepare(`
-        UPDATE content 
+        UPDATE content
         SET workflow_state_id = ?, updated_at = ?
         WHERE id = ?
       `).bind(toStateId, Date.now(), contentId).run()
 
-      // Record history
+      // Record history (actual table columns: content_id, action, from_status, to_status, user_id, comment)
       await this.db.prepare(`
-        INSERT INTO workflow_history 
-        (content_id, workflow_id, from_state_id, to_state_id, user_id, comment, metadata)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO workflow_history
+        (content_id, action, from_status, to_status, user_id, comment)
+        VALUES (?, ?, ?, ?, ?, ?)
       `).bind(
         contentId,
-        currentStatus.workflow_id,
+        'transition',
         currentStatus.current_state_id,
         toStateId,
-        userId,
-        comment || null,
-        metadata ? JSON.stringify(metadata) : null
+        userIdOrRole,
+        comment ?? null
       ).run()
 
       // Auto-publish if state is 'published'
       if (toStateId === 'published') {
         await this.db.prepare(`
-          UPDATE content 
+          UPDATE content
           SET status = 'published', published_at = ?
           WHERE id = ?
         `).bind(Date.now(), contentId).run()
@@ -201,16 +198,30 @@ export class WorkflowEngine {
 
   async initializeContentWorkflow(contentId: string, collectionId: string): Promise<boolean> {
     try {
-      // Get workflow for collection
-      const workflow = await this.getWorkflowByCollection(collectionId)
+      // Get workflow for collection, auto-create default if missing
+      let workflow = await this.getWorkflowByCollection(collectionId)
       if (!workflow) {
-        return false
+        // Auto-create default workflow for this collection (matches migration 005 pattern)
+        const workflowId = `default-${collectionId}`
+        await this.db.prepare(`
+          INSERT OR IGNORE INTO workflows (id, name, description, collection_id, is_active, require_approval, approval_levels)
+          VALUES (?, ?, ?, ?, 1, 1, 1)
+        `).bind(
+          workflowId,
+          `Default Workflow for ${collectionId}`,
+          'Standard content approval workflow',
+          collectionId
+        ).run()
+        workflow = await this.getWorkflow(workflowId)
+        if (!workflow) {
+          return false
+        }
       }
 
       // Get initial state
       const initialState = await this.db.prepare(`
         SELECT id FROM workflow_states WHERE is_initial = 1 LIMIT 1
-      `).first()
+      `).first() as { id: string } | null
 
       if (!initialState) {
         return false
@@ -218,14 +229,14 @@ export class WorkflowEngine {
 
       // Create workflow status
       await this.db.prepare(`
-        INSERT OR REPLACE INTO content_workflow_status 
+        INSERT OR REPLACE INTO content_workflow_status
         (content_id, workflow_id, current_state_id)
         VALUES (?, ?, ?)
       `).bind(contentId, workflow.id, initialState.id).run()
 
       // Update content table
       await this.db.prepare(`
-        UPDATE content 
+        UPDATE content
         SET workflow_state_id = ?
         WHERE id = ?
       `).bind(initialState.id, contentId).run()
@@ -238,30 +249,31 @@ export class WorkflowEngine {
   }
 
   async getWorkflowHistory(contentId: string): Promise<WorkflowHistoryEntry[]> {
+    // Actual table columns: id, content_id, action, from_status, to_status, user_id, comment, created_at
     const { results } = await this.db.prepare(`
-      SELECT 
+      SELECT
         wh.*,
         u.username as user_name,
         fs.name as from_state_name,
         ts.name as to_state_name
       FROM workflow_history wh
       LEFT JOIN users u ON wh.user_id = u.id
-      LEFT JOIN workflow_states fs ON wh.from_state_id = fs.id
-      LEFT JOIN workflow_states ts ON wh.to_state_id = ts.id
+      LEFT JOIN workflow_states fs ON wh.from_status = fs.id
+      LEFT JOIN workflow_states ts ON wh.to_status = ts.id
       WHERE wh.content_id = ?
       ORDER BY wh.created_at DESC
     `).bind(contentId).all()
-    
-    return results as WorkflowHistoryEntry[]
+
+    return results as unknown as WorkflowHistoryEntry[]
   }
 
   async assignContentToUser(contentId: string, userId: string, dueDate?: string): Promise<boolean> {
     try {
       await this.db.prepare(`
-        UPDATE content_workflow_status 
+        UPDATE content_workflow_status
         SET assigned_to = ?, due_date = ?, updated_at = CURRENT_TIMESTAMP
         WHERE content_id = ?
-      `).bind(userId, dueDate || null, contentId).run()
+      `).bind(userId, dueDate ?? null, contentId).run()
 
       return true
     } catch (error) {
@@ -270,9 +282,9 @@ export class WorkflowEngine {
     }
   }
 
-  async getAssignedContent(userId: string): Promise<any[]> {
+  async getAssignedContent(userId: string): Promise<unknown[]> {
     const { results } = await this.db.prepare(`
-      SELECT 
+      SELECT
         c.*,
         cws.current_state_id,
         cws.due_date,
@@ -286,13 +298,13 @@ export class WorkflowEngine {
       WHERE cws.assigned_to = ?
       ORDER BY cws.due_date ASC, c.updated_at DESC
     `).bind(userId).all()
-    
+
     return results
   }
 
-  async getContentByState(stateId: string, limit: number = 50): Promise<any[]> {
+  async getContentByState(stateId: string, limit: number = 50): Promise<unknown[]> {
     const { results } = await this.db.prepare(`
-      SELECT 
+      SELECT
         c.*,
         cws.assigned_to,
         cws.due_date,
@@ -309,7 +321,7 @@ export class WorkflowEngine {
       ORDER BY c.updated_at DESC
       LIMIT ?
     `).bind(stateId, limit).all()
-    
+
     return results
   }
 }
@@ -331,7 +343,7 @@ export const workflowSchemas = {
       FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
     )
   `,
-  
+
   workflow_states: `
     CREATE TABLE IF NOT EXISTS workflow_states (
       id TEXT PRIMARY KEY,
@@ -343,7 +355,7 @@ export const workflowSchemas = {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `,
-  
+
   workflow_transitions: `
     CREATE TABLE IF NOT EXISTS workflow_transitions (
       id TEXT PRIMARY KEY,
@@ -359,7 +371,7 @@ export const workflowSchemas = {
       FOREIGN KEY (to_state_id) REFERENCES workflow_states(id)
     )
   `,
-  
+
   content_workflow_status: `
     CREATE TABLE IF NOT EXISTS content_workflow_status (
       id TEXT PRIMARY KEY,
@@ -376,7 +388,7 @@ export const workflowSchemas = {
       FOREIGN KEY (assigned_to) REFERENCES users(id)
     )
   `,
-  
+
   workflow_history: `
     CREATE TABLE IF NOT EXISTS workflow_history (
       id TEXT PRIMARY KEY,
@@ -395,7 +407,7 @@ export const workflowSchemas = {
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `,
-  
+
   scheduled_content: `
     CREATE TABLE IF NOT EXISTS scheduled_content (
       id TEXT PRIMARY KEY,
