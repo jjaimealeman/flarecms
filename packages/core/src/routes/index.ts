@@ -43,6 +43,10 @@ export { adminAuditLogRoutes } from './admin-audit-log'
 export { adminAnalyticsRoutes } from './admin-analytics'
 export { apiAnalyticsRoutes } from './api-analytics'
 
+// Workflow routes
+export { createWorkflowRoutes } from '../plugins/core-plugins/workflow-plugin/routes'
+export { createWorkflowAdminRoutes } from '../plugins/core-plugins/workflow-plugin/admin-routes'
+
 export const ROUTES_INFO = {
   message: 'Core routes available',
   available: [
@@ -73,7 +77,9 @@ export const ROUTES_INFO = {
     'adminSchemaMigrationsRoutes',
     'adminDeployRoutes',
     'adminAnalyticsRoutes',
-    'apiAnalyticsRoutes'
+    'apiAnalyticsRoutes',
+    'workflowRoutes',
+    'workflowAdminRoutes'
   ],
   status: 'Core package routes ready',
   reference: 'https://github.com/jjaimealeman/flarecms'
