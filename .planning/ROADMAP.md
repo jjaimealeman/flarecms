@@ -61,10 +61,10 @@ Plans:
   1. Visitor submits their email and receives an OTP code via Resend within seconds
   2. Visitor enters the OTP code and is logged into the admin panel with `demo` role -- no password creation needed
   3. Demo session automatically expires after 30 minutes and the user is redirected to the demo page
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 12-01: OTP send/verify endpoints and demo session creation with 30-min TTL
+- [ ] 12-01-PLAN.md -- OTP send/verify endpoints, branded email template, 30-min JWT session, route wiring
 
 #### Phase 13: Demo Page
 **Goal**: Visitors on flarecms.dev see a clear path to try the CMS -- one page, minimal friction, straight into the admin
@@ -105,4 +105,4 @@ Plans:
 | 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-03-16 after Phase 11 complete*
+*Last updated: 2026-03-16 after Phase 12 planned*
