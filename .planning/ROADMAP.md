@@ -46,11 +46,11 @@ Full details: milestones/v2.0-ROADMAP.md
   3. A demo user who exceeds 50 mutations in a session receives a clear "limit reached" response and is blocked from further writes
   4. Demo file uploads accept only images under 2MB; other file types or oversized images are rejected with a clear message
   5. Every demo signup is recorded in a `demo_signups` table with email, IP address, and timestamp
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 11-01: Demo role, demo-sandbox collection, and permission wiring
-- [ ] 11-02: Mutation rate limiting, upload restrictions, and demo_signups table
+- [ ] 11-01-PLAN.md -- Demo sandbox plugin, migration 038, collection + demo-service, plugin registration
+- [ ] 11-02-PLAN.md -- Mutation rate limiting, upload restrictions middleware
 
 #### Phase 12: Demo Authentication
 **Goal**: A visitor can go from entering their email to sitting in the admin dashboard in under 60 seconds, with no password to remember
@@ -104,4 +104,4 @@ Plans:
 | 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-03-16 after v2.1 roadmap creation*
+*Last updated: 2026-03-16 after Phase 11 planning*
