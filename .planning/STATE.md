@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 11 of 14 (Sandbox Foundation)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-16 -- Completed 11-01-PLAN.md (demo-sandbox plugin + migration 038)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-16 -- Completed 11-02-PLAN.md (demo mutation guard + upload guard middleware)
 
-Progress: [██░░░░░░░░] 20% (1/5 plans)
+Progress: [████░░░░░░] 40% (2/5 plans)
 
 ## Performance Metrics
 
@@ -23,7 +23,7 @@ Progress: [██░░░░░░░░] 20% (1/5 plans)
 
 **Current milestone (v2.1):**
 - 4 phases, 5 plans estimated
-- Plans completed: 1
+- Plans completed: 2
 
 ## Accumulated Context
 
@@ -37,6 +37,9 @@ Recent decisions:
 - Migration SQL in packages/core/migrations/ (not src/db/migrations/) -- pre-commit hook auto-bundles
 - Plugin import in app.ts is direct (no pluginManager.install()) for Phase 11; routes added in Phase 12
 - demo-sandbox collection managed=1 so it shows in admin but schema UI cannot modify it
+- Demo user detection uses KV key existence (demo-mutations:{userId}), NOT role check -- avoids false-positive on viewer role shared by API token users
+- Middleware wired in app.ts (not plugin index) so guards apply to existing /api/content/* and /api/media/* routes
+- formData body-consumption solved: guard parses once, stores as parsedFormData on context, downstream reuses it
 
 ### Prerequisites Verified
 
@@ -56,6 +59,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-16T19:09:30Z
-Stopped at: Completed 11-01-PLAN.md (demo-sandbox plugin + migration 038)
+Last session: 2026-03-16T19:15:43Z
+Stopped at: Completed 11-02-PLAN.md (demo mutation guard + upload guard middleware)
 Resume file: None
