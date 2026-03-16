@@ -137,7 +137,7 @@ export function renderAdminPreviewPage(data: PreviewPageData): string {
   </script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
     * {
       margin: 0;
@@ -146,7 +146,7 @@ export function renderAdminPreviewPage(data: PreviewPageData): string {
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }

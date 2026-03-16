@@ -90,12 +90,35 @@ export type {
   ValidateApiTokenResult,
 } from './api-tokens'
 
+// Revision Service — Content Staging Layer
+export {
+  createPendingRevision,
+  getPendingCount,
+  getPendingRevisions,
+  approveRevision,
+  approveAllRevisions,
+  rejectRevision,
+  computeDiff,
+  hasPendingRevision,
+  getLatestPendingRevision,
+} from './revisions'
+export type { RevisionStatus, PendingRevision, RevisionDiff } from './revisions'
+
 // Audit Trail Service — Workflow History Logging
 export {
   computeFieldDiff,
   logStatusChange,
   logContentEdit,
 } from './audit-trail'
+
+// Audit Log Service — Comprehensive admin action logging
+export {
+  logAudit,
+  queryAuditLog,
+  getResourceHistory,
+  getClientIP,
+} from './audit-log'
+export type { AuditEntry, AuditLogRow, AuditFilter } from './audit-log'
 
 // Schema Migration Service — Schema evolution tracking
 export { SchemaMigrationService } from './schema-migration'

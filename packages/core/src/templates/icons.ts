@@ -47,6 +47,7 @@ import {
   BarChart3,
   Sun,
   Moon,
+  GitBranch,
 } from 'lucide-static'
 
 /**
@@ -131,4 +132,5 @@ export {
   BarChart3,
   Sun,
   Moon,
+  GitBranch,
 }

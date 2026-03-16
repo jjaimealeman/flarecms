@@ -178,6 +178,93 @@ export function renderSettingsPage(data: SettingsPageData): string {
         }
       }
 
+      async function saveAppearanceSettings() {
+        var formData = new FormData();
+        var container = document.getElementById('settings-content');
+
+        var themeRadio = container.querySelector('input[name="theme"]:checked');
+        if (themeRadio) formData.append('theme', themeRadio.value);
+
+        container.querySelectorAll('input[type="url"], input[type="color"], textarea').forEach(function(el) {
+          if (el.name) formData.append(el.name, el.value);
+        });
+
+        var colorPicker = container.querySelector('input[name="primaryColor"]');
+        if (colorPicker) formData.set('primaryColor', colorPicker.value);
+
+        var saveBtn = document.querySelector('button[onclick="saveAppearanceSettings()"]');
+        var originalText = saveBtn.textContent;
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        try {
+          var response = await fetch('/admin/settings/appearance', { method: 'POST', body: formData });
+          var result = await response.json();
+          showNotification(result.success ? (result.message || 'Appearance settings saved!') : (result.error || 'Failed to save settings'), result.success ? 'success' : 'error');
+        } catch (error) {
+          console.error('Error saving appearance settings:', error);
+          showNotification('Failed to save settings. Please try again.', 'error');
+        } finally {
+          saveBtn.textContent = originalText;
+          saveBtn.disabled = false;
+        }
+      }
+
+      async function saveNotificationSettings() {
+        var formData = new FormData();
+        var container = document.getElementById('settings-content');
+
+        container.querySelectorAll('input[type="checkbox"]').forEach(function(el) {
+          formData.append(el.name, el.checked ? 'true' : 'false');
+        });
+        container.querySelectorAll('select').forEach(function(el) {
+          if (el.name) formData.append(el.name, el.value);
+        });
+
+        var saveBtn = document.querySelector('button[onclick="saveNotificationSettings()"]');
+        var originalText = saveBtn.textContent;
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        try {
+          var response = await fetch('/admin/settings/notifications', { method: 'POST', body: formData });
+          var result = await response.json();
+          showNotification(result.success ? (result.message || 'Notification settings saved!') : (result.error || 'Failed to save settings'), result.success ? 'success' : 'error');
+        } catch (error) {
+          console.error('Error saving notification settings:', error);
+          showNotification('Failed to save settings. Please try again.', 'error');
+        } finally {
+          saveBtn.textContent = originalText;
+          saveBtn.disabled = false;
+        }
+      }
+
+      async function saveStorageSettings() {
+        var formData = new FormData();
+        var container = document.getElementById('settings-content');
+
+        container.querySelectorAll('input[type="number"], select, textarea').forEach(function(el) {
+          if (el.name) formData.append(el.name, el.value);
+        });
+
+        var saveBtn = document.querySelector('button[onclick="saveStorageSettings()"]');
+        var originalText = saveBtn.textContent;
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        try {
+          var response = await fetch('/admin/settings/storage', { method: 'POST', body: formData });
+          var result = await response.json();
+          showNotification(result.success ? (result.message || 'Storage settings saved!') : (result.error || 'Failed to save settings'), result.success ? 'success' : 'error');
+        } catch (error) {
+          console.error('Error saving storage settings:', error);
+          showNotification('Failed to save settings. Please try again.', 'error');
+        } finally {
+          saveBtn.textContent = originalText;
+          saveBtn.disabled = false;
+        }
+      }
+
       // Migration functions
       window.refreshMigrationStatus = async function() {
         try {
@@ -657,125 +744,69 @@ function renderGeneralSettings(settings?: GeneralSettings): string {
 }
 
 function renderAppearanceSettings(settings?: AppearanceSettings): string {
+  const inputClass = 'w-full rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-zinc-400 dark:placeholder:text-zinc-500'
+
   return `
-    <div class="space-y-6">
-      <!-- WIP Notice -->
-      <div class="rounded-lg bg-blue-50 dark:bg-blue-950/20 p-6 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-500/30">
-        <div class="flex items-start space-x-3">
-          <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <div class="flex-1">
-            <h4 class="text-base/7 font-semibold text-blue-900 dark:text-blue-300">Work in Progress</h4>
-            <p class="mt-1 text-sm/6 text-blue-700 dark:text-blue-200">
-              This settings section is currently under development and provided for reference and design feedback only. Changes made here will not be saved.
-            </p>
-          </div>
-        </div>
-      </div>
-
+    <div class="space-y-8">
       <div>
-        <h3 class="text-lg font-semibold text-white mb-4">Appearance Settings</h3>
-        <p class="text-gray-300 mb-6">Customize the look and feel of your application.</p>
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white">Appearance Settings</h3>
+        <p class="mt-1 text-sm/6 text-zinc-500 dark:text-zinc-400">Customize the look and feel of your admin panel.</p>
       </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Theme</label>
-            <div class="grid grid-cols-3 gap-3">
-              <label class="flex items-center space-x-2 p-3 bg-white/10 rounded-lg border border-white/20 cursor-pointer hover:bg-white/20 transition-colors">
-                <input 
-                  type="radio" 
-                  name="theme" 
-                  value="light"
-                  ${settings?.theme === 'light' ? 'checked' : ''}
-                  class="text-blue-600"
-                />
-                <span class="text-sm text-gray-300">Light</span>
-              </label>
-              <label class="flex items-center space-x-2 p-3 bg-white/10 rounded-lg border border-white/20 cursor-pointer hover:bg-white/20 transition-colors">
-                <input 
-                  type="radio" 
-                  name="theme" 
-                  value="dark"
-                  ${settings?.theme === 'dark' || !settings?.theme ? 'checked' : ''}
-                  class="text-blue-600"
-                />
-                <span class="text-sm text-gray-300">Dark</span>
-              </label>
-              <label class="flex items-center space-x-2 p-3 bg-white/10 rounded-lg border border-white/20 cursor-pointer hover:bg-white/20 transition-colors">
-                <input 
-                  type="radio" 
-                  name="theme" 
-                  value="auto"
-                  ${settings?.theme === 'auto' ? 'checked' : ''}
-                  class="text-blue-600"
-                />
-                <span class="text-sm text-gray-300">Auto</span>
-              </label>
-            </div>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Primary Color</label>
-            <div class="flex items-center space-x-3">
-              <input 
-                type="color" 
-                name="primaryColor"
-                value="${settings?.primaryColor || '#465FFF'}"
-                class="w-12 h-10 bg-white/10 border border-white/20 rounded-lg cursor-pointer"
-              />
-              <input 
-                type="text" 
-                value="${settings?.primaryColor || '#465FFF'}"
-                class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="#465FFF"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Logo URL</label>
-            <input 
-              type="url" 
-              name="logoUrl"
-              value="${settings?.logoUrl || ''}"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/logo.png"
-            />
+
+      <!-- Theme -->
+      <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Theme</label>
+          <div class="grid grid-cols-3 gap-3">
+            <label class="flex items-center gap-2 p-3 rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/10 transition-colors">
+              <input type="radio" name="theme" value="light" ${settings?.theme === 'light' ? 'checked' : ''} class="text-indigo-500 focus:ring-indigo-500" />
+              <span class="text-sm text-zinc-950 dark:text-white">Light</span>
+            </label>
+            <label class="flex items-center gap-2 p-3 rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/10 transition-colors">
+              <input type="radio" name="theme" value="dark" ${settings?.theme === 'dark' || !settings?.theme ? 'checked' : ''} class="text-indigo-500 focus:ring-indigo-500" />
+              <span class="text-sm text-zinc-950 dark:text-white">Dark</span>
+            </label>
+            <label class="flex items-center gap-2 p-3 rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/10 transition-colors">
+              <input type="radio" name="theme" value="auto" ${settings?.theme === 'auto' ? 'checked' : ''} class="text-indigo-500 focus:ring-indigo-500" />
+              <span class="text-sm text-zinc-950 dark:text-white">Auto</span>
+            </label>
           </div>
         </div>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Favicon URL</label>
-            <input 
-              type="url" 
-              name="favicon"
-              value="${settings?.favicon || ''}"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/favicon.ico"
-            />
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Custom CSS</label>
-            <textarea 
-              name="customCSS"
-              rows="6"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-              placeholder="/* Add your custom CSS here */"
-            >${settings?.customCSS || ''}</textarea>
+
+        <!-- Primary Color -->
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Primary Color</label>
+          <div class="flex items-center gap-3">
+            <input type="color" id="primaryColorPicker" name="primaryColor" value="${settings?.primaryColor || '#465FFF'}" class="w-12 h-10 rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 cursor-pointer" oninput="document.getElementById('primaryColorText').value = this.value" />
+            <input type="text" id="primaryColorText" value="${settings?.primaryColor || '#465FFF'}" class="${inputClass}" placeholder="#465FFF" oninput="document.getElementById('primaryColorPicker').value = this.value" />
           </div>
         </div>
       </div>
 
-      <!-- Save Button (Disabled for WIP) -->
+      <!-- Logo & Favicon -->
+      <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Logo URL</label>
+          <input type="url" name="logoUrl" value="${settings?.logoUrl || ''}" class="${inputClass}" placeholder="https://example.com/logo.png" />
+        </div>
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Favicon URL</label>
+          <input type="url" name="favicon" value="${settings?.favicon || ''}" class="${inputClass}" placeholder="https://example.com/favicon.ico" />
+        </div>
+      </div>
+
+      <!-- Custom CSS -->
+      <div>
+        <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Custom CSS</label>
+        <textarea name="customCSS" rows="6" class="${inputClass} font-mono" placeholder="/* Add your custom CSS here */">${settings?.customCSS || ''}</textarea>
+        <p class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">Injected into the admin layout. Use with caution.</p>
+      </div>
+
+      <!-- Save Button -->
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
-          disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
+          onclick="saveAppearanceSettings()"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1040,154 +1071,60 @@ function renderSecuritySettings(settings?: SecuritySettings): string {
 }
 
 function renderNotificationSettings(settings?: NotificationSettings): string {
+  const selectClass = 'w-full rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+  const checkboxClass = 'col-start-1 row-start-1 appearance-none rounded border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 checked:border-indigo-500 checked:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500'
+  const checkSvg = `<svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white"><path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:checked]:opacity-100" /></svg>`
+
+  function checkbox(id: string, name: string, label: string, description: string, checked: boolean): string {
+    return `
+      <div class="flex gap-3">
+        <div class="flex h-6 shrink-0 items-center">
+          <div class="group grid size-4 grid-cols-1">
+            <input type="checkbox" id="${id}" name="${name}" ${checked ? 'checked' : ''} class="${checkboxClass}" />
+            ${checkSvg}
+          </div>
+        </div>
+        <div class="text-sm/6">
+          <label for="${id}" class="font-medium text-zinc-950 dark:text-white">${label}</label>
+          <p class="text-zinc-500 dark:text-zinc-400">${description}</p>
+        </div>
+      </div>`
+  }
+
   return `
-    <div class="space-y-6">
-      <!-- WIP Notice -->
-      <div class="rounded-lg bg-blue-50 dark:bg-blue-950/20 p-6 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-500/30">
-        <div class="flex items-start space-x-3">
-          <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <div class="flex-1">
-            <h4 class="text-base/7 font-semibold text-blue-900 dark:text-blue-300">Work in Progress</h4>
-            <p class="mt-1 text-sm/6 text-blue-700 dark:text-blue-200">
-              This settings section is currently under development and provided for reference and design feedback only. Changes made here will not be saved.
-            </p>
-          </div>
-        </div>
-      </div>
-
+    <div class="space-y-8">
       <div>
-        <h3 class="text-lg font-semibold text-white mb-4">Notification Settings</h3>
-        <p class="text-gray-300 mb-6">Configure how and when you receive notifications.</p>
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white">Notification Settings</h3>
+        <p class="mt-1 text-sm/6 text-zinc-500 dark:text-zinc-400">Configure how and when you receive notifications. Requires an email provider plugin (e.g. Resend) to deliver emails.</p>
       </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <div>
-            <h4 class="text-md font-medium text-white mb-3">Email Notifications</h4>
-            <div class="space-y-5">
-              <div class="flex gap-3">
-                <div class="flex h-6 shrink-0 items-center">
-                  <div class="group grid size-4 grid-cols-1">
-                    <input
-                      type="checkbox"
-                      id="emailNotifications"
-                      name="emailNotifications"
-                      ${settings?.emailNotifications ? 'checked' : ''}
-                      class="col-start-1 row-start-1 appearance-none rounded border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 checked:border-indigo-500 checked:bg-indigo-500 indeterminate:border-indigo-500 indeterminate:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:border-zinc-950/5 dark:disabled:border-white/5 disabled:bg-zinc-950/10 dark:disabled:bg-white/10 disabled:checked:bg-zinc-950/10 dark:disabled:checked:bg-white/10 forced-colors:appearance-auto"
-                    />
-                    <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-zinc-950/25 dark:group-has-[:disabled]:stroke-white/25">
-                      <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:checked]:opacity-100" />
-                      <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:indeterminate]:opacity-100" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="text-sm/6">
-                  <label for="emailNotifications" class="font-medium text-zinc-950 dark:text-white">Enable email notifications</label>
-                </div>
-              </div>
 
-              <div class="flex gap-3">
-                <div class="flex h-6 shrink-0 items-center">
-                  <div class="group grid size-4 grid-cols-1">
-                    <input
-                      type="checkbox"
-                      id="contentUpdates"
-                      name="contentUpdates"
-                      ${settings?.contentUpdates ? 'checked' : ''}
-                      class="col-start-1 row-start-1 appearance-none rounded border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 checked:border-indigo-500 checked:bg-indigo-500 indeterminate:border-indigo-500 indeterminate:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:border-zinc-950/5 dark:disabled:border-white/5 disabled:bg-zinc-950/10 dark:disabled:bg-white/10 disabled:checked:bg-zinc-950/10 dark:disabled:checked:bg-white/10 forced-colors:appearance-auto"
-                    />
-                    <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-zinc-950/25 dark:group-has-[:disabled]:stroke-white/25">
-                      <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:checked]:opacity-100" />
-                      <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:indeterminate]:opacity-100" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="text-sm/6">
-                  <label for="contentUpdates" class="font-medium text-zinc-950 dark:text-white">Content updates</label>
-                </div>
-              </div>
-
-              <div class="flex gap-3">
-                <div class="flex h-6 shrink-0 items-center">
-                  <div class="group grid size-4 grid-cols-1">
-                    <input
-                      type="checkbox"
-                      id="systemAlerts"
-                      name="systemAlerts"
-                      ${settings?.systemAlerts ? 'checked' : ''}
-                      class="col-start-1 row-start-1 appearance-none rounded border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 checked:border-indigo-500 checked:bg-indigo-500 indeterminate:border-indigo-500 indeterminate:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:border-zinc-950/5 dark:disabled:border-white/5 disabled:bg-zinc-950/10 dark:disabled:bg-white/10 disabled:checked:bg-zinc-950/10 dark:disabled:checked:bg-white/10 forced-colors:appearance-auto"
-                    />
-                    <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-zinc-950/25 dark:group-has-[:disabled]:stroke-white/25">
-                      <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:checked]:opacity-100" />
-                      <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:indeterminate]:opacity-100" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="text-sm/6">
-                  <label for="systemAlerts" class="font-medium text-zinc-950 dark:text-white">System alerts</label>
-                </div>
-              </div>
-
-              <div class="flex gap-3">
-                <div class="flex h-6 shrink-0 items-center">
-                  <div class="group grid size-4 grid-cols-1">
-                    <input
-                      type="checkbox"
-                      id="userRegistrations"
-                      name="userRegistrations"
-                      ${settings?.userRegistrations ? 'checked' : ''}
-                      class="col-start-1 row-start-1 appearance-none rounded border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 checked:border-indigo-500 checked:bg-indigo-500 indeterminate:border-indigo-500 indeterminate:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:border-zinc-950/5 dark:disabled:border-white/5 disabled:bg-zinc-950/10 dark:disabled:bg-white/10 disabled:checked:bg-zinc-950/10 dark:disabled:checked:bg-white/10 forced-colors:appearance-auto"
-                    />
-                    <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-zinc-950/25 dark:group-has-[:disabled]:stroke-white/25">
-                      <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:checked]:opacity-100" />
-                      <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-[:indeterminate]:opacity-100" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="text-sm/6">
-                  <label for="userRegistrations" class="font-medium text-zinc-950 dark:text-white">New user registrations</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Email Frequency</label>
-            <select 
-              name="emailFrequency"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="immediate" ${settings?.emailFrequency === 'immediate' ? 'selected' : ''}>Immediate</option>
-              <option value="daily" ${settings?.emailFrequency === 'daily' ? 'selected' : ''}>Daily Digest</option>
-              <option value="weekly" ${settings?.emailFrequency === 'weekly' ? 'selected' : ''}>Weekly Digest</option>
-            </select>
-          </div>
-          
-          <div class="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              <div>
-                <h5 class="text-sm font-medium text-blue-300">Notification Preferences</h5>
-                <p class="text-xs text-blue-200 mt-1">
-                  Critical system alerts will always be sent immediately regardless of your frequency setting.
-                </p>
-              </div>
-            </div>
-          </div>
+      <!-- Email Notifications -->
+      <div>
+        <h4 class="text-sm/6 font-semibold text-zinc-950 dark:text-white mb-4">Email Notifications</h4>
+        <div class="space-y-5">
+          ${checkbox('emailNotifications', 'emailNotifications', 'Enable email notifications', 'Master toggle for all email notifications', settings?.emailNotifications ?? true)}
+          ${checkbox('contentUpdates', 'contentUpdates', 'Content updates', 'Notify when content is created, updated, or published', settings?.contentUpdates ?? true)}
+          ${checkbox('systemAlerts', 'systemAlerts', 'System alerts', 'Notify on errors, failed migrations, or security events', settings?.systemAlerts ?? true)}
+          ${checkbox('userRegistrations', 'userRegistrations', 'New user registrations', 'Notify when a new user registers an account', settings?.userRegistrations ?? false)}
         </div>
       </div>
 
-      <!-- Save Button (Disabled for WIP) -->
+      <!-- Email Frequency -->
+      <div class="max-w-sm">
+        <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Email Frequency</label>
+        <select name="emailFrequency" class="${selectClass}">
+          <option value="immediate" ${settings?.emailFrequency === 'immediate' ? 'selected' : ''}>Immediate</option>
+          <option value="daily" ${settings?.emailFrequency === 'daily' ? 'selected' : ''}>Daily Digest</option>
+          <option value="weekly" ${settings?.emailFrequency === 'weekly' ? 'selected' : ''}>Weekly Digest</option>
+        </select>
+        <p class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">Critical system alerts are always sent immediately regardless of this setting.</p>
+      </div>
+
+      <!-- Save Button -->
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
-          disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
+          onclick="saveNotificationSettings()"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1200,111 +1137,64 @@ function renderNotificationSettings(settings?: NotificationSettings): string {
 }
 
 function renderStorageSettings(settings?: StorageSettings): string {
+  const inputClass = 'w-full rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-zinc-400 dark:placeholder:text-zinc-500'
+  const selectClass = 'w-full rounded-lg border border-zinc-950/10 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+
   return `
-    <div class="space-y-6">
-      <!-- WIP Notice -->
-      <div class="rounded-lg bg-blue-50 dark:bg-blue-950/20 p-6 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-500/30">
-        <div class="flex items-start space-x-3">
-          <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <div class="flex-1">
-            <h4 class="text-base/7 font-semibold text-blue-900 dark:text-blue-300">Work in Progress</h4>
-            <p class="mt-1 text-sm/6 text-blue-700 dark:text-blue-200">
-              This settings section is currently under development and provided for reference and design feedback only. Changes made here will not be saved.
-            </p>
-          </div>
-        </div>
-      </div>
-
+    <div class="space-y-8">
       <div>
-        <h3 class="text-lg font-semibold text-white mb-4">Storage Settings</h3>
-        <p class="text-gray-300 mb-6">Configure file storage and backup settings.</p>
+        <h3 class="text-lg font-semibold text-zinc-950 dark:text-white">Storage Settings</h3>
+        <p class="mt-1 text-sm/6 text-zinc-500 dark:text-zinc-400">Configure file upload limits, allowed types, and backup preferences.</p>
       </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Max File Size (MB)</label>
-            <input 
-              type="number" 
-              name="maxFileSize"
-              value="${settings?.maxFileSize || 10}"
-              min="1"
-              max="100"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Storage Provider</label>
-            <select 
-              name="storageProvider"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="local" ${settings?.storageProvider === 'local' ? 'selected' : ''}>Local Storage</option>
-              <option value="cloudflare" ${settings?.storageProvider === 'cloudflare' ? 'selected' : ''}>Cloudflare R2</option>
-              <option value="s3" ${settings?.storageProvider === 's3' ? 'selected' : ''}>Amazon S3</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Backup Frequency</label>
-            <select 
-              name="backupFrequency"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="daily" ${settings?.backupFrequency === 'daily' ? 'selected' : ''}>Daily</option>
-              <option value="weekly" ${settings?.backupFrequency === 'weekly' ? 'selected' : ''}>Weekly</option>
-              <option value="monthly" ${settings?.backupFrequency === 'monthly' ? 'selected' : ''}>Monthly</option>
-            </select>
-          </div>
+
+      <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+        <!-- Max File Size -->
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Max File Size (MB)</label>
+          <input type="number" name="maxFileSize" value="${settings?.maxFileSize || 10}" min="1" max="100" class="${inputClass}" />
+          <p class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">Maximum upload size per file (1-100 MB)</p>
         </div>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Allowed File Types</label>
-            <textarea 
-              name="allowedFileTypes"
-              rows="3"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="jpg, jpeg, png, gif, pdf, docx"
-            >${settings?.allowedFileTypes?.join(', ') || 'jpg, jpeg, png, gif, pdf, docx'}</textarea>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Backup Retention (days)</label>
-            <input 
-              type="number" 
-              name="retentionPeriod"
-              value="${settings?.retentionPeriod || 30}"
-              min="7"
-              max="365"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div class="p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-green-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              <div>
-                <h5 class="text-sm font-medium text-green-300">Storage Status</h5>
-                <p class="text-xs text-green-200 mt-1">
-                  Current usage: 2.4 GB / 10 GB available
-                </p>
-              </div>
-            </div>
-          </div>
+
+        <!-- Storage Provider -->
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Storage Provider</label>
+          <select name="storageProvider" class="${selectClass}">
+            <option value="cloudflare" ${settings?.storageProvider === 'cloudflare' ? 'selected' : ''}>Cloudflare R2</option>
+            <option value="s3" ${settings?.storageProvider === 's3' ? 'selected' : ''}>Amazon S3</option>
+            <option value="local" ${settings?.storageProvider === 'local' ? 'selected' : ''}>Local Storage</option>
+          </select>
+        </div>
+
+        <!-- Backup Frequency -->
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Backup Frequency</label>
+          <select name="backupFrequency" class="${selectClass}">
+            <option value="daily" ${settings?.backupFrequency === 'daily' ? 'selected' : ''}>Daily</option>
+            <option value="weekly" ${settings?.backupFrequency === 'weekly' ? 'selected' : ''}>Weekly</option>
+            <option value="monthly" ${settings?.backupFrequency === 'monthly' ? 'selected' : ''}>Monthly</option>
+          </select>
+          <p class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">D1 automatic backups are managed by Cloudflare</p>
+        </div>
+
+        <!-- Retention Period -->
+        <div>
+          <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Backup Retention (days)</label>
+          <input type="number" name="retentionPeriod" value="${settings?.retentionPeriod || 30}" min="7" max="365" class="${inputClass}" />
         </div>
       </div>
 
-      <!-- Save Button (Disabled for WIP) -->
+      <!-- Allowed File Types -->
+      <div>
+        <label class="block text-sm/6 font-medium text-zinc-950 dark:text-white mb-2">Allowed File Types</label>
+        <textarea name="allowedFileTypes" rows="2" class="${inputClass}" placeholder="jpg, jpeg, png, gif, webp, svg, pdf, docx">${settings?.allowedFileTypes?.join(', ') || 'jpg, jpeg, png, gif, webp, svg, pdf, docx'}</textarea>
+        <p class="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">Comma-separated list of allowed file extensions for media uploads</p>
+      </div>
+
+      <!-- Save Button -->
       <div class="mt-8 pt-6 border-t border-zinc-950/5 dark:border-white/10 flex justify-end">
         <button
-          disabled
-          class="inline-flex items-center justify-center rounded-lg bg-zinc-950/50 dark:bg-blue-600/50 px-3.5 py-2.5 text-sm font-semibold text-white/50 dark:text-white/50 cursor-not-allowed shadow-sm"
+          onclick="saveStorageSettings()"
+          class="inline-flex items-center justify-center rounded-lg bg-zinc-950 dark:bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white dark:text-white hover:bg-zinc-800 dark:hover:bg-blue-700 transition-colors shadow-sm"
         >
           <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

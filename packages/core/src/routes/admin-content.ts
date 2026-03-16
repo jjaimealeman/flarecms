@@ -10,6 +10,8 @@ import { getCacheService, CACHE_CONFIGS } from '../services/cache'
 import { validateStatusTransition, isSlugLocked } from '../services/content-state-machine'
 import { checkCollectionPermission, getCollectionPermissions, isAuthorAllowedToEdit } from '../services/rbac'
 import { logStatusChange, logContentEdit, computeFieldDiff } from '../services/audit-trail'
+import { createPendingRevision, getLatestPendingRevision } from '../services/revisions'
+import { logAudit, getClientIP } from '../services/audit-log'
 import type { Bindings, Variables } from '../app'
 import { PluginService } from '../services/plugin-service'
 import { getBlocksFieldConfig, parseBlocksValue } from '../utils/blocks'
@@ -535,14 +537,14 @@ adminContentRoutes.get('/new', async (c) => {
       const db = c.env.DB
       const collectionsStmt = db.prepare('SELECT id, name, display_name, description FROM collections WHERE is_active = 1 ORDER BY display_name')
       const { results } = await collectionsStmt.all()
-      
+
       const collections = (results || []).map((row: any) => ({
         id: row.id,
         name: row.name,
         display_name: row.display_name,
         description: row.description
       }))
-      
+
       // Deduplicate collections by name
       const seenNames = new Set<string>()
       const uniqueCollections = collections.filter(c => {
@@ -550,6 +552,18 @@ adminContentRoutes.get('/new', async (c) => {
         seenNames.add(c.name)
         return true
       })
+
+      // Filter collections by RBAC permissions (non-admin users only see collections they can create in)
+      let filteredCollections = uniqueCollections
+      if (user && user.role !== 'admin') {
+        const userPerms = await getCollectionPermissions(db, user.userId)
+        const createableIds = new Set(
+          userPerms
+            .filter(p => p.role === 'editor' || p.role === 'author')
+            .map(p => p.collectionId)
+        )
+        filteredCollections = uniqueCollections.filter(c => createableIds.has(c.id))
+      }
 
       // Render collection selection using admin layout
       const pageContent = `
@@ -559,8 +573,15 @@ adminContentRoutes.get('/new', async (c) => {
             <p class="mt-2 text-sm/6 text-zinc-500 dark:text-zinc-400">Select a collection to create content in:</p>
           </div>
 
+          ${filteredCollections.length === 0 ? `
+            <div class="text-center py-12">
+              <p class="text-sm text-zinc-500 dark:text-zinc-400">You don't have permission to create content in any collection.</p>
+              <a href="/admin/content" class="mt-4 inline-block text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500">← Back to Content List</a>
+            </div>
+          ` : ''}
+
           <div class="grid gap-4">
-            ${uniqueCollections.map(collection => `
+            ${filteredCollections.map(collection => `
               <a href="/admin/content/new?collection=${collection.id}"
                  class="block p-6 bg-white dark:bg-zinc-900 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ring-1 ring-zinc-950/5 dark:ring-white/10 shadow-sm">
                 <h3 class="text-lg font-semibold text-zinc-950 dark:text-white mb-1">${collection.display_name}</h3>
@@ -584,10 +605,25 @@ adminContentRoutes.get('/new', async (c) => {
         content: pageContent,
       }))
     }
-    
+
     const db = c.env.DB
+
+    // RBAC: check create permission on this collection
+    if (user && user.role !== 'admin') {
+      const canCreate = await checkCollectionPermission(db, user.userId, user.role, collectionId, 'create')
+      if (!canCreate) {
+        const formData: ContentFormData = {
+          collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
+          fields: [],
+          error: 'You do not have permission to create content in this collection.',
+          user: { name: user.email, email: user.email, role: user.role }
+        }
+        return c.html(renderContentFormPage(formData))
+      }
+    }
+
     const collection = await getCollection(db, collectionId)
-    
+
     if (!collection) {
       const formData: ContentFormData = {
         collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
@@ -719,7 +755,34 @@ adminContentRoutes.get('/:id/edit', async (c) => {
       }
       return c.html(renderContentFormPage(formData))
     }
-    
+
+    // RBAC: check edit permission on this collection
+    if (user && user.role !== 'admin') {
+      const canEdit = await checkCollectionPermission(db, user.userId, user.role, content.collection_id, 'edit')
+      if (!canEdit) {
+        const formData: ContentFormData = {
+          collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
+          fields: [],
+          error: 'You do not have permission to edit content in this collection.',
+          user: { name: user.email, email: user.email, role: user.role }
+        }
+        return c.html(renderContentFormPage(formData))
+      }
+      // Author role: can only edit their own content
+      const permRow = await db.prepare(
+        'SELECT role FROM user_collection_permissions WHERE user_id = ? AND collection_id = ?'
+      ).bind(user.userId, content.collection_id).first<{ role: string }>()
+      if (permRow && !isAuthorAllowedToEdit(permRow.role, content.author_id, user.userId)) {
+        const formData: ContentFormData = {
+          collection: { id: '', name: '', display_name: 'Unknown', schema: {} },
+          fields: [],
+          error: 'Authors can only edit their own content.',
+          user: { name: user.email, email: user.email, role: user.role }
+        }
+        return c.html(renderContentFormPage(formData))
+      }
+    }
+
     const collection = {
       id: content.collection_id,
       name: content.collection_name,
@@ -729,7 +792,18 @@ adminContentRoutes.get('/:id/edit', async (c) => {
     }
     
     const fields = await getCollectionFields(db, content.collection_id)
-    const contentData = content.data ? JSON.parse(content.data) : {}
+    let contentData = content.data ? JSON.parse(content.data) : {}
+
+    // If published content has a pending revision, load that instead of live data.
+    // This ensures subsequent edits build on the previous pending changes.
+    if (content.status === 'published') {
+      const pendingRev = await getLatestPendingRevision(db, id)
+      if (pendingRev) {
+        const pendingData = { ...pendingRev.data }
+        delete pendingData._revision_meta
+        contentData = pendingData
+      }
+    }
 
     // Enrich content data with metadata for the form template
     contentData.created_at = content.created_at
@@ -959,7 +1033,9 @@ adminContentRoutes.post('/', async (c) => {
     } catch (auditErr) {
       console.error('[audit] Failed to log admin content creation:', auditErr)
     }
-    
+
+    logAudit(db, { userId: user?.userId || 'unknown', userEmail: user?.email || '', action: 'content.create', resourceType: 'content', resourceId: contentId, resourceTitle: data.title || data.name || 'Untitled', ipAddress: getClientIP(c.req) })
+
     // Handle different actions
     const referrerParams = formData.get('referrer_params') as string
     const redirectUrl = action === 'save_and_continue'
@@ -1147,7 +1223,46 @@ adminContentRoutes.put('/:id', async (c) => {
       data.author_display = authorDisplay
     }
 
-    // Update content
+    // Content Staging: if editing published content and user is not bypassing,
+    // create a pending revision instead of overwriting the live version.
+    const publishImmediately = formData.get('publish_immediately') === 'on'
+    const isPublishedContent = existingContent.status === 'published'
+    const isAdmin = user?.role === 'admin'
+    const shouldStage = isPublishedContent && !(isAdmin && publishImmediately)
+
+    if (shouldStage) {
+      await createPendingRevision(db, {
+        contentId: id,
+        data,
+        authorId: user?.userId || 'unknown',
+        status,
+        title: data.title || data.name || 'Untitled',
+        slug,
+        metaTitle: data.meta_title || null,
+        metaDescription: data.meta_description || null,
+        scheduledPublishAt: resolvedScheduledPublishAt ? new Date(resolvedScheduledPublishAt).getTime() : null,
+        scheduledUnpublishAt: resolvedScheduledUnpublishAt ? new Date(resolvedScheduledUnpublishAt).getTime() : null,
+      })
+
+      logAudit(db, { userId: user?.userId || 'unknown', userEmail: user?.email || '', action: 'content.update', resourceType: 'content', resourceId: id, resourceTitle: data.title || data.name || existingContent.title, details: { staged: true }, ipAddress: getClientIP(c.req) })
+
+      // Redirect with staging-specific success message
+      const referrerParams = formData.get('referrer_params') as string
+      const stagingMsg = 'Changes saved as pending revision. Use Sync to publish.'
+      const redirectUrl = action === 'save_and_continue'
+        ? `/admin/content/${id}/edit?success=${encodeURIComponent(stagingMsg)}${referrerParams ? `&ref=${encodeURIComponent(referrerParams)}` : ''}`
+        : referrerParams
+          ? `/admin/content?${referrerParams}&success=${encodeURIComponent(stagingMsg)}`
+          : `/admin/content?collection=${existingContent.collection_id}&success=${encodeURIComponent(stagingMsg)}`
+
+      const isHTMX = c.req.header('HX-Request') === 'true'
+      if (isHTMX) {
+        return c.text('', 200, { 'HX-Redirect': redirectUrl })
+      }
+      return c.redirect(redirectUrl)
+    }
+
+    // Direct save path: draft content, or admin with "publish immediately" bypass
     const now = Date.now()
 
     const updateStmt = db.prepare(`
@@ -1173,10 +1288,14 @@ adminContentRoutes.put('/:id', async (c) => {
       id,
     ).run()
 
-    // Invalidate content cache
+    // Invalidate content cache + bump version for frontend freshness
     const cache = getCacheService(CACHE_CONFIGS.content!)
     await cache.delete(cache.generateKey('content', id))
     await cache.invalidate(`content:list:${existingContent.collection_id}:*`)
+    if (c.env.CACHE_KV) {
+      const cv = await c.env.CACHE_KV.get('flare:content_version')
+      await c.env.CACHE_KV.put('flare:content_version', String((cv ? parseInt(cv, 10) : 0) + 1))
+    }
 
     // Create new version if content changed
     const existingData = JSON.parse(existingContent.data || '{}')
@@ -1185,12 +1304,12 @@ adminContentRoutes.put('/:id', async (c) => {
       const versionCountStmt = db.prepare('SELECT MAX(version) as max_version FROM content_versions WHERE content_id = ?')
       const versionResult = await versionCountStmt.bind(id).first() as any
       const nextVersion = (versionResult?.max_version || 0) + 1
-      
+
       const versionStmt = db.prepare(`
-        INSERT INTO content_versions (id, content_id, version, data, author_id, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO content_versions (id, content_id, version, data, author_id, created_at, status)
+        VALUES (?, ?, ?, ?, ?, ?, 'history')
       `)
-      
+
       await versionStmt.bind(
         crypto.randomUUID(),
         id,
@@ -1241,7 +1360,9 @@ adminContentRoutes.put('/:id', async (c) => {
     } catch (auditErr) {
       console.error('[audit] Failed to log admin content update:', auditErr)
     }
-    
+
+    logAudit(db, { userId: user?.userId || 'unknown', userEmail: user?.email || '', action: 'content.update', resourceType: 'content', resourceId: id, resourceTitle: data.title || data.name || existingContent.title, ipAddress: getClientIP(c.req) })
+
     // Handle different actions
     const referrerParams = formData.get('referrer_params') as string
     const redirectUrl = action === 'save_and_continue'
@@ -1576,6 +1697,17 @@ adminContentRoutes.post('/bulk-action', async (c) => {
     // Also invalidate list caches (they contain content from potentially multiple collections)
     await cache.invalidate('content:list:*')
 
+    // Audit log for bulk actions
+    const auditAction = action === 'delete' ? 'content.delete'
+      : action === 'restore' ? 'content.restore'
+      : action === 'purge' ? 'content.delete'
+      : action === 'publish' ? 'content.publish'
+      : action === 'draft' ? 'content.unpublish'
+      : 'content.update'
+    for (const contentId of ids) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: auditAction, resourceType: 'content', resourceId: contentId, details: { bulk: true, count: ids.length }, ipAddress: getClientIP(c.req) })
+    }
+
     return c.json({ success: true, count: ids.length })
   } catch (error) {
     console.error('Bulk action error:', error)
@@ -1627,6 +1759,8 @@ adminContentRoutes.delete('/:id', async (c) => {
     const cache = getCacheService(CACHE_CONFIGS.content!)
     await cache.delete(cache.generateKey('content', id))
     await cache.invalidate('content:list:*')
+
+    logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'content.delete', resourceType: 'content', resourceId: id, resourceTitle: content.title, ipAddress: getClientIP(c.req) })
 
     // Return success - let HTMX reload the page
     return c.html(`

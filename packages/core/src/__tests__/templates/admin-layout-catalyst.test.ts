@@ -536,10 +536,10 @@ describe('renderAdminLayoutCatalyst', () => {
   });
 
   describe('Font Loading', () => {
-    it('should include Inter font import', () => {
+    it('should include Outfit font import', () => {
       const html = renderAdminLayoutCatalyst(baseData);
 
-      expect(html).toContain("font-family: 'Inter'");
+      expect(html).toContain("font-family: 'Outfit'");
       expect(html).toContain('fonts.googleapis.com');
     });
   });

@@ -4,6 +4,7 @@ import { requireAuth, requireRole } from '../middleware'
 import { renderSettingsPage, SettingsPageData } from '../templates/pages/admin-settings.template'
 import { MigrationService } from '../services/migrations'
 import { SettingsService } from '../services/settings'
+import { logAudit, getClientIP } from '../services/audit-log'
 
 type Bindings = {
   DB: D1Database
@@ -49,7 +50,7 @@ function getMockSettings(user: any) {
       maintenanceMode: false
     },
     appearance: {
-      theme: 'dark' as const,
+      theme: 'dark' as 'light' | 'dark' | 'auto',
       primaryColor: '#465FFF',
       logoUrl: '',
       favicon: '',
@@ -76,13 +77,13 @@ function getMockSettings(user: any) {
       contentUpdates: true,
       systemAlerts: true,
       userRegistrations: false,
-      emailFrequency: 'immediate' as const
+      emailFrequency: 'immediate' as 'immediate' | 'daily' | 'weekly'
     },
     storage: {
       maxFileSize: 10,
       allowedFileTypes: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'docx'],
-      storageProvider: 'cloudflare' as const,
-      backupFrequency: 'daily' as const,
+      storageProvider: 'cloudflare' as 'local' | 'cloudflare' | 's3',
+      backupFrequency: 'daily' as 'daily' | 'weekly' | 'monthly',
       retentionPeriod: 30
     },
     migrations: {
@@ -133,15 +134,23 @@ adminSettingsRoutes.get('/general', async (c) => {
 })
 
 // Appearance settings
-adminSettingsRoutes.get('/appearance', (c) => {
+adminSettingsRoutes.get('/appearance', async (c) => {
   const user = c.get('user')
+  const db = c.env.DB
+  const settingsService = new SettingsService(db)
+
+  const appearanceSettings = await settingsService.getAppearanceSettings()
+
+  const mockSettings = getMockSettings(user)
+  mockSettings.appearance = appearanceSettings
+
   const pageData: SettingsPageData = {
     user: user ? {
       name: user.email,
       email: user.email,
       role: user.role
     } : undefined,
-    settings: getMockSettings(user),
+    settings: mockSettings,
     activeTab: 'appearance',
     version: c.get('appVersion')
   }
@@ -173,15 +182,23 @@ adminSettingsRoutes.get('/security', async (c) => {
 })
 
 // Notifications settings
-adminSettingsRoutes.get('/notifications', (c) => {
+adminSettingsRoutes.get('/notifications', async (c) => {
   const user = c.get('user')
+  const db = c.env.DB
+  const settingsService = new SettingsService(db)
+
+  const notificationSettings = await settingsService.getNotificationSettings()
+
+  const mockSettings = getMockSettings(user)
+  mockSettings.notifications = notificationSettings
+
   const pageData: SettingsPageData = {
     user: user ? {
       name: user.email,
       email: user.email,
       role: user.role
     } : undefined,
-    settings: getMockSettings(user),
+    settings: mockSettings,
     activeTab: 'notifications',
     version: c.get('appVersion')
   }
@@ -189,15 +206,23 @@ adminSettingsRoutes.get('/notifications', (c) => {
 })
 
 // Storage settings
-adminSettingsRoutes.get('/storage', (c) => {
+adminSettingsRoutes.get('/storage', async (c) => {
   const user = c.get('user')
+  const db = c.env.DB
+  const settingsService = new SettingsService(db)
+
+  const storageSettings = await settingsService.getStorageSettings()
+
+  const mockSettings = getMockSettings(user)
+  mockSettings.storage = storageSettings
+
   const pageData: SettingsPageData = {
     user: user ? {
       name: user.email,
       email: user.email,
       role: user.role
     } : undefined,
-    settings: getMockSettings(user),
+    settings: mockSettings,
     activeTab: 'storage',
     version: c.get('appVersion')
   }
@@ -510,6 +535,7 @@ adminSettingsRoutes.post('/general', async (c) => {
     const success = await settingsService.saveGeneralSettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'general', ipAddress: getClientIP(c.req) })
       return c.json({
         success: true,
         message: 'General settings saved successfully!'
@@ -565,12 +591,139 @@ adminSettingsRoutes.post('/security', async (c) => {
     const success = await settingsService.saveSecuritySettings(settings)
 
     if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'security', ipAddress: getClientIP(c.req) })
       return c.json({ success: true, message: 'Security settings saved successfully!' })
     } else {
       return c.json({ success: false, error: 'Failed to save settings' }, 500)
     }
   } catch (error) {
     console.error('Error saving security settings:', error)
+    return c.json({ success: false, error: 'Failed to save settings. Please try again.' }, 500)
+  }
+})
+
+// API: Get idle timeout settings (used by admin layout JS)
+adminSettingsRoutes.get('/api/idle-config', async (c) => {
+  try {
+    const db = c.env.DB
+    const settingsService = new SettingsService(db)
+    const settings = await settingsService.getSecuritySettings()
+    return c.json({
+      idleTimeout: settings.idleTimeout,
+      idleWarningMinutes: settings.idleWarningMinutes
+    })
+  } catch {
+    return c.json({ idleTimeout: 0, idleWarningMinutes: 5 })
+  }
+})
+
+// Save appearance settings
+adminSettingsRoutes.post('/appearance', async (c) => {
+  try {
+    const user = c.get('user')
+
+    if (!user || user.role !== 'admin') {
+      return c.json({ success: false, error: 'Unauthorized. Admin access required.' }, 403)
+    }
+
+    const formData = await c.req.formData()
+    const db = c.env.DB
+    const settingsService = new SettingsService(db)
+
+    const themeRaw = (formData.get('theme') as string) || 'dark'
+    const theme = (['light', 'dark', 'auto'].includes(themeRaw) ? themeRaw : 'dark') as 'light' | 'dark' | 'auto'
+
+    const settings = {
+      theme,
+      primaryColor: (formData.get('primaryColor') as string) || '#465FFF',
+      logoUrl: (formData.get('logoUrl') as string) || '',
+      favicon: (formData.get('favicon') as string) || '',
+      customCSS: (formData.get('customCSS') as string) || ''
+    }
+
+    const success = await settingsService.saveAppearanceSettings(settings)
+
+    if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'appearance', ipAddress: getClientIP(c.req) })
+      return c.json({ success: true, message: 'Appearance settings saved successfully!' })
+    } else {
+      return c.json({ success: false, error: 'Failed to save settings' }, 500)
+    }
+  } catch (error) {
+    console.error('Error saving appearance settings:', error)
+    return c.json({ success: false, error: 'Failed to save settings. Please try again.' }, 500)
+  }
+})
+
+// Save notification settings
+adminSettingsRoutes.post('/notifications', async (c) => {
+  try {
+    const user = c.get('user')
+
+    if (!user || user.role !== 'admin') {
+      return c.json({ success: false, error: 'Unauthorized. Admin access required.' }, 403)
+    }
+
+    const formData = await c.req.formData()
+    const db = c.env.DB
+    const settingsService = new SettingsService(db)
+
+    const settings = {
+      emailNotifications: formData.get('emailNotifications') === 'true',
+      contentUpdates: formData.get('contentUpdates') === 'true',
+      systemAlerts: formData.get('systemAlerts') === 'true',
+      userRegistrations: formData.get('userRegistrations') === 'true',
+      emailFrequency: ((['immediate', 'daily', 'weekly'].includes(formData.get('emailFrequency') as string) ? formData.get('emailFrequency') : 'immediate') as 'immediate' | 'daily' | 'weekly')
+    }
+
+    const success = await settingsService.saveNotificationSettings(settings)
+
+    if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'notifications', ipAddress: getClientIP(c.req) })
+      return c.json({ success: true, message: 'Notification settings saved successfully!' })
+    } else {
+      return c.json({ success: false, error: 'Failed to save settings' }, 500)
+    }
+  } catch (error) {
+    console.error('Error saving notification settings:', error)
+    return c.json({ success: false, error: 'Failed to save settings. Please try again.' }, 500)
+  }
+})
+
+// Save storage settings
+adminSettingsRoutes.post('/storage', async (c) => {
+  try {
+    const user = c.get('user')
+
+    if (!user || user.role !== 'admin') {
+      return c.json({ success: false, error: 'Unauthorized. Admin access required.' }, 403)
+    }
+
+    const formData = await c.req.formData()
+    const db = c.env.DB
+    const settingsService = new SettingsService(db)
+
+    const typesRaw = (formData.get('allowedFileTypes') as string) || ''
+    const typesList = typesRaw.split(',').map(t => t.trim()).filter(Boolean)
+
+    const settings = {
+      maxFileSize: parseInt(formData.get('maxFileSize') as string, 10) || 10,
+      allowedFileTypes: typesList,
+      storageProvider: ((['local', 'cloudflare', 's3'].includes(formData.get('storageProvider') as string) ? formData.get('storageProvider') : 'cloudflare') as 'local' | 'cloudflare' | 's3'),
+      backupFrequency: ((['daily', 'weekly', 'monthly'].includes(formData.get('backupFrequency') as string) ? formData.get('backupFrequency') : 'daily') as 'daily' | 'weekly' | 'monthly'),
+      retentionPeriod: parseInt(formData.get('retentionPeriod') as string, 10) || 30
+    }
+
+    const success = await settingsService.saveStorageSettings(settings)
+
+    if (success) {
+      logAudit(db, { userId: user!.userId, userEmail: user!.email, action: 'settings.update', resourceType: 'settings', resourceTitle: 'storage', ipAddress: getClientIP(c.req) })
+      return c.json({ success: true, message: 'Storage settings saved successfully!' })
+    } else {
+      return c.json({ success: false, error: 'Failed to save settings' }, 500)
+    }
+  } catch (error) {
+    console.error('Error saving storage settings:', error)
     return c.json({ success: false, error: 'Failed to save settings. Please try again.' }, 500)
   }
 })

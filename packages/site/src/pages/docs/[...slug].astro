@@ -3,7 +3,7 @@ import { renderMarkdown } from '../../lib/markdown'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 import TableOfContents from '../../components/docs/TableOfContents.astro'
 import EditInCms from '../../components/docs/EditInCms.astro'
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 import { buildNavTree, flattenForPrevNext } from '../../lib/docs-nav'
 import '../../styles/code-blocks.css'
 import '../../styles/callouts.css'
@@ -21,8 +21,8 @@ if (parts.length !== 2) {
 const [sectionSlug, pageSlug] = parts
 
 // Fetch all data from Content Layer
-const rawSections = await getCollection('docsSections')
-const rawDocs = await getCollection('docs')
+const rawSections = (await getLiveCollection('docsSections'))?.entries || []
+const rawDocs = (await getLiveCollection('docs'))?.entries || []
 
 // Map Content Layer entries to the shape buildNavTree expects
 const sections = rawSections

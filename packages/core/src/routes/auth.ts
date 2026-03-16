@@ -11,6 +11,7 @@ import { authValidationService, isRegistrationEnabled, isFirstUserRegistration }
 import type { RegistrationData } from '../services/auth-validation'
 import type { Bindings, Variables } from '../app'
 import { log } from '../lib/logger'
+import { logAudit, getClientIP } from '../services/audit-log'
 
 const JWT_SECRET_FALLBACK = 'your-super-secret-jwt-key-change-in-production'
 
@@ -258,6 +259,7 @@ authRoutes.post('/login',
 
       if (!user) {
         log.warn('auth.login_failed', { email: normalizedEmail, reason: 'user_not_found', ip: c.req.header('CF-Connecting-IP') })
+        logAudit(db, { userId: 'unknown', userEmail: normalizedEmail, action: 'user.login_failed', resourceType: 'user', details: 'Invalid credentials', ipAddress: getClientIP(c.req) })
         return c.json({ error: 'Invalid email or password' }, 401)
       }
 
@@ -265,6 +267,7 @@ authRoutes.post('/login',
       const isValidPassword = await AuthManager.verifyPassword(password, user.password_hash)
       if (!isValidPassword) {
         log.warn('auth.login_failed', { email: normalizedEmail, reason: 'invalid_password', ip: c.req.header('CF-Connecting-IP') })
+        logAudit(db, { userId: 'unknown', userEmail: normalizedEmail, action: 'user.login_failed', resourceType: 'user', details: 'Invalid credentials', ipAddress: getClientIP(c.req) })
         return c.json({ error: 'Invalid email or password' }, 401)
       }
 
@@ -306,6 +309,8 @@ authRoutes.post('/login',
 
       log.info('auth.login', { userId: user.id, email: normalizedEmail, ip: c.req.header('CF-Connecting-IP') })
 
+      logAudit(db, { userId: user.id, userEmail: user.email, action: 'user.login', resourceType: 'user', resourceId: user.id, ipAddress: getClientIP(c.req) })
+
       return c.json({
         user: {
           id: user.id,
@@ -325,6 +330,9 @@ authRoutes.post('/login',
 
 // Logout user (both GET and POST for convenience)
 authRoutes.post('/logout', (c) => {
+  const user = c.get('user')
+  const db = c.env.DB
+
   // Clear the auth cookie
   setCookie(c, 'auth_token', '', {
     httpOnly: true,
@@ -335,6 +343,10 @@ authRoutes.post('/logout', (c) => {
   clearCsrfCookie(c)
 
   log.info('auth.logout', { ip: c.req.header('CF-Connecting-IP') })
+
+  if (user) {
+    logAudit(db, { userId: user.userId, userEmail: user.email, action: 'user.logout', resourceType: 'user', ipAddress: getClientIP(c.req) })
+  }
 
   return c.json({ message: 'Logged out successfully' })
 })
@@ -573,16 +585,18 @@ authRoutes.post('/login/form',
       .first() as any
     
     if (!user) {
+      logAudit(db, { userId: 'unknown', userEmail: normalizedEmail, action: 'user.login_failed', resourceType: 'user', details: 'Invalid credentials', ipAddress: getClientIP(c.req) })
       return c.html(html`
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           Invalid email or password
         </div>
       `)
     }
-    
+
     // Verify password
     const isValidPassword = await AuthManager.verifyPassword(password, user.password_hash)
     if (!isValidPassword) {
+      logAudit(db, { userId: 'unknown', userEmail: normalizedEmail, action: 'user.login_failed', resourceType: 'user', details: 'Invalid credentials', ipAddress: getClientIP(c.req) })
       return c.html(html`
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           Invalid email or password
@@ -621,6 +635,8 @@ authRoutes.post('/login/form',
     await db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?')
       .bind(new Date().getTime(), user.id)
       .run()
+
+    logAudit(db, { userId: user.id, userEmail: user.email, action: 'user.login', resourceType: 'user', resourceId: user.id, ipAddress: getClientIP(c.req) })
 
     return c.html(html`
       <div id="form-response">

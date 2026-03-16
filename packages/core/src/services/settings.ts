@@ -34,6 +34,54 @@ export interface SecuritySettings {
   ipWhitelist: string[]
 }
 
+export interface AppearanceSettings {
+  theme: 'light' | 'dark' | 'auto'
+  primaryColor: string
+  logoUrl: string
+  favicon: string
+  customCSS: string
+}
+
+export const APPEARANCE_DEFAULTS: AppearanceSettings = {
+  theme: 'dark',
+  primaryColor: '#465FFF',
+  logoUrl: '',
+  favicon: '',
+  customCSS: ''
+}
+
+export interface NotificationSettings {
+  emailNotifications: boolean
+  contentUpdates: boolean
+  systemAlerts: boolean
+  userRegistrations: boolean
+  emailFrequency: 'immediate' | 'daily' | 'weekly'
+}
+
+export const NOTIFICATION_DEFAULTS: NotificationSettings = {
+  emailNotifications: true,
+  contentUpdates: true,
+  systemAlerts: true,
+  userRegistrations: false,
+  emailFrequency: 'immediate'
+}
+
+export interface StorageSettings {
+  maxFileSize: number
+  allowedFileTypes: string[]
+  storageProvider: 'local' | 'cloudflare' | 's3'
+  backupFrequency: 'daily' | 'weekly' | 'monthly'
+  retentionPeriod: number
+}
+
+export const STORAGE_DEFAULTS: StorageSettings = {
+  maxFileSize: 10,
+  allowedFileTypes: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'pdf', 'docx'],
+  storageProvider: 'cloudflare',
+  backupFrequency: 'daily',
+  retentionPeriod: 30
+}
+
 export const SECURITY_DEFAULTS: SecuritySettings = {
   idleTimeout: 30,
   sessionDuration: 24,
@@ -234,5 +282,95 @@ export class SettingsService {
     if (settings.ipWhitelist !== undefined) settingsToSave.ipWhitelist = settings.ipWhitelist
 
     return await this.setMultipleSettings('security', settingsToSave)
+  }
+
+  /**
+   * Get appearance settings with defaults
+   */
+  async getAppearanceSettings(): Promise<AppearanceSettings> {
+    const settings = await this.getCategorySettings('appearance')
+
+    return {
+      theme: settings.theme ?? APPEARANCE_DEFAULTS.theme,
+      primaryColor: settings.primaryColor ?? APPEARANCE_DEFAULTS.primaryColor,
+      logoUrl: settings.logoUrl ?? APPEARANCE_DEFAULTS.logoUrl,
+      favicon: settings.favicon ?? APPEARANCE_DEFAULTS.favicon,
+      customCSS: settings.customCSS ?? APPEARANCE_DEFAULTS.customCSS
+    }
+  }
+
+  /**
+   * Save appearance settings
+   */
+  async saveAppearanceSettings(settings: Partial<AppearanceSettings>): Promise<boolean> {
+    const settingsToSave: Record<string, any> = {}
+
+    if (settings.theme !== undefined) settingsToSave.theme = settings.theme
+    if (settings.primaryColor !== undefined) settingsToSave.primaryColor = settings.primaryColor
+    if (settings.logoUrl !== undefined) settingsToSave.logoUrl = settings.logoUrl
+    if (settings.favicon !== undefined) settingsToSave.favicon = settings.favicon
+    if (settings.customCSS !== undefined) settingsToSave.customCSS = settings.customCSS
+
+    return await this.setMultipleSettings('appearance', settingsToSave)
+  }
+
+  /**
+   * Get notification settings with defaults
+   */
+  async getNotificationSettings(): Promise<NotificationSettings> {
+    const settings = await this.getCategorySettings('notifications')
+
+    return {
+      emailNotifications: settings.emailNotifications ?? NOTIFICATION_DEFAULTS.emailNotifications,
+      contentUpdates: settings.contentUpdates ?? NOTIFICATION_DEFAULTS.contentUpdates,
+      systemAlerts: settings.systemAlerts ?? NOTIFICATION_DEFAULTS.systemAlerts,
+      userRegistrations: settings.userRegistrations ?? NOTIFICATION_DEFAULTS.userRegistrations,
+      emailFrequency: settings.emailFrequency ?? NOTIFICATION_DEFAULTS.emailFrequency
+    }
+  }
+
+  /**
+   * Save notification settings
+   */
+  async saveNotificationSettings(settings: Partial<NotificationSettings>): Promise<boolean> {
+    const settingsToSave: Record<string, any> = {}
+
+    if (settings.emailNotifications !== undefined) settingsToSave.emailNotifications = settings.emailNotifications
+    if (settings.contentUpdates !== undefined) settingsToSave.contentUpdates = settings.contentUpdates
+    if (settings.systemAlerts !== undefined) settingsToSave.systemAlerts = settings.systemAlerts
+    if (settings.userRegistrations !== undefined) settingsToSave.userRegistrations = settings.userRegistrations
+    if (settings.emailFrequency !== undefined) settingsToSave.emailFrequency = settings.emailFrequency
+
+    return await this.setMultipleSettings('notifications', settingsToSave)
+  }
+
+  /**
+   * Get storage settings with defaults
+   */
+  async getStorageSettings(): Promise<StorageSettings> {
+    const settings = await this.getCategorySettings('storage')
+
+    return {
+      maxFileSize: settings.maxFileSize ?? STORAGE_DEFAULTS.maxFileSize,
+      allowedFileTypes: settings.allowedFileTypes ?? STORAGE_DEFAULTS.allowedFileTypes,
+      storageProvider: settings.storageProvider ?? STORAGE_DEFAULTS.storageProvider,
+      backupFrequency: settings.backupFrequency ?? STORAGE_DEFAULTS.backupFrequency,
+      retentionPeriod: settings.retentionPeriod ?? STORAGE_DEFAULTS.retentionPeriod
+    }
+  }
+
+  /**
+   * Save storage settings
+   */
+  async saveStorageSettings(settings: Partial<StorageSettings>): Promise<boolean> {
+    const settingsToSave: Record<string, any> = {}
+
+    if (settings.maxFileSize !== undefined) settingsToSave.maxFileSize = settings.maxFileSize
+    if (settings.allowedFileTypes !== undefined) settingsToSave.allowedFileTypes = settings.allowedFileTypes
+    if (settings.storageProvider !== undefined) settingsToSave.storageProvider = settings.storageProvider
+    if (settings.backupFrequency !== undefined) settingsToSave.backupFrequency = settings.backupFrequency
+    if (settings.retentionPeriod !== undefined) settingsToSave.retentionPeriod = settings.retentionPeriod
+
+    return await this.setMultipleSettings('storage', settingsToSave)
   }
 }

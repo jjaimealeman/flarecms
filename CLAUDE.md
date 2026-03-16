@@ -19,6 +19,7 @@
 - `packages/core/` — `@flare-cms/core` (engine, tsup build)
 - `packages/cms/` — `@flare-cms/cms` (Cloudflare Worker backend)
 - `packages/site/` — `@flare-cms/site` (Astro frontend on Cloudflare Pages)
+- `packages/astro/` — `@flare-cms/astro` (Content Layer Loader for Astro)
 - `.planning/` — GSD planning files
 
 ---
@@ -28,7 +29,7 @@
 ### Core (`packages/core/`)
 - **Build**: tsup (8 entry points: index, services, middleware, routes, templates, plugins, utils, types)
 - **Database**: Drizzle ORM schema + migrations (bundled in package)
-- **Tests**: Vitest (99 tests)
+- **Tests**: Vitest (1200+ tests)
 
 ### CMS Backend (`packages/cms/`)
 - **Runtime**: Cloudflare Workers (Hono web framework)
@@ -96,8 +97,8 @@ pnpm test
 
 ## Production URLs
 
-- CMS Worker: `https://flare-cms.jjaimealeman.workers.dev`
-- Site Pages: `https://flare-site.pages.dev`
+- CMS Admin: `https://admin.flarecms.dev`
+- Site: `https://flarecms.dev`
 
 ---
 
@@ -153,8 +154,6 @@ export default {
 
 1. **API filters BROKEN** — must filter client-side
 2. **Select field `default` ignored**
-3. **Status is one-way** — can't unpublish
-4. **Soft-delete doesn't cascade**
 
 ---
 

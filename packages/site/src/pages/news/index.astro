@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content'
+import { getLiveCollection } from 'astro:content'
 import Layout from '../../layouts/Layout.astro'
 
 const categoryStyles: Record<string, string> = {
@@ -8,7 +8,7 @@ const categoryStyles: Record<string, string> = {
   general: 'bg-slate-700/50 text-slate-300',
 }
 
-const allArticles = await getCollection('news')
+const allArticles = (await getLiveCollection('news'))?.entries || []
 
 const articles = allArticles
   .map(a => ({

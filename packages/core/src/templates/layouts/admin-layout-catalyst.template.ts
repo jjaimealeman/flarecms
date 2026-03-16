@@ -26,6 +26,7 @@ import {
   Trash2,
   Sun,
   Moon,
+  GitBranch,
 } from "../icons";
 
 // Catalyst Checkbox Component (HTML implementation)
@@ -191,9 +192,24 @@ export interface AdminLayoutCatalystData {
   }>;
 }
 
+/**
+ * Module-level menu items set by adminMenuMiddleware.
+ * Safe for Workers: the set→render path is synchronous
+ * (no await between set and render), so concurrent requests cannot interleave.
+ */
+let _pendingMenuItems: AdminLayoutCatalystData['dynamicMenuItems'] | undefined
+
+export function setCatalystDynamicMenuItems(items: AdminLayoutCatalystData['dynamicMenuItems']) {
+  _pendingMenuItems = items
+}
+
 export function renderAdminLayoutCatalyst(
   data: AdminLayoutCatalystData
 ): string {
+  // Auto-inject menu items from middleware if not explicitly provided
+  if (_pendingMenuItems && !data.dynamicMenuItems) {
+    data = { ...data, dynamicMenuItems: _pendingMenuItems }
+  }
   if (!data.version) data.version = getVersionDisplay();
   return `<!DOCTYPE html>
 <html lang="en">
@@ -239,7 +255,7 @@ export function renderAdminLayoutCatalyst(
 
   <!-- Additional Styles -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
     * {
       margin: 0;
@@ -248,7 +264,7 @@ export function renderAdminLayoutCatalyst(
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -571,168 +587,346 @@ export function renderAdminLayoutCatalyst(
 
     // Check for pending migrations when the page loads
     document.addEventListener('DOMContentLoaded', checkPendingMigrations);
+
+    // --- Idle Timeout ---
+    (function() {
+      fetch('/admin/settings/api/idle-config').then(function(r) { return r.json(); }).then(function(cfg) {
+        initIdleTimeout(cfg.idleTimeout || 0, cfg.idleWarningMinutes || 5);
+      }).catch(function() {});
+
+      function initIdleTimeout(IDLE_TIMEOUT, WARNING_BEFORE) {
+      if (IDLE_TIMEOUT <= 0) return;
+
+      const timeoutMs = IDLE_TIMEOUT * 60 * 1000;
+      const warningMs = (IDLE_TIMEOUT - WARNING_BEFORE) * 60 * 1000;
+      let lastActivity = Date.now();
+      let warningShown = false;
+      let warningModal = null;
+
+      function resetTimer() {
+        lastActivity = Date.now();
+        if (warningShown && warningModal) {
+          warningModal.remove();
+          warningShown = false;
+        }
+      }
+
+      ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function(evt) {
+        document.addEventListener(evt, resetTimer, { passive: true });
+      });
+
+      function buildWarningModal(secsLeft) {
+        var modal = document.createElement('div');
+        modal.id = 'idle-warning-modal';
+        modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm';
+
+        var card = document.createElement('div');
+        card.className = 'bg-white dark:bg-zinc-800 rounded-xl shadow-2xl p-6 max-w-sm mx-4 ring-1 ring-zinc-200 dark:ring-zinc-700';
+
+        var header = document.createElement('div');
+        header.className = 'flex items-center gap-3 mb-3';
+
+        var iconWrap = document.createElement('div');
+        iconWrap.className = 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20';
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('class', 'h-5 w-5 text-amber-600 dark:text-amber-400');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        var path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('stroke-linejoin', 'round');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('d', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z');
+        svg.appendChild(path);
+        iconWrap.appendChild(svg);
+        header.appendChild(iconWrap);
+
+        var title = document.createElement('h3');
+        title.className = 'text-lg font-semibold text-zinc-900 dark:text-white';
+        title.textContent = 'Session Expiring';
+        header.appendChild(title);
+        card.appendChild(header);
+
+        var msg = document.createElement('p');
+        msg.className = 'text-sm text-zinc-600 dark:text-zinc-400 mb-4';
+        msg.textContent = 'You will be logged out in ';
+        var countdown = document.createElement('strong');
+        countdown.id = 'idle-countdown';
+        countdown.className = 'text-amber-600 dark:text-amber-400';
+        countdown.textContent = String(Math.ceil(secsLeft));
+        msg.appendChild(countdown);
+        var suffix = document.createTextNode(' seconds due to inactivity.');
+        msg.appendChild(suffix);
+        card.appendChild(msg);
+
+        var btn = document.createElement('button');
+        btn.className = 'w-full rounded-lg bg-zinc-900 dark:bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 dark:hover:bg-blue-700 transition-colors';
+        btn.textContent = "I'm still here";
+        btn.addEventListener('click', function() { modal.remove(); warningShown = false; });
+        card.appendChild(btn);
+
+        modal.appendChild(card);
+        return modal;
+      }
+
+      function showWarning(secsLeft) {
+        if (warningShown) {
+          var counter = document.getElementById('idle-countdown');
+          if (counter) counter.textContent = String(Math.max(0, Math.ceil(secsLeft)));
+          return;
+        }
+        warningShown = true;
+        warningModal = buildWarningModal(secsLeft);
+        document.body.appendChild(warningModal);
+      }
+
+      setInterval(function() {
+        var elapsed = Date.now() - lastActivity;
+        if (elapsed >= timeoutMs) {
+          window.location.href = '/auth/logout?error=Session expired due to inactivity';
+        } else if (elapsed >= warningMs && warningMs > 0) {
+          var secsLeft = (timeoutMs - elapsed) / 1000;
+          showWarning(secsLeft);
+        }
+      }, 1000);
+      } // end initIdleTimeout
+    })();
   </script>
 
-  <!-- Deploy Modal -->
-  <div id="deploy-modal" class="hidden fixed inset-0 z-50">
-    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeployModal()"></div>
+  <!-- Sync Modal -->
+  <div id="sync-modal" class="hidden fixed inset-0 z-50">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSyncModal()"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
       <div class="relative w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-950/5 dark:ring-white/10 max-h-[80vh] flex flex-col">
         <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
           <div>
-            <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Deploy Site</h2>
-            <p id="deploy-subtitle" class="text-sm text-zinc-500 dark:text-zinc-400">Review changes before deploying</p>
+            <h2 class="text-lg font-semibold text-zinc-950 dark:text-white">Sync</h2>
+            <p id="sync-subtitle" class="text-sm text-zinc-500 dark:text-zinc-400">Review pending changes before going live</p>
           </div>
-          <button onclick="closeDeployModal()" class="rounded-lg p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+          <button onclick="closeSyncModal()" class="rounded-lg p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
-        <div id="deploy-body" class="flex-1 overflow-y-auto px-6 py-4">
+        <div id="sync-body" class="flex-1 overflow-y-auto px-6 py-4">
           <div class="flex items-center justify-center py-8">
             <div class="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600"></div>
-            <span class="ml-3 text-sm text-zinc-500">Loading changes...</span>
+            <span class="ml-3 text-sm text-zinc-500">Loading pending changes...</span>
           </div>
         </div>
-        <div id="deploy-footer" class="border-t border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between">
-          <div id="deploy-status" class="text-sm text-zinc-500 dark:text-zinc-400"></div>
+        <div id="sync-footer" class="border-t border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between">
+          <div id="sync-status" class="text-sm text-zinc-500 dark:text-zinc-400"></div>
           <div class="flex gap-3">
-            <button onclick="closeDeployModal()" class="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
-            <button id="deploy-confirm-btn" onclick="triggerDeploy()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Deploy Now</button>
+            <button onclick="closeSyncModal()" class="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
+            <button id="sync-confirm-btn" onclick="syncAll()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>Go Live</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Deploy Setup Modal -->
-  <div id="deploy-setup-modal" class="hidden fixed inset-0 z-50">
-    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeploySetup()"></div>
+  <!-- Reject Confirmation Modal -->
+  <div id="reject-confirm-modal" class="hidden fixed inset-0 z-[60]">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeRejectConfirm()"></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
-      <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-950/5 dark:ring-white/10">
-        <div class="px-6 py-5">
-          <h2 class="text-lg font-semibold text-zinc-950 dark:text-white mb-2">Configure GitHub Deploy</h2>
-          <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-            Deploy triggers a GitHub Actions workflow that builds and deploys your site. Enter your repo and a personal access token with <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">repo</code> scope.
-          </p>
-          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">GitHub Repository</label>
-          <input id="deploy-repo-input" type="text" placeholder="owner/repo" class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400 mb-3" />
-          <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">GitHub Token</label>
-          <input id="deploy-token-input" type="password" placeholder="ghp_..." class="w-full rounded-lg bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-950 dark:text-white shadow-sm ring-1 ring-inset ring-zinc-950/10 dark:ring-white/10 placeholder:text-zinc-400" />
-          <p class="text-xs text-zinc-400 mt-1">Token is stored securely in your CMS database.</p>
-          <div class="flex justify-end gap-3 mt-4">
-            <button onclick="closeDeploySetup()" class="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
-            <button onclick="saveDeploySettings()" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">Save</button>
+      <div class="relative w-full max-w-sm rounded-xl bg-white dark:bg-zinc-800 shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-700 p-6">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/20">
+            <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </div>
+          <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Reject Revision</h3>
+        </div>
+        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-5">This revision will be discarded. The live content will remain unchanged.</p>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeRejectConfirm()" class="rounded-lg bg-zinc-100 dark:bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">Cancel</button>
+          <button onclick="confirmReject()" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors">Reject</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Deploy feature
-    async function checkPendingDeploy() {
+    // Sync feature — content staging
+    let _syncRevisions = [];
+
+    async function checkPendingSync() {
       try {
-        const res = await fetch('/admin/deploy/api/pending-count');
+        const res = await fetch('/admin/sync/api/pending-count');
         const data = await res.json();
-        const badge = document.getElementById('deploy-badge');
-        if (badge && data.count > 0) {
-          badge.textContent = data.count;
-          badge.classList.remove('hidden');
-        } else if (badge) {
-          badge.classList.add('hidden');
+        const badge = document.getElementById('sync-badge');
+        const btn = document.getElementById('sync-btn');
+        const subtext = document.getElementById('sync-subtext');
+        if (data.count > 0) {
+          if (badge) { badge.textContent = data.count; badge.classList.remove('hidden'); }
+          if (btn) { btn.disabled = false; btn.classList.add('ring-2', 'ring-blue-500/50'); btn.style.animation = 'sync-pulse 2s ease-in-out infinite'; }
+          if (subtext) { subtext.textContent = data.count + ' pending'; subtext.classList.remove('hidden'); }
+        } else {
+          if (badge) badge.classList.add('hidden');
+          if (btn) { btn.disabled = true; btn.classList.remove('ring-2', 'ring-blue-500/50'); btn.style.animation = ''; }
+          if (subtext) { subtext.textContent = 'Up to date'; subtext.classList.remove('hidden'); }
         }
       } catch (e) { /* silent */ }
     }
 
-    async function openDeployModal() {
-      try {
-        const settingsRes = await fetch('/admin/deploy/api/settings');
-        const settings = await settingsRes.json();
-        if (!settings.hasToken || !settings.githubRepo) {
-          document.getElementById('deploy-setup-modal').classList.remove('hidden');
-          document.getElementById('deploy-repo-input').focus();
-          return;
-        }
-      } catch (e) { return; }
+    async function openSyncModal() {
+      document.getElementById('sync-modal').classList.remove('hidden');
+      const body = document.getElementById('sync-body');
+      const subtitle = document.getElementById('sync-subtitle');
+      const confirmBtn = document.getElementById('sync-confirm-btn');
+      const status = document.getElementById('sync-status');
 
-      document.getElementById('deploy-modal').classList.remove('hidden');
-      const body = document.getElementById('deploy-body');
-      const subtitle = document.getElementById('deploy-subtitle');
-      const confirmBtn = document.getElementById('deploy-confirm-btn');
-      const status = document.getElementById('deploy-status');
-
-      // Reset state
       confirmBtn.disabled = true;
-      confirmBtn.textContent = 'Deploy Now';
+      confirmBtn.textContent = 'Go Live';
       confirmBtn.className = 'rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
       try {
-        const res = await fetch('/admin/deploy/api/pending');
+        const res = await fetch('/admin/sync/api/pending');
         const data = await res.json();
+        _syncRevisions = data.revisions || [];
 
-        if (data.count === 0) {
-          subtitle.textContent = 'No pending changes';
-          body.textContent = '';
+        body.textContent = '';
+
+        if (_syncRevisions.length === 0) {
+          subtitle.textContent = 'Everything is in sync';
           const msg = document.createElement('div');
           msg.className = 'py-8 text-center';
           const p = document.createElement('p');
           p.className = 'text-zinc-500 dark:text-zinc-400';
-          p.textContent = 'All content is up to date. Nothing to deploy.';
+          p.textContent = 'No pending changes. All content is live.';
           msg.appendChild(p);
           body.appendChild(msg);
           confirmBtn.disabled = true;
-          status.textContent = data.lastDeployedAt ? 'Last deployed: ' + new Date(data.lastDeployedAt).toLocaleString() : '';
+          status.textContent = '';
         } else {
-          subtitle.textContent = data.count + ' change' + (data.count === 1 ? '' : 's') + ' pending';
+          subtitle.textContent = _syncRevisions.length + ' change' + (_syncRevisions.length === 1 ? '' : 's') + ' ready for review';
           confirmBtn.disabled = false;
-          status.textContent = data.lastDeployedAt ? 'Last deployed: ' + new Date(data.lastDeployedAt).toLocaleString() : 'Never deployed';
+          confirmBtn.textContent = 'Go Live (' + _syncRevisions.length + ')';
+          status.textContent = '';
 
+          // Group by collection
           const groups = {};
-          for (const item of data.pending) {
-            const col = item.collection_name || 'Unknown';
+          for (const rev of _syncRevisions) {
+            const col = rev.collectionName || 'Unknown';
             if (!groups[col]) groups[col] = [];
-            groups[col].push(item);
+            groups[col].push(rev);
           }
 
-          body.textContent = '';
-          for (const [collection, items] of Object.entries(groups)) {
+          for (const [collection, revs] of Object.entries(groups)) {
             const section = document.createElement('div');
             section.className = 'mb-4';
 
             const heading = document.createElement('h3');
             heading.className = 'text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-2';
-            heading.textContent = collection + ' (' + items.length + ')';
+            heading.textContent = collection + ' (' + revs.length + ')';
             section.appendChild(heading);
 
             const list = document.createElement('div');
-            list.className = 'space-y-1';
+            list.className = 'space-y-2';
 
-            for (const item of items) {
-              const link = document.createElement('a');
-              link.href = '/admin/content/' + item.id + '/edit';
-              link.className = 'flex items-center justify-between rounded-lg px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group';
+            for (const rev of revs) {
+              const card = document.createElement('div');
+              card.className = 'rounded-lg border border-zinc-200 dark:border-zinc-700 p-3';
+
+              const row = document.createElement('div');
+              row.className = 'flex items-start justify-between';
 
               const info = document.createElement('div');
-              info.className = 'min-w-0';
+              info.className = 'min-w-0 flex-1';
 
-              const title = document.createElement('p');
-              title.className = 'text-sm font-medium text-zinc-950 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400';
-              title.textContent = item.title;
+              const titleLink = document.createElement('a');
+              titleLink.href = '/admin/content/' + rev.contentId + '/edit';
+              titleLink.className = 'text-sm font-medium text-zinc-950 dark:text-white hover:text-blue-600 dark:hover:text-blue-400';
+              titleLink.textContent = rev.contentTitle;
 
-              const time = document.createElement('p');
-              time.className = 'text-xs text-zinc-500 dark:text-zinc-400';
-              time.textContent = new Date(item.updated_at).toLocaleString();
+              const meta = document.createElement('p');
+              meta.className = 'text-xs text-zinc-500 dark:text-zinc-400 mt-0.5';
+              meta.textContent = 'by ' + rev.submittedByEmail + ' \u00b7 ' + formatTimeAgo(rev.submittedAt);
 
-              info.appendChild(title);
-              info.appendChild(time);
+              info.appendChild(titleLink);
+              info.appendChild(meta);
 
-              const badge = document.createElement('span');
-              badge.className = 'text-xs font-medium ml-3 shrink-0 ' + (item.status === 'published' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400');
-              badge.textContent = item.status;
+              // Show changed fields with expandable diff
+              if (rev.diffs && rev.diffs.length > 0) {
+                var diffToggle = document.createElement('button');
+                diffToggle.className = 'text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 flex items-center gap-1';
+                diffToggle.textContent = rev.diffs.length + ' field' + (rev.diffs.length === 1 ? '' : 's') + ' changed';
+                var arrow = document.createElement('span');
+                arrow.className = 'transition-transform text-[10px]';
+                arrow.textContent = '\u25B6';
+                diffToggle.prepend(arrow);
 
-              link.appendChild(info);
-              link.appendChild(badge);
-              list.appendChild(link);
+                var diffDetails = document.createElement('div');
+                diffDetails.className = 'hidden mt-2 space-y-1.5';
+
+                for (var di = 0; di < rev.diffs.length; di++) {
+                  var d = rev.diffs[di];
+                  var diffRow = document.createElement('div');
+                  diffRow.className = 'text-xs rounded bg-zinc-50 dark:bg-zinc-800/50 px-2 py-1.5';
+
+                  var fieldName = document.createElement('span');
+                  fieldName.className = 'font-medium text-zinc-600 dark:text-zinc-300';
+                  fieldName.textContent = d.field;
+                  diffRow.appendChild(fieldName);
+
+                  var oldVal = truncateValue(d.oldValue);
+                  var newVal = truncateValue(d.newValue);
+
+                  if (oldVal && newVal) {
+                    // Changed value
+                    var oldSpan = document.createElement('div');
+                    oldSpan.className = 'text-red-500/70 dark:text-red-400/70 line-through mt-0.5';
+                    oldSpan.textContent = oldVal;
+                    diffRow.appendChild(oldSpan);
+                    var newSpan = document.createElement('div');
+                    newSpan.className = 'text-emerald-600 dark:text-emerald-400';
+                    newSpan.textContent = newVal;
+                    diffRow.appendChild(newSpan);
+                  } else if (newVal) {
+                    // Added
+                    var addedSpan = document.createElement('div');
+                    addedSpan.className = 'text-emerald-600 dark:text-emerald-400 mt-0.5';
+                    addedSpan.textContent = '+ ' + newVal;
+                    diffRow.appendChild(addedSpan);
+                  } else if (oldVal) {
+                    // Removed
+                    var removedSpan = document.createElement('div');
+                    removedSpan.className = 'text-red-500 dark:text-red-400 line-through mt-0.5';
+                    removedSpan.textContent = oldVal;
+                    diffRow.appendChild(removedSpan);
+                  }
+
+                  diffDetails.appendChild(diffRow);
+                }
+
+                diffToggle.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  var details = this.nextElementSibling;
+                  var arr = this.querySelector('span');
+                  if (details.classList.contains('hidden')) {
+                    details.classList.remove('hidden');
+                    arr.style.transform = 'rotate(90deg)';
+                  } else {
+                    details.classList.add('hidden');
+                    arr.style.transform = '';
+                  }
+                });
+
+                info.appendChild(diffToggle);
+                info.appendChild(diffDetails);
+              }
+
+              const rejectBtn = document.createElement('button');
+              rejectBtn.className = 'shrink-0 ml-2 rounded px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/20 transition-colors';
+              rejectBtn.textContent = 'Reject';
+              rejectBtn.title = 'Reject';
+              rejectBtn.setAttribute('data-version-id', rev.versionId);
+              rejectBtn.addEventListener('click', function() { showRejectConfirm(this.getAttribute('data-version-id')); });
+
+              row.appendChild(info);
+              row.appendChild(rejectBtn);
+              card.appendChild(row);
+              list.appendChild(card);
             }
 
             section.appendChild(list);
@@ -743,66 +937,98 @@ export function renderAdminLayoutCatalyst(
         body.textContent = '';
         const err = document.createElement('div');
         err.className = 'py-8 text-center text-red-500';
-        err.textContent = 'Failed to load changes';
+        err.textContent = 'Failed to load pending changes';
         body.appendChild(err);
       }
     }
 
-    function closeDeployModal() {
-      document.getElementById('deploy-modal').classList.add('hidden');
+    function closeSyncModal() {
+      document.getElementById('sync-modal').classList.add('hidden');
     }
 
-    function closeDeploySetup() {
-      document.getElementById('deploy-setup-modal').classList.add('hidden');
-    }
-
-    async function saveDeploySettings() {
-      const repo = document.getElementById('deploy-repo-input').value.trim();
-      const token = document.getElementById('deploy-token-input').value.trim();
-      if (!repo || !token) { alert('Both fields are required'); return; }
-      try {
-        await fetch('/admin/deploy/api/settings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ githubRepo: repo, githubToken: token })
-        });
-        closeDeploySetup();
-        openDeployModal();
-      } catch (e) {
-        alert('Failed to save deploy settings');
-      }
-    }
-
-    async function triggerDeploy() {
-      const btn = document.getElementById('deploy-confirm-btn');
-      const status = document.getElementById('deploy-status');
+    async function syncAll() {
+      const btn = document.getElementById('sync-confirm-btn');
+      const status = document.getElementById('sync-status');
       btn.disabled = true;
-      btn.textContent = 'Deploying...';
-      status.textContent = 'Triggering build...';
+      btn.textContent = 'Publishing...';
+      status.textContent = 'Pushing changes live...';
       try {
-        const res = await fetch('/admin/deploy/api/trigger', { method: 'POST' });
+        const res = await fetch('/admin/sync/api/approve-all', { method: 'POST' });
         const data = await res.json();
         if (data.success) {
-          status.textContent = 'Build triggered via GitHub Actions! Site will be live in ~60 seconds.';
-          btn.textContent = 'Deployed';
+          status.textContent = data.count + ' change(s) are now live!';
+          btn.textContent = 'Synced';
           btn.className = 'rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
-          const badge = document.getElementById('deploy-badge');
-          if (badge) badge.classList.add('hidden');
-          setTimeout(closeDeployModal, 3000);
+          checkPendingSync();
+          setTimeout(closeSyncModal, 2000);
         } else {
-          status.textContent = data.error || 'Deploy failed';
-          btn.textContent = 'Deploy Now';
+          status.textContent = data.error || 'Sync failed';
+          btn.textContent = 'Go Live';
           btn.disabled = false;
         }
       } catch (e) {
         status.textContent = 'Network error';
-        btn.textContent = 'Deploy Now';
+        btn.textContent = 'Go Live';
         btn.disabled = false;
       }
     }
 
-    document.addEventListener('DOMContentLoaded', checkPendingDeploy);
+    var _rejectTargetId = null;
+
+    function showRejectConfirm(versionId) {
+      _rejectTargetId = versionId;
+      document.getElementById('reject-confirm-modal').classList.remove('hidden');
+    }
+
+    function closeRejectConfirm() {
+      _rejectTargetId = null;
+      document.getElementById('reject-confirm-modal').classList.add('hidden');
+    }
+
+    async function confirmReject() {
+      if (!_rejectTargetId) return;
+      var versionId = _rejectTargetId;
+      closeRejectConfirm();
+      try {
+        var res = await fetch('/admin/sync/api/reject', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ versionId: versionId })
+        });
+        var data = await res.json();
+        if (data.success) {
+          openSyncModal();
+          checkPendingSync();
+        }
+      } catch (e) { /* silent */ }
+    }
+
+    function truncateValue(val) {
+      if (val === null || val === undefined || val === '') return '';
+      var str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+      return str.length > 300 ? str.substring(0, 300) + '...' : str;
+    }
+
+    function formatTimeAgo(ts) {
+      var diff = Date.now() - ts;
+      var mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hours = Math.floor(mins / 60);
+      if (hours < 24) return hours + 'h ago';
+      var days = Math.floor(hours / 24);
+      return days + 'd ago';
+    }
+
+    document.addEventListener('DOMContentLoaded', checkPendingSync);
   </script>
+
+  <style>
+    @keyframes sync-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0); }
+    }
+  </style>
 </body>
 </html>`;
 }
@@ -911,6 +1137,12 @@ function renderCatalystSidebar(
     isActivePath('/admin/analytics')
   )
 
+  // Workflow (admin/editor only, between analytics and system)
+  const workflowItem = isEditorOrAbove ? navLink(
+    { label: 'Workflow', path: '/admin/workflow/dashboard', iconHtml: icon(GitBranch, 'h-5 w-5') },
+    isActivePath('/admin/workflow')
+  ) : ''
+
   // SYSTEM section — filtered by role
   // Admin-only: Users, Collections, Plugins, Cache, Migrations
   // Editor+: Forms, FAQs
@@ -924,23 +1156,29 @@ function renderCatalystSidebar(
     systemItemsList.push({ label: 'FAQs', path: '/admin/faq', iconHtml: icon(CircleHelp, 'h-5 w-5') })
   }
   if (isAdmin) {
+    systemItemsList.push({ label: 'Audit Log', path: '/admin/audit-log', iconHtml: icon(ClipboardList, 'h-5 w-5') })
     systemItemsList.push({ label: 'Plugins', path: '/admin/plugins', iconHtml: icon(Plug, 'h-5 w-5') })
     systemItemsList.push({ label: 'Cache', path: '/admin/cache', iconHtml: icon(HardDrive, 'h-5 w-5') })
     systemItemsList.push({ label: 'Migrations', path: '/admin/schema-migrations', iconHtml: icon(Database, 'h-5 w-5') })
   }
   const systemItems = systemItemsList.map(item => navLink(item, isActivePath(item.path))).join('')
 
-  // Deploy button (admin only, pinned bottom)
-  const deployItem = isAdmin ? `
-    <button
-      onclick="openDeployModal()"
-      class="relative flex w-full items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-white/5 sm:text-sm/5 transition-colors"
-    >
-      ${icon(Rocket, 'h-5 w-5 shrink-0')}
-      <span>Deploy</span>
-      <span id="deploy-badge" class="ml-auto hidden min-w-[20px] rounded-full bg-blue-600 px-1.5 py-0.5 text-center text-[10px] font-bold text-white"></span>
-    </button>
-  ` : ''
+  // Sync button (always visible, disabled when no pending changes)
+  const syncItem = `
+    <div class="flex flex-col">
+      <button
+        id="sync-btn"
+        onclick="openSyncModal()"
+        disabled
+        class="relative flex w-full items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-white/5 sm:text-sm/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
+      >
+        ${icon(Rocket, 'h-5 w-5 shrink-0')}
+        <span>Sync</span>
+        <span id="sync-badge" class="ml-auto hidden min-w-[20px] rounded-full bg-blue-600 px-1.5 py-0.5 text-center text-[10px] font-bold text-white"></span>
+      </button>
+      <span id="sync-subtext" class="hidden pl-10 -mt-1 text-[10px] text-zinc-400 dark:text-zinc-500">Up to date</span>
+    </div>
+  `
 
   // Settings (admin only, pinned bottom)
   const settingsItem = isAdmin ? navLink(
@@ -986,9 +1224,10 @@ function renderCatalystSidebar(
           ${trashItem}
         </div>
 
-        <!-- ANALYTICS -->
+        <!-- ANALYTICS + WORKFLOW -->
         <div class="flex flex-col gap-0.5 pt-2">
           ${analyticsItem}
+          ${workflowItem}
         </div>
 
         <!-- SYSTEM -->
@@ -1000,13 +1239,11 @@ function renderCatalystSidebar(
         ` : ''}
       </div>
 
-      <!-- Deploy + Settings (Bottom, admin only) -->
-      ${isAdmin ? `
-        <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800 flex flex-col gap-0.5">
-          ${deployItem}
-          ${settingsItem}
-        </div>
-      ` : ''}
+      <!-- Sync + Settings (Bottom) -->
+      <div class="border-t border-zinc-200 px-4 py-2 dark:border-zinc-800 flex flex-col gap-0.5">
+        ${syncItem}
+        ${isAdmin ? settingsItem : ''}
+      </div>
 
 
       <!-- Sidebar Footer (User) -->

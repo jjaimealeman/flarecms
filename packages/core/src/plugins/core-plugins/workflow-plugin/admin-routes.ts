@@ -1,33 +1,17 @@
 import { Hono } from 'hono'
+import type { Bindings, Variables } from '../../../app'
+import { requireAuth } from '../../../middleware'
 import { WorkflowEngine } from './services/workflow-service'
 import { SchedulerService } from './services/scheduler'
 import { renderWorkflowDashboard } from './templates/workflow-dashboard'
 import { renderWorkflowContentDetail } from './templates/workflow-content'
 import { renderScheduledContent } from './templates/scheduled-content'
 
-type Bindings = {
-  DB: D1Database
-  KV: KVNamespace
-  MEDIA_BUCKET: R2Bucket
-  EMAIL_QUEUE?: Queue
-  SENDGRID_API_KEY?: string
-  DEFAULT_FROM_EMAIL?: string
-  IMAGES_ACCOUNT_ID?: string
-  IMAGES_API_TOKEN?: string
-}
-
-type Variables = {
-  user: {
-    userId: string
-    email: string
-    role: string
-    exp: number
-    iat: number
-  }
-}
-
 export function createWorkflowAdminRoutes() {
   const adminRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>()
+
+  // Auth middleware — decodes JWT and sets c.get('user') for all workflow admin routes
+  adminRoutes.use('*', requireAuth())
 
   // Workflow Dashboard
   adminRoutes.get('/dashboard', async (c) => {
@@ -43,7 +27,33 @@ export function createWorkflowAdminRoutes() {
 
     try {
       const workflowEngine = new WorkflowEngine(c.env.DB)
-      
+
+      // Auto-enroll any content missing workflow status (one-time backfill per item)
+      try {
+        const { results: unenrolled } = await c.env.DB.prepare(`
+          SELECT c.id, c.collection_id, c.status
+          FROM content c
+          LEFT JOIN content_workflow_status cws ON c.id = cws.content_id
+          WHERE cws.id IS NULL
+        `).all() as { results: Array<{ id: string, collection_id: string, status: string }> }
+        for (const item of unenrolled) {
+          await workflowEngine.initializeContentWorkflow(item.id, item.collection_id)
+          // Sync workflow state to match current content status
+          const stateId = item.status || 'draft'
+          await c.env.DB.prepare(`
+            UPDATE content_workflow_status SET current_state_id = ? WHERE content_id = ?
+          `).bind(stateId, item.id).run()
+          await c.env.DB.prepare(`
+            UPDATE content SET workflow_state_id = ? WHERE id = ?
+          `).bind(stateId, item.id).run()
+        }
+        if (unenrolled.length > 0) {
+          console.log(`[workflow] Backfilled ${unenrolled.length} content items into workflow`)
+        }
+      } catch (backfillErr) {
+        console.error('[workflow] Backfill failed:', backfillErr)
+      }
+
       // Get workflow states and counts with error handling
       console.log('Fetching workflow states...')
       const states = await workflowEngine.getWorkflowStates()
@@ -75,7 +85,7 @@ export function createWorkflowAdminRoutes() {
 
       // Get assigned content with error handling
       console.log('Fetching assigned content...')
-      let assignedContent = []
+      let assignedContent: any[] = []
       try {
         assignedContent = await workflowEngine.getAssignedContent(user.userId)
         console.log(`Found ${assignedContent.length} assigned content items`)
@@ -114,65 +124,76 @@ export function createWorkflowAdminRoutes() {
 
   // Content workflow detail
   adminRoutes.get('/content/:contentId', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.redirect('/auth/login')
     }
 
     const contentId = c.req.param('contentId')
-    const workflowEngine = new WorkflowEngine(c.env.DB)
-    
-    // Get content details
-    const content = await c.env.DB.prepare(`
-      SELECT c.*, col.name as collection_name, u.username as author_name
-      FROM content c
-      JOIN collections col ON c.collection_id = col.id
-      JOIN users u ON c.author_id = u.id
-      WHERE c.id = ?
-    `).bind(contentId).first()
 
-    if (!content) {
-      return c.text('Content not found', 404)
+    try {
+      const workflowEngine = new WorkflowEngine(c.env.DB)
+
+      // Get content details (LEFT JOIN users — author_id may not match users.id)
+      const content = await c.env.DB.prepare(`
+        SELECT c.*, col.name as collection_name, u.username as author_name
+        FROM content c
+        JOIN collections col ON c.collection_id = col.id
+        LEFT JOIN users u ON c.author_id = u.id
+        WHERE c.id = ?
+      `).bind(contentId).first()
+
+      if (!content) {
+        return c.text('Content not found', 404)
+      }
+
+      // Get workflow status
+      const workflowStatus = await workflowEngine.getContentWorkflowStatus(contentId)
+      const currentState = await c.env.DB.prepare(`
+        SELECT * FROM workflow_states WHERE id = ?
+      `).bind(workflowStatus?.current_state_id || 'draft').first()
+
+      // Get available transitions (uses userRole, not userId)
+      const availableTransitions = workflowStatus
+        ? await workflowEngine.getAvailableTransitions(
+            workflowStatus.workflow_id,
+            workflowStatus.current_state_id,
+            user.role || 'viewer'
+          )
+        : []
+
+      // Get workflow history
+      const history = await workflowEngine.getWorkflowHistory(contentId)
+
+      // Get scheduled actions
+      let scheduledActions: unknown[] = []
+      try {
+        const scheduler = new SchedulerService(c.env.DB)
+        scheduledActions = await scheduler.getScheduledContentForContent(contentId)
+      } catch (schedErr) {
+        console.error('[workflow] Scheduled actions query failed:', schedErr)
+      }
+
+      const data = {
+        user,
+        content,
+        currentState,
+        workflowStatus,
+        availableTransitions,
+        history,
+        scheduledActions
+      }
+
+      return c.html(renderWorkflowContentDetail(data))
+    } catch (error) {
+      console.error('[workflow] Content detail error:', error)
+      return c.json({ error: 'Internal Server Error', detail: (error as Error).message }, 500)
     }
-
-    // Get workflow status
-    const workflowStatus = await workflowEngine.getContentWorkflowStatus(contentId)
-    const currentState = await c.env.DB.prepare(`
-      SELECT * FROM workflow_states WHERE id = ?
-    `).bind(workflowStatus?.current_state_id || 'draft').first()
-
-    // Get available transitions
-    const availableTransitions = workflowStatus 
-      ? await workflowEngine.getAvailableTransitions(
-          workflowStatus.workflow_id, 
-          workflowStatus.current_state_id, 
-          user.userId
-        )
-      : []
-
-    // Get workflow history
-    const history = await workflowEngine.getWorkflowHistory(contentId)
-
-    // Get scheduled actions
-    const scheduler = new SchedulerService(c.env.DB)
-    const scheduledActions = await scheduler.getScheduledContentForContent(contentId)
-
-    const data = {
-      user,
-      content,
-      currentState,
-      workflowStatus,
-      availableTransitions,
-      history,
-      scheduledActions
-    }
-
-    return c.html(renderWorkflowContentDetail(data))
   })
 
   // Get scheduled content
   adminRoutes.get('/scheduled', async (c) => {
-    const user = await c.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.redirect('/auth/login')
     }

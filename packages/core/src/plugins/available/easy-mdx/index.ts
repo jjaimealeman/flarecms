@@ -47,104 +47,142 @@ export function getMDXEditorScripts(): string {
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <style>
-      /* Dark mode styling for EasyMDE */
+      /* EasyMDE — Light mode (default) */
       .EasyMDEContainer {
-        background-color: #1e293b;
+        background-color: #ffffff;
       }
 
       .EasyMDEContainer .CodeMirror {
+        background-color: #ffffff;
+        color: #18181b;
+        border-color: #e4e4e7;
+      }
+
+      .EasyMDEContainer .CodeMirror-scroll {
+        background-color: #ffffff;
+      }
+
+      .EasyMDEContainer .CodeMirror-cursor {
+        border-left-color: #18181b;
+      }
+
+      .editor-toolbar {
+        background-color: #fafafa;
+        border-color: #e4e4e7;
+      }
+
+      .editor-toolbar button {
+        color: #52525b !important;
+      }
+
+      .editor-toolbar button:hover,
+      .editor-toolbar button.active {
+        background-color: #e4e4e7;
+        border-color: #d4d4d8;
+        color: #18181b !important;
+      }
+
+      .editor-toolbar i.separator {
+        border-left-color: #e4e4e7;
+        border-right-color: #e4e4e7;
+      }
+
+      .editor-statusbar {
+        background-color: #fafafa;
+        color: #71717a;
+        border-top-color: #e4e4e7;
+      }
+
+      .editor-preview,
+      .editor-preview-side {
+        background-color: #ffffff;
+        color: #18181b;
+      }
+
+      .cm-header { color: #2563eb; }
+      .cm-strong { color: #b45309; }
+      .cm-em { color: #7c3aed; }
+      .cm-link { color: #059669; }
+      .cm-url { color: #059669; }
+      .cm-quote { color: #71717a; font-style: italic; }
+      .cm-comment { color: #a1a1aa; }
+
+      /* EasyMDE — Dark mode */
+      .dark .EasyMDEContainer {
+        background-color: #1e293b;
+      }
+
+      .dark .EasyMDEContainer .CodeMirror {
         background-color: #1e293b;
         color: #e2e8f0;
         border-color: #334155;
       }
 
-      .EasyMDEContainer .CodeMirror-scroll {
+      .dark .EasyMDEContainer .CodeMirror-scroll {
         background-color: #1e293b;
       }
 
-      .EasyMDEContainer .CodeMirror-cursor {
+      .dark .EasyMDEContainer .CodeMirror-cursor {
         border-left-color: #e2e8f0;
       }
 
-      .EasyMDEContainer .CodeMirror-gutters {
+      .dark .EasyMDEContainer .CodeMirror-gutters {
         background-color: #0f172a;
         border-right-color: #334155;
       }
 
-      .EasyMDEContainer .CodeMirror-linenumber {
+      .dark .EasyMDEContainer .CodeMirror-linenumber {
         color: #64748b;
       }
 
-      .editor-toolbar {
+      .dark .editor-toolbar {
         background-color: #0f172a;
         border-color: #334155;
       }
 
-      .editor-toolbar button {
+      .dark .editor-toolbar button {
         color: #94a3b8 !important;
       }
 
-      .editor-toolbar button:hover,
-      .editor-toolbar button.active {
+      .dark .editor-toolbar button:hover,
+      .dark .editor-toolbar button.active {
         background-color: #334155;
         border-color: #475569;
         color: #e2e8f0 !important;
       }
 
-      .editor-toolbar i.separator {
+      .dark .editor-toolbar i.separator {
         border-left-color: #334155;
         border-right-color: #334155;
       }
 
-      .editor-statusbar {
+      .dark .editor-statusbar {
         background-color: #0f172a;
         color: #64748b;
         border-top-color: #334155;
       }
 
-      .editor-preview,
-      .editor-preview-side {
+      .dark .editor-preview,
+      .dark .editor-preview-side {
         background-color: #1e293b;
         color: #e2e8f0;
       }
 
-      .CodeMirror-selected {
+      .dark .CodeMirror-selected {
         background-color: #334155 !important;
       }
 
-      .CodeMirror-focused .CodeMirror-selected {
+      .dark .CodeMirror-focused .CodeMirror-selected {
         background-color: #475569 !important;
       }
 
-      /* Syntax highlighting for dark mode */
-      .cm-header {
-        color: #60a5fa;
-      }
-
-      .cm-strong {
-        color: #fbbf24;
-      }
-
-      .cm-em {
-        color: #a78bfa;
-      }
-
-      .cm-link {
-        color: #34d399;
-      }
-
-      .cm-url {
-        color: #34d399;
-      }
-
-      .cm-quote {
-        color: #94a3b8;
-        font-style: italic;
-      }
-
-      .cm-comment {
-        color: #64748b;
-      }
+      .dark .cm-header { color: #60a5fa; }
+      .dark .cm-strong { color: #fbbf24; }
+      .dark .cm-em { color: #a78bfa; }
+      .dark .cm-link { color: #34d399; }
+      .dark .cm-url { color: #34d399; }
+      .dark .cm-quote { color: #94a3b8; font-style: italic; }
+      .dark .cm-comment { color: #64748b; }
     </style>
   `
 }
