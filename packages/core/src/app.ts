@@ -259,7 +259,10 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.use('*', securityHeadersMiddleware())
 
   // CSRF protection middleware
-  app.use('*', csrfProtection())
+  // /demo/auth is exempt: no auth_token exists yet at that point in the demo flow,
+  // but a stale cookie from a prior session could trigger CSRF validation and block
+  // the OTP verify POST. The endpoints perform their own validation (email, OTP, rate limit).
+  app.use('*', csrfProtection({ exemptPaths: ['/demo/auth'] }))
 
   // Custom middleware - after auth
   if (config.middleware?.afterAuth) {
@@ -335,6 +338,13 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   // Plugin routes - Cache (dashboard and management API)
   // Fixes GitHub Issue #461: Cache routes were not registered
   app.route('/admin/cache', cachePlugin.getRoutes())
+
+  // Plugin routes - Demo Sandbox (MUST be registered BEFORE admin/plugins to avoid route conflict)
+  if (demoSandboxPlugin.routes && demoSandboxPlugin.routes.length > 0) {
+    for (const route of demoSandboxPlugin.routes) {
+      app.route(route.path, route.handler as any)
+    }
+  }
 
   // Plugin routes - OTP Login (MUST be registered BEFORE admin/plugins to avoid route conflict)
   // Register OTP Login routes first so they take precedence over the generic /:id handler
