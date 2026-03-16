@@ -117,4 +117,5 @@ export const navLinks = [
   { label: 'Docs', href: '/docs' },
   { label: 'Features', href: '/features' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Demo', href: '/demo' },
 ]

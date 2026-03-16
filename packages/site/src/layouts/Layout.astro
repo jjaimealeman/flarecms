@@ -142,7 +142,9 @@ const currentPath = Astro.url.pathname;
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
           </button>
-          <!-- TODO: Re-enable when /demo with roles + OTP login is ready -->
+          <a href="/demo" class="inline-flex items-center gap-2 px-4 py-2 bg-flare-500 hover:bg-flare-400 text-white text-sm font-semibold rounded-lg transition-colors" onclick="plausible('CTA: Try Demo', {props: {location: 'nav'}})">
+            Try Demo
+          </a>
         </div>
 
         <!-- Mobile logo + hamburger -->
@@ -278,7 +280,11 @@ const currentPath = Astro.url.pathname;
           </a>
         </div>
 
-        <!-- TODO: Re-enable when /demo with roles + OTP login is ready -->
+        <div class="p-4 border-t border-border">
+          <a href="/demo" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-flare-500 hover:bg-flare-400 text-white text-sm font-semibold rounded-lg transition-colors w-full" onclick="plausible('CTA: Try Demo', {props: {location: 'mobile-nav'}})">
+            Try Demo
+          </a>
+        </div>
       </div>
     </div>
 
@@ -348,7 +354,7 @@ const currentPath = Astro.url.pathname;
                   class="text-sm text-text-secondary hover:text-text-primary transition-colors"
                   >FAQ</a>
               </li>
-              <!-- TODO: Re-enable when /demo with roles + OTP login is ready -->
+              <li><a href="/demo" class="text-sm text-text-secondary hover:text-text-primary transition-colors">Try Demo</a></li>
             </ul>
           </div>
 
