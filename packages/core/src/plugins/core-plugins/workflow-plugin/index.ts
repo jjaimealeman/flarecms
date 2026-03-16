@@ -153,8 +153,8 @@ export function createWorkflowPlugin(): Plugin {
     singleton: true
   })
 
-  // Register hooks
-  builder.addHook('content:create', async (data: any, context: any) => {
+  // Register hooks — names must match HOOKS constants in types/plugin.ts
+  builder.addHook('content:after-create', async (data: any, context: any) => {
     if (context?.db) {
       const workflowEngine = new WorkflowEngine(context.db)
       await workflowEngine.initializeContentWorkflow(data.id, data.collectionId || data.collection_id)
@@ -162,13 +162,11 @@ export function createWorkflowPlugin(): Plugin {
     return data
   })
 
-  builder.addHook('content:save', async (data: any, _context: any) => {
-    // For now, we'll just return the data as-is
-    // This can be extended to handle workflow state changes on save
+  builder.addHook('content:after-update', async (data: any, _context: any) => {
     return data
   })
 
-  builder.addHook('content:delete', async (data: any, _context: any) => {
+  builder.addHook('content:before-delete', async (data: any, _context: any) => {
     // Workflow status will be deleted automatically due to foreign key constraints
     return data
   })
