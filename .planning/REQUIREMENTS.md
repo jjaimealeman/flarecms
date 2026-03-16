@@ -7,9 +7,9 @@
 
 ### Demo Access
 
-- [ ] **DEMO-01**: Visitor enters email on /demo page and receives OTP code via Resend
-- [ ] **DEMO-02**: Visitor enters OTP code and is logged into admin as `demo` role
-- [ ] **DEMO-03**: Demo user session expires after 30 minutes
+- [x] **DEMO-01**: Visitor enters email on /demo page and receives OTP code via Resend
+- [x] **DEMO-02**: Visitor enters OTP code and is logged into admin as `demo` role
+- [x] **DEMO-03**: Demo user session expires after 30 minutes
 - [ ] **DEMO-04**: Demo signup captured in `demo_signups` table (email, IP, timestamp)
 
 ### Sandbox
@@ -51,9 +51,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEMO-01 | Phase 12 | Pending |
-| DEMO-02 | Phase 12 | Pending |
-| DEMO-03 | Phase 12 | Pending |
+| DEMO-01 | Phase 12 | Complete |
+| DEMO-02 | Phase 12 | Complete |
+| DEMO-03 | Phase 12 | Complete |
 | DEMO-04 | Phase 11 | Complete |
 | SAND-01 | Phase 11 | Complete |
 | SAND-02 | Phase 11 | Complete |

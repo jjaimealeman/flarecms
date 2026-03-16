@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** v2.1 Live Demo -- Phase 12: Demo Authentication
+**Current focus:** v2.1 Live Demo -- Phase 13: Demo Page
 
 ## Current Position
 
-Phase: 12 of 14 (Demo Authentication)
-Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2026-03-16 -- Completed Phase 12 Plan 01 (Demo Authentication)
+Phase: 13 of 14 (Demo Page)
+Plan: 0 of 1 in current phase
+Status: Not started
+Last activity: 2026-03-16 -- Completed Phase 12 (Demo Authentication)
 
 Progress: [████████░░] 80% (4/5 plans)
 
@@ -66,5 +66,5 @@ Recent decisions:
 ## Session Continuity
 
 Last session: 2026-03-16T20:40:27Z
-Stopped at: Phase 12 Plan 01 complete (Demo Authentication)
+Stopped at: Phase 12 complete, ready for Phase 13
 Resume file: None

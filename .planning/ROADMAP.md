@@ -30,7 +30,7 @@ Full details: milestones/v2.0-ROADMAP.md
 ### Phase Overview
 
 - [x] **Phase 11: Sandbox Foundation** - Demo role, sandbox collection, permission boundaries, rate limiting
-- [ ] **Phase 12: Demo Authentication** - OTP email login flow with 30-minute session expiry
+- [x] **Phase 12: Demo Authentication** - OTP email login flow with 30-minute session expiry
 - [ ] **Phase 13: Demo Page** - Astro /demo page with email gate, OTP entry, and admin redirect
 - [ ] **Phase 14: Reset & Cleanup** - Cron trigger to reset sandbox data and purge expired sessions
 
@@ -64,7 +64,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 12-01-PLAN.md -- OTP send/verify endpoints, branded email template, 30-min JWT session, route wiring
+- [x] 12-01-PLAN.md -- OTP send/verify endpoints, branded email template, 30-min JWT session, route wiring
 
 #### Phase 13: Demo Page
 **Goal**: Visitors on flarecms.dev see a clear path to try the CMS -- one page, minimal friction, straight into the admin
@@ -100,9 +100,9 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v2.0 | 31/31 | Complete | 2026-03-15 |
 | 11. Sandbox Foundation | v2.1 | 3/3 | Complete | 2026-03-16 |
-| 12. Demo Authentication | v2.1 | 0/1 | Not started | - |
+| 12. Demo Authentication | v2.1 | 1/1 | Complete | 2026-03-16 |
 | 13. Demo Page | v2.1 | 0/1 | Not started | - |
 | 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-03-16 after Phase 12 planned*
+*Last updated: 2026-03-16 after Phase 12 complete*
