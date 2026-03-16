@@ -5,13 +5,17 @@
  * Creates scoped demo users (viewer role + editor permission on demo-sandbox-collection).
  *
  * Routes (Phase 12):
- *   POST /demo/auth/request — validate email, rate limit, send OTP via Resend
- *   POST /demo/auth/verify  — verify OTP, create demo user, issue 30-min JWT session
+ *   POST /demo/auth/request  — validate email, rate limit, send OTP via Resend
+ *   POST /demo/auth/verify   — verify OTP, create demo user, issue 30-min JWT session
+ *
+ * Routes (Phase 13):
+ *   GET  /demo/auth/exchange — validate JWT from query string, set cookies, redirect to /admin
  */
 
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { getCookie, setCookie } from 'hono/cookie'
-import { sign } from 'hono/jwt'
+import { sign, verify } from 'hono/jwt'
 import { z } from 'zod'
 import { PluginBuilder } from '../../sdk/plugin-builder'
 import type { Plugin } from '@flare-cms/core'
@@ -101,6 +105,14 @@ export function createDemoSandboxPlugin(): Plugin {
   // ============================================================================
 
   const demoAuthAPI = new Hono()
+
+  // CORS middleware — must be registered before any route handlers
+  demoAuthAPI.use('/*', cors({
+    origin: ['http://localhost:4321', 'https://flarecms.dev'],
+    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    allowHeaders: ['Content-Type'],
+    credentials: true,
+  }))
 
   /**
    * POST /demo/auth/request
@@ -302,6 +314,7 @@ export function createDemoSandboxPlugin(): Plugin {
       return c.json({
         success: true,
         isNew,
+        token: demoToken,
         expiresAt: expiresAt * 1000,
         redirect: '/admin',
       })
@@ -309,6 +322,53 @@ export function createDemoSandboxPlugin(): Plugin {
       console.error('[demo-sandbox] /verify error:', error)
       return c.json({ error: 'An error occurred. Please try again.' }, 500)
     }
+  })
+
+  /**
+   * GET /demo/auth/exchange?token=JWT
+   *
+   * Cross-domain handoff: the Astro demo page receives the JWT in the verify
+   * response body, then redirects here so the CMS Worker can set httpOnly
+   * cookies same-origin and bounce the user into /admin.
+   *
+   * SameSite=Strict cookies cannot be set cross-origin — this exchange
+   * endpoint closes that gap.
+   */
+  demoAuthAPI.get('/exchange', async (c: any) => {
+    const token = c.req.query('token')
+    const jwtSecret = c.env.JWT_SECRET || JWT_SECRET_FALLBACK
+    const isDev = c.env?.ENVIRONMENT === 'development' || !c.env?.ENVIRONMENT
+
+    if (!token) {
+      return c.redirect('https://flarecms.dev/demo?error=missing_token', 302)
+    }
+
+    try {
+      await verify(token, jwtSecret, 'HS256')
+    } catch {
+      return c.redirect('https://flarecms.dev/demo?error=invalid_token', 302)
+    }
+
+    // Token is valid — set auth_token cookie (httpOnly, 30-min TTL)
+    setCookie(c, 'auth_token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Strict',
+      path: '/',
+      maxAge: 1800,
+    })
+
+    // Set CSRF cookie (readable by JS, 30-min TTL)
+    const csrfToken = await generateCsrfToken(jwtSecret)
+    setCookie(c, 'csrf_token', csrfToken, {
+      httpOnly: false,
+      secure: !isDev,
+      sameSite: 'Strict',
+      path: '/',
+      maxAge: 1800,
+    })
+
+    return c.redirect('/admin', 302)
   })
 
   // Register routes — must be before builder.build()
