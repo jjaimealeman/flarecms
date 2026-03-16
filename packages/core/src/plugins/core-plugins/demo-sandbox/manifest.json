@@ -1,0 +1,20 @@
+{
+  "id": "demo-sandbox",
+  "name": "Demo Sandbox",
+  "version": "1.0.0",
+  "description": "Public demo sandbox for visitors to explore Flare CMS",
+  "author": "Flare CMS Team",
+  "homepage": "https://flarecms.dev",
+  "repository": "https://github.com/jjaimealeman/flarecms",
+  "license": "MIT",
+  "category": "demo",
+  "tags": ["demo", "sandbox", "public"],
+  "dependencies": [],
+  "settings": {},
+  "hooks": {
+    "onActivate": "activate",
+    "onDeactivate": "deactivate"
+  },
+  "routes": [],
+  "permissions": []
+}
