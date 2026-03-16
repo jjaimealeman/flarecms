@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 13 of 14 (Demo Page)
-Plan: 0 of 1 in current phase
-Status: Not started
-Last activity: 2026-03-16 -- Completed Phase 12 (Demo Authentication)
+Plan: 1 of 1 in current phase
+Status: Phase complete
+Last activity: 2026-03-16 -- Completed 13-01 (Cross-domain demo auth wiring)
 
-Progress: [████████░░] 80% (4/5 plans)
+Progress: [█████████░] 90% (5/6 plans)
 
 ## Performance Metrics
 
@@ -23,7 +23,7 @@ Progress: [████████░░] 80% (4/5 plans)
 
 **Current milestone (v2.1):**
 - 4 phases, 5 plans estimated
-- Plans completed: 4
+- Plans completed: 5
 
 ## Accumulated Context
 
@@ -45,6 +45,8 @@ Recent decisions:
 - CSRF exempted for /demo/auth: demo users have no csrf_token yet at time of POST /verify, but stale auth_token from prior session would trigger validation
 - Disposable domain blocking at /request (fail before OTP code is created)
 - Email send failure is non-blocking -- OTP code still created, user can retry
+- Cross-domain cookie handoff via token-in-URL exchange (SameSite=Strict limitation workaround): verify returns JWT in body, Astro redirects to /demo/auth/exchange?token=JWT, Worker sets httpOnly cookies same-origin
+- flarecms.dev added to production CORS_ORIGINS alongside flare-site.pages.dev fallback
 
 ### Prerequisites Verified
 
@@ -65,6 +67,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-16T20:40:27Z
-Stopped at: Phase 12 complete, ready for Phase 13
+Last session: 2026-03-16T21:38:00Z
+Stopped at: Phase 13 Plan 01 complete -- CMS backend wired for cross-domain demo auth
 Resume file: None
