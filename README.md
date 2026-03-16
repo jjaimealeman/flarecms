@@ -4,7 +4,7 @@ Edge-native headless CMS built for Cloudflare Workers. Zero cold starts, D1 data
 
 Forked from [SonicJS](https://github.com/Sonicjs-Org/sonicjs) with security hardening, content workflows, media pipeline improvements, and full rebranding.
 
-**Live:** [flarecms.dev](https://flarecms.dev) | **Admin:** [admin.flarecms.dev](https://admin.flarecms.dev) | **v1.9.0**
+**Live:** [flarecms.dev](https://flarecms.dev) | **Admin:** [admin.flarecms.dev](https://admin.flarecms.dev) | **v2.0.0**
 
 https://github.com/user-attachments/assets/9453cd39-e784-47d0-b1f3-3b56b66364c6
 
@@ -13,6 +13,12 @@ https://github.com/user-attachments/assets/9453cd39-e784-47d0-b1f3-3b56b66364c6
 ## Features
 
 - **Built-in Admin UI** — Content management, media library, user management, rich text editor
+- **Workflow Engine** — Approval workflows with Draft → Review → Approved → Published lifecycle
+- **Content Staging** — Save drafts, diff view, reject with comments, sync to production
+- **Schema Migrations UI** — Add/remove/rename fields from the admin panel with history and rollback
+- **Live Preview** — Split-screen draft preview API for content editors
+- **Audit Logging** — Full-stack activity log for content CRUD, auth events, and admin actions
+- **Role-Based Access** — Admin, Editor, Viewer roles with per-collection permissions
 - **Built-in Analytics** — Privacy-first page views, exit links, device stats (no cookies, no PII)
 - **Dark/Light Mode** — Full dual-mode design system (Supernova Dark + Edge Light)
 - **Plugin Architecture** — FAQ, Forms, OTP Login, Testimonials, Code Examples
