@@ -51,6 +51,7 @@ import { createWorkflowAdminRoutes } from './plugins/core-plugins/workflow-plugi
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
 import { otpLoginPlugin } from './plugins/core-plugins/otp-login-plugin'
 import { aiSearchPlugin } from './plugins/core-plugins/ai-search-plugin'
+import { demoSandboxPlugin } from './plugins/core-plugins/demo-sandbox'
 import { createMagicLinkAuthPlugin } from './plugins/available/magic-link-auth'
 import cachePlugin, { setGlobalKVNamespace as setPluginKVNamespace } from './plugins/cache'
 import { setGlobalKVNamespace as setSimpleKVNamespace } from './services/cache'
