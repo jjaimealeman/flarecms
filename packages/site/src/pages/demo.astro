@@ -1,0 +1,504 @@
+---
+import Layout from '../layouts/Layout.astro'
+const cmsUrl = import.meta.env.PUBLIC_FLARE_API_URL || 'http://localhost:8787'
+---
+
+<Layout title="Try the Demo - Flare CMS" description="Get live access to the Flare CMS admin. Enter your email, verify with OTP, and explore the full admin dashboard.">
+  <div class="max-w-2xl mx-auto px-6 pt-24 pb-16">
+
+    <!-- Audience toggle -->
+    <div class="flex justify-center mb-8">
+      <div class="inline-flex items-center p-1 rounded-xl bg-surface-secondary border border-border gap-1">
+        <button
+          id="toggle-dev"
+          data-toggle="dev"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-flare-500 text-white"
+        >
+          For Developers
+        </button>
+        <button
+          id="toggle-client"
+          data-toggle="client"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-transparent text-text-secondary hover:text-text-primary"
+        >
+          For Clients
+        </button>
+      </div>
+    </div>
+
+    <!-- Dev headline -->
+    <div data-audience="dev" class="text-center mb-8">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+        Take Flare CMS for a spin
+      </h1>
+      <p class="text-lg text-text-secondary">
+        See what a Cloudflare-native headless CMS can do. Full admin access, real data, zero setup.
+      </p>
+    </div>
+
+    <!-- Client headline -->
+    <div data-audience="client" class="text-center mb-8 hidden">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+        See your content workflow in action
+      </h1>
+      <p class="text-lg text-text-secondary">
+        Experience how easy it is to manage content. Edit, preview, publish &mdash; all from one dashboard.
+      </p>
+    </div>
+
+    <!-- Dev bullets -->
+    <div data-audience="dev" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">Cloudflare-native stack</div>
+          <div class="text-xs text-text-secondary mt-0.5">Workers, D1, R2, KV &mdash; runs at the edge</div>
+        </div>
+      </div>
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">REST API + Astro integration</div>
+          <div class="text-xs text-text-secondary mt-0.5">Content Layer Loader with full type safety</div>
+        </div>
+      </div>
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">Schema Migrations UI</div>
+          <div class="text-xs text-text-secondary mt-0.5">Add and edit fields visually with history and rollback</div>
+        </div>
+      </div>
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">Open source</div>
+          <div class="text-xs text-text-secondary mt-0.5">Fork it, deploy to your own Cloudflare account</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client bullets -->
+    <div data-audience="client" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 hidden">
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">Visual content editor</div>
+          <div class="text-xs text-text-secondary mt-0.5">Rich text, media uploads, intuitive admin panel</div>
+        </div>
+      </div>
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">Workflow &amp; approvals</div>
+          <div class="text-xs text-text-secondary mt-0.5">Draft, Review, Published &mdash; content governance built in</div>
+        </div>
+      </div>
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">Live preview</div>
+          <div class="text-xs text-text-secondary mt-0.5">Split-screen draft preview before publishing</div>
+        </div>
+      </div>
+      <div class="bg-surface-secondary border border-border rounded-xl p-4 flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-flare-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-text-primary">No setup required</div>
+          <div class="text-xs text-text-secondary mt-0.5">Just log in and start managing content</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer callout -->
+    <div class="bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-4 mb-6 flex gap-3">
+      <div class="shrink-0 mt-0.5">
+        <svg class="w-4 h-4 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path stroke-linecap="round" d="M12 8v4m0 4h.01"/>
+        </svg>
+      </div>
+      <p id="disclaimer-text" class="text-xs text-text-secondary leading-relaxed">
+        Demo sessions last 30 minutes with a limit of 50 API operations. Sandbox data resets every 6 hours.
+      </p>
+    </div>
+
+    <!-- Email form -->
+    <div id="email-section">
+      <form id="email-form" class="flex flex-col sm:flex-row gap-3">
+        <input
+          id="email-input"
+          type="email"
+          placeholder="you@example.com"
+          required
+          autocomplete="email"
+          class="flex-1 bg-surface-secondary border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-tertiary focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors"
+        />
+        <button
+          id="email-submit"
+          type="submit"
+          class="inline-flex items-center justify-center gap-2 bg-flare-500 hover:bg-flare-400 text-white rounded-lg px-6 py-3 font-semibold transition-colors shrink-0"
+        >
+          <span id="email-btn-text">Get Access</span>
+          <svg id="email-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+        </button>
+      </form>
+      <p id="email-error" class="mt-2 text-sm text-red-400 hidden"></p>
+    </div>
+
+    <!-- OTP section (hidden initially) -->
+    <div id="otp-section" class="hidden">
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-text-secondary">
+          Code sent to <span id="otp-email-display" class="text-text-primary font-medium"></span>
+        </p>
+        <button id="change-email-btn" class="text-sm text-flare-500 hover:text-flare-400 transition-colors">
+          Change
+        </button>
+      </div>
+
+      <div class="flex gap-3 justify-center mb-4">
+        <input data-otp-index="0" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" class="w-12 h-14 text-center text-2xl font-mono bg-surface-secondary border border-border rounded-lg focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors" autocomplete="off" />
+        <input data-otp-index="1" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" class="w-12 h-14 text-center text-2xl font-mono bg-surface-secondary border border-border rounded-lg focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors" autocomplete="off" />
+        <input data-otp-index="2" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" class="w-12 h-14 text-center text-2xl font-mono bg-surface-secondary border border-border rounded-lg focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors" autocomplete="off" />
+        <input data-otp-index="3" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" class="w-12 h-14 text-center text-2xl font-mono bg-surface-secondary border border-border rounded-lg focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors" autocomplete="off" />
+        <input data-otp-index="4" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" class="w-12 h-14 text-center text-2xl font-mono bg-surface-secondary border border-border rounded-lg focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors" autocomplete="off" />
+        <input data-otp-index="5" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" class="w-12 h-14 text-center text-2xl font-mono bg-surface-secondary border border-border rounded-lg focus:border-flare-500 focus:ring-1 focus:ring-flare-500 outline-none transition-colors" autocomplete="off" />
+      </div>
+
+      <p id="otp-error" class="mb-3 text-sm text-red-400 hidden text-center"></p>
+
+      <div class="text-center">
+        <button id="resend-btn" class="text-sm text-text-secondary transition-colors" disabled>
+          Didn&apos;t get the code? <span class="text-flare-500">Resend</span>
+          <span id="resend-countdown" class="text-text-tertiary ml-1">(60s)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Success state (hidden initially) -->
+    <div id="success-section" class="hidden text-center py-8">
+      <div class="flex justify-center mb-4">
+        <svg class="w-16 h-16 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-text-primary mb-2">You&apos;re in!</h2>
+      <p class="text-text-secondary">Redirecting to admin...</p>
+    </div>
+
+  </div>
+</Layout>
+
+<script is:inline define:vars={{ cmsUrl }}>
+  (function () {
+    var currentEmail = ''
+    var resendTimer = null
+    var resendSeconds = 0
+
+    // --- Toggle logic ---
+    var toggleDev = document.getElementById('toggle-dev')
+    var toggleClient = document.getElementById('toggle-client')
+    var disclaimerText = document.getElementById('disclaimer-text')
+
+    var devDisclaimer = 'Demo sessions last 30 minutes with a limit of 50 API operations. Sandbox data resets every 6 hours.'
+    var clientDisclaimer = 'Demo sessions last 30 minutes with a limit of 50 content edits. Sandbox data resets every 6 hours.'
+
+    function setAudience(audience) {
+      var devEls = document.querySelectorAll('[data-audience="dev"]')
+      var clientEls = document.querySelectorAll('[data-audience="client"]')
+
+      if (audience === 'dev') {
+        devEls.forEach(function (el) { el.classList.remove('hidden') })
+        clientEls.forEach(function (el) { el.classList.add('hidden') })
+        toggleDev.classList.remove('bg-transparent', 'text-text-secondary', 'hover:text-text-primary')
+        toggleDev.classList.add('bg-flare-500', 'text-white')
+        toggleClient.classList.remove('bg-flare-500', 'text-white')
+        toggleClient.classList.add('bg-transparent', 'text-text-secondary', 'hover:text-text-primary')
+        if (disclaimerText) disclaimerText.textContent = devDisclaimer
+      } else {
+        devEls.forEach(function (el) { el.classList.add('hidden') })
+        clientEls.forEach(function (el) { el.classList.remove('hidden') })
+        toggleClient.classList.remove('bg-transparent', 'text-text-secondary', 'hover:text-text-primary')
+        toggleClient.classList.add('bg-flare-500', 'text-white')
+        toggleDev.classList.remove('bg-flare-500', 'text-white')
+        toggleDev.classList.add('bg-transparent', 'text-text-secondary', 'hover:text-text-primary')
+        if (disclaimerText) disclaimerText.textContent = clientDisclaimer
+      }
+    }
+
+    toggleDev && toggleDev.addEventListener('click', function () { setAudience('dev') })
+    toggleClient && toggleClient.addEventListener('click', function () { setAudience('client') })
+
+    // --- Email form ---
+    var emailForm = document.getElementById('email-form')
+    var emailInput = document.getElementById('email-input')
+    var emailSubmit = document.getElementById('email-submit')
+    var emailBtnText = document.getElementById('email-btn-text')
+    var emailSpinner = document.getElementById('email-spinner')
+    var emailError = document.getElementById('email-error')
+    var emailSection = document.getElementById('email-section')
+    var otpSection = document.getElementById('otp-section')
+    var otpEmailDisplay = document.getElementById('otp-email-display')
+
+    function showEmailError(msg) {
+      if (emailError) {
+        emailError.textContent = msg
+        emailError.classList.remove('hidden')
+      }
+    }
+
+    function clearEmailError() {
+      if (emailError) {
+        emailError.textContent = ''
+        emailError.classList.add('hidden')
+      }
+    }
+
+    function setEmailLoading(loading) {
+      if (emailSubmit) emailSubmit.disabled = loading
+      if (emailBtnText) emailBtnText.textContent = loading ? 'Sending...' : 'Get Access'
+      if (emailSpinner) {
+        if (loading) {
+          emailSpinner.classList.remove('hidden')
+        } else {
+          emailSpinner.classList.add('hidden')
+        }
+      }
+    }
+
+    function requestOtp(email) {
+      setEmailLoading(true)
+      clearEmailError()
+      return fetch(cmsUrl + '/demo/auth/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: email }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data }
+          })
+        })
+        .then(function (result) {
+          setEmailLoading(false)
+          if (result.ok) {
+            plausible && plausible('Demo: Email Submit')
+            currentEmail = email
+            if (otpEmailDisplay) otpEmailDisplay.textContent = email
+            if (emailSection) emailSection.classList.add('hidden')
+            if (otpSection) otpSection.classList.remove('hidden')
+            focusOtpInput(0)
+            startResendCountdown()
+          } else {
+            showEmailError(result.data.message || result.data.error || 'Failed to send code. Please try again.')
+          }
+        })
+        .catch(function () {
+          setEmailLoading(false)
+          showEmailError('Network error. Please check your connection and try again.')
+        })
+    }
+
+    emailForm && emailForm.addEventListener('submit', function (e) {
+      e.preventDefault()
+      var email = emailInput ? emailInput.value.trim() : ''
+      if (!email) return
+      requestOtp(email)
+    })
+
+    // --- OTP inputs ---
+    var otpInputs = document.querySelectorAll('[data-otp-index]')
+    var otpError = document.getElementById('otp-error')
+    var successSection = document.getElementById('success-section')
+
+    function focusOtpInput(index) {
+      var input = document.querySelector('[data-otp-index="' + index + '"]')
+      if (input) input.focus()
+    }
+
+    function getOtpCode() {
+      var code = ''
+      otpInputs.forEach(function (input) {
+        code += input.value || ''
+      })
+      return code
+    }
+
+    function clearOtpInputs() {
+      otpInputs.forEach(function (input) {
+        input.value = ''
+      })
+    }
+
+    function showOtpError(msg) {
+      if (otpError) {
+        otpError.textContent = msg
+        otpError.classList.remove('hidden')
+      }
+    }
+
+    function clearOtpError() {
+      if (otpError) {
+        otpError.textContent = ''
+        otpError.classList.add('hidden')
+      }
+    }
+
+    function verifyOtp(code) {
+      clearOtpError()
+      fetch(cmsUrl + '/demo/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: currentEmail, code: code }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data }
+          })
+        })
+        .then(function (result) {
+          if (result.ok && result.data.token) {
+            plausible && plausible('Demo: OTP Verified')
+            if (otpSection) otpSection.classList.add('hidden')
+            if (successSection) successSection.classList.remove('hidden')
+            setTimeout(function () {
+              window.location.href = cmsUrl + '/demo/auth/exchange?token=' + result.data.token
+            }, 1500)
+          } else {
+            var msg = result.data.message || result.data.error || 'Invalid code. Please try again.'
+            if (result.data.attemptsRemaining !== undefined) {
+              msg += ' (' + result.data.attemptsRemaining + ' attempt' + (result.data.attemptsRemaining === 1 ? '' : 's') + ' remaining)'
+            }
+            showOtpError(msg)
+            clearOtpInputs()
+            focusOtpInput(0)
+          }
+        })
+        .catch(function () {
+          showOtpError('Network error. Please try again.')
+          clearOtpInputs()
+          focusOtpInput(0)
+        })
+    }
+
+    otpInputs.forEach(function (input) {
+      input.addEventListener('input', function (e) {
+        var idx = parseInt(input.getAttribute('data-otp-index'))
+        var val = input.value.replace(/[^0-9]/g, '')
+        input.value = val ? val[0] : ''
+
+        if (input.value && idx < 5) {
+          focusOtpInput(idx + 1)
+        }
+
+        var code = getOtpCode()
+        if (code.length === 6) {
+          verifyOtp(code)
+        }
+      })
+
+      input.addEventListener('keydown', function (e) {
+        var idx = parseInt(input.getAttribute('data-otp-index'))
+        if (e.key === 'Backspace' && !input.value && idx > 0) {
+          focusOtpInput(idx - 1)
+        }
+      })
+
+      input.addEventListener('paste', function (e) {
+        e.preventDefault()
+        var pasted = (e.clipboardData || window.clipboardData).getData('text')
+        var digits = pasted.replace(/[^0-9]/g, '').split('')
+        otpInputs.forEach(function (inp, i) {
+          inp.value = digits[i] || ''
+        })
+        var lastFilled = Math.min(digits.length - 1, 5)
+        if (lastFilled >= 0) focusOtpInput(lastFilled)
+
+        var code = getOtpCode()
+        if (code.length === 6) {
+          verifyOtp(code)
+        }
+      })
+    })
+
+    // --- Change email ---
+    var changeEmailBtn = document.getElementById('change-email-btn')
+    changeEmailBtn && changeEmailBtn.addEventListener('click', function () {
+      clearOtpInputs()
+      clearOtpError()
+      if (resendTimer) clearInterval(resendTimer)
+      if (otpSection) otpSection.classList.add('hidden')
+      if (emailSection) emailSection.classList.remove('hidden')
+      if (emailInput) {
+        emailInput.value = ''
+        emailInput.focus()
+      }
+    })
+
+    // --- Resend countdown ---
+    var resendBtn = document.getElementById('resend-btn')
+    var resendCountdown = document.getElementById('resend-countdown')
+
+    function startResendCountdown() {
+      resendSeconds = 60
+      if (resendBtn) resendBtn.disabled = true
+      if (resendCountdown) resendCountdown.textContent = '(60s)'
+
+      if (resendTimer) clearInterval(resendTimer)
+      resendTimer = setInterval(function () {
+        resendSeconds--
+        if (resendCountdown) resendCountdown.textContent = '(' + resendSeconds + 's)'
+        if (resendSeconds <= 0) {
+          clearInterval(resendTimer)
+          if (resendBtn) resendBtn.disabled = false
+          if (resendCountdown) resendCountdown.textContent = ''
+        }
+      }, 1000)
+    }
+
+    resendBtn && resendBtn.addEventListener('click', function () {
+      if (resendBtn.disabled) return
+      clearOtpInputs()
+      clearOtpError()
+      requestOtp(currentEmail)
+    })
+  })()
+</script>
