@@ -28,9 +28,9 @@
 
 ### Reset & Cleanup
 
-- [ ] **RESET-01**: Cron trigger runs every 6 hours
-- [ ] **RESET-02**: Cron deletes all demo-sandbox content and re-seeds with clean data
-- [ ] **RESET-03**: Cron purges expired demo user sessions
+- [x] **RESET-01**: Cron trigger runs every 6 hours
+- [x] **RESET-02**: Cron deletes all demo-sandbox content and re-seeds with clean data
+- [x] **RESET-03**: Cron purges expired demo user sessions
 
 ## Future Requirements
 
@@ -63,9 +63,9 @@
 | PAGE-01 | Phase 13 | Complete |
 | PAGE-02 | Phase 13 | Complete |
 | PAGE-03 | Phase 13 | Complete |
-| RESET-01 | Phase 14 | Pending |
-| RESET-02 | Phase 14 | Pending |
-| RESET-03 | Phase 14 | Pending |
+| RESET-01 | Phase 14 | Complete |
+| RESET-02 | Phase 14 | Complete |
+| RESET-03 | Phase 14 | Complete |
 
 **Coverage:**
 - v2.1 requirements: 15 total

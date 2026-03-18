@@ -3,7 +3,7 @@
 ## Milestones
 
 - SHIPPED **v2.0 Platform Maturity** -- Phases 1-10 (shipped 2026-03-15)
-- IN PROGRESS **v2.1 Live Demo** -- Phases 11-14
+- SHIPPED **v2.1 Live Demo** -- Phases 11-14 (shipped 2026-03-18)
 
 <details>
 <summary>v2.0 Platform Maturity (Phases 1-10) -- SHIPPED 2026-03-15</summary>
@@ -32,7 +32,7 @@ Full details: milestones/v2.0-ROADMAP.md
 - [x] **Phase 11: Sandbox Foundation** - Demo role, sandbox collection, permission boundaries, rate limiting
 - [x] **Phase 12: Demo Authentication** - OTP email login flow with 30-minute session expiry
 - [x] **Phase 13: Demo Page** - Astro /demo page with email gate, OTP entry, and admin redirect
-- [ ] **Phase 14: Reset & Cleanup** - Cron trigger to reset sandbox data and purge expired sessions
+- [x] **Phase 14: Reset & Cleanup** - Cron trigger to reset sandbox data and purge expired sessions
 
 ### Phase Details
 
@@ -91,7 +91,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 14-01-PLAN.md -- DemoResetService + cron trigger wiring (sandbox reset + user purge)
+- [x] 14-01-PLAN.md -- DemoResetService + cron trigger wiring (sandbox reset + user purge)
 
 ## Progress
 
@@ -103,7 +103,7 @@ Plans:
 | 11. Sandbox Foundation | v2.1 | 3/3 | Complete | 2026-03-16 |
 | 12. Demo Authentication | v2.1 | 1/1 | Complete | 2026-03-16 |
 | 13. Demo Page | v2.1 | 2/2 | Complete | 2026-03-18 |
-| 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
+| 14. Reset & Cleanup | v2.1 | 1/1 | Complete | 2026-03-18 |
 
 ---
-*Last updated: 2026-03-18 after Phase 14 planned*
+*Last updated: 2026-03-18 after Phase 14 complete*
