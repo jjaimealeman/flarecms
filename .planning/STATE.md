@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Prove that Flare CMS works by using it to power its own documentation
-**Current focus:** v2.1 Live Demo -- Phase 13: Demo Page
+**Current focus:** v2.1 Live Demo -- Phase 14: Reset Cleanup (COMPLETE)
 
 ## Current Position
 
-Phase: 13 of 14 (Demo Page)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-18 -- Completed 13-02 (Demo page frontend + nav links)
+Phase: 14 of 14 (Reset Cleanup)
+Plan: 1 of 1 in current phase
+Status: Milestone complete
+Last activity: 2026-03-18 -- Completed 14-01 (DemoResetService + 6-hour cron)
 
-Progress: [██████████] 100% (6/6 plans)
+Progress: [██████████] 100% (7/7 plans)
 
 ## Performance Metrics
 
@@ -22,8 +22,8 @@ Progress: [██████████] 100% (6/6 plans)
 - 10 phases, 31 plans, 236 commits, 8 days
 
 **Current milestone (v2.1):**
-- 4 phases, 5 plans estimated
-- Plans completed: 5
+- 4 phases, 7 plans completed
+- Plans completed: 7 (MILESTONE COMPLETE)
 
 ## Accumulated Context
 
@@ -32,6 +32,10 @@ Progress: [██████████] 100% (6/6 plans)
 Full decision log in PROJECT.md.
 
 Recent decisions:
+- 6-hour cron dispatched via controller.cron string match in scheduled() handler
+- KV key absence (demo-mutations:{userId}) signals demo user expiry; 48h age fallback for local dev
+- INSERT OR REPLACE restores seed rows even if visitor edited them (not INSERT OR IGNORE)
+- user_collection_permissions cleaned via ON DELETE CASCADE; demo_signups.user_id SET NULL preserves analytics
 - Minimal gate for demo (not polished landing) -- get people into admin fast
 - Demo as plugin approach (not core) -- not every install needs public demo
 - Migration SQL in packages/core/migrations/ (not src/db/migrations/) -- pre-commit hook auto-bundles
@@ -67,6 +71,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-18T00:00:00Z
-Stopped at: Phase 13 Plan 02 complete -- /demo page and nav links shipped
+Last session: 2026-03-18T15:58:17Z
+Stopped at: Phase 14 Plan 01 complete -- DemoResetService + 6-hour cron shipped (v2.1 milestone COMPLETE)
 Resume file: None
