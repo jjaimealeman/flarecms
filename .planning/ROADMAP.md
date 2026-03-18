@@ -88,10 +88,10 @@ Plans:
   1. A Cloudflare cron trigger fires every 6 hours automatically
   2. After cron runs, all demo-sandbox content is replaced with fresh seed data (visitor edits are gone, sample rows are back)
   3. After cron runs, all expired demo sessions are purged from the database
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 14-01: Cron trigger with sandbox reset and session purge logic
+- [ ] 14-01-PLAN.md -- DemoResetService + cron trigger wiring (sandbox reset + user purge)
 
 ## Progress
 
@@ -106,4 +106,4 @@ Plans:
 | 14. Reset & Cleanup | v2.1 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-03-18 after Phase 13 complete*
+*Last updated: 2026-03-18 after Phase 14 planned*
