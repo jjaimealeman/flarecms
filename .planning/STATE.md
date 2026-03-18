@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 13 of 14 (Demo Page)
-Plan: 1 of 1 in current phase
+Plan: 2 of 2 in current phase
 Status: Phase complete
-Last activity: 2026-03-16 -- Completed 13-01 (Cross-domain demo auth wiring)
+Last activity: 2026-03-18 -- Completed 13-02 (Demo page frontend + nav links)
 
-Progress: [█████████░] 90% (5/6 plans)
+Progress: [██████████] 100% (6/6 plans)
 
 ## Performance Metrics
 
@@ -67,6 +67,6 @@ Recent decisions:
 
 ## Session Continuity
 
-Last session: 2026-03-16T21:38:00Z
-Stopped at: Phase 13 Plan 01 complete -- CMS backend wired for cross-domain demo auth
+Last session: 2026-03-18T00:00:00Z
+Stopped at: Phase 13 Plan 02 complete -- /demo page and nav links shipped
 Resume file: None
