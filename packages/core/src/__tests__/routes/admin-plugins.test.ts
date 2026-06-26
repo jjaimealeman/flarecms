@@ -357,18 +357,6 @@ describe('Admin Plugins Routes', () => {
       expect(mockInstallPlugin).toHaveBeenCalled()
     })
 
-    it('should install demo-login-plugin successfully', async () => {
-      const res = await app.request('/admin/plugins/install', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'demo-login-plugin' })
-      })
-
-      expect(res.status).toBe(200)
-      const json = await res.json()
-      expect(json.success).toBe(true)
-    })
-
     it('should install core-auth plugin successfully', async () => {
       const res = await app.request('/admin/plugins/install', {
         method: 'POST',
@@ -410,18 +398,6 @@ describe('Admin Plugins Routes', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: 'database-tools' })
-      })
-
-      expect(res.status).toBe(200)
-      const json = await res.json()
-      expect(json.success).toBe(true)
-    })
-
-    it('should install seed-data plugin successfully', async () => {
-      const res = await app.request('/admin/plugins/install', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'seed-data' })
       })
 
       expect(res.status).toBe(200)

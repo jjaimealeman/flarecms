@@ -45,7 +45,6 @@ import { securityHeadersMiddleware } from './middleware/security-headers'
 import { csrfProtection } from './middleware/csrf'
 import { adminMenuMiddleware } from './middleware/admin-menu'
 import { createDatabaseToolsAdminRoutes } from './plugins/core-plugins/database-tools-plugin/admin-routes'
-import { createSeedDataAdminRoutes } from './plugins/core-plugins/seed-data-plugin/admin-routes'
 import { createWorkflowRoutes } from './plugins/core-plugins/workflow-plugin/routes'
 import { createWorkflowAdminRoutes } from './plugins/core-plugins/workflow-plugin/admin-routes'
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
@@ -324,7 +323,6 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/testimonials', adminTestimonialsRoutes)
   app.route('/admin/code-examples', adminCodeExamplesRoutes)
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())
-  app.route('/admin/seed-data', createSeedDataAdminRoutes())
   app.route('/admin/content', adminContentRoutes)
   app.route('/admin/media', adminMediaRoutes)
   // Plugin routes - AI Search (MUST be registered BEFORE admin/plugins to avoid route conflict)

@@ -29,19 +29,6 @@ const AVAILABLE_PLUGINS = [
     is_core: false
   },
   {
-    id: 'demo-login-prefill',
-    name: 'demo-login-plugin',
-    display_name: 'Demo Login Prefill',
-    description: 'Prefills login form with demo credentials for easy site demonstration',
-    version: '1.0.0-beta.1',
-    author: 'Flare CMS',
-    category: 'demo',
-    icon: '🎯',
-    permissions: [],
-    dependencies: [],
-    is_core: false
-  },
-  {
     id: 'database-tools',
     name: 'database-tools',
     display_name: 'Database Tools',
@@ -51,19 +38,6 @@ const AVAILABLE_PLUGINS = [
     category: 'system',
     icon: '🗄️',
     permissions: ['manage:database', 'admin'],
-    dependencies: [],
-    is_core: false
-  },
-  {
-    id: 'seed-data',
-    name: 'seed-data',
-    display_name: 'Seed Data',
-    description: 'Generate realistic example users and content for testing and development',
-    version: '1.0.0-beta.1',
-    author: 'Flare CMS Team',
-    category: 'development',
-    icon: '🌱',
-    permissions: ['admin'],
     dependencies: [],
     is_core: false
   },
@@ -439,29 +413,6 @@ adminPluginRoutes.post('/install', async (c) => {
       return c.json({ success: true, plugin: faqPlugin })
     }
 
-    // Handle Demo Login plugin installation
-    if (body.name === 'demo-login-plugin') {
-      const demoPlugin = await pluginService.installPlugin({
-        id: 'demo-login-prefill',
-        name: 'demo-login-plugin',
-        display_name: 'Demo Login Prefill',
-        description: 'Prefills login form with demo credentials for easy site demonstration',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS',
-        category: 'demo',
-        icon: '🎯',
-        permissions: [],
-        dependencies: [],
-        settings: {
-          enableNotice: true,
-          demoEmail: 'admin@flarecms.dev',
-          demoPassword: 'flarecms!'
-        }
-      })
-
-      return c.json({ success: true, plugin: demoPlugin })
-    }
-
     // Handle Database Tools plugin installation
     if (body.name === 'database-tools') {
       const databaseToolsPlugin = await pluginService.installPlugin({
@@ -485,30 +436,6 @@ adminPluginRoutes.post('/install', async (c) => {
       })
 
       return c.json({ success: true, plugin: databaseToolsPlugin })
-    }
-
-    // Handle Seed Data plugin installation
-    if (body.name === 'seed-data') {
-      const seedDataPlugin = await pluginService.installPlugin({
-        id: 'seed-data',
-        name: 'seed-data',
-        display_name: 'Seed Data',
-        description: 'Generate realistic example users and content for testing and development',
-        version: '1.0.0-beta.1',
-        author: 'Flare CMS Team',
-        category: 'development',
-        icon: '🌱',
-        permissions: ['admin'],
-        dependencies: [],
-        is_core: false,
-        settings: {
-          userCount: 20,
-          contentCount: 200,
-          defaultPassword: 'password123'
-        }
-      })
-
-      return c.json({ success: true, plugin: seedDataPlugin })
     }
 
     // Handle Quill Editor plugin installation

@@ -9,8 +9,7 @@
 
 export { testimonialsPlugin, createTestimonialPlugin } from './testimonials'
 export { codeExamplesPlugin, createCodeExamplesPlugin } from './code-examples'
-export { demoLoginPlugin } from './demo-login'
-export { seedDataPlugin, createSeedDataPlugin } from './seed-data-plugin'
+
 export { databaseToolsPlugin } from './database-tools-plugin'
 export { quillEditorPlugin, createQuillEditorPlugin } from './quill-editor'
 export { emailPlugin, createEmailPlugin } from './email-plugin'
@@ -25,9 +24,7 @@ export { demoSandboxPlugin, createDemoSandboxPlugin } from './demo-sandbox'
 export const CORE_PLUGIN_IDS = [
   'testimonials-plugin',
   'code-examples-plugin',
-  'demo-login-plugin',
-  'seed-data',
-  'database-tools',
+'database-tools',
   'quill-editor',
   'email',
   'otp-login',

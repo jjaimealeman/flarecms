@@ -59,18 +59,7 @@ authRoutes.get('/login', async (c) => {
     registrationEnabled
   }
 
-  // Check if demo login plugin is active
-  let demoLoginActive = false
-  try {
-    const plugin = await db.prepare('SELECT * FROM plugins WHERE id = ? AND status = ?')
-      .bind('demo-login-prefill', 'active')
-      .first()
-    demoLoginActive = !!plugin
-  } catch (error) {
-    // Ignore database errors - plugin system might not be initialized
-  }
-  
-  return c.html(renderLoginPage(pageData, demoLoginActive))
+  return c.html(renderLoginPage(pageData))
 })
 
 // Registration page (HTML form)
