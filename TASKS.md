@@ -34,8 +34,8 @@ Currently: JWT login + OTP Login + Magic Link Auth = 3 auth paths, confusing
 - [x] **KEEP `core-plugins/email-plugin/`** — it powers OTP Login (Resend API integration). Removing it breaks passwordless auth. Not related to magic link.
 
 ### EVALUATE — Keep or kill per client use case
-- [ ] `core-plugins/database-tools-plugin/` — has truncate/backup/validation. NEVER expose in client deployments. Gate behind env flag `FLARECMS_DEV_TOOLS=true` or remove entirely. Evaluate.
-- [ ] `core-plugins/code-examples/` — syntax-highlighted code snippets. Not useful for local business clients (boutique, auto dealer, life coach). Remove from default, make installable-only.
+- [x] `core-plugins/database-tools-plugin/` — Gated behind `FLARECMS_DEV_TOOLS` env flag. Routes return 404 and truncate endpoint returns 403 without it.
+- [x] `core-plugins/code-examples/` — Default status changed to `inactive` in migrations. Code stays, clients can activate from Plugins page if needed.
 
 ### KEEP — Core functionality, activate and polish
 - [ ] Analytics & Tracking ✅

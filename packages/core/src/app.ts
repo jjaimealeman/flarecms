@@ -76,6 +76,7 @@ export interface Bindings {
   BUCKET_NAME?: string
   MEDIA_DOMAIN?: string
   GOOGLE_MAPS_API_KEY?: string
+  FLARECMS_DEV_TOOLS?: string
 }
 
 export interface Variables {
@@ -307,6 +308,10 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/workflow', createWorkflowAdminRoutes())
   app.route('/admin/testimonials', adminTestimonialsRoutes)
   app.route('/admin/code-examples', adminCodeExamplesRoutes)
+  app.use('/admin/database-tools/*', async (c, next) => {
+    if (!c.env.FLARECMS_DEV_TOOLS) return c.notFound()
+    return next()
+  })
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())
   app.route('/admin/content', adminContentRoutes)
   app.route('/admin/media', adminMediaRoutes)
