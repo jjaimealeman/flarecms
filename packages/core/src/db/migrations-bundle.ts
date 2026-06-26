@@ -158,10 +158,10 @@ export const bundledMigrations: BundledMigration[] = [
   },
   {
     id: '021',
-    name: 'Add Magic Link Auth Plugin',
+    name: 'Add Magic Link Auth Plugin (removed)',
     filename: '021_add_magic_link_auth_plugin.sql',
-    description: 'Migration 021: Add Magic Link Auth Plugin',
-    sql: "-- Add Magic Link Authentication Plugin\n-- Migration: 021_add_magic_link_auth_plugin\n-- Description: Add magic link authentication plugin for passwordless login\n\n-- Create magic_links table\nCREATE TABLE IF NOT EXISTS magic_links (\n  id TEXT PRIMARY KEY,\n  user_email TEXT NOT NULL,\n  token TEXT NOT NULL UNIQUE,\n  expires_at INTEGER NOT NULL,\n  used INTEGER DEFAULT 0,\n  used_at INTEGER,\n  ip_address TEXT,\n  user_agent TEXT,\n  created_at INTEGER NOT NULL\n);\n\n-- Create indexes for performance\nCREATE INDEX IF NOT EXISTS idx_magic_links_token ON magic_links(token);\nCREATE INDEX IF NOT EXISTS idx_magic_links_email ON magic_links(user_email);\nCREATE INDEX IF NOT EXISTS idx_magic_links_expires ON magic_links(expires_at);\n\n-- Register the plugin\nINSERT OR IGNORE INTO plugins (\n    id, name, display_name, description, version, author, category, icon,\n    status, is_core, permissions, dependencies, installed_at, last_updated\n) VALUES (\n    'magic-link-auth',\n    'magic-link-auth',\n    'Magic Link Authentication',\n    'Passwordless authentication via email magic links. Users receive a secure one-time link to sign in without entering a password.',\n    '1.0.0',\n    'SonicJS Team',\n    'security',\n    '🔗',\n    'inactive',\n    FALSE,\n    '[\"auth:manage\", \"auth:magic-link\"]',\n    '[\"email\"]',\n    unixepoch(),\n    unixepoch()\n);\n"
+    description: 'Migration 021: Magic Link Auth removed — no-op',
+    sql: "-- Magic Link Auth plugin removed (OTP Login covers same use case). Kept as no-op for migration ordering.\nSELECT 1;\n"
   },
   {
     id: '022',

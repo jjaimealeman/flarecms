@@ -29,9 +29,9 @@ Currently have: Quill, TinyMCE, EasyMDE, EasyMDx (4 editors for one job)
 
 ### CONSOLIDATE — Auth plugins (too many, pick a strategy)
 Currently: JWT login + OTP Login + Magic Link Auth = 3 auth paths, confusing
-- [ ] Decision: Keep **JWT login** (standard, works) + **OTP Login** as optional upgrade for clients who want passwordless.
-- [ ] Remove `available/magic-link-auth/` — OTP Login covers the same use case with less complexity.
-- [ ] **KEEP `core-plugins/email-plugin/`** — it powers OTP Login (Resend API integration). Removing it breaks passwordless auth. Not related to magic link.
+- [x] Decision: Keep **JWT login** (standard, works) + **OTP Login** as optional upgrade for clients who want passwordless.
+- [x] Remove `available/magic-link-auth/` — OTP Login covers the same use case with less complexity.
+- [x] **KEEP `core-plugins/email-plugin/`** — it powers OTP Login (Resend API integration). Removing it breaks passwordless auth. Not related to magic link.
 
 ### EVALUATE — Keep or kill per client use case
 - [ ] `core-plugins/database-tools-plugin/` — has truncate/backup/validation. NEVER expose in client deployments. Gate behind env flag `FLARECMS_DEV_TOOLS=true` or remove entirely. Evaluate.

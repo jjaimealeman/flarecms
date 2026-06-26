@@ -50,7 +50,6 @@ import { createWorkflowAdminRoutes } from './plugins/core-plugins/workflow-plugi
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
 import { otpLoginPlugin } from './plugins/core-plugins/otp-login-plugin'
 import { aiSearchPlugin } from './plugins/core-plugins/ai-search-plugin'
-import { createMagicLinkAuthPlugin } from './plugins/available/magic-link-auth'
 import cachePlugin, { setGlobalKVNamespace as setPluginKVNamespace } from './plugins/cache'
 import { setGlobalKVNamespace as setSimpleKVNamespace } from './services/cache'
 import { faviconSvg } from './assets/favicon'
@@ -342,14 +341,6 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   // Plugin routes - Email
   if (emailPlugin.routes && emailPlugin.routes.length > 0) {
     for (const route of emailPlugin.routes) {
-      app.route(route.path, route.handler as any)
-    }
-  }
-
-  // Plugin routes - Magic Link Auth (passwordless authentication via email links)
-  const magicLinkPlugin = createMagicLinkAuthPlugin()
-  if (magicLinkPlugin.routes && magicLinkPlugin.routes.length > 0) {
-    for (const route of magicLinkPlugin.routes) {
       app.route(route.path, route.handler as any)
     }
   }
