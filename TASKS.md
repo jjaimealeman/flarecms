@@ -42,7 +42,7 @@ Currently: JWT login + OTP Login + Magic Link Auth = 3 auth paths, confusing
 - [ ] Authentication System ✅
 - [ ] Cache System ✅
 - [ ] Media Manager ✅
-- [ ] Workflow Engine — **fix the duplicate**: two versions show in UI (v1.0.0-beta1 and v1.0.0-beta.1). Consolidate to one.
+- [x] Workflow Engine — Fixed duplicate: ghost `core-workflow` entry from migration 006 removed, kept `workflow-plugin` from migration 015. Version aligned to `1.0.0-beta.1`.
 - [ ] AI Search — currently Inactive. **Activate and wire up.** This is a key differentiator. See Phase 3.
 - [ ] FAQ Management ✅ — useful for most clients
 - [ ] Customer Testimonials ✅ — useful for most clients
