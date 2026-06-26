@@ -186,10 +186,10 @@ export const bundledMigrations: BundledMigration[] = [
   },
   {
     id: '025',
-    name: 'Add Easymde Plugin',
+    name: 'Add Easymde Plugin (removed)',
     filename: '025_add_easymde_plugin.sql',
-    description: 'Migration 025: Add Easymde Plugin',
-    sql: "-- Add EasyMDE Rich Text Editor Plugin\n-- Migration: 025_add_easymde_plugin\n-- Description: Add EasyMDE plugin for markdown-based rich text editing\n\n-- Register the plugin (inactive by default, replacing MDXEditor)\nINSERT OR IGNORE INTO plugins (\n    id, name, display_name, description, version, author, category, icon,\n    status, is_core, permissions, dependencies, settings, installed_at, last_updated\n) VALUES (\n    'easymde-editor',\n    'easymde-editor',\n    'EasyMDE Editor',\n    'Lightweight markdown editor for content creation. Simple, elegant WYSIWYG markdown editor with live preview, toolbar, and dark mode support for richtext fields.',\n    '1.0.0',\n    'SonicJS Team',\n    'editor',\n    '✍️',\n    'inactive',\n    TRUE,\n    '[]',\n    '[]',\n    '{\"theme\":\"dark\",\"defaultHeight\":300,\"toolbar\":\"full\",\"spellChecker\":false,\"placeholder\":\"Start writing your content...\"}',\n    unixepoch(),\n    unixepoch()\n);\n"
+    description: 'Migration 025: Duplicate easymde-editor entry removed — no-op',
+    sql: "-- Duplicate easymde-editor plugin removed (easy-mdx is the real one). Kept as no-op for migration ordering.\nSELECT 1;\n"
   },
   {
     id: '026',

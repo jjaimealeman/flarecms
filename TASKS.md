@@ -24,8 +24,8 @@ The `demo-sandbox` plugin was built by us in v2.1 (March 2026, phases 11-14) for
 Currently have: Quill, TinyMCE, EasyMDE, EasyMDx (4 editors for one job)
 - [x] Keep **Quill** as the primary rich text editor (already active, best UX).
 - [x] Remove `core-plugins/tinymce-plugin/` — redundant, licensing overhead, not needed.
-- [ ] Consolidate EasyMDE: there are TWO versions showing in the plugin UI (Inactive + Active). Remove the duplicate. Keep one markdown editor for markdown-specific fields only.
-- [ ] Remove `available/easy-mdx/` (installable version) if keeping core EasyMDE — don't need both.
+- [x] Consolidate EasyMDE: the "Inactive" duplicate was a ghost DB entry (`easymde-editor`, migration 025) with no code — no-op'd it. The real plugin is `available/easy-mdx/`. Fixed display name inconsistency.
+- [x] ~~Remove `available/easy-mdx/`~~ — Kept. It's the ONLY real implementation. The "core" version never existed as code.
 
 ### CONSOLIDATE — Auth plugins (too many, pick a strategy)
 Currently: JWT login + OTP Login + Magic Link Auth = 3 auth paths, confusing

@@ -67,7 +67,7 @@ export class PluginBootstrapService {
     {
       id: "easy-mdx",
       name: "easy-mdx",
-      display_name: "EasyMDE Editor",
+      display_name: "EasyMDE Markdown Editor",
       description: "Lightweight markdown editor with live preview for richtext fields",
       version: "1.0.0",
       author: "Flare CMS Team",
