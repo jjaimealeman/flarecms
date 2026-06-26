@@ -55,19 +55,6 @@ const AVAILABLE_PLUGINS = [
     is_core: true
   },
   {
-    id: 'tinymce-plugin',
-    name: 'tinymce-plugin',
-    display_name: 'TinyMCE Rich Text Editor',
-    description: 'Powerful WYSIWYG rich text editor for content creation. Provides a full-featured editor with formatting, media embedding, and customizable toolbars for richtext fields.',
-    version: '1.0.0',
-    author: 'Flare CMS Team',
-    category: 'editor',
-    icon: '📝',
-    permissions: [],
-    dependencies: [],
-    is_core: false
-  },
-  {
     id: 'easy-mdx',
     name: 'easy-mdx',
     display_name: 'EasyMDE Markdown Editor',
@@ -461,31 +448,6 @@ adminPluginRoutes.post('/install', async (c) => {
       })
 
       return c.json({ success: true, plugin: quillPlugin })
-    }
-
-    // Handle TinyMCE plugin installation
-    if (body.name === 'tinymce-plugin') {
-      const tinymcePlugin = await pluginService.installPlugin({
-        id: 'tinymce-plugin',
-        name: 'tinymce-plugin',
-        display_name: 'TinyMCE Rich Text Editor',
-        description: 'Powerful WYSIWYG rich text editor for content creation. Provides a full-featured editor with formatting, media embedding, and customizable toolbars for richtext fields.',
-        version: '1.0.0',
-        author: 'Flare CMS Team',
-        category: 'editor',
-        icon: '📝',
-        permissions: [],
-        dependencies: [],
-        is_core: false,
-        settings: {
-          apiKey: 'no-api-key',
-          defaultHeight: 300,
-          defaultToolbar: 'full',
-          skin: 'oxide-dark'
-        }
-      })
-
-      return c.json({ success: true, plugin: tinymcePlugin })
     }
 
     // Handle Easy MDX plugin installation

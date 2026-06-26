@@ -22,8 +22,8 @@ The `demo-sandbox` plugin was built by us in v2.1 (March 2026, phases 11-14) for
 
 ### REMOVE — Redundant editors (pick one, kill the others)
 Currently have: Quill, TinyMCE, EasyMDE, EasyMDx (4 editors for one job)
-- [ ] Keep **Quill** as the primary rich text editor (already active, best UX).
-- [ ] Remove `core-plugins/tinymce-plugin/` — redundant, licensing overhead, not needed.
+- [x] Keep **Quill** as the primary rich text editor (already active, best UX).
+- [x] Remove `core-plugins/tinymce-plugin/` — redundant, licensing overhead, not needed.
 - [ ] Consolidate EasyMDE: there are TWO versions showing in the plugin UI (Inactive + Active). Remove the duplicate. Keep one markdown editor for markdown-specific fields only.
 - [ ] Remove `available/easy-mdx/` (installable version) if keeping core EasyMDE — don't need both.
 

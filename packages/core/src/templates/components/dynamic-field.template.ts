@@ -84,7 +84,6 @@ export interface FieldRenderOptions {
   pluginStatuses?: {
     quillEnabled?: boolean
     mdxeditorEnabled?: boolean
-    tinymceEnabled?: boolean
   }
   collectionId?: string
   contentId?: string
@@ -111,9 +110,6 @@ export function renderDynamicField(field: FieldDefinition, options: FieldRenderO
   } else if (field.field_type === 'mdxeditor' && !pluginStatuses.mdxeditorEnabled) {
     fallbackToTextarea = true
     fallbackWarning = '⚠️ MDXEditor plugin is inactive. Using textarea fallback.'
-  } else if (field.field_type === 'tinymce' && !pluginStatuses.tinymceEnabled) {
-    fallbackToTextarea = true
-    fallbackWarning = '⚠️ TinyMCE plugin is inactive. Using textarea fallback.'
   }
 
   // If falling back to textarea, render it with a warning
@@ -1398,9 +1394,6 @@ function getStructuredFieldScript(): string {
                 const nextIndex = list.querySelectorAll('.structured-array-item').length;
                 const html = template.innerHTML.replace(/__INDEX__/g, String(nextIndex));
                 list.insertAdjacentHTML('beforeend', html);
-                if (typeof initializeTinyMCE === 'function') {
-                  initializeTinyMCE();
-                }
                 if (typeof window.initializeQuillEditors === 'function') {
                   window.initializeQuillEditors();
                 }
@@ -1554,9 +1547,6 @@ function getBlocksFieldScript(): string {
             };
 
             const initializeEditors = () => {
-              if (typeof initializeTinyMCE === 'function') {
-                initializeTinyMCE();
-              }
               if (typeof window.initializeQuillEditors === 'function') {
                 window.initializeQuillEditors();
               }

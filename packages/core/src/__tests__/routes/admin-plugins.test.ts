@@ -417,18 +417,6 @@ describe('Admin Plugins Routes', () => {
       expect(json.success).toBe(true)
     })
 
-    it('should install tinymce-plugin successfully', async () => {
-      const res = await app.request('/admin/plugins/install', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'tinymce-plugin' })
-      })
-
-      expect(res.status).toBe(200)
-      const json = await res.json()
-      expect(json.success).toBe(true)
-    })
-
     it('should install easy-mdx plugin successfully', async () => {
       const res = await app.request('/admin/plugins/install', {
         method: 'POST',

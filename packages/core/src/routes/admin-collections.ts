@@ -36,7 +36,6 @@ interface CollectionFormData {
   }
   version?: string
   editorPlugins?: {
-    tinymce: boolean
     quill: boolean
     easyMdx: boolean
   }
@@ -185,17 +184,10 @@ adminCollectionsRoutes.get('/new', async (c) => {
   const db = c.env.DB
 
   // Check which editor plugins are active
-  const [tinymceActive, quillActive, mdxeditorActive] = await Promise.all([
-    isPluginActive(db, 'tinymce-plugin'),
+  const [quillActive, mdxeditorActive] = await Promise.all([
     isPluginActive(db, 'quill-editor'),
     isPluginActive(db, 'easy-mdx')
   ])
-
-  console.log('[Collections /new] Editor plugins status:', {
-    tinymce: tinymceActive,
-    quill: quillActive,
-    easyMdx: mdxeditorActive
-  })
 
   const formData: CollectionFormData = {
     isEdit: false,
@@ -206,7 +198,6 @@ adminCollectionsRoutes.get('/new', async (c) => {
     } : undefined,
     version: c.get('appVersion'),
     editorPlugins: {
-      tinymce: tinymceActive,
       quill: quillActive,
       easyMdx: mdxeditorActive
     }
@@ -409,8 +400,7 @@ adminCollectionsRoutes.get('/:id', async (c) => {
 
     if (!collection) {
       // Check which editor plugins are active
-      const [tinymceActive, quillActive, mdxeditorActive] = await Promise.all([
-        isPluginActive(db, 'tinymce-plugin'),
+      const [quillActive, mdxeditorActive] = await Promise.all([
         isPluginActive(db, 'quill-editor'),
         isPluginActive(db, 'easy-mdx')
       ])
@@ -425,7 +415,6 @@ adminCollectionsRoutes.get('/:id', async (c) => {
         } : undefined,
         version: c.get('appVersion'),
         editorPlugins: {
-          tinymce: tinymceActive,
           quill: quillActive,
           easyMdx: mdxeditorActive
         }
@@ -507,17 +496,10 @@ adminCollectionsRoutes.get('/:id', async (c) => {
     }
 
     // Check which editor plugins are active
-    const [tinymceActive, quillActive, mdxeditorActive] = await Promise.all([
-      isPluginActive(db, 'tinymce-plugin'),
+    const [quillActive, mdxeditorActive] = await Promise.all([
       isPluginActive(db, 'quill-editor'),
       isPluginActive(db, 'easy-mdx')
     ])
-
-    console.log('[Collections /:id] Editor plugins status:', {
-      tinymce: tinymceActive,
-      quill: quillActive,
-      easyMdx: mdxeditorActive
-    })
 
     const formData: CollectionFormData = {
       id: collection.id,
@@ -534,7 +516,6 @@ adminCollectionsRoutes.get('/:id', async (c) => {
       } : undefined,
       version: c.get('appVersion'),
       editorPlugins: {
-        tinymce: tinymceActive,
         quill: quillActive,
         easyMdx: mdxeditorActive
       }
@@ -546,8 +527,7 @@ adminCollectionsRoutes.get('/:id', async (c) => {
     const user = c.get('user')
 
     // Check which editor plugins are active (even in error state)
-    const [tinymceActive, quillActive, mdxeditorActive] = await Promise.all([
-      isPluginActive(db, 'tinymce-plugin'),
+    const [quillActive, mdxeditorActive] = await Promise.all([
       isPluginActive(db, 'quill-editor'),
       isPluginActive(db, 'easy-mdx')
     ])
@@ -562,7 +542,6 @@ adminCollectionsRoutes.get('/:id', async (c) => {
       } : undefined,
       version: c.get('appVersion'),
       editorPlugins: {
-        tinymce: tinymceActive,
         quill: quillActive,
         easyMdx: mdxeditorActive
       }

@@ -2,7 +2,6 @@ import { renderAdminLayoutCatalyst, AdminLayoutCatalystData } from '../layouts/a
 import { renderAlert } from '../alert.template'
 import { renderDynamicField, renderFieldGroup, FieldDefinition } from '../components/dynamic-field.template'
 import { renderConfirmationDialog, getConfirmationDialogScript } from '../confirmation-dialog.template'
-import { getTinyMCEScript, getTinyMCEInitScript } from '../../plugins/available/tinymce-plugin'
 import { getQuillCDN, getQuillInitScript } from '../../plugins/core-plugins/quill-editor'
 import { getMDXEditorScripts, getMDXEditorInitScript } from '../../plugins/available/easy-mdx'
 
@@ -32,13 +31,6 @@ export interface ContentFormData {
   success?: string
   validationErrors?: Record<string, string[]>
   workflowEnabled?: boolean // New flag to indicate if workflow plugin is active
-  tinymceEnabled?: boolean // Flag to indicate if TinyMCE plugin is active
-  tinymceSettings?: {
-    apiKey?: string
-    defaultHeight?: number
-    defaultToolbar?: string
-    skin?: string
-  }
   quillEnabled?: boolean // Flag to indicate if Quill plugin is active
   quillSettings?: {
     version?: string
@@ -86,8 +78,7 @@ export function renderContentFormPage(data: ContentFormData): string {
   // Prepare plugin statuses for field rendering
   const pluginStatuses = {
     quillEnabled: data.quillEnabled || false,
-    mdxeditorEnabled: data.mdxeditorEnabled || false,
-    tinymceEnabled: data.tinymceEnabled || false
+    mdxeditorEnabled: data.mdxeditorEnabled || false
   }
 
   // Render field groups
@@ -432,8 +423,6 @@ export function renderContentFormPage(data: ContentFormData): string {
     })}
 
     ${getConfirmationDialogScript()}
-
-    ${data.tinymceEnabled && !data.mdxeditorEnabled ? getTinyMCEScript(data.tinymceSettings?.apiKey) : '<!-- TinyMCE not loaded (inactive or superseded by EasyMDE) -->'}
 
     ${data.quillEnabled ? getQuillCDN(data.quillSettings?.version) : '<!-- Quill plugin not active -->'}
 
@@ -1082,12 +1071,6 @@ export function renderContentFormPage(data: ContentFormData): string {
         form.addEventListener('input', scheduleAutoSave);
         form.addEventListener('change', scheduleAutoSave);
       });
-
-      ${data.tinymceEnabled ? getTinyMCEInitScript({
-        skin: data.tinymceSettings?.skin,
-        defaultHeight: data.tinymceSettings?.defaultHeight,
-        defaultToolbar: data.tinymceSettings?.defaultToolbar
-      }) : ''}
 
       ${data.mdxeditorEnabled ? getMDXEditorInitScript({
         defaultHeight: data.mdxeditorSettings?.defaultHeight,

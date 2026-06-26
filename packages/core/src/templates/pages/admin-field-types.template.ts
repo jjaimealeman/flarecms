@@ -191,13 +191,13 @@ export function getFieldTypeDefinitions(): FieldTypeDefinition[] {
           title: 'Article Content Editor',
           configuration: { height: 400, toolbar: 'full' },
           sampleValue: '<h2>Introduction</h2><p>This is <strong>rich</strong> content...</p>',
-          renderedOutput: 'TinyMCE editor with full toolbar'
+          renderedOutput: 'Rich text editor with full toolbar'
         },
         {
           title: 'Simple Comment Editor',
           configuration: { height: 150, toolbar: 'simple' },
           sampleValue: '<p>A simple comment with <em>basic</em> formatting.</p>',
-          renderedOutput: 'TinyMCE editor with limited toolbar'
+          renderedOutput: 'Rich text editor with limited toolbar'
         }
       ],
       useCases: [

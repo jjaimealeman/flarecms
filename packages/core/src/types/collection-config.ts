@@ -29,7 +29,6 @@ export type FieldType =
   | 'color'
   | 'file'
   | 'quill'
-  | 'tinymce'
   | 'mdxeditor'
 
 export interface BlockDefinition {
