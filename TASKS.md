@@ -38,15 +38,15 @@ Currently: JWT login + OTP Login + Magic Link Auth = 3 auth paths, confusing
 - [x] `core-plugins/code-examples/` — Default status changed to `inactive` in migrations. Code stays, clients can activate from Plugins page if needed.
 
 ### KEEP — Core functionality, activate and polish
-- [ ] Analytics & Tracking ✅
-- [ ] Authentication System ✅
-- [ ] Cache System ✅
-- [ ] Media Manager ✅
+- [x] Analytics & Tracking ✅
+- [x] Authentication System ✅
+- [x] Cache System ✅
+- [x] Media Manager ✅
 - [x] Workflow Engine — Fixed duplicate: ghost `core-workflow` entry from migration 006 removed, kept `workflow-plugin` from migration 015. Version aligned to `1.0.0-beta.1`.
 - [ ] AI Search — currently Inactive. **Activate and wire up.** This is a key differentiator. See Phase 3.
-- [ ] FAQ Management ✅ — useful for most clients
-- [ ] Customer Testimonials ✅ — useful for most clients
-- [ ] Cloudflare Turnstile — keep as Available/opt-in, not forced
+- [x] FAQ Management ✅ — useful for most clients
+- [x] Customer Testimonials ✅ — useful for most clients
+- [x] Cloudflare Turnstile — kept as Available/opt-in
 
 ---
 
