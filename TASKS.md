@@ -53,14 +53,14 @@ Currently: JWT login + OTP Login + Magic Link Auth = 3 auth paths, confusing
 ## PHASE 2 — Admin UI & Navigation Fix
 
 ### Sidebar cleanup
-- [ ] Audit sidebar nav for duplicated URLs. Remove duplication. Each route should appear exactly once.
-- [ ] The default sidebar shows SonicJS demo collections: "Blog Posts", "Docs Sections", "Documentation", "News" — these are seeded from SonicJS's demo. A fresh FlareCMS install for dthelifecoach should NOT show these by default.
-- [ ] Collections in sidebar should only show what the site operator has actually defined in `packages/cms/src/collections/`. Make sidebar dynamic from actual collection definitions.
+- [x] Sidebar is already dynamic (admin-menu middleware queries DB for active collections). No hardcoded nav.
+- [x] Removed SonicJS demo collection seeds (blog_posts, pages, news) from migration 001. Fresh installs only show collections registered by the CMS package via collection-sync.
+- [x] Collections in sidebar now driven entirely by `packages/cms/src/collections/` config files synced on startup.
 - [ ] Broken editor: identify which editor is broken (Quill? EasyMDE?), fix or replace. Don't ship broken tooling.
 
 ### Plugin management UI
-- [ ] The "Experimental Feature" warning banner on the Plugins page needs to either be removed (if it's production ready) or the functionality needs to reach that state. Don't show "experimental" to clients.
-- [ ] Plugins page shows 21 total / 13 active — after Phase 1 purge, this number should drop to ~8-10 meaningful plugins.
+- [x] Removed "Experimental Feature" warning banner from Plugins page — plugin system is production-ready since v2.0.
+- [ ] Plugins page count — verify after deploying Phase 1 changes that the count reflects the purge.
 
 ---
 
