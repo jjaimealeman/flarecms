@@ -82,10 +82,6 @@ export {
 export { SchedulerService } from '../plugins/core-plugins/workflow-plugin/services/scheduler'
 export type { ScheduledContent } from '../plugins/core-plugins/workflow-plugin/services/scheduler'
 
-// Demo Reset Service
-export { DemoResetService } from '../plugins/core-plugins/demo-sandbox/reset-service'
-export type { ResetContentResult, PurgeUsersResult, ResetRunResult } from '../plugins/core-plugins/demo-sandbox/reset-service'
-
 export type {
   ApiTokenRecord,
   ApiTokenSafe,

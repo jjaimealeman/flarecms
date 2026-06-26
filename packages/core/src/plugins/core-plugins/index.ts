@@ -18,7 +18,6 @@ export { turnstilePlugin } from './turnstile-plugin'
 export { TurnstileService, verifyTurnstile, createTurnstileMiddleware } from './turnstile-plugin'
 export { aiSearchPlugin } from './ai-search-plugin'
 export { AISearchService, IndexManager } from './ai-search-plugin'
-export { demoSandboxPlugin, createDemoSandboxPlugin } from './demo-sandbox'
 
 // Core plugins list
 export const CORE_PLUGIN_IDS = [
@@ -30,7 +29,6 @@ export const CORE_PLUGIN_IDS = [
   'otp-login',
   'turnstile',
   'ai-search',
-  'demo-sandbox'
 ] as const
 
 export type CorePluginNames = (typeof CORE_PLUGIN_IDS)[number]

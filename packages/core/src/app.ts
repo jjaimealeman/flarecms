@@ -50,8 +50,6 @@ import { createWorkflowAdminRoutes } from './plugins/core-plugins/workflow-plugi
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
 import { otpLoginPlugin } from './plugins/core-plugins/otp-login-plugin'
 import { aiSearchPlugin } from './plugins/core-plugins/ai-search-plugin'
-import { demoSandboxPlugin } from './plugins/core-plugins/demo-sandbox'
-import { demoMutationGuard, demoUploadGuard } from './plugins/core-plugins/demo-sandbox/middleware'
 import { createMagicLinkAuthPlugin } from './plugins/available/magic-link-auth'
 import cachePlugin, { setGlobalKVNamespace as setPluginKVNamespace } from './plugins/cache'
 import { setGlobalKVNamespace as setSimpleKVNamespace } from './services/cache'
@@ -106,7 +104,6 @@ export interface Variables {
   startTime?: number
   appVersion?: string
   csrfToken?: string
-  parsedFormData?: FormData
   adminMenuItems?: Array<{
     label: string
     slug: string
@@ -258,10 +255,7 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.use('*', securityHeadersMiddleware())
 
   // CSRF protection middleware
-  // /demo/auth is exempt: no auth_token exists yet at that point in the demo flow,
-  // but a stale cookie from a prior session could trigger CSRF validation and block
-  // the OTP verify POST. The endpoints perform their own validation (email, OTP, rate limit).
-  app.use('*', csrfProtection({ exemptPaths: ['/demo/auth'] }))
+  app.use('*', csrfProtection())
 
   // Custom middleware - after auth
   if (config.middleware?.afterAuth) {
@@ -281,14 +275,6 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
     }
     await next()
   })
-
-  // Demo sandbox middleware — rate-limits mutations and restricts uploads for demo users
-  // Demo user detection is via KV key existence (demo-mutations:{userId}), NOT role checks.
-  // This ensures API token users (viewer role) and standard viewer users are unaffected.
-  // Must run AFTER auth middleware (needs user on context) and BEFORE route handlers.
-  app.use('/api/content/*', demoMutationGuard())
-  app.use('/api/media/*', demoMutationGuard())
-  app.use('/api/media/upload', demoUploadGuard())
 
   // Admin menu middleware — queries collections for sidebar nav (cached per isolate)
   app.use('/admin/*', adminMenuMiddleware())
@@ -336,13 +322,6 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   // Plugin routes - Cache (dashboard and management API)
   // Fixes GitHub Issue #461: Cache routes were not registered
   app.route('/admin/cache', cachePlugin.getRoutes())
-
-  // Plugin routes - Demo Sandbox (MUST be registered BEFORE admin/plugins to avoid route conflict)
-  if (demoSandboxPlugin.routes && demoSandboxPlugin.routes.length > 0) {
-    for (const route of demoSandboxPlugin.routes) {
-      app.route(route.path, route.handler as any)
-    }
-  }
 
   // Plugin routes - OTP Login (MUST be registered BEFORE admin/plugins to avoid route conflict)
   // Register OTP Login routes first so they take precedence over the generic /:id handler

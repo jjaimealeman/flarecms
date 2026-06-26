@@ -42,9 +42,7 @@ apiMediaRoutes.use('*', requireAuth())
 apiMediaRoutes.post('/upload', async (c) => {
   try {
     const user = c.get('user')!
-    // Reuse formData parsed by demoUploadGuard (if present) to avoid double body-consumption.
-    // For non-demo users the guard is skipped, so we fall back to parsing here.
-    const formData = (c.get('parsedFormData') as FormData | undefined) ?? await c.req.formData()
+    const formData = await c.req.formData()
     const fileData = formData.get('file')
 
     if (!fileData || typeof fileData === 'string') {

@@ -4,7 +4,7 @@
  * Entry point for your Flare CMS headless application
  */
 
-import { createFlareApp, registerCollections, SchedulerService, DemoResetService } from '@flare-cms/core'
+import { createFlareApp, registerCollections, SchedulerService } from '@flare-cms/core'
 import type { FlareConfig } from '@flare-cms/core'
 import { validateBindingsMiddleware } from './middleware/validate-bindings'
 
@@ -42,13 +42,8 @@ const app = createFlareApp(config)
 // Export Workers module with both fetch and scheduled handlers
 export default {
   fetch: app.fetch.bind(app),
-  async scheduled(controller: ScheduledController, env: any, ctx: ExecutionContext) {
-    if (controller.cron === '0 */6 * * *') {
-      const service = new DemoResetService(env.DB, env.CACHE_KV)
-      ctx.waitUntil(service.run())
-    } else {
-      const scheduler = new SchedulerService(env.DB, env, ctx)
-      ctx.waitUntil(scheduler.processScheduledContent())
-    }
+  async scheduled(_controller: ScheduledController, env: any, ctx: ExecutionContext) {
+    const scheduler = new SchedulerService(env.DB, env, ctx)
+    ctx.waitUntil(scheduler.processScheduledContent())
   },
 }

@@ -63,8 +63,6 @@ export {
   listApiTokens,
   // Scheduler Service
   SchedulerService,
-  // Demo Reset Service
-  DemoResetService,
   // Audit Trail Service
   computeFieldDiff,
   logStatusChange,

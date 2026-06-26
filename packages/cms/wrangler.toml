@@ -77,7 +77,7 @@ bucket_name = "my-astro-cms-media"
 
 # Cron triggers for scheduled content publishing
 [triggers]
-crons = ["* * * * *", "0 */6 * * *"]
+crons = ["* * * * *"]
 
 # Observability
 [observability]
