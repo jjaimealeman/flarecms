@@ -59,8 +59,7 @@ export function renderAdminPreviewPage(data: PreviewPageData): string {
 
   const pluginStatuses = {
     quillEnabled: data.quillEnabled || false,
-    mdxeditorEnabled: false,
-    tinymceEnabled: false
+    mdxeditorEnabled: false
   }
 
   // Group fields same as content form

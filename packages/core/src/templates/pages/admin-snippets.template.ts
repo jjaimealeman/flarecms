@@ -40,7 +40,6 @@ function tsType(fieldType: string): string {
     case 'string':
     case 'slug':
     case 'quill':
-    case 'tinymce':
     case 'mdxeditor':
     case 'richtext':
     case 'markdown':

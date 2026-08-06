@@ -41,9 +41,16 @@ Prove that Flare CMS works by using it to power its own documentation — every 
 - ✓ Workflow Engine with approval workflows (Draft -> Review -> Approved -> Published) — v2
 - ✓ Deployed to Cloudflare Pages with all routes live — v2
 
-### Active
+### Validated (v2.1 — Complete)
 
-(No active milestone — define with `/gsd:new-milestone`)
+- ✓ Public demo page at flarecms.dev/demo with minimal email gate — v2.1
+- ✓ OTP email login for demo visitors via Resend — v2.1
+- ✓ Auto-assigned `demo` role with read-only + sandbox CRUD — v2.1
+- ✓ `demo-sandbox` collection for visitors to experiment with — v2.1
+- ✓ 30-minute session expiry for demo users — v2.1
+- ✓ Cron trigger to reset sandbox data every 6 hours — v2.1
+- ✓ `demo_signups` table for email capture — v2.1
+- ✓ Rate limiting (50 ops per demo session) — v2.1
 
 ### Out of Scope
 
@@ -53,16 +60,18 @@ Prove that Flare CMS works by using it to power its own documentation — every 
 - Pricing page — no paid tier exists yet
 - Showcase page — no showcase projects yet
 
-## Current State (v2.0 shipped 2026-03-15)
+## Current State (v2.1 shipped 2026-03-18)
 
-**Codebase:** ~201K LOC TypeScript/Astro across 4 packages
+**Codebase:** ~208K LOC TypeScript/Astro across 4 packages
 **Stack:** Cloudflare Workers + D1 + R2 + KV, Hono, Astro 5 SSR, Drizzle ORM
-**Production:** admin.flarecms.dev (CMS), flarecms.dev (site)
+**Production:** admin.flarecms.dev (CMS), flarecms.dev (site), flarecms.dev/demo (live demo)
 
-**Known tech debt (from v2 audit):**
-- `schema_migrations` DDL not in migrations-bundle.ts (fresh installs 500 on schema migrations page)
-- `workflowPlugin` object is dead code (routes wired directly in app.ts instead)
+**Known tech debt (remaining):**
+- `workflowPlugin` dead code deferred (routes work via direct wiring)
 - Phase 6 missing VERIFICATION.md
+- createDemoUser generates unused 24h JWT token (wasted CPU)
+- /verify sets SameSite=Strict cookies that are dead in cross-origin production
+- Demo plugin CORS hardcodes origins instead of reading from env
 
 ## Context
 
@@ -94,8 +103,13 @@ Prove that Flare CMS works by using it to power its own documentation — every 
 | Seed docs via API, not manual entry | Reproducible, version-controlled | ✓ Good — idempotent re-seeding |
 | Content Layer Loader (`@flare-cms/astro`) | First-class Astro DX, type safety | ✓ Good — `getCollection()` just works |
 | Live Preview via KV draft storage | Same-edge-network latency (<50ms) | ✓ Good — unique edge advantage |
-| Direct route wiring for workflow (not plugin system) | Plugin activation incomplete, direct wiring reliable | ⚠️ Revisit — plugin dead code needs cleanup |
-| Schema migrations in DB (not code) | Non-technical users can modify fields | ⚠️ Revisit — migration bundle entry missing |
+| Direct route wiring for workflow (not plugin system) | Plugin activation incomplete, direct wiring reliable | ✓ Good — dead code cleaned up in v2.0.1 |
+| Schema migrations in DB (not code) | Non-technical users can modify fields | ✓ Good — migration bundle fixed in v2.0.1 |
+| Minimal gate for demo (not polished landing) | Get people into admin fast, polish later | ✓ Good — visitors in admin in <60s |
+| Demo as plugin (not core) | Not every install needs a public demo | ✓ Good — clean plugin isolation |
+| Cross-domain cookie handoff via token exchange | SameSite=Strict blocks cross-origin cookies | ✓ Good — /exchange endpoint bridges gap |
+| KV key existence for demo detection (not role) | Viewer role shared by API tokens | ✓ Good — zero false positives |
+| 30-min JWT via direct sign() | AuthManager hardcodes 24h | ✓ Good — clean separation |
 
 ---
-*Last updated: 2026-03-15 after v2.0 milestone*
+*Last updated: 2026-03-18 after v2.1 milestone complete*

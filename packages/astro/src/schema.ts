@@ -32,7 +32,6 @@ const FIELD_TYPE_MAP: Record<string, () => z.ZodTypeAny> = {
   richtext: () => z.string(),
   markdown: () => z.string(),
   quill: () => z.string(),
-  tinymce: () => z.string(),
   mdxeditor: () => z.string(),
   textarea: () => z.string(),
   json: () => z.unknown(),

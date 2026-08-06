@@ -46,24 +46,6 @@ export class PluginBootstrapService {
       },
     },
     {
-      id: "seed-data",
-      name: "seed-data",
-      display_name: "Seed Data",
-      description:
-        "Generate realistic example users and content for testing and development",
-      version: "1.0.0",
-      author: "Flare CMS Team",
-      category: "development",
-      icon: "🌱",
-      permissions: ["admin"],
-      dependencies: [],
-      settings: {
-        userCount: 20,
-        contentCount: 200,
-        defaultPassword: "password123",
-      },
-    },
-    {
       id: "core-cache",
       name: "core-cache",
       display_name: "Cache System",
@@ -85,7 +67,7 @@ export class PluginBootstrapService {
     {
       id: "easy-mdx",
       name: "easy-mdx",
-      display_name: "EasyMDE Editor",
+      display_name: "EasyMDE Markdown Editor",
       description: "Lightweight markdown editor with live preview for richtext fields",
       version: "1.0.0",
       author: "Flare CMS Team",

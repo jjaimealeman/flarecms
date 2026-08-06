@@ -530,17 +530,6 @@ describe('renderDynamicField - Quill Editor Fields', () => {
     expect(html).toContain('MDXEditor plugin is inactive');
   });
 
-  it('should fallback to textarea when tinymce plugin is disabled', () => {
-    const field = createTestField({
-      field_type: 'tinymce',
-    });
-    const html = renderDynamicField(field, {
-      pluginStatuses: { tinymceEnabled: false },
-    });
-
-    expect(html).toContain('<textarea');
-    expect(html).toContain('TinyMCE plugin is inactive');
-  });
 });
 
 describe('renderDynamicField - Unknown Field Type', () => {

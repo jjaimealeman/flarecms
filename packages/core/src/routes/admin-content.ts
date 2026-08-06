@@ -643,15 +643,6 @@ adminContentRoutes.get('/new', async (c) => {
     // Check if workflow plugin is active
     const workflowEnabled = await isPluginActive(db, 'workflow')
 
-    // Check if TinyMCE plugin is active and get settings
-    const tinymceEnabled = await isPluginActive(db, 'tinymce-plugin')
-    let tinymceSettings
-    if (tinymceEnabled) {
-      const pluginService = new PluginService(db)
-      const tinymcePlugin = await pluginService.getPlugin('tinymce-plugin')
-      tinymceSettings = tinymcePlugin?.settings
-    }
-
     // Check if Quill plugin is active and get settings
     const quillEnabled = await isPluginActive(db, 'quill-editor')
     let quillSettings
@@ -670,20 +661,11 @@ adminContentRoutes.get('/new', async (c) => {
       mdxeditorSettings = mdxeditorPlugin?.settings
     }
 
-    console.log('[Content Form /new] Editor plugins status:', {
-      tinymce: tinymceEnabled,
-      quill: quillEnabled,
-      mdxeditor: mdxeditorEnabled,
-      mdxeditorSettings
-    })
-
     const formData: ContentFormData = {
       collection,
       fields,
       isEdit: false,
       workflowEnabled,
-      tinymceEnabled,
-      tinymceSettings,
       quillEnabled,
       quillSettings,
       mdxeditorEnabled,
@@ -818,15 +800,6 @@ adminContentRoutes.get('/:id/edit', async (c) => {
     // Check if workflow plugin is active
     const workflowEnabled = await isPluginActive(db, 'workflow')
 
-    // Check if TinyMCE plugin is active and get settings
-    const tinymceEnabled = await isPluginActive(db, 'tinymce-plugin')
-    let tinymceSettings
-    if (tinymceEnabled) {
-      const pluginService = new PluginService(db)
-      const tinymcePlugin = await pluginService.getPlugin('tinymce-plugin')
-      tinymceSettings = tinymcePlugin?.settings
-    }
-
     // Check if Quill plugin is active and get settings
     const quillEnabled = await isPluginActive(db, 'quill-editor')
     let quillSettings
@@ -860,8 +833,6 @@ adminContentRoutes.get('/:id/edit', async (c) => {
       fields,
       isEdit: true,
       workflowEnabled,
-      tinymceEnabled,
-      tinymceSettings,
       quillEnabled,
       quillSettings,
       mdxeditorEnabled,
