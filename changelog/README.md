@@ -2,6 +2,10 @@
 
 Dev changelog entries for Flare CMS monorepo.
 
+## August 2026
+
+- [Remove SonicJS/Demo Cruft, Document Cleanup Initiative](2026-08-06-0658_remove-sonicjs-demo-cruft-document-cleanup-initiative.md) [REFACTOR] [PLUGINS] [CLEANUP] [DOCUMENTATION]
+
 ## March 2026
 
 - [1273564 - Fix CSP Blocking Login Page CDNs](1273564_fix-csp-allow-login-page-cdns.md) [SECURITY] [BUG_FIX] [CONFIG]
