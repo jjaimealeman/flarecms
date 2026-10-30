@@ -45,13 +45,11 @@ import { securityHeadersMiddleware } from './middleware/security-headers'
 import { csrfProtection } from './middleware/csrf'
 import { adminMenuMiddleware } from './middleware/admin-menu'
 import { createDatabaseToolsAdminRoutes } from './plugins/core-plugins/database-tools-plugin/admin-routes'
-import { createSeedDataAdminRoutes } from './plugins/core-plugins/seed-data-plugin/admin-routes'
 import { createWorkflowRoutes } from './plugins/core-plugins/workflow-plugin/routes'
 import { createWorkflowAdminRoutes } from './plugins/core-plugins/workflow-plugin/admin-routes'
 import { emailPlugin } from './plugins/core-plugins/email-plugin'
 import { otpLoginPlugin } from './plugins/core-plugins/otp-login-plugin'
 import { aiSearchPlugin } from './plugins/core-plugins/ai-search-plugin'
-import { createMagicLinkAuthPlugin } from './plugins/available/magic-link-auth'
 import cachePlugin, { setGlobalKVNamespace as setPluginKVNamespace } from './plugins/cache'
 import { setGlobalKVNamespace as setSimpleKVNamespace } from './services/cache'
 import { faviconSvg } from './assets/favicon'
@@ -78,6 +76,7 @@ export interface Bindings {
   BUCKET_NAME?: string
   MEDIA_DOMAIN?: string
   GOOGLE_MAPS_API_KEY?: string
+  FLARECMS_DEV_TOOLS?: string
 }
 
 export interface Variables {
@@ -309,8 +308,11 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   app.route('/admin/workflow', createWorkflowAdminRoutes())
   app.route('/admin/testimonials', adminTestimonialsRoutes)
   app.route('/admin/code-examples', adminCodeExamplesRoutes)
+  app.use('/admin/database-tools/*', async (c, next) => {
+    if (!c.env.FLARECMS_DEV_TOOLS) return c.notFound()
+    return next()
+  })
   app.route('/admin/database-tools', createDatabaseToolsAdminRoutes())
-  app.route('/admin/seed-data', createSeedDataAdminRoutes())
   app.route('/admin/content', adminContentRoutes)
   app.route('/admin/media', adminMediaRoutes)
   // Plugin routes - AI Search (MUST be registered BEFORE admin/plugins to avoid route conflict)
@@ -344,14 +346,6 @@ export function createFlareApp(config: FlareConfig = {}): FlareApp {
   // Plugin routes - Email
   if (emailPlugin.routes && emailPlugin.routes.length > 0) {
     for (const route of emailPlugin.routes) {
-      app.route(route.path, route.handler as any)
-    }
-  }
-
-  // Plugin routes - Magic Link Auth (passwordless authentication via email links)
-  const magicLinkPlugin = createMagicLinkAuthPlugin()
-  if (magicLinkPlugin.routes && magicLinkPlugin.routes.length > 0) {
-    for (const route of magicLinkPlugin.routes) {
       app.route(route.path, route.handler as any)
     }
   }

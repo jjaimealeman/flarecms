@@ -11,6 +11,45 @@
 
 ---
 
+## Active Initiative — Cleanup & Revival (June 25, 2026)
+
+**See `TASKS.md` for full task breakdown.**
+
+FlareCMS is NOT abandoned — it's production-ready v2.0.0, 102k LOC, 1200+ tests,
+last committed April 2026. The goal is to make it 100% 915website's own and
+actually deploy it for real clients. It was forked from SonicJS March 1, 2026.
+
+**Target clients:** dthelifecoach.com (first), 915website.com (dogfood), upcoming clients.
+
+### What to kill first
+**SonicJS legacy (actual inherited cruft):**
+- `demo-login`, `seed-data` plugins — SonicJS demo artifacts, delete them
+- TinyMCE editor — redundant (we have Quill), remove
+- EasyMDE duplicate — two versions in plugin UI, consolidate to one
+- Magic Link Auth — OTP Login covers same use case, remove magic-link
+- Database Tools plugin — dangerous in client sites (has truncate), gate or remove
+
+**FlareCMS demo system (ours, built v2.1 March 2026 — not SonicJS):**
+- `demo-sandbox` plugin — built for flarecms.dev marketing demo (OTP auth, sandbox collection, reset cron). Not needed for client deploys. Remove plugin, migration 038, demo routes from app.ts, /demo page from site, cron trigger from wrangler.toml.
+
+**DO NOT remove `email-plugin`** — it powers OTP Login via Resend. Load-bearing.
+
+### What to fix
+- Sidebar nav: duplicated URLs, broken editor
+- Workflow Engine: two versions showing (beta1 vs beta.1), consolidate
+- Collections in sidebar default to SonicJS demo types — make dynamic
+
+### What to activate
+- AI Search plugin (already built, just Inactive) — key differentiator
+  Wire up Workers AI binding, integrate CF similarity cache freshness (June 24 2026 feature)
+
+### Context: where this fits
+FlareCMS is the CMS layer. Agente is a future concept (brainstormed June 2026) — an AI agent
+layer that would sit alongside FlareCMS to generate/draft/monitor content. No code exists yet.
+"Page-as-DO" (every page = Durable Object) is the long-term FlareCMS differentiator — parking lot for now.
+
+---
+
 ## Project Overview
 
 **Flare CMS** is a headless CMS built for Cloudflare Workers, forked from [SonicJS](https://github.com/Sonicjs-Org/sonicjs). This monorepo contains the core engine, CMS backend, and Astro frontend.

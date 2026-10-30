@@ -3,6 +3,7 @@
 ## Milestones
 
 - SHIPPED **v2.0 Platform Maturity** -- Phases 1-10 (shipped 2026-03-15)
+- SHIPPED **v2.1 Live Demo** -- Phases 11-14 (shipped 2026-03-18)
 
 <details>
 <summary>v2.0 Platform Maturity (Phases 1-10) -- SHIPPED 2026-03-15</summary>
@@ -22,9 +23,24 @@ Full details: milestones/v2.0-ROADMAP.md
 
 </details>
 
-## Next Milestone
+<details>
+<summary>v2.1 Live Demo (Phases 11-14) -- SHIPPED 2026-03-18</summary>
 
-Not yet defined. Run `/gsd:new-milestone` to start.
+- [x] Phase 11: Sandbox Foundation (3/3 plans) -- 2026-03-16
+- [x] Phase 12: Demo Authentication (1/1 plan) -- 2026-03-16
+- [x] Phase 13: Demo Page (2/2 plans) -- 2026-03-18
+- [x] Phase 14: Reset & Cleanup (1/1 plan) -- 2026-03-18
+
+Full details: milestones/v2.1-ROADMAP.md
+
+</details>
+
+## Progress
+
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1-10 | v2.0 | 31/31 | Complete | 2026-03-15 |
+| 11-14 | v2.1 | 7/7 | Complete | 2026-03-18 |
 
 ---
-*Last updated: 2026-03-15 after v2.0 milestone completion*
+*Last updated: 2026-03-18 after v2.1 milestone complete*

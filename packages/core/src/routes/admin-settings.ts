@@ -17,6 +17,7 @@ type Bindings = {
   IMAGES_ACCOUNT_ID?: string
   IMAGES_API_TOKEN?: string
   ENVIRONMENT?: string
+  FLARECMS_DEV_TOOLS?: string
 }
 
 type Variables = {
@@ -446,9 +447,13 @@ adminSettingsRoutes.post('/api/database-tools/backup', async (c) => {
   }
 })
 
-// Truncate tables
+// Truncate tables — gated behind FLARECMS_DEV_TOOLS env flag
 adminSettingsRoutes.post('/api/database-tools/truncate', async (c) => {
   try {
+    if (!c.env.FLARECMS_DEV_TOOLS) {
+      return c.json({ success: false, error: 'Database tools disabled' }, 403)
+    }
+
     const user = c.get('user')
 
     // Only allow admin users

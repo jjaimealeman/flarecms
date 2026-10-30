@@ -9,8 +9,7 @@
 
 export { testimonialsPlugin, createTestimonialPlugin } from './testimonials'
 export { codeExamplesPlugin, createCodeExamplesPlugin } from './code-examples'
-export { demoLoginPlugin } from './demo-login'
-export { seedDataPlugin, createSeedDataPlugin } from './seed-data-plugin'
+
 export { databaseToolsPlugin } from './database-tools-plugin'
 export { quillEditorPlugin, createQuillEditorPlugin } from './quill-editor'
 export { emailPlugin, createEmailPlugin } from './email-plugin'
@@ -24,14 +23,12 @@ export { AISearchService, IndexManager } from './ai-search-plugin'
 export const CORE_PLUGIN_IDS = [
   'testimonials-plugin',
   'code-examples-plugin',
-  'demo-login-plugin',
-  'seed-data',
-  'database-tools',
+'database-tools',
   'quill-editor',
   'email',
   'otp-login',
   'turnstile',
-  'ai-search'
+  'ai-search',
 ] as const
 
 export type CorePluginNames = (typeof CORE_PLUGIN_IDS)[number]

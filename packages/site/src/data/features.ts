@@ -114,7 +114,7 @@ export const coreFeatures: Feature[] = [
   {
     icon: 'code',
     title: '34+ Field Types',
-    description: 'String, number, boolean, date, rich text (Quill/TinyMCE/MDX), media, select, multiselect, JSON, blocks, references, slug, and more.',
+    description: 'String, number, boolean, date, rich text (Quill/MDX), media, select, multiselect, JSON, blocks, references, slug, and more.',
     color: 'purple',
     status: 'stable',
   },
